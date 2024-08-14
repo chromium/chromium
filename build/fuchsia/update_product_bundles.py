@@ -154,11 +154,11 @@ def main():
   auth_args = [
       '--auth',
       os.path.join(os.path.dirname(__file__), 'get_auth_token.py')
-  ] if args.internal and running_unattended() else []
-  if args.internal and not running_unattended():
-    print('*** product bundle v2 requires authentication with your account and '
-          'it should already open a browser window to do it if you have not '
-          'granted the permission yet.')
+  ] if running_unattended() else []
+  if not running_unattended():
+    print('*** product bundle v2 requires authentication with your account when'
+          'downloading images from internal storages. It will open a browser'
+          'window to do it if you have not granted the permission yet.')
   for product in new_products:
     prod, board = product.split('.', 1)
     if prod.startswith('smart_display_') and board in [
@@ -169,8 +169,8 @@ def main():
       # src-internal. Likely we can download two copies for a smooth
       # transition, but it would be easier to keep it as-is during the ffx
       # product v2 migration.
-      # TODO(crbug.com/40938340): Migrate the image download folder away from the
-      # following hack.
+      # TODO(crbug.com/40938340): Migrate the image download folder away from
+      # the following hack.
       prod, board = board + '-release', prod
     if args.internal:
       # sdk_override.txt does not work for internal images.
@@ -179,10 +179,10 @@ def main():
     else:
       override_url = update_sdk.GetSDKOverrideGCSPath()
       if override_url:
-        logging.debug('Using override file')
         # TODO(zijiehe): Convert to removesuffix once python 3.9 is supported.
         if override_url.endswith('/sdk'):
           override_url = override_url[:-len('/sdk')]
+        logging.debug(f'Using {override_url} from override file.')
       image_dir = os.path.join(common.IMAGES_ROOT, prod, board)
     curr_signature = get_current_signature(image_dir)
 
@@ -190,12 +190,15 @@ def main():
       continue
 
     common.make_clean_directory(image_dir)
-    base_url = 'gs://{bucket}/development/{new_hash}'.format(
+    base_url = override_url or 'gs://{bucket}/development/{new_hash}'.format(
         bucket='fuchsia-sdk' if args.internal else 'fuchsia', new_hash=new_hash)
+    effective_auth_args = auth_args if base_url.startswith(
+        'gs://fuchsia-artifacts-internal/') or base_url.startswith(
+            'gs://fuchsia-sdk/') else []
     lookup_output = common.run_ffx_command(cmd=[
         '--machine', 'json', 'product', 'lookup', product, new_hash,
-        '--base-url', override_url or base_url
-    ] + auth_args,
+        '--base-url', base_url
+    ] + effective_auth_args,
                                            check=True,
                                            capture_output=True).stdout.strip()
     download_url = json.loads(lookup_output)['transfer_manifest_url']
@@ -204,7 +207,8 @@ def main():
     # if it's not coming from the sdk_override.txt file.
     logging.info(f'Downloading {product} from {base_url} and {download_url}.')
     common.run_ffx_command(
-        cmd=['product', 'download', download_url, image_dir] + auth_args,
+        cmd=['product', 'download', download_url, image_dir] +
+        effective_auth_args,
         check=True)
 
   return 0
