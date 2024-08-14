@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_QUADS_FRAME_INTERVAL_INPUTS_H_
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -29,6 +30,9 @@ enum class ContentFrameIntervalType {
   kAnimatingImage,  // Gifs.
   kScrollBarFadeOutAnimation,
 };
+
+VIZ_COMMON_EXPORT std::string ContentFrameIntervalTypeToString(
+    ContentFrameIntervalType type);
 
 struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {
   // Type of content that has fixed content frame interval.

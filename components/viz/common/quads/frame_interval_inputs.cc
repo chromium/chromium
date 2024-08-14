@@ -6,6 +6,17 @@
 
 namespace viz {
 
+std::string ContentFrameIntervalTypeToString(ContentFrameIntervalType type) {
+  switch (type) {
+    case ContentFrameIntervalType::kVideo:
+      return "video";
+    case ContentFrameIntervalType::kAnimatingImage:
+      return "animating_image";
+    case ContentFrameIntervalType::kScrollBarFadeOutAnimation:
+      return "scrollbar_fade_out";
+  }
+}
+
 FrameIntervalInputs::FrameIntervalInputs() = default;
 FrameIntervalInputs::FrameIntervalInputs(const FrameIntervalInputs& other) =
     default;
