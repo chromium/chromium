@@ -1397,9 +1397,15 @@ IN_PROC_BROWSER_TEST_P(
                 supervised_user::SupervisionMixin::SignInMode::kSupervised);
 }
 
+// TODO(crbug.com/359268574): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckAgainstClassifyUrlRPC DISABLED_CheckAgainstClassifyUrlRPC
+#else
+#define MAYBE_CheckAgainstClassifyUrlRPC CheckAgainstClassifyUrlRPC
+#endif
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
-    CheckAgainstClassifyUrlRPC) {
+    MAYBE_CheckAgainstClassifyUrlRPC) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
 
   // Only supervised users should call the backend
