@@ -81,15 +81,15 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Disclosure strings:
-      {"acceptDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCEPT},
-      {"declineDisclosure", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DECLINE},
-      {"disclosureAboutItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ABOUT_ITEM},
-      {"disclosureAccountItem",
-       IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ACCOUNT_ITEM},
-      {"disclosureDataItem", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_DATA_ITEM},
-      {"disclosureItemsHeader",
-       IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_ITEMS_HEADER},
-      {"disclosureTitle", IDS_PRODUCT_SPECIFICATIONS_DISCLOSURE_TITLE},
+      {"acceptDisclosure", IDS_COMPARE_DISCLOSURE_ACCEPT},
+      {"declineDisclosure", IDS_COMPARE_DISCLOSURE_DECLINE},
+      {"disclosureAboutItem", IDS_COMPARE_DISCLOSURE_ABOUT_AI_ITEM},
+      {"disclosureTabItem", IDS_COMPARE_DISCLOSURE_TAB_ITEM},
+      {"disclosureAccountItem", IDS_COMPARE_DISCLOSURE_ACCOUNT_ITEM},
+      {"disclosureDataItem", IDS_COMPARE_DISCLOSURE_DATA_ITEM},
+      {"disclosureItemsHeader", IDS_COMPARE_DISCLOSURE_ITEMS_HEADER},
+      {"disclosureTitle", IDS_COMPARE_DISCLOSURE_TITLE},
+      {"disclosureLearnMore", IDS_COMPARE_DISCLOSURE_LEARN_MORE},
 
       // Main UI strings:
       {"delete", IDS_COMPARE_DELETE},
