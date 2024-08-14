@@ -5595,23 +5595,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DataUrlsHaveUniqueSiteURLs) {
   GURL main_url = main_frame->GetSiteInstance()->GetSiteURL();
   GURL new_url = new_frame->GetSiteInstance()->GetSiteURL();
   EXPECT_NE(new_frame->GetSiteInstance(), main_frame->GetSiteInstance());
-  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
-    // The site URL is the data scheme followed by a serialized nonce, which is
-    // unique for every data: URL instance.
-    EXPECT_NE(main_url, new_url);
-    EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
-    EXPECT_EQ(new_url.GetContent().length(),
-              base::UnguessableToken::Create().ToString().length());
-    EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
 
-  } else {
-    // Without the feature, the site URL of data: URLs is the entire data: URL,
-    // so if the data is the same in both cases, the site URLs will be the same,
-    // and they will be allowed to share a process.
-    EXPECT_EQ(main_url, new_url);
-    EXPECT_EQ(main_url, data_url);
-    EXPECT_EQ(new_frame->GetProcess(), main_frame->GetProcess());
-  }
+  // The site URL is the data scheme followed by a serialized nonce, which is
+  // unique for every data: URL instance.
+  EXPECT_NE(main_url, new_url);
+  EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
+  EXPECT_EQ(new_url.GetContent().length(),
+            base::UnguessableToken::Create().ToString().length());
+  EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
 }
 
 // Ensures that subframes navigated to data: URLs start in a process based on

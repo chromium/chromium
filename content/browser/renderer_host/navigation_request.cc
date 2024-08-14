@@ -4071,8 +4071,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // Propagate the tentative origin to commit value (for data: URLs that will be
   // rendered) to the UrlInfo, to make sure the nonce remains the same
   // throughout the navigation.
-  if (GetURL().SchemeIs(url::kDataScheme) &&
-      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+  if (GetURL().SchemeIs(url::kDataScheme)) {
     // The function for computing the request's origin depends on the stage of
     // the request, but the same opaque nonce value is preserved across both
     // functions for data: URLs.
@@ -10712,8 +10711,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
   // the nonce from the origin and that of the site URL to match, which will let
   // us uniquely identify the correct data: SiteInstance.
   if (common_params().url.SchemeIs(url::kDataScheme) &&
-      tentative_data_origin_to_commit_.has_value() &&
-      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+      tentative_data_origin_to_commit_.has_value()) {
     return std::make_pair(tentative_data_origin_to_commit_.value(),
                           "data: URL");
   }
@@ -10745,8 +10743,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
       common_params().url,
       common_params().initiator_origin.value_or(url::Origin()));
 
-  if (common_params().url.SchemeIs(url::kDataScheme) &&
-      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+  if (common_params().url.SchemeIs(url::kDataScheme)) {
     // Cache the origin for data: URLs, so that its nonce remains stable.
     tentative_data_origin_to_commit_ = resolved_origin;
   }
