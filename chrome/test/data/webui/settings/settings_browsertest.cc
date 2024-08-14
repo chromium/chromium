@@ -528,14 +528,14 @@ IN_PROC_BROWSER_TEST_F(SettingsAboutPageTest, OfficialBuild) {
 
 using SettingsAllSitesTest = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, EnableFirstPartySets) {
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, EnableRelatedWebsiteSets) {
   RunTest("settings/all_sites_test.js",
-          "runMochaSuite('EnableFirstPartySets')");
+          "runMochaSuite('EnableRelatedWebsiteSets')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableRelatedWebsiteSets) {
   RunTest("settings/all_sites_test.js",
-          "runMochaSuite('DisableFirstPartySets')");
+          "runMochaSuite('DisableRelatedWebsiteSets')");
 }
 
 class SettingsBasicPageTest : public SettingsBrowserTest {

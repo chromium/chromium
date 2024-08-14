@@ -66,9 +66,9 @@
               <span id="cookies" hidden$="[[!siteGroup.numCookies]]">
                 &middot; [[cookieString_]]
               </span>
-              <span id="fpsMembership"
-                  hidden$="[[!isFpsMember_(siteGroup.fpsOwner)]]">
-                &middot; [[fpsMembershipLabel_]]
+              <span id="rwsMembership"
+                  hidden$="[[!isRwsMember_(siteGroup.rwsOwner)]]">
+                &middot; [[rwsMembershipLabel_]]
               </span>
               <span id="extensionIdDescription"
                   hidden$="[[!isExtension_(siteGroup)]]">
@@ -77,9 +77,9 @@
             </div>
           </div>
           <template is="dom-if" restamp if="[[shouldShowPolicyPrefIndicator_(
-                            siteGroup.fpsEnterpriseManaged)]]">
+                            siteGroup.rwsEnterpriseManaged)]]">
             <cr-policy-pref-indicator
-                id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                id="rwsPolicy" pref="[[rwsEnterprisePref_]]"
                 icon-aria-label="[[label]]"
                 focus-row-control focus-type="policy">
             </cr-policy-pref-indicator>
@@ -96,10 +96,10 @@
         </div>
         <div class="row-aligned">
           <template is="dom-if" if=
-              "[[shouldShowOverflowMenu(siteGroup.fpsOwner, isFpsFiltered)]]">
+              "[[shouldShowOverflowMenu(siteGroup.rwsOwner, isRwsFiltered)]]">
             <div class="separator"></div>
             <cr-icon-button class="icon-more-vert"
-                id="fpsOverflowMenuButton"
+                id="rwsOverflowMenuButton"
                 title="$i18n{moreActions}"
                 on-click="showOverflowMenu_"
                 focus-row-control focus-type="more-actions"
@@ -107,7 +107,7 @@
             </cr-icon-button>
           </template>
           <template is="dom-if" if=
-              "[[!shouldShowOverflowMenu(siteGroup.fpsOwner, isFpsFiltered)]]">
+              "[[!shouldShowOverflowMenu(siteGroup.rwsOwner, isRwsFiltered)]]">
             <div class="separator"></div>
             <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
                 title$=

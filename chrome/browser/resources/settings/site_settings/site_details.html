@@ -111,15 +111,15 @@
                   [[numCookies_]]
                 </div>
               </div>
-              <div id="fpsMembership" class="secondary"
-                  hidden$="[[!fpsMembership_]]">
-                [[fpsMembership_]]
+              <div id="rwsMembership" class="secondary"
+                  hidden$="[[!rwsMembership_]]">
+                [[rwsMembership_]]
               </div>
             </div>
-            <template is="dom-if" if="[[fpsEnterprisePref_]]">
+            <template is="dom-if" if="[[rwsEnterprisePref_]]">
               <div id="fpsPolicyContainer">
                 <cr-policy-pref-indicator
-                    id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                    id="rwsPolicy" pref="[[rwsEnterprisePref_]]"
                     icon-aria-label="[[label]]" focus-row-control
                     focus-type="policy">
                 </cr-policy-pref-indicator>

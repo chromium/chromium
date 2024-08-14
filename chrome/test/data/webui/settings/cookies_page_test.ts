@@ -220,31 +220,34 @@ suite('CookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('disabledFPSToggle', async () => {
+  test('disabledRWSToggle', async () => {
     // Confirm that when the user has not selected the block 3PC setting, the
-    // FPS toggle is disabled.
-    const firstPartySetsToggle =
+    // RWS toggle is disabled.
+    const relatedWebsiteSetsToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#firstPartySetsToggle')!;
+            '#relatedWebsiteSetsToggle')!;
     blockThirdParty().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
         CookieControlsMode.BLOCK_THIRD_PARTY,
         page.prefs.profile.cookie_controls_mode.value);
-    assertFalse(firstPartySetsToggle.disabled, 'expect toggle to be enabled');
+    assertFalse(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be enabled');
 
     allowThirdParty().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
         CookieControlsMode.OFF, page.prefs.profile.cookie_controls_mode.value);
-    assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
+    assertTrue(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
 
     blockThirdPartyIncognito().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
         CookieControlsMode.INCOGNITO_ONLY,
         page.prefs.profile.cookie_controls_mode.value);
-    assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
+    assertTrue(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
   });
 
   test('blockThirdPartyIncognitoSecondBulletPointText', function() {

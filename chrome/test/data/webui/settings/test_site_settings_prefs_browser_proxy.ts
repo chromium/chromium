@@ -70,7 +70,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'clearPartitionedOriginDataAndCookies',
       'recordAction',
       'getRecentSitePermissions',
-      'getFpsMembershipLabel',
+      'getRwsMembershipLabel',
       'getNumCookiesString',
       'getOsGlobalPermissionStatus',
       'openSystemPermissionSettings',
@@ -617,12 +617,12 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.methodCalled('setProtocolHandlerDefault', value);
   }
 
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
-    this.methodCalled('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string) {
+    this.methodCalled('getRwsMembershipLabel', rwsNumMembers, rwsOwner);
     return Promise.resolve([
-      `${fpsNumMembers}`,
-      (fpsNumMembers === 1 ? 'site' : 'sites'),
-      `in ${fpsOwner}'s group`,
+      `${rwsNumMembers}`,
+      (rwsNumMembers === 1 ? 'site' : 'sites'),
+      `in ${rwsOwner}'s group`,
     ].join(' '));
   }
 

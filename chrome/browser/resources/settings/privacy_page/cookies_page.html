@@ -77,7 +77,7 @@
         padding-bottom: 12px;
       }
 
-      #firstPartySetsToggle {
+      #relatedWebsiteSetsToggle {
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
@@ -179,11 +179,11 @@
             <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
               <div slot="noSelectionCollapse">
                 <settings-toggle-button
-                    id="firstPartySetsToggle"
+                    id="relatedWebsiteSetsToggle"
                     pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
                     label="$i18n{cookiePageFpsLabel}"
                     sub-label="$i18n{cookiePageFpsSubLabel}"
-                    disabled="[[firstPartySetsToggleDisabled_(
+                    disabled="[[relatedWebsiteSetsToggleDisabled_(
                         prefs.profile.cookie_controls_mode.value)]]">
                 </settings-toggle-button>
               </div>

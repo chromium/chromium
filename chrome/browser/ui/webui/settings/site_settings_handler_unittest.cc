@@ -234,18 +234,18 @@ void ValidateSitesWithRws(
           related_website_sets[schemeful_site].GetURL().host();
       ASSERT_EQ(owner_etldplus1, *site_group.FindString("fpsOwner"));
       if (owner_etldplus1 == "google.com") {
-        ASSERT_EQ(2, *site_group.FindInt("fpsNumMembers"));
-        ASSERT_EQ(false, *site_group.FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(2, *site_group.FindInt("rwsNumMembers"));
+        ASSERT_EQ(false, *site_group.FindBool("rwsEnterpriseManaged"));
       } else if (owner_etldplus1 == "example.com") {
-        ASSERT_EQ(1, *site_group.FindInt("fpsNumMembers"));
-        ASSERT_EQ(true, *site_group.FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(1, *site_group.FindInt("rwsNumMembers"));
+        ASSERT_EQ(true, *site_group.FindBool("rwsEnterpriseManaged"));
       }
     } else {
-      // The site is not part of a FPS therefore doesn't have `fpsOwner` or
-      // `fpsNumMembers` set. `FindString` and `FindInt` should return null.
+      // The site is not part of a RWS therefore doesn't have `fpsOwner` or
+      // `rwsNumMembers` set. `FindString` and `FindInt` should return null.
       ASSERT_FALSE(site_group.FindString("fpsOwner"));
-      ASSERT_FALSE(site_group.FindInt("fpsNumMembers"));
-      ASSERT_FALSE(site_group.FindBool("fpsEnterpriseManaged"));
+      ASSERT_FALSE(site_group.FindInt("rwsNumMembers"));
+      ASSERT_FALSE(site_group.FindBool("rwsEnterpriseManaged"));
     }
   }
 }
@@ -6355,14 +6355,14 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
 
 TEST_F(SiteSettingsHandlerTest, HandleGetRwsMembershipLabel) {
   base::Value::List args;
-  args.Append("getFpsMembershipLabel");
+  args.Append("getRwsMembershipLabel");
   args.Append(5);
   args.Append("google.com");
   handler()->HandleGetRwsMembershipLabel(args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
 
   EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("getFpsMembershipLabel", data.arg1()->GetString());
+  EXPECT_EQ("getRwsMembershipLabel", data.arg1()->GetString());
   ASSERT_TRUE(data.arg2()->GetBool());
   EXPECT_EQ("5 sites in google.com's group", data.arg3()->GetString());
 }

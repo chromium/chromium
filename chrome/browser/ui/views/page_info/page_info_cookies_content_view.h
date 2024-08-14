@@ -137,7 +137,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // the user.
   raw_ptr<views::ToggleButton> blocking_third_party_cookies_toggle_ = nullptr;
 
-  // The button that displays Related-Web-Set information with a link to
+  // The button that displays Related-Website-Set information with a link to
   // 'All sites' settings page.
   raw_ptr<RichHoverButton> rws_button_ = nullptr;
 

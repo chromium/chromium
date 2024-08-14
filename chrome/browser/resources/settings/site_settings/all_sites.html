@@ -31,7 +31,7 @@
         padding-inline-start: var(--cr-section-padding);
       }
 
-      #fpsLearnMore {
+      #relatedWebsiteSetsLearnMore {
         margin: 0 var(--cr-icon-button-margin-start);
         padding-bottom: 16px;
         padding-inline-end: var(--cr-section-padding);
@@ -69,9 +69,9 @@
         </cr-button>
       </div>
     </div>
-    <div id="fpsLearnMore"
-        hidden$="[[!shouldShowFpsLearnMore_(filter, filteredList_)]]">
-      [[getFpsLearnMoreLabel_(filter)]]
+    <div id="relatedWebsiteSetsLearnMore"
+        hidden$="[[!shouldShowRwsLearnMore_(filter, filteredList_)]]">
+      [[getRwsLearnMoreLabel_(filter)]]
       <a href="$i18n{firstPartySetsLearnMoreURL}"
           aria-label="$i18n{siteSettingsFirstPartySetsLearnMoreAccessibility}">
         $i18n{learnMore}
@@ -96,7 +96,7 @@
               last-focused="{{lastFocused_}}"
               list-blurred="{{listBlurred_}}"
               sort-method="[[sortMethod_]]"
-              is-fps-filtered="[[isFpsFiltered_(filter)]]">
+              is-fps-filtered="[[isRwsFiltered_(filter)]]">
           </site-entry>
         </template>
       </iron-list>

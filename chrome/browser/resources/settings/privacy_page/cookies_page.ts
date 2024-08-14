@@ -254,7 +254,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
                         '#privacySandboxLink')!.click();
   }
 
-  private firstPartySetsToggleDisabled_() {
+  private relatedWebsiteSetsToggleDisabled_() {
     return this.getPref('profile.cookie_controls_mode').value !==
         CookieControlsMode.BLOCK_THIRD_PARTY;
   }

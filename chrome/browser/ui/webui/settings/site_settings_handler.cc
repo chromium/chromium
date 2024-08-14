@@ -147,8 +147,8 @@ constexpr char kHasPermissionSettings[] = "hasPermissionSettings";
 constexpr char kHasInstalledPWA[] = "hasInstalledPWA";
 constexpr char kIsInstalled[] = "isInstalled";
 constexpr char kRwsOwner[] = "fpsOwner";
-constexpr char kRwsNumMembers[] = "fpsNumMembers";
-constexpr char kRwsEnterpriseManaged[] = "fpsEnterpriseManaged";
+constexpr char kRwsNumMembers[] = "rwsNumMembers";
+constexpr char kRwsEnterpriseManaged[] = "rwsEnterpriseManaged";
 constexpr char kZoom[] = "zoom";
 
 constexpr uint16_t kHttpsDefaultPort = 443;
@@ -657,7 +657,7 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleFetchUsageTotal,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getFpsMembershipLabel",
+      "getRwsMembershipLabel",
       base::BindRepeating(&SiteSettingsHandler::HandleGetRwsMembershipLabel,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(

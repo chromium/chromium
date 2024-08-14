@@ -48,7 +48,7 @@ export interface SiteDetailsElement {
   $: {
     confirmClearStorage: CrDialogElement,
     confirmResetSettings: CrDialogElement,
-    fpsMembership: HTMLElement,
+    rwsMembership: HTMLElement,
     noStorage: HTMLElement,
     storage: HTMLElement,
     usage: HTMLElement,
@@ -105,17 +105,19 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       },
 
       /**
-       * The first party set info for a site including owner and members count.
+       * The related website set info for a site including owner and members
+       * count.
        */
-      fpsMembership_: {
+      rwsMembership_: {
         type: String,
         value: '',
       },
 
       /**
-       * Mock preference used to power managed policy icon for first party sets.
+       * Mock preference used to power managed policy icon for related website
+       * sets.
        */
-      fpsEnterprisePref_: Object,
+      rwsEnterprisePref_: Object,
 
       enableExperimentalWebPlatformFeatures_: {
         type: Boolean,
@@ -170,8 +172,8 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private origin_: string;
   private storedData_: string;
   private numCookies_: string;
-  private fpsMembership_: string;
-  private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  private rwsMembership_: string;
+  private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private autoPictureInPictureEnabled_: boolean;
@@ -186,9 +188,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
 
     this.addWebUiListener(
         'usage-total-changed',
-        (host: string, data: string, cookies: string, fps: string,
-         fpsPolicy: boolean) => {
-          this.onUsageTotalChanged_(host, data, cookies, fps, fpsPolicy);
+        (host: string, data: string, cookies: string, rws: string,
+         rwsPolicy: boolean) => {
+          this.onUsageTotalChanged_(host, data, cookies, rws, rwsPolicy);
         });
 
     this.addWebUiListener(
@@ -246,17 +248,18 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
    * @param origin The origin that the usage was fetched for.
    * @param usage The string showing how much data the given host is using.
    * @param cookies The string showing how many cookies the given host is using.
-   * @param fpsMembership The string showing first party set membership details.
-   * @param fpsPolicy Whether a policy is applied to this FPS member.
+   * @param rwsMembership The string showing related website set membership
+   *     details.
+   * @param rwsPolicy Whether a policy is applied to this RWS member.
    */
   private onUsageTotalChanged_(
-      origin: string, usage: string, cookies: string, fpsMembership: string,
-      fpsPolicy: boolean) {
+      origin: string, usage: string, cookies: string, rwsMembership: string,
+      rwsPolicy: boolean) {
     if (this.origin_ === origin) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
-      this.fpsMembership_ = fpsMembership;
-      this.fpsEnterprisePref_ = fpsPolicy ? Object.assign({
+      this.rwsMembership_ = rwsMembership;
+      this.rwsEnterprisePref_ = rwsPolicy ? Object.assign({
         enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
         controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
       }) :
