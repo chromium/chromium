@@ -243,7 +243,12 @@ void BrightnessControllerChromeos::SetBrightnessPercent(
           : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
   request.set_cause(BrightnessChangeSourceToCause(source));
   chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
-  RecordHistogramForBrightnessAction(BrightnessAction::kSetBrightness);
+
+  // Record the brightness action only if it was not initiated by the system's
+  // brightness restoration.
+  if (source != BrightnessChangeSource::kRestoredFromUserPref) {
+    RecordHistogramForBrightnessAction(BrightnessAction::kSetBrightness);
+  }
 }
 
 void BrightnessControllerChromeos::GetBrightnessPercent(

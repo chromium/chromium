@@ -849,6 +849,63 @@ TEST_P(BrightnessControllerChromeosTest_NonApplicableSessionStates,
       0);
 }
 
+TEST_F(BrightnessControllerChromeosTest,
+       HistogramTest_SetBrightnessAfterSystemRestoration) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+
+  // Start on the login screen.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  SetBatteryPower();
+
+  // Metrics count should start at 0, both OnLogin and AfterLogin.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Display.TimeUntilFirstBrightnessChange.OnLoginScreen."
+      "SetBrightness.BatteryPower",
+      0);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Display.TimeUntilFirstBrightnessChange.AfterLogin."
+      "SetBrightness.BatteryPower",
+      0);
+
+  // Log in.
+  ClearLogin();
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  user_manager::KnownUser known_user(local_state());
+  SimulateUserLogin(kUserEmail);
+
+  // Set display brightness.
+  known_user.SetPath(account_id, prefs::kInternalDisplayScreenBrightnessPercent,
+                     std::make_optional<base::Value>(30.0));
+
+  // Simulate reboot, brightness should be restored.
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  // Verify that system restoring brightness is not recorded.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Display.TimeUntilFirstBrightnessChange.OnLoginScreen."
+      "SetBrightness.BatteryPower",
+      0);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Display.TimeUntilFirstBrightnessChange.AfterLogin."
+      "SetBrightness.BatteryPower",
+      0);
+
+  // Wait and then simulate a user-initiated brightness change.
+  int seconds_to_wait = 5;
+  AdvanceClock(base::Seconds(seconds_to_wait));
+  brightness_control_delegate()->SetBrightnessPercent(
+      50, /*gradual=*/true, /*source=*/
+      BrightnessControlDelegate::BrightnessChangeSource::kQuickSettings);
+
+  // Verify that the user-initiated brightness change is recorded.
+  histogram_tester_->ExpectTimeBucketCount(
+      "ChromeOS.Display.TimeUntilFirstBrightnessChange.AfterLogin."
+      "SetBrightness.BatteryPower",
+      base::Seconds(seconds_to_wait), 1);
+}
+
 TEST_F(BrightnessControllerChromeosTest, SetBrightnessPercent_Cause) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
