@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
-#include "ios/chrome/browser/browser_state/model/chrome_browser_state_impl_io_data.h"
+#include "ios/chrome/browser/profile/model/profile_ios_impl_io_data.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace policy {
