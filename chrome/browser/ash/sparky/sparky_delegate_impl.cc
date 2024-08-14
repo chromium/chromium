@@ -383,6 +383,27 @@ void SparkyDelegateImpl::KeyboardEntry(std::string text) {
   }
 }
 
+void SparkyDelegateImpl::KeyPress(const std::string& key,
+                                  bool control,
+                                  bool alt,
+                                  bool shift) {
+  // Get the window tree host for the primary display.
+  const auto& display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  CHECK(host);
+
+  const auto key_code = KeyboardCodeForDOMString(key);
+
+  if (key_code) {
+    auto pressed_released =
+        MakeKeyEventPair(key_code.value(), control, alt, shift);
+    host->DeliverEventToSink(&pressed_released.first);
+    host->DeliverEventToSink(&pressed_released.second);
+  } else {
+    // TODO(b/351099209): Report an error.
+  }
+}
+
 void SparkyDelegateImpl::StartObservingCalculators() {
   total_disk_space_calculator_.AddObserver(this);
   free_disk_space_calculator_.AddObserver(this);

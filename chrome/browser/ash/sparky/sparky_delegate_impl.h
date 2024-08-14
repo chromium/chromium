@@ -46,6 +46,10 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
   void ObtainStorageInfo(manta::StorageDataCallback storage_callback) override;
   void Click(int x, int y) override;
   void KeyboardEntry(std::string text) override;
+  void KeyPress(const std::string& key,
+                bool control,
+                bool alt,
+                bool shift) override;
   void GetMyFiles(manta::FilesDataCallback callback,
                   bool obtain_bytes,
                   std::set<std::string> allowed_file_paths) override;

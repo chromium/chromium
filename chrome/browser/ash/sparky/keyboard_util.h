@@ -13,6 +13,11 @@
 
 namespace ash {
 
+// Returns a pressed/released pair of KeyEvents for `key_code`, with some
+// combination of control, alt, shift held down.
+std::pair<ui::KeyEvent, ui::KeyEvent>
+MakeKeyEventPair(ui::KeyboardCode key_code, bool control, bool alt, bool shift);
+
 // Given some `text`, returns a vector of key events which simulate typing that
 // text on a US keyboard. The returned vector contains a pressed/released
 // pair of events for each character in `text`, and handles the modifiers
@@ -20,7 +25,16 @@ namespace ash {
 //
 // This only works for characters typeable on a US keyboard. If any other
 // character is encountered, it will return nullopt.
-std::optional<std::vector<ui::KeyEvent>> KeyEventsForText(std::string text);
+std::optional<std::vector<ui::KeyEvent>> KeyEventsForText(
+    const std::string& text);
+
+// Returns the KeyEvent corresponding to a subset of the key strings defined
+// in https://www.w3.org/TR/uievents-key/, such as "Tab" and "Enter". Returns
+// nullopt if `key` is invalid or unimplemented.
+//
+// This function is case insensitive.
+std::optional<ui::KeyboardCode> KeyboardCodeForDOMString(
+    const std::string& key);
 
 }  // namespace ash
 

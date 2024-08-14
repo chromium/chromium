@@ -15,7 +15,7 @@ namespace {
 // A mapping from the typeable characters on a US keyboard, to a pair describing
 // how to type that character. The pair contains a) the key code and b) any
 // modifiers. Modifiers are encoded as a bitset and 0 means 'no modifiers'.
-constexpr auto kKeyboardCodes =
+constexpr auto kKeyboardCodeForCharacter =
     base::MakeFixedFlatMap<char, std::pair<ui::KeyboardCode, int>>({
         {' ', {ui::VKEY_SPACE, 0}},
         {'\t', {ui::VKEY_TAB, 0}},
@@ -122,27 +122,80 @@ constexpr auto kKeyboardCodes =
         {'|', {ui::VKEY_OEM_5, ui::EF_SHIFT_DOWN}},
     });
 
+// A mapping from the lowercased versions of a subset of strings defined in:
+//
+//   https://www.w3.org/TR/uievents-key/
+//
+// to their ui::KeyboardCodes.
+constexpr auto kKeyboardCodeForDOMString =
+    base::MakeFixedFlatMap<std::string, ui::KeyboardCode>({
+        {"tab", ui::VKEY_TAB},
+        {"enter", ui::VKEY_RETURN},
+        {"space", ui::VKEY_SPACE},
+
+        {"arrowleft", ui::VKEY_LEFT},
+        {"arrowright", ui::VKEY_RIGHT},
+        {"arrowdown", ui::VKEY_DOWN},
+        {"arrowup", ui::VKEY_UP},
+    });
+
 }  // namespace
 
-std::optional<std::vector<ui::KeyEvent>> KeyEventsForText(std::string text) {
+std::pair<ui::KeyEvent, ui::KeyEvent> MakeKeyEventPair(
+    ui::KeyboardCode key_code,
+    bool control,
+    bool alt,
+    bool shift) {
+  const auto dom_code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
+
+  int modifiers = 0;
+  if (control) {
+    modifiers |= ui::EF_CONTROL_DOWN;
+  }
+  if (alt) {
+    modifiers |= ui::EF_ALT_DOWN;
+  }
+  if (shift) {
+    modifiers |= ui::EF_SHIFT_DOWN;
+  }
+
+  return {
+      ui::KeyEvent(ui::EventType::kKeyPressed, key_code, dom_code, modifiers),
+      ui::KeyEvent(ui::EventType::kKeyReleased, key_code, dom_code, modifiers)};
+}
+
+std::optional<std::vector<ui::KeyEvent>> KeyEventsForText(
+    const std::string& text) {
   std::vector<ui::KeyEvent> events;
   for (const char& character : text) {
-    const auto it = kKeyboardCodes.find(character);
-    if (it == kKeyboardCodes.end()) {
+    const auto it = kKeyboardCodeForCharacter.find(character);
+    if (it == kKeyboardCodeForCharacter.end()) {
       return std::nullopt;
     }
 
-    const auto modifier = it->second.second;
     const auto key_code = it->second.first;
-    const auto dom_code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
+    const auto modifier = it->second.second;
+    const auto pressed_released =
+        MakeKeyEventPair(key_code, false, false, modifier);
 
-    events.emplace_back(ui::EventType::kKeyPressed, key_code, dom_code,
-                        modifier);
-    events.emplace_back(ui::EventType::kKeyReleased, key_code, dom_code,
-                        modifier);
+    events.push_back(pressed_released.first);
+    events.push_back(pressed_released.second);
   }
 
   return events;
+}
+
+std::optional<ui::KeyboardCode> KeyboardCodeForDOMString(
+    const std::string& key) {
+  if (!base::IsStringASCII(key)) {
+    return std::nullopt;
+  }
+
+  const auto it = kKeyboardCodeForDOMString.find(base::ToLowerASCII(key));
+  if (it != kKeyboardCodeForDOMString.end()) {
+    return it->second;
+  }
+  return std::nullopt;
 }
 
 }  // namespace ash

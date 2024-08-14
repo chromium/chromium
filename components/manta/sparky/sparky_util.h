@@ -23,6 +23,8 @@ enum class Role {
   kMaxValue = kAssistant,
 };
 
+// TODO(b/351099209): Add kKeyPress to actions.
+
 enum class ActionType {
   kSetting = 0,
   kLaunchApp = 1,

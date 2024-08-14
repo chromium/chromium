@@ -108,6 +108,18 @@ message TextEntry {
   optional string text = 1;
 }
 
+// Press one key on the keyboard, possibly with modifiers.
+message KeyPress {
+  // A KeyboardEvent string from https://www.w3.org/TR/uievents-key/
+  optional string key = 1;
+
+  // Which modifier keys should be held down while pressing `key`. Meta is
+  // skipped because it's missing on ChromeOS keyboards.
+  optional bool control = 2;
+  optional bool alt = 3;
+  optional bool shift = 4;
+}
+
 message Click {
   optional int32 x_pos = 1;
   optional int32 y_pos = 2;
@@ -125,6 +137,7 @@ message Action {
     TextEntry text_entry = 4;
     bool all_done = 5;
     FileAction file_action = 6;
+    KeyPress key_press = 7;
   }
 }
 
