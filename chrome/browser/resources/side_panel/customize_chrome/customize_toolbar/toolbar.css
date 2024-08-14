@@ -75,7 +75,6 @@
 .intro-text {
   color: var(--cr-secondary-text-color);
   font-weight: 400;
-  line-height: 20px;
   text-align: center;
   padding: 0 0 8px;
 }
@@ -91,11 +90,16 @@
   padding: 16px;
 }
 
+#tipIcon {
+  height: 20px;
+  width: 20px;
+}
+
 #miniToolbar {
   border: 0;
   border-radius: 8px;
   box-shadow: var(--cr-elevation-2);
-  height: 148px;
+  height: 126px;
   width: 280px;
   z-index: 1;
 }
