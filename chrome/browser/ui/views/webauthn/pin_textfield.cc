@@ -132,6 +132,7 @@ void PinTextfield::SetDisabled(bool disabled) {
   disabled_ = disabled;
   SetTextInputType(disabled ? ui::TEXT_INPUT_TYPE_NONE
                             : ui::TEXT_INPUT_TYPE_PASSWORD);
+  UpdateTextColor();
   SchedulePaint();
 }
 
@@ -147,8 +148,9 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
                 : ui::kColorTextfieldBackground);
   for (int i = 0; i < pin_digits_count_; i++) {
     paint_flags.setColor(GetColorProvider()->GetColor(
-        HasCellFocus(i) ? ui::kColorFocusableBorderFocused
-                        : ui::kColorFocusableBorderUnfocused));
+        disabled_ ? ui::kColorTextfieldOutlineDisabled
+                  : (HasCellFocus(i) ? ui::kColorFocusableBorderFocused
+                                     : ui::kColorTextfieldOutline)));
     float stroke_width = HasCellFocus(i) ? 2.f : 1.f;
     paint_flags.setStrokeWidth(stroke_width);
 
@@ -187,13 +189,7 @@ gfx::Size PinTextfield::CalculatePreferredSize(
 
 void PinTextfield::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  SkColor text_color =
-      GetColorProvider()->GetColor(views::TypographyProvider::Get().GetColorId(
-          views::style::CONTEXT_TEXTFIELD, views::style::STYLE_PRIMARY));
-  for (int i = 0; i < pin_digits_count_; i++) {
-    render_texts_[i]->SetColor(text_color);
-  }
+  UpdateTextColor();
 }
 
 void PinTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -228,6 +224,21 @@ void PinTextfield::UpdateAccessibilityAfterPinChange() {
   if (!obscured_) {
     NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged,
                              /*send_native_event=*/true);
+  }
+}
+
+void PinTextfield::UpdateTextColor() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  int text_style =
+      disabled_ ? views::style::STYLE_DISABLED : views::style::STYLE_PRIMARY;
+  SkColor text_color =
+      GetColorProvider()->GetColor(views::TypographyProvider::Get().GetColorId(
+          views::style::CONTEXT_TEXTFIELD, text_style));
+  for (int i = 0; i < pin_digits_count_; i++) {
+    render_texts_[i]->SetColor(text_color);
   }
 }
 

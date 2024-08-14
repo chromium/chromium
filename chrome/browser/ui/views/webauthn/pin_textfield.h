@@ -61,6 +61,9 @@ class PinTextfield : public views::Textfield {
   // pin value.
   void UpdateAccessibilityAfterPinChange();
 
+  // Updates text color based on the current state of `disabled_`.
+  void UpdateTextColor();
+
   // Render text for each of the pin cells.
   std::vector<std::unique_ptr<gfx::RenderText>> render_texts_;
 
