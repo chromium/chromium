@@ -9,6 +9,7 @@
 
 #include <string_view>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -32,8 +33,9 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   if (library_path.Extension() == "dylib" || !DirectoryExists(library_path)) {
     void* dylib = dlopen(library_path.value().c_str(), RTLD_LAZY);
     if (!dylib) {
-      if (error)
+      if (error) {
         error->message = dlerror();
+      }
       return nullptr;
     }
     NativeLibrary native_lib = new NativeLibraryStruct();
@@ -41,14 +43,14 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
     native_lib->dylib = dylib;
     return native_lib;
   }
-  apple::ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
-      kCFAllocatorDefault, (const UInt8*)library_path.value().c_str(),
-      checked_cast<CFIndex>(library_path.value().length()), true));
-  if (!url)
+  apple::ScopedCFTypeRef<CFURLRef> url = apple::FilePathToCFURL(library_path);
+  if (!url) {
     return nullptr;
+  }
   CFBundleRef bundle = CFBundleCreate(kCFAllocatorDefault, url.get());
-  if (!bundle)
+  if (!bundle) {
     return nullptr;
+  }
 
   NativeLibrary native_lib = new NativeLibraryStruct();
   native_lib->type = BUNDLE;

@@ -268,7 +268,7 @@ void RecordLastRunAppBundlePath() {
                                        .DirName()
                                        .DirName();
   base::apple::ScopedCFTypeRef<CFStringRef> app_bundle_path_cfstring =
-      base::SysUTF8ToCFStringRef(app_bundle_path.value());
+      base::apple::FilePathToCFString(app_bundle_path);
   CFPreferencesSetAppValue(
       base::apple::NSToCFPtrCast(app_mode::kLastRunAppBundlePathPrefsKey),
       app_bundle_path_cfstring.get(),
