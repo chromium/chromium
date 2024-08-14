@@ -831,9 +831,6 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  // TODO(https://crbug.com/40059176): This looks like it handles both
-  // percentages and anchor queries, but it looks like it handles anchor
-  // queries incorrectly.
   if ((offset.IsPercent() || offset.IsCalculated()) && box &&
       box->IsPositioned()) {
     LayoutUnit containing_block_size;
@@ -873,9 +870,6 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
           0, CSSPrimitiveValue::UnitType::kPixels);
     }
 
-    // TODO(https://crbug.com/40059176): This looks like it handles both
-    // percentages and anchor queries, but it looks like it handles anchor
-    // queries incorrectly.
     if (opposite.IsPercent() || opposite.IsCalculated()) {
       if (box) {
         LayoutUnit containing_block_size =
