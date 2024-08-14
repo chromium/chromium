@@ -49,18 +49,23 @@ std::wstring GetPreferredLanguage() {
 std::wstring GetLocalizedString(UINT base_message_id,
                                 const std::wstring& lang) {
   // Map `base_message_id` to the base id for the current install mode.
-  UINT message_id =
+  const UINT message_id =
       static_cast<UINT>(base_message_id + GetLanguageOffset(lang));
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
     return std::wstring(image->achString, image->nLength);
   }
+  const DWORD error_code = ::GetLastError();
   base::debug::Alias(&base_message_id);
   base::debug::Alias(&message_id);
+  base::debug::Alias(&error_code);
   DEBUG_ALIAS_FOR_CSTR(dbg_lang, base::WideToUTF8(lang).c_str(), 16);
-  VLOG(2) << base_message_id << ", " << message_id << ", " << lang;
-  NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
+  VLOG(2) << base_message_id << ", " << message_id << ", " << error_code << ", "
+          << lang;
+  NOTREACHED_IN_MIGRATION()
+      << "Unable to find resource, " << base_message_id << ", " << message_id
+      << ", " << error_code << ", " << lang;
   return std::wstring();
 }
 
