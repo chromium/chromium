@@ -100,8 +100,10 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
 }
 
 void BirchWeatherProvider::FetchWeather() {
+  // Use the prod endpoint by default. This results in the alpha server being
+  // used for canary/dev channel and the prod server being used for beta/stable.
   const bool prefer_prod_endpoint = base::GetFieldTrialParamByFeatureAsBool(
-      features::kBirchWeather, "prod_weather_endpoint", false);
+      features::kBirchWeather, "prod_weather_endpoint", true);
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()

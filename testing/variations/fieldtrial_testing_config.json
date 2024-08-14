@@ -3181,9 +3181,9 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithWeatherProdEndpoint",
+                    "name": "EnabledWithWeatherAlphaEndpoint",
                     "params": {
-                        "prod_weather_endpoint": "true"
+                        "prod_weather_endpoint": "false"
                     },
                     "enable_features": [
                         "BirchWeather"
