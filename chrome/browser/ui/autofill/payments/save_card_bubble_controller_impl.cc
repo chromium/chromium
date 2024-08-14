@@ -489,7 +489,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       }
 
       std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted,
+          .Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                   kAccepted,
                user_provided_card_details);
       break;
     }
@@ -500,7 +501,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
         sentiment_service->SavedCard();
       }
       std::move(upload_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted,
+          .Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                   kAccepted,
                /*user_provided_card_details=*/{});
       break;
     }
@@ -515,7 +517,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       // UpdatePageActionIcon() is called.
       should_show_card_saved_label_animation_ = true;
       std::move(local_save_card_prompt_callback_)
-          .Run(AutofillClient::SaveCardOfferUserDecision::kAccepted);
+          .Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                   kAccepted);
       break;
     case BubbleType::MANAGE_CARDS:
       LogManageCardsPromptMetric(ManageCardsPromptMetric::kManageCardsDone,
@@ -625,7 +628,8 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
 
   // Handles |current_bubble_type_| change according to its current type and the
   // |closed_reason|.
-  using SaveCardOfferUserDecision = AutofillClient::SaveCardOfferUserDecision;
+  using SaveCardOfferUserDecision =
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
   std::optional<SaveCardOfferUserDecision> user_decision;
   switch (closed_reason) {
     case PaymentsBubbleClosedReason::kAccepted:

@@ -174,6 +174,17 @@ class PaymentsAutofillClient : public RiskDataLoader {
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
+  enum class SaveCardOfferUserDecision {
+    // The user accepted credit card save.
+    kAccepted,
+
+    // The user explicitly declined credit card save.
+    kDeclined,
+
+    // The user ignored the credit card save prompt.
+    kIgnored,
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
@@ -209,17 +220,17 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Callback to run after local credit card save or local CVC save is offered.
   // Sends whether the prompt was accepted, declined, or ignored in
   // `user_decision`.
-  using LocalSaveCardPromptCallback = base::OnceCallback<void(
-      AutofillClient::SaveCardOfferUserDecision user_decision)>;
+  using LocalSaveCardPromptCallback =
+      base::OnceCallback<void(SaveCardOfferUserDecision user_decision)>;
 
   // Callback to run after upload credit card save or upload CVC save for
   // existing server card is offered. Sends whether the prompt was accepted,
   // declined, or ignored in `user_decision`, and additional
   // `user_provided_card_details` if applicable.
-  using UploadSaveCardPromptCallback = base::OnceCallback<void(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
-          user_provided_card_details)>;
+  using UploadSaveCardPromptCallback =
+      base::OnceCallback<void(SaveCardOfferUserDecision user_decision,
+                              const AutofillClient::UserProvidedCardDetails&
+                                  user_provided_card_details)>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't

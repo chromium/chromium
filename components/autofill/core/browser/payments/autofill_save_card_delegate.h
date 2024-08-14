@@ -45,7 +45,7 @@ class AutofillSaveCardDelegate {
  protected:
   // Called when all of the prerequisites for saving a card have been met.
   void OnFinishedGatheringConsent(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
  private:
@@ -58,7 +58,7 @@ class AutofillSaveCardDelegate {
   // |user_provided_details| are handled separately, so if either of them are
   // empty the current card values will be used.
   void RunSaveCardPromptCallback(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
   // TODO(crbug.com/40283111): Make GatherAdditionalConsentIfApplicable() a pure

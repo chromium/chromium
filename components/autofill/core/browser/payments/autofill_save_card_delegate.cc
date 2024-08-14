@@ -51,7 +51,7 @@ void AutofillSaveCardDelegate::OnUiUpdatedAndAccepted(
 
 void AutofillSaveCardDelegate::OnUiCanceled() {
   RunSaveCardPromptCallback(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogInfoBarAction(AutofillMetrics::INFOBAR_DENIED);
   if (options_.card_save_type !=
@@ -65,7 +65,7 @@ void AutofillSaveCardDelegate::OnUiCanceled() {
 void AutofillSaveCardDelegate::OnUiIgnored() {
   if (!had_user_interaction_) {
     RunSaveCardPromptCallback(
-        AutofillClient::SaveCardOfferUserDecision::kIgnored,
+        payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
     LogInfoBarAction(AutofillMetrics::INFOBAR_IGNORED);
     if (options_.card_save_type !=
@@ -78,7 +78,7 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
 }
 
 void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   RunSaveCardPromptCallback(user_decision, user_provided_details);
   if (!on_finished_gathering_consent_callback_.is_null()) {
@@ -87,7 +87,7 @@ void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
 }
 
 void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   if (is_for_upload()) {
     absl::get<payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
@@ -103,7 +103,7 @@ void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
 void AutofillSaveCardDelegate::GatherAdditionalConsentIfApplicable(
     AutofillClient::UserProvidedCardDetails user_provided_details) {
   OnFinishedGatheringConsent(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kAccepted,
       user_provided_details);
 }
 

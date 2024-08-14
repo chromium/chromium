@@ -20,7 +20,8 @@
 namespace autofill {
 
 using InfoBarMetric = AutofillMetrics::InfoBarMetric;
-using SaveCardOfferUserDecision = AutofillClient::SaveCardOfferUserDecision;
+using SaveCardOfferUserDecision =
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
 using UserProvidedCardDetails = AutofillClient::UserProvidedCardDetails;
 using autofill_metrics::SaveCreditCardPromptResult;
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;

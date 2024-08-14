@@ -107,17 +107,6 @@ using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient {
  public:
-  enum class SaveCardOfferUserDecision {
-    // The user accepted credit card save.
-    kAccepted,
-
-    // The user explicitly declined credit card save.
-    kDeclined,
-
-    // The user ignored the credit card save prompt.
-    kIgnored,
-  };
-
   // Represents the user's possible decisions or outcomes in response to a
   // prompt related to address saving, updating, or migrating.
   // These values are persisted to logs. Entries should not be renumbered and

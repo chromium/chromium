@@ -342,11 +342,12 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
  private:
   static void UploadSaveCardCallback(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       const AutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {}
   static void LocalSaveCardCallback(
-      AutofillClient::SaveCardOfferUserDecision user_decision) {}
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision
+          user_decision) {}
   void OnConfirmationClosedCallback() {
     did_on_confirmation_closed_callback_run_ = true;
   }

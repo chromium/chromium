@@ -266,12 +266,14 @@ class CreditCardSaveManager {
   // offer-to-save prompt. If accepted, clears strikes for the to-be-saved card
   // and has `PaymentsDataManager` save the card.
   void OnUserDidDecideOnLocalSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision);
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision
+          user_decision);
 
   // Called once the user makes a decision with respect to the local CVC
   // offer-to-save prompt.
   void OnUserDidDecideOnCvcLocalSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision);
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision
+          user_decision);
 
   // Called once the user makes a decision with respect to the credit card
   // upload offer-to-save prompt.
@@ -285,14 +287,14 @@ class CreditCardSaveManager {
   // If rejected or ignored:
   //   Logs a strike against the current card to deter future offers to save.
   void OnUserDidDecideOnUploadSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       const AutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
   // Called once the user makes a decision with respect to the server CVC
   // offer-to-save prompt.
   void OnUserDidDecideOnCvcUploadSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       const AutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 

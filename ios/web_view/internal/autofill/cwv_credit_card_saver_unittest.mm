@@ -71,13 +71,14 @@ TEST_F(CWVCreditCardSaverTest, Ignore) {
   BOOL callback_called = NO;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       callback = base::BindLambdaForTesting(
-          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
+          [&](autofill::payments::PaymentsAutofillClient::
+                  SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(
-                autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
-                decision);
+            EXPECT_EQ(autofill::payments::PaymentsAutofillClient::
+                          SaveCardOfferUserDecision::kIgnored,
+                      decision);
           });
 
   [[maybe_unused]] CWVCreditCardSaver* credit_card_saver =
@@ -101,13 +102,14 @@ TEST_F(CWVCreditCardSaverTest, Decline) {
   BOOL callback_called = NO;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       callback = base::BindLambdaForTesting(
-          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
+          [&](autofill::payments::PaymentsAutofillClient::
+                  SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(
-                autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
-                decision);
+            EXPECT_EQ(autofill::payments::PaymentsAutofillClient::
+                          SaveCardOfferUserDecision::kDeclined,
+                      decision);
           });
 
   CWVCreditCardSaver* credit_card_saver =
@@ -128,13 +130,14 @@ TEST_F(CWVCreditCardSaverTest, Accept) {
   BOOL callback_called = NO;
   autofill::payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       callback = base::BindLambdaForTesting(
-          [&](autofill::AutofillClient::SaveCardOfferUserDecision decision,
+          [&](autofill::payments::PaymentsAutofillClient::
+                  SaveCardOfferUserDecision decision,
               const autofill::AutofillClient::UserProvidedCardDetails&
                   user_provided_card_details) {
             callback_called = YES;
-            EXPECT_EQ(
-                autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
-                decision);
+            EXPECT_EQ(autofill::payments::PaymentsAutofillClient::
+                          SaveCardOfferUserDecision::kAccepted,
+                      decision);
             EXPECT_EQ(u"John Doe", user_provided_card_details.cardholder_name);
             EXPECT_EQ(u"08", user_provided_card_details.expiration_date_month);
             EXPECT_EQ(u"2021", user_provided_card_details.expiration_date_year);

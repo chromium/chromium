@@ -95,6 +95,8 @@ using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
 using SaveCreditCardOptions =
     payments::PaymentsAutofillClient::SaveCreditCardOptions;
+using SaveCardOfferUserDecision =
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
 
 #if !BUILDFLAG(IS_IOS)
 base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
@@ -195,10 +197,10 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
                            /*callback=*/_));
   }
 
-  // Used in tests to set what AutofillClient::SaveCardOfferUserDecision the
+  // Used in tests to set what SaveCardOfferUserDecision the
   // ConfirmSaveCreditCardLocally() method should call the callback with.
   void SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision offer_decision) {
+      SaveCardOfferUserDecision offer_decision) {
     ON_CALL(*this, ConfirmSaveCreditCardLocally)
         .WillByDefault(
             [offer_decision](
@@ -219,10 +221,10 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
                            _));
   }
 
-  // Used in tests to set what AutofillClient::SaveCardOfferUserDecision the
+  // Used in tests to set what SaveCardOfferUserDecision the
   // ConfirmSaveCreditCardToCloud() method should call the callback with.
   void SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision offer_decision) {
+      SaveCardOfferUserDecision offer_decision) {
     ON_CALL(*this, ConfirmSaveCreditCardToCloud)
         .WillByDefault(
             [offer_decision](
@@ -291,9 +293,9 @@ class CreditCardSaveManagerTest : public testing::Test {
             autofill_client_.GetPersonalDataManager(),
             &payments_network_interface(), &autofill_client_));
     payments_client().SetLocalSaveCallbackOfferDecision(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted);
+        SaveCardOfferUserDecision::kAccepted);
     payments_client().SetCloudSaveCallbackOfferDecision(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted);
+        SaveCardOfferUserDecision::kAccepted);
     auto credit_card_save_manager =
         std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
     credit_card_save_manager_ = credit_card_save_manager.get();
@@ -331,20 +333,17 @@ class CreditCardSaveManagerTest : public testing::Test {
   void UserHasAcceptedCardUpload(
       AutofillClient::UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted,
-        user_provided_card_details);
+        SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
 
-  void UserDidDecideCvcLocalSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision) {
+  void UserDidDecideCvcLocalSave(SaveCardOfferUserDecision user_decision) {
     credit_card_save_manager_->OnUserDidDecideOnCvcLocalSave(user_decision);
   }
 
   void UserHasAcceptedCvcUpload(
       AutofillClient::UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnCvcUploadSave(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted,
-        user_provided_card_details);
+        SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
 
   // Returns a `FormData` with data corresponding to a simple credit card form.
@@ -841,8 +840,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
   EXPECT_CALL(payments_data_manager(), UpdateLocalCvc(local_card.guid(), kCvc));
-  UserDidDecideCvcLocalSave(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted);
+  UserDidDecideCvcLocalSave(SaveCardOfferUserDecision::kAccepted);
 }
 
 // Tests that adding a CVC clears all strikes for that card.
@@ -891,7 +889,7 @@ TEST_F(CreditCardSaveManagerTest,
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
   payments_client().SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
@@ -914,8 +912,8 @@ TEST_F(CreditCardSaveManagerTest,
           [](const CreditCard&, SaveCreditCardOptions,
              payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
                  callback) {
-            std::move(callback).Run(
-                AutofillClient::SaveCardOfferUserDecision::kIgnored);
+            std::move(callback).Run(payments::PaymentsAutofillClient::
+                                        SaveCardOfferUserDecision::kIgnored);
           });
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -955,7 +953,7 @@ TEST_F(CreditCardSaveManagerTest,
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
   payments_client().SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
   // Verify that the user ignoring an offer will add a strike count for that
@@ -967,7 +965,7 @@ TEST_F(CreditCardSaveManagerTest,
   task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   payments_client().SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
   // Verify that the user declining an offer will count as the max strike.
@@ -1046,7 +1044,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user declining an offer will count as the max strike.
@@ -1065,7 +1063,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user ignoring an offer will add a strike count for that
@@ -1079,7 +1077,7 @@ TEST_F(CreditCardSaveManagerTest,
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that user ignoring an offer will not add a strike count for that
@@ -1093,7 +1091,7 @@ TEST_F(CreditCardSaveManagerTest,
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that user ignoring an offer after sufficient delay time will add a
@@ -1112,7 +1110,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user ignoring an offer will add a strike count for that
@@ -1125,7 +1123,7 @@ TEST_F(CreditCardSaveManagerTest,
   task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user declining an offer will count as the max strike.

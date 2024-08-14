@@ -27,12 +27,13 @@ constexpr int kNavEntryId = 10;
 class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
  public:
   void LocalSaveCardPromptCallbackFn(
-      AutofillClient::SaveCardOfferUserDecision user_decision) {
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision
+          user_decision) {
     last_user_decision_ = user_decision;
   }
 
   void UploadSaveCardPromptCallbackFn(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       const AutofillClient::UserProvidedCardDetails&
           user_provided_card_details) {
     last_user_decision_ = user_decision;
@@ -79,7 +80,8 @@ class AutofillSaveCardInfoBarDelegateTest : public PlatformTest {
       .is_form_submission = false,
       .has_user_gesture = true};
   std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate_;
-  std::optional<AutofillClient::SaveCardOfferUserDecision> last_user_decision_;
+  std::optional<payments::PaymentsAutofillClient::SaveCardOfferUserDecision>
+      last_user_decision_;
   std::optional<AutofillClient::UserProvidedCardDetails>
       last_user_provided_card_details_;
   std::optional<bool> card_saved_;
@@ -101,8 +103,9 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Local) {
       /*expiration_date_year=*/u"24"));
 
   ASSERT_TRUE(last_user_decision_);
-  EXPECT_EQ(AutofillClient::SaveCardOfferUserDecision::kAccepted,
-            last_user_decision_);
+  EXPECT_EQ(
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kAccepted,
+      last_user_decision_);
 }
 
 // Tests that the user decision is propagated when accepting upload.
@@ -124,8 +127,9 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Upload) {
       /*expiration_date_year=*/expiration_date_year));
 
   ASSERT_TRUE(last_user_decision_ && last_user_provided_card_details_);
-  EXPECT_EQ(AutofillClient::SaveCardOfferUserDecision::kAccepted,
-            last_user_decision_);
+  EXPECT_EQ(
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kAccepted,
+      last_user_decision_);
   EXPECT_THAT(
       *last_user_provided_card_details_,
       ::testing::FieldsAre(/*cardholder_name=*/cardholder_name,

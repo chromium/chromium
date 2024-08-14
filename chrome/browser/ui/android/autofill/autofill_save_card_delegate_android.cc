@@ -43,8 +43,10 @@ void AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi(
     bool is_device_lock_requirement_met) {
   OnFinishedGatheringConsent(
       /*user_decision=*/is_device_lock_requirement_met
-          ? AutofillClient::SaveCardOfferUserDecision::kAccepted
-          : AutofillClient::SaveCardOfferUserDecision::kIgnored,
+          ? payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                kAccepted
+          : payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                kIgnored,
       is_device_lock_requirement_met
           ? user_provided_details
           : AutofillClient::UserProvidedCardDetails());
