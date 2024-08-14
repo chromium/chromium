@@ -1732,15 +1732,15 @@ Your Google account may have other forms of browsing history like searches and a
         Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because this site is dangerous
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" desc="Snackbar text displayed when the user clicks the Unsubscribe button for a site which sends a lot of notifications. Informs the user for which site the notifications were unsubscribed.">
-        Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
+       Unsubscribed from <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>. You'll be asked again on your next visit.
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ALLOW_SNACKBAR" desc="Snackbar text displayed when the user clicks the Allow button for a site which sends a lot of notifications. Informs the user for which site the notifications were allowed.">
         Notifications allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" desc="Snackbar text displayed when the user click the 'Unsubscribe all' button at the bottom of the notifications review subpage or in the notifications review module of the dashboard. Informs the user about the number of sites for which the notifications were unsubscribed.">
         {NUM_SITES, plural,
-        =1 {Notifications not allowed for 1 site}
-        other {Notifications not allowed for # sites}}
+        =1 {Unsubscribed from 1 site}
+        other {Unsubscribed from # sites}}
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" desc="Title for the Safe Browsing check row in the Safety Check page indicating that the user currently has Safe Browsing turned on and is getting the standard level of protection.">
         Safe Browsing is on
