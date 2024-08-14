@@ -38,6 +38,7 @@ class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
   std::unique_ptr<views::View> BuildStepSpecificHeader() override;
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
+  int GetSpacingBetweenTitleAndDescription() override;
 
   // AuthenticatorGPMPinView::Delegate:
   void OnPinChanged(std::u16string pin) override;

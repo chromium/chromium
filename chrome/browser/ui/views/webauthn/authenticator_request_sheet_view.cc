@@ -129,6 +129,11 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
   return std::make_pair(nullptr, AutoFocus::kNo);
 }
 
+int AuthenticatorRequestSheetView::GetSpacingBetweenTitleAndDescription() {
+  return views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+}
+
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   constexpr int kImageHeight = 112;
@@ -198,11 +203,11 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     }
   }
 
+  // GPM PIN dialogs have a different spacing, 4px.
   auto label_container = std::make_unique<views::View>();
   label_container->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical, gfx::Insets(),
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+      GetSpacingBetweenTitleAndDescription()));
 
   std::unique_ptr<views::View> step_specific_content;
   // Compute `should_focus_step_specific_content_` before setting `title_label`
