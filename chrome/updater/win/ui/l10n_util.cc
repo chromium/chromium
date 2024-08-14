@@ -7,8 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/i18n.h"
@@ -53,6 +56,10 @@ std::wstring GetLocalizedString(UINT base_message_id,
   if (image) {
     return std::wstring(image->achString, image->nLength);
   }
+  base::debug::Alias(&base_message_id);
+  base::debug::Alias(&message_id);
+  DEBUG_ALIAS_FOR_CSTR(dbg_lang, base::WideToUTF8(lang).c_str(), 16);
+  VLOG(2) << base_message_id << ", " << message_id << ", " << lang;
   NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
   return std::wstring();
 }
