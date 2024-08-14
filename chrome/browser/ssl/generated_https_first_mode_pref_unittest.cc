@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ssl/generated_https_first_mode_pref.h"
+
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
@@ -11,7 +14,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -393,4 +395,66 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
+}
+
+// Tests the collection of settings changed metrics.
+TEST_F(GeneratedHttpsFirstModePrefTest, SettingChangedMetricsLogged) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+
+  base::HistogramTester histograms;
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Emulate changing the UI setting to fully enabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kEnabledFull))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", true,
+                               1);
+
+  // Emulate changing the UI to disabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 2);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", false,
+                               1);
+}
+
+// Tests the collection of settings changed metrics, with the
+// HttpsFirstBalancedMode feature flag enabled.
+TEST_F(GeneratedHttpsFirstModePrefTest,
+       SettingChangedMetricsLogged_BalancedMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  base::HistogramTester histograms;
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Emulate changing the UI setting to fully enabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kEnabledFull))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledFull, 1);
+
+  // Emulate changing the UI setting to balanced mode.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 2);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledBalanced, 1);
+
+  // Emulate changing the UI to disabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 3);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kDisabled, 1);
 }

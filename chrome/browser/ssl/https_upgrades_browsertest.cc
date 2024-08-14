@@ -14,8 +14,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
@@ -3302,9 +3304,11 @@ class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
   ~HttpsUpgradesPrefsBrowserTest() override = default;
 
  protected:
-  void SetPref(bool enabled) {
-    auto* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, enabled);
+  void SetUISetting(HttpsFirstModeSetting setting) {
+    extensions::settings_private::GeneratedPrefs prefs(browser()->profile());
+    prefs.SetPref(
+        kGeneratedHttpsFirstModePref,
+        std::make_unique<base::Value>(static_cast<int>(setting)).get());
   }
 
   bool GetPref() const {
@@ -3319,7 +3323,7 @@ class HttpsUpgradesPrefsBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histograms_;
 };
 
-// Tests that the HTTPS-First Mode pref is recorded at startup and when
+// Tests that the HTTPS-First Mode state is recorded at startup and when
 // changed. This test requires restarting the browser to test the "at startup"
 // metric in order for the preference state to be set up before the
 // HttpsFirstModeService is created.
@@ -3327,13 +3331,15 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PRE_PrefStatesRecorded) {
   // The default pref state is `false`, which should get recorded when the
   // initial browser instance is started here.
   histograms()->ExpectUniqueSample(
-      "Security.HttpsFirstMode.SettingEnabledAtStartup", false, 1);
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+      HttpsFirstModeSetting::kDisabled, 1);
 
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
                                                   "Disabled"));
 
-  // Change the pref to true. This should get recorded in the histogram.
-  SetPref(true);
+  // Emulate changing the UI setting to Enabled. This should get recorded
+  // in the histogram.
+  SetUISetting(HttpsFirstModeSetting::kEnabledFull);
   histograms()->ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged",
                                    true, 1);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
@@ -3341,19 +3347,20 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PRE_PrefStatesRecorded) {
 }
 
 IN_PROC_BROWSER_TEST_F(HttpsUpgradesPrefsBrowserTest, PrefStatesRecorded) {
-  // Restarting the browser from the PRE_ test should record the startup pref
+  // Restarting the browser from the PRE_ test should record the startup setting
   // histogram. Checking the unique count also ensures that other profile
   // types (e.g. the ChromeOS sign-in profile) don't cause double-counting.
   EXPECT_TRUE(GetPref());
   histograms()->ExpectUniqueSample(
-      "Security.HttpsFirstMode.SettingEnabledAtStartup", true, 1);
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2",
+      HttpsFirstModeSetting::kEnabledFull, 1);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
                                                   "Enabled"));
 
   // Open an Incognito window. Startup metrics should not get recorded.
   CreateIncognitoBrowser();
   histograms()->ExpectTotalCount(
-      "Security.HttpsFirstMode.SettingEnabledAtStartup", 1);
+      "Security.HttpsFirstMode.SettingEnabledAtStartup2", 1);
 }
 
 enum class BalancedModeParam {
@@ -3389,9 +3396,11 @@ class HttpsUpgradesBalancedModePrefsBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
-  void SetPref(bool enabled) {
-    auto* prefs = browser()->profile()->GetPrefs();
-    prefs->SetBoolean(prefs::kHttpsFirstBalancedMode, enabled);
+  void SetUISetting(HttpsFirstModeSetting setting) {
+    extensions::settings_private::GeneratedPrefs prefs(browser()->profile());
+    prefs.SetPref(
+        kGeneratedHttpsFirstModePref,
+        std::make_unique<base::Value>(static_cast<int>(setting)).get());
   }
 
   bool GetPref() const {
@@ -3422,7 +3431,7 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-// Tests that the HTTPS-First Mode pref is recorded at startup and when
+// Tests that the HTTPS-First Mode setting is recorded at startup and when
 // changed, when the HFM-Balanced-Mode feature flag is enabled. This test
 // requires restarting the browser to test the "at startup" metric in order
 // for the preference state to be set up before the HttpsFirstModeService is
@@ -3449,9 +3458,10 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBalancedModePrefsBrowserTest,
         "HttpsFirstModeClientSetting", "Balanced"));
   }
 
-  // Change the Balanced Mode pref to true. This should get recorded in the
-  // histogram.
-  SetPref(true);
+  // Emulate changing the UI setting to Balanced Mode. This should get recorded
+  // in the histogram.
+  SetUISetting(HttpsFirstModeSetting::kEnabledBalanced);
+  EXPECT_TRUE(GetPref());
   histograms()->ExpectUniqueSample("Security.HttpsFirstMode.SettingChanged2",
                                    HttpsFirstModeSetting::kEnabledBalanced, 1);
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("HttpsFirstModeClientSetting",
@@ -3460,7 +3470,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBalancedModePrefsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBalancedModePrefsBrowserTest,
                        PrefStatesRecorded) {
-  // Restarting the browser from the PRE_ test should record the startup pref
+  // Restarting the browser from the PRE_ test should record the startup setting
   // histogram. Checking the unique count also ensures that other profile
   // types (e.g. the ChromeOS sign-in profile) don't cause double-counting.
   EXPECT_TRUE(GetPref());
