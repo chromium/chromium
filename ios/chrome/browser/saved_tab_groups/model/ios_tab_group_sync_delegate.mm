@@ -14,6 +14,7 @@
 #import "components/saved_tab_groups/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/utils.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -414,12 +415,19 @@ web::WebState* IOSTabGroupSyncDelegate::InsertDistantTab(
     TabInsertionBrowserAgent* tab_insertion_browser_agent,
     int web_state_index,
     const TabGroup* tab_group) {
-  web::NavigationManager::WebLoadParams web_params(tab.url());
+  GURL url_to_open = tab.url();
+  std::u16string title = tab.title();
+  if (!IsURLValidForSavedTabGroups(url_to_open)) {
+    url_to_open = GetDefaultUrlAndTitle().first;
+    title = GetDefaultUrlAndTitle().second;
+  }
+
+  web::NavigationManager::WebLoadParams web_params(url_to_open);
   TabInsertion::Params tab_insertion_params;
   tab_insertion_params.index = web_state_index;
   tab_insertion_params.in_background = true;
   tab_insertion_params.instant_load = false;
-  tab_insertion_params.placeholder_title = tab.title();
+  tab_insertion_params.placeholder_title = title;
   if (tab_group) {
     tab_insertion_params.insert_in_group = true;
     tab_insertion_params.tab_group = tab_group->GetWeakPtr();
@@ -440,11 +448,19 @@ void IOSTabGroupSyncDelegate::UpdateLocalWebState(
     return;
   }
 
+  // Dont navigate to the new URL if its not valid for sync. We allow local
+  // state to differ from sync in this case, especially since we want to honor
+  // the local URL after restarts.
+  if (!IsURLValidForSavedTabGroups(saved_tab.url())) {
+    return;
+  }
+
   WebStateList* web_state_list = tab_group_info.web_state_list;
 
   // If the `web_state` is the active index, open and load the updated URL.
   if (web_state_list->active_index() == web_state_index) {
     local_update_observer_->IgnoreNavigationForWebState(web_state);
+
     web_state->OpenURL(web::WebState::OpenURLParams(
         saved_tab.url(), web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
         ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));

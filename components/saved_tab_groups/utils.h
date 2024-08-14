@@ -26,6 +26,10 @@ std::optional<LocalTabGroupID> LocalTabGroupIDFromString(
 // group.
 bool IsURLValidForSavedTabGroups(const GURL& gurl);
 
+// Returns a default URL and default title. Should be invoked when
+// IsURLValidForSavedTabGroups() returns false.
+std::pair<GURL, std::u16string> GetDefaultUrlAndTitle();
+
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_UTILS_H_

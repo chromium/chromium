@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -286,10 +287,16 @@ void TabGroupLocalUpdateObserver::UpdateLocalWebStateInSyncedGroup(
   LocalTabInfo tab_info =
       utils::GetLocalTabInfo(browser_list_, web_state->GetUniqueIdentifier());
 
+  GURL url = web_state->GetVisibleURL();
+  std::u16string title = web_state->GetTitle();
+  if (!IsURLValidForSavedTabGroups(url)) {
+    url = GetDefaultUrlAndTitle().first;
+    title = GetDefaultUrlAndTitle().second;
+  }
+
   sync_service_->UpdateTab(tab_info.tab_group->tab_group_id(),
-                           web_state->GetUniqueIdentifier().identifier(),
-                           web_state->GetTitle(), web_state->GetVisibleURL(),
-                           std::nullopt);
+                           web_state->GetUniqueIdentifier().identifier(), title,
+                           url, std::nullopt);
 }
 
 void TabGroupLocalUpdateObserver::AddLocalWebStateToSyncedGroup(
