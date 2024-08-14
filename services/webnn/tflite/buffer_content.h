@@ -7,27 +7,23 @@
 
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/ref_counted.h"
 
 namespace webnn::tflite {
 
-// The internal contents of an MLBuffer. This class is reference counted and
-// may be passed between threads so that compute tasks can be executed on the
-// thread pool. Access is managed via the BufferState class.
-class BufferContent : public base::RefCountedThreadSafe<BufferContent> {
+// The internal contents of an MLBuffer. Access should be managed by wrapping in
+// a `QueueableResourceState`.
+class BufferContent {
  public:
   explicit BufferContent(size_t size);
 
   BufferContent(const BufferContent&) = delete;
   BufferContent& operator=(const BufferContent&) = delete;
 
+  ~BufferContent();
+
   base::span<uint8_t> AsSpan() const;
 
  private:
-  friend class base::RefCountedThreadSafe<BufferContent>;
-
-  ~BufferContent();
-
   // TODO(https://crbug.com/40278771): Use a real hardware buffer on platforms
   // where that would be beneficial.
   const std::unique_ptr<void, base::AlignedFreeDeleter> buffer_;

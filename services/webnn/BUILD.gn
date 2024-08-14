@@ -132,14 +132,16 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
+      # TODO(crbug.com/333392274): Use these headers on Mac, too.
+      "queueable_resource_state.h",
+      "queueable_resource_state_base.cc",
+      "queueable_resource_state_base.h",
+      "resource_task.cc",
+      "resource_task.h",
       "tflite/buffer_content.cc",
       "tflite/buffer_content.h",
       "tflite/buffer_impl_tflite.cc",
       "tflite/buffer_impl_tflite.h",
-      "tflite/buffer_state.cc",
-      "tflite/buffer_state.h",
-      "tflite/buffer_task.cc",
-      "tflite/buffer_task.h",
     ]
 
     if (is_chromeos) {
