@@ -2045,11 +2045,11 @@ TEST_P(InteractionIdTest, PointerupClick) {
       {event_type_names::kClick, std::nullopt, 1, GetTimeStamp(120),
        GetTimeStamp(150)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
-  EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
-  EXPECT_EQ(ids[0], ids[1]) << "Pointerup and click have same interaction id";
+  EXPECT_EQ(ids[0], 0u) << "Orphan pointerup gets interaction id of zero";
+  EXPECT_GT(ids[1], 0u) << "Nonzero interaction id for click";
   // Flush UKM logging mojo request.
   RunPendingTasks();
-  CheckUKMValues({{40, 50, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{30, 30, UserInteractionType::kTapOrClick}});
 }
 
 TEST_P(InteractionIdTest, JustClick) {
@@ -2107,17 +2107,19 @@ TEST_P(InteractionIdTest, MultiTouch) {
 TEST_P(InteractionIdTest, ClickIncorrectPointerId) {
   // On mobile, in cases where touchstart is skipped, click does not get the
   // correct pointerId. See crbug.com/1264930 for more details.
+  // TODO crbug.com/359679950: remove this test and event timing workaround
+  // since crbug.com/1264930 has been fixed.
   std::vector<EventForInteraction> events = {
       {event_type_names::kPointerup, std::nullopt, 1, GetTimeStamp(100),
        GetTimeStamp(130)},
       {event_type_names::kClick, std::nullopt, 0, GetTimeStamp(120),
        GetTimeStamp(160)}};
   std::vector<uint32_t> ids = SimulateInteractionIds(events);
-  EXPECT_GT(ids[0], 0u) << "Nonzero interaction id";
-  EXPECT_EQ(ids[0], ids[1]) << "Pointerup and click have same interaction id";
+  EXPECT_EQ(ids[0], 0u) << "Orphan pointerup gets interaction id of zero";
+  EXPECT_GT(ids[1], 0u) << "Nonzero interaction id for click";
   // Flush UKM logging mojo request.
   RunPendingTasks();
-  CheckUKMValues({{40, 60, UserInteractionType::kTapOrClick}});
+  CheckUKMValues({{40, 40, UserInteractionType::kTapOrClick}});
 }
 
 INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());
