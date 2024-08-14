@@ -233,6 +233,7 @@
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
+        navigate-back-source="[[pageEnum_.ADMIN_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2AdminCertsTitle')]]"
         subpage-cert-lists="[[enterpriseSubpageLists_]]">
     </certificate-subpage-v2>
@@ -242,6 +243,7 @@
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
+        navigate-back-source="[[pageEnum_.PLATFORM_CERTS]]"
         subpage-title="[[i18n('certificateManagerV2PlatformCertsTitle')]]"
         subpage-cert-lists="[[platformSubpageLists_]]">
     </certificate-subpage-v2>
@@ -251,6 +253,7 @@
         class="cr-centered-card-container"
         on-hash-copied="onHashCopied_" on-navigate-back="onNavigateBack_"
         navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
+        navigate-back-source="[[pageEnum_.PLATFORM_CLIENT_CERTS]]"
         on-import-result="onImportResult_"
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">

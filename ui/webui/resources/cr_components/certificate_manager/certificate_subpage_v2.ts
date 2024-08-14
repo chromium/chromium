@@ -35,7 +35,7 @@ export interface CertificateSubpageV2Element {
 
 declare global {
   interface HTMLElementEventMap {
-    'navigate-back': CustomEvent<{target: Page}>;
+    'navigate-back': CustomEvent<{target: Page, source: Page}>;
   }
 }
 
@@ -63,14 +63,18 @@ export class CertificateSubpageV2Element extends
       subpageTitle: String,
       subpageCertLists: Array,
       navigateBackTarget: Page,
+      navigateBackSource: Page,
     };
   }
 
   subpageTitle: string;
   subpageCertLists: SubpageCertificateList[] = [];
   navigateBackTarget: Page;
+  navigateBackSource: Page;
 
-  // Sets initial keyboard focus of the subpage.
+  // Sets initial keyboard focus of the subpage. Assumes that subpage elements
+  // are visible.
+  // TODO(crbug.com/40928765): add test for ensuring correct focus behaviour.
   setInitialFocus() {
     focusWithoutInk(this.$.backButton);
   }
@@ -82,6 +86,7 @@ export class CertificateSubpageV2Element extends
       bubbles: true,
       detail: {
         target: this.navigateBackTarget,
+        source: this.navigateBackSource,
       },
     }));
   }

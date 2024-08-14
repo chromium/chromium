@@ -29,6 +29,7 @@ import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
 import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
+import type {CrPageSelectorElement} from '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -60,6 +61,7 @@ export interface CertificateManagerV2Element {
   $: {
     crsCerts: CertificateListV2Element,
     toolbar: HTMLElement,
+    main: CrPageSelectorElement,
     platformClientCerts: CertificateListV2Element,
     // <if expr="is_win or is_macosx or is_linux">
     provisionedClientCerts: CertificateListV2Element,
@@ -84,7 +86,6 @@ export interface CertificateManagerV2Element {
     localCertSection: HTMLElement,
     clientCertSection: HTMLElement,
     crsCertSection: HTMLElement,
-    adminCertsInstalledLinkRow: HTMLElement,
     adminCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
     platformClientCertsSection: CertificateSubpageV2Element,
@@ -332,27 +333,46 @@ export class CertificateManagerV2Element extends
     }
   }
 
-  private onPlatformCertsLinkRowClick_(e: Event) {
+  private async onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CERTS);
+    await this.$.main.updateComplete;
     this.$.platformCertsSection.setInitialFocus();
   }
 
-  private onClientPlatformCertsLinkRowClick_(e: Event) {
+  private async onClientPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CLIENT_CERTS);
+    await this.$.main.updateComplete;
     this.$.platformClientCertsSection.setInitialFocus();
   }
 
-  private onAdminCertsInstalledLinkRowClick_(e: Event) {
+  private async onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.ADMIN_CERTS);
+    await this.$.main.updateComplete;
     this.$.adminCertsSection.setInitialFocus();
   }
 
-  private onNavigateBack_(e: CustomEvent<{target: Page}>) {
+  private async onNavigateBack_(e: CustomEvent<{target: Page, source: Page}>) {
     Router.getInstance().navigateTo(e.detail.target);
-    focusWithoutInk(this.$.localMenuItem);
+    await this.$.main.updateComplete;
+    switch (e.detail.source) {
+      case Page.ADMIN_CERTS:
+        const linkRow = this.shadowRoot!.querySelector<HTMLElement>(
+            '#adminCertsInstalledLinkRow');
+        assert(linkRow);
+        focusWithoutInk(linkRow);
+        break;
+      case Page.PLATFORM_CERTS:
+        focusWithoutInk(this.$.viewOsImportedCerts);
+        break;
+      case Page.PLATFORM_CLIENT_CERTS:
+        focusWithoutInk(this.$.viewOsImportedClientCerts);
+        break;
+      default:
+        // do nothing; shouldn't ever get here.
+    }
   }
 
   private onImportResult_(e: CustomEvent<ImportResult|null>) {
