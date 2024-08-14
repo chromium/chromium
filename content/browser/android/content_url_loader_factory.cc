@@ -56,12 +56,12 @@ bool GetRequestedByteRange(const network::ResourceRequest& request,
   *first_byte_to_send = 0;
   *total_bytes_to_send = content_size;
 
-  std::string range_header;
+  std::optional<std::string> range_header =
+      request.headers.GetHeader(net::HttpRequestHeaders::kRange);
   std::vector<net::HttpByteRange> ranges;
 
-  if (!request.headers.GetHeader(net::HttpRequestHeaders::kRange,
-                                 &range_header) ||
-      !net::HttpUtil::ParseRangeHeader(range_header, &ranges)) {
+  if (!range_header ||
+      !net::HttpUtil::ParseRangeHeader(*range_header, &ranges)) {
     return true;
   }
 
@@ -85,11 +85,13 @@ void GetMimeType(const network::ResourceRequest& request,
                  std::string* out_mime_type) {
   out_mime_type->clear();
 
-  std::string intent_type_header;
-  if ((request.resource_type ==
-       static_cast<int>(blink::mojom::ResourceType::kMainFrame)) &&
-      request.headers.GetHeader("X-Chrome-intent-type", &intent_type_header)) {
-    *out_mime_type = intent_type_header;
+  if (request.resource_type ==
+      static_cast<int>(blink::mojom::ResourceType::kMainFrame)) {
+    std::optional<std::string> intent_type_header =
+        request.headers.GetHeader("X-Chrome-intent-type");
+    if (intent_type_header) {
+      *out_mime_type = std::move(intent_type_header).value();
+    }
   }
 
   if (out_mime_type->empty())
