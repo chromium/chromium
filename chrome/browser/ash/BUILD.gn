@@ -39,8 +39,6 @@ static_library("ash") {
     "note_taking/note_taking_controller_client.h",
     "note_taking/note_taking_helper.cc",
     "note_taking/note_taking_helper.h",
-    "shortcut_mapping_pref_service.cc",
-    "shortcut_mapping_pref_service.h",
     "system_token_cert_db_initializer.cc",
     "system_token_cert_db_initializer.h",
     "throttle_observer.cc",
