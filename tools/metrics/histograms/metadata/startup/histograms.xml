@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Startup.AfterStartupTaskCount" units="units"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>michaeln@chromium.org</owner>
   <summary>
     The number of after-startup tasks that were queued prior to startup
@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.AfterStartupTaskDelayedUntilTime" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>michaeln@chromium.org</owner>
   <summary>
     Time from the process creation until deferred after-startup tasks began
@@ -593,7 +593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BrowserMainRunnerImplInitializeLongTime" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>robliao@chromium.org</owner>
   <summary>
     The amount of time that elapsed during BrowserMainRunnerImpl::Initialize.
@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BrowserWindow.FirstPaint" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>gab@chromium.org</owner>
   <owner>mblsha@yandex-team.ru</owner>
   <summary>
@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.InitializeFontConfigDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>

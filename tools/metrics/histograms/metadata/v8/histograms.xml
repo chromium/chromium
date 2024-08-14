@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileBackgroundMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-10">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileForegroundMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-10">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScript.CacheBehaviour" enum="V8CacheBehaviour"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-10">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -1449,7 +1449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedCodePointersCount" units="count"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedExternalPointersCount" units="count"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1508,7 +1508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxMode" enum="V8SandboxMode"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1529,7 +1529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxReservationSizeGB" units="GB"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1553,7 +1553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SnapshotDecompressMicroSeconds" units="microseconds"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1775,7 +1775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInMainThread" enum="BooleanOccurred"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
@@ -1804,7 +1804,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCacheCount" units="count" expires_after="2024-12-08">
+<histogram name="V8.WasmCacheCount" units="count" expires_after="2025-02-10">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -1830,7 +1830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCompilationMethod" enum="WasmCompilationMethod"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -2251,7 +2251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmStreamingInputType" enum="WasmStreamingInputType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>

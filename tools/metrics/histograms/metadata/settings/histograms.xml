@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.AutocompleteSearches.OnStartup2"
-    enum="BooleanEnabled" expires_after="2024-11-03">
+    enum="BooleanEnabled" expires_after="2025-02-10">
   <owner>harrisonsean@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.FirstPartySets.State" enum="FirstPartySetsState"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>alimariam@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.Homepage.LocationType" enum="HomepageLocationType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>bttk@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.HoverCards.ImagePreview.Enabled"
-    enum="BooleanEnabled" expires_after="2024-12-08">
+    enum="BooleanEnabled" expires_after="2025-02-10">
   <owner>charlesmeng@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <summary>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.IpProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PreloadStatus.OnStartup3" enum="PreloadPagesState"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyElementInteractions"
-    enum="SettingsPrivacyElementInteractions" expires_after="2024-12-08">
+    enum="SettingsPrivacyElementInteractions" expires_after="2025-02-10">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.EntryExit"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2024-12-08">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2025-02-10">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacyGuide.NextNavigation"
-    enum="SettingsPrivacyGuideInteractions" expires_after="2024-12-08">
+    enum="SettingsPrivacyGuideInteractions" expires_after="2025-02-10">
   <owner>harrisonsean@chromium.org</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.PrivacyGuide.StepsEligibleAndReached"
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>rainhard@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -469,7 +469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -552,7 +552,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.PasswordsResult2"
-    enum="SafetyCheckPasswordsStatus" expires_after="2024-12-08">
+    enum="SafetyCheckPasswordsStatus" expires_after="2025-02-10">
   <owner>rainhard@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -816,7 +816,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyHub.NotificationPermissionsModule.Interactions"
     enum="SafetyCheckNotificationsModuleInteractions"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -828,7 +828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.NotificationPermissionsModule.ListCount"
-    units="suggestions" expires_after="2024-12-08">
+    units="suggestions" expires_after="2025-02-10">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -876,7 +876,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -888,7 +888,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.ListCount"
-    units="suggestions" expires_after="2024-12-08">
+    units="suggestions" expires_after="2025-02-10">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
@@ -1071,7 +1071,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
@@ -1109,7 +1109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2024-12-08">
+    enum="TrackedPreference" expires_after="2025-02-10">
   <owner>drubery@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1119,7 +1119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackingProtection.BlockAllThirdParty" enum="Boolean"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1130,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackingProtection.Enabled" enum="BooleanEnabled"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.App.GmsCoreKill.{ArcBootType}" enum="ArcAppGmsKillType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1246,7 +1246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.IdleManager.ScreenOffTime" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>raging@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -1352,7 +1352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.LaunchedWithGhostWindow" units="apps"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>sstan@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
   <summary>The number of ARC apps launched with ghost window.</summary>
@@ -1954,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Success{ArcUserTypes}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -2059,7 +2059,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.JanksPerMinute2{ArcPerformanceAppCategories}"
-    units="count" expires_after="2024-12-08">
+    units="count" expires_after="2025-02-10">
   <owner>alanding@google.com</owner>
   <owner>matvore@google.com</owner>
   <summary>
@@ -2075,7 +2075,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.PerceivedFPS2{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2024-12-08">
+    units="fps" expires_after="2025-02-10">
   <owner>khmel@google.com</owner>
   <owner>matvore@google.com</owner>
   <summary>
@@ -2122,7 +2122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>niwa@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
@@ -2700,7 +2700,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Wakeup.{DeviceType}" units="ms" expires_after="2024-12-08">
+<histogram name="Arc.Wakeup.{DeviceType}" units="ms" expires_after="2025-02-10">
   <owner>stevensd@google.com</owner>
   <owner>cros-core-systems-perf@google.com</owner>
   <summary>
@@ -2836,7 +2836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.WM.WindowMinimizedDelayTime.{ChromeOSAppType}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>lingyufeng@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>

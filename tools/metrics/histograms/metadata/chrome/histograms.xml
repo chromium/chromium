@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Frame.MouseDownCaptionHitTestInReservedGrabHandleSpace"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>robliao@chromium.org</owner>
   <owner>pkasting@chromium.org</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
-    enum="RemoteHungProcessTerminateReason" expires_after="2024-12-08">
+    enum="RemoteHungProcessTerminateReason" expires_after="2025-02-10">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>The reason of remote hang processes termination.</summary>
@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorType" enum="ChromeColorType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

@@ -260,7 +260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.SelectedContent.Length" units="characters"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>

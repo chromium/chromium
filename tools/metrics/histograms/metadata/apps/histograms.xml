@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
-    enum="AppInstallResult" expires_after="2024-12-08">
+    enum="AppInstallResult" expires_after="2025-02-10">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2024-12-08">
+    enum="WebAppInstallResultCode" expires_after="2025-02-10">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ContinueIsDriveEnabled" enum="BooleanEnabled"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>tby@chromium.org</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
@@ -688,7 +688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveSearchProvider.Status"
-    enum="DriveSearchProviderStatus" expires_after="2024-12-08">
+    enum="DriveSearchProviderStatus" expires_after="2025-02-10">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -698,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -1275,7 +1275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.QueryLength{SessionConclusion}"
-    units="characters" expires_after="2024-12-08">
+    units="characters" expires_after="2025-02-10">
   <owner>amandadeacon@google.com</owner>
   <owner>chenjih@google.com</owner>
   <owner>yulunwu@chromium.org</owner>
@@ -1304,7 +1304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.{LauncherSearchEntryPoint}"
-    enum="LauncherSearchSessionConclusion" expires_after="2024-12-08">
+    enum="LauncherSearchSessionConclusion" expires_after="2025-02-10">
   <owner>yulunwu@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -1331,7 +1331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1358,7 +1358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1370,7 +1370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
-    enum="AppListSearchResult" expires_after="2024-12-08">
+    enum="AppListSearchResult" expires_after="2025-02-10">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -2017,7 +2017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
-    units="characters" expires_after="2024-12-08">
+    units="characters" expires_after="2025-02-10">
   <owner>laurencom@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -2173,7 +2173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppsCount.{AppType}" units="Apps"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <component>Platform&gt;Apps&gt;Foundation</component>
@@ -2327,7 +2327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
-    enum="DefaultAppName" expires_after="2024-12-08">
+    enum="DefaultAppName" expires_after="2025-02-10">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -2501,7 +2501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
-    enum="AppListSortOrder" expires_after="2024-12-08">
+    enum="AppListSortOrder" expires_after="2025-02-10">
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2813,7 +2813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RunningDuration.{AppType}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <component>Platform&gt;Apps&gt;Foundation</component>
@@ -3020,7 +3020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.UsageTime.{AppType}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <component>Platform&gt;Apps&gt;Foundation</component>
@@ -3032,7 +3032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.UsageTimeV2.{AppTypeV2}" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <component>Platform&gt;Apps&gt;Foundation</component>
