@@ -4,6 +4,8 @@
 
 #include "components/sync/engine/debug_info_event_listener.h"
 
+#include "components/sync/protocol/client_debug_info.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

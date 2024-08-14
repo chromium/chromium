@@ -16,10 +16,10 @@
 #include "base/time/time.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_pb {
 class EntitySpecifics;
+class UniquePosition;
 }  // namespace sync_pb
 
 namespace syncer {

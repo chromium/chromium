@@ -16,7 +16,11 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+class GetUpdateTriggers;
+enum SyncEnums_GetUpdatesOrigin : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -130,7 +134,7 @@ class NudgeTracker {
   DataTypeSet GetRefreshRequestedTypes() const;
 
   // Returns the 'origin' of the GetUpdate request.
-  sync_pb::SyncEnums::GetUpdatesOrigin GetOrigin() const;
+  sync_pb::SyncEnums_GetUpdatesOrigin GetOrigin() const;
 
   // Fills a GetUpdatesTrigger message for the next GetUpdates request.  This is
   // used by the DownloadUpdatesCommand to dump lots of useful per-type state

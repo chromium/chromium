@@ -14,11 +14,11 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace sync_pb {
 class EncryptedData;
-}
+class NigoriSpecifics_TrustedVaultDebugInfo;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -143,7 +143,7 @@ class SyncEncryptionHandler {
   virtual KeystoreKeysHandler* GetKeystoreKeysHandler() = 0;
 
   // Returns debug information related to trusted vault passphrase type.
-  virtual const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+  virtual const sync_pb::NigoriSpecifics_TrustedVaultDebugInfo&
   GetTrustedVaultDebugInfo() = 0;
 };
 

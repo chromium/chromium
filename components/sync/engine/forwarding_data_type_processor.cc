@@ -5,8 +5,10 @@
 #include "components/sync/engine/forwarding_data_type_processor.h"
 
 #include <utility>
+
 #include "base/functional/callback.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 

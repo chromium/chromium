@@ -16,6 +16,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

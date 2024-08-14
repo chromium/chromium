@@ -15,8 +15,11 @@
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace sync_pb {
+class SavedTabGroupSpecifics;
+}  // namespace sync_pb
 
 namespace tab_groups {
 class SavedTabGroupModel;

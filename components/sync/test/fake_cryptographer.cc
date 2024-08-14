@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "components/sync/protocol/encryption.pb.h"
 
 namespace syncer {
 

@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

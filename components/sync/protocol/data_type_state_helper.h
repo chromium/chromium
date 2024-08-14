@@ -6,14 +6,17 @@
 #define COMPONENTS_SYNC_PROTOCOL_DATA_TYPE_STATE_HELPER_H_
 
 #include "components/sync/base/data_type.h"
-#include "components/sync/protocol/data_type_state.pb.h"
+
+namespace sync_pb {
+enum DataTypeState_InitialSyncState : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
-bool IsInitialSyncDone(sync_pb::DataTypeState::InitialSyncState state);
+bool IsInitialSyncDone(sync_pb::DataTypeState_InitialSyncState state);
 
 bool IsInitialSyncAtLeastPartiallyDone(
-    sync_pb::DataTypeState::InitialSyncState state);
+    sync_pb::DataTypeState_InitialSyncState state);
 
 }  // namespace syncer
 

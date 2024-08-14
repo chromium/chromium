@@ -14,10 +14,10 @@
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace sync_pb {
+class EncryptedData;
 class NigoriModel;
 }  // namespace sync_pb
 

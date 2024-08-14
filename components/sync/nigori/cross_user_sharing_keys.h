@@ -10,7 +10,11 @@
 #include <string>
 
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
-#include "components/sync/protocol/nigori_local_data.pb.h"
+
+namespace sync_pb {
+class CrossUserSharingKeys;
+class CrossUserSharingPrivateKey;
+}  // namespace sync_pb
 
 namespace syncer {
 

@@ -27,12 +27,16 @@
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
+class DataTypeContext;
+class DataTypeProgressMarker;
+class DataTypeState;
+class GarbageCollectionDirective;
+class GetUpdateTriggers;
 class SyncEntity;
-}
+}  // namespace sync_pb
 
 namespace syncer {
 

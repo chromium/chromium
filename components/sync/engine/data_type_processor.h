@@ -11,8 +11,12 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/data_type_state.pb.h"
+
+namespace sync_pb {
+class DataTypeState;
+class DataTypeState_Invalidation;
+class GarbageCollectionDirective;
+}  // namespace sync_pb
 
 namespace syncer {
 class CommitQueue;
@@ -64,7 +68,7 @@ class DataTypeProcessor {
   // Informs this object that it should handle new invalidations to store,
   // replacing any previously-stored invalidations.
   virtual void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation>
+      std::vector<sync_pb::DataTypeState_Invalidation>
           invalidations_to_store) = 0;
 };
 

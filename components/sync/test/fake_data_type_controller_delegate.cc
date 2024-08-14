@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 

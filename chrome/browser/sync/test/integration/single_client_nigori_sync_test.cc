@@ -50,6 +50,7 @@
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"

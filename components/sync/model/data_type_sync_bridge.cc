@@ -13,6 +13,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace syncer {
 

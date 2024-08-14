@@ -31,6 +31,7 @@
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_manager_factory.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/service/active_devices_provider.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"

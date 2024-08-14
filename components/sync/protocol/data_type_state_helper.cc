@@ -4,6 +4,8 @@
 
 #include "components/sync/protocol/data_type_state_helper.h"
 
+#include "components/sync/protocol/data_type_state.pb.h"
+
 namespace syncer {
 
 bool IsInitialSyncDone(sync_pb::DataTypeState::InitialSyncState state) {

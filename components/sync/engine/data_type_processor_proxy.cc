@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 

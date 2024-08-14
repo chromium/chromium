@@ -9,6 +9,7 @@
 
 #include "base/not_fatal_until.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 

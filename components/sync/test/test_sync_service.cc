@@ -14,6 +14,7 @@
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_token_status.h"
 
 namespace syncer {

@@ -15,10 +15,10 @@
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace sync_pb {
 class DataTypeState;
+class GarbageCollectionDirective;
 }  // namespace sync_pb
 
 namespace syncer {

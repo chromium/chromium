@@ -28,11 +28,11 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/processor_entity_tracker.h"
-#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
 class DataTypeState;
-}
+class DataTypeState_Invalidation;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -124,7 +124,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.

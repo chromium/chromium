@@ -14,7 +14,10 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
+
+namespace sync_pb {
+class NigoriSpecifics_TrustedVaultDebugInfo;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -59,7 +62,7 @@ class SyncStatusTracker : public SyncEngineEventListener {
   void SetHasKeystoreKey(bool has_keystore_key);
   void SetKeystoreMigrationTime(const base::Time& migration_time);
   void SetTrustedVaultDebugInfo(
-      const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+      const sync_pb::NigoriSpecifics_TrustedVaultDebugInfo&
           trusted_vault_debug_info);
 
   void SetCacheGuid(const std::string& cache_guid);

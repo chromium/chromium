@@ -4,6 +4,7 @@
 
 #include "components/sync/base/page_transition_conversion.h"
 
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 

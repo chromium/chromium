@@ -24,6 +24,7 @@
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/syncer_error.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/http/http_status_code.h"
 
 namespace syncer {

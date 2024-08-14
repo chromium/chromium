@@ -15,7 +15,11 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/protocol/unique_position.pb.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+class UniquePosition;
+}  // namespace sync_pb
 
 namespace syncer {
 

@@ -14,10 +14,10 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_pb {
 class EntitySpecifics;
+class UniquePosition;
 }  // namespace sync_pb
 
 namespace syncer {

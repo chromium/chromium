@@ -18,6 +18,7 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_engine.h"
+#include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/service/data_type_encryption_handler.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 

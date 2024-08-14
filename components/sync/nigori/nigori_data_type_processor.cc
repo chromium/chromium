@@ -19,6 +19,7 @@
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"

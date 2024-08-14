@@ -11,7 +11,10 @@
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/syncer_error.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+enum SyncEnums_GetUpdatesOrigin : int;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -99,7 +102,7 @@ class Syncer {
   // Returns: false if an error occurred and retries should backoff, true
   // otherwise.
   virtual bool ConfigureSyncShare(const DataTypeSet& request_types,
-                                  sync_pb::SyncEnums::GetUpdatesOrigin origin,
+                                  sync_pb::SyncEnums_GetUpdatesOrigin origin,
                                   SyncCycle* cycle);
 
   // Requests to download updates for the |request_types|.  For a well-behaved
@@ -127,7 +130,7 @@ class Syncer {
   bool ExitRequested();
 
   bool HandleCycleEnd(SyncCycle* cycle,
-                      sync_pb::SyncEnums::GetUpdatesOrigin origin);
+                      sync_pb::SyncEnums_GetUpdatesOrigin origin);
 
   const raw_ptr<CancelationSignal> cancelation_signal_;
 

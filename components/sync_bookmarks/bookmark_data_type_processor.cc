@@ -27,6 +27,7 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"

@@ -15,6 +15,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/trusted_vault_histograms.h"
 

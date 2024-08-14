@@ -14,7 +14,6 @@
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_local_change_processor.h"
-#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace syncer {
 
@@ -46,7 +45,7 @@ class NigoriDataTypeProcessor : public DataTypeProcessor,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.

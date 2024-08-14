@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

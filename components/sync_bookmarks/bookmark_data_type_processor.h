@@ -60,7 +60,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
       syncer::UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
   // DataTypeControllerDelegate implementation.
