@@ -818,6 +818,7 @@ source_set("extensions") {
     "//chrome/browser/sync",
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/apps",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",

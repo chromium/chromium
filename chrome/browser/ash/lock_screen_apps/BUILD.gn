@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui/apps",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",

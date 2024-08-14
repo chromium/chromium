@@ -223,6 +223,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/apps",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",

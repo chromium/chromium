@@ -1045,13 +1045,6 @@ static_library("ui") {
     sources += [
       "app_icon_loader.cc",
       "app_icon_loader.h",
-      "apps/app_info_dialog.h",
-      "apps/chrome_app_delegate.cc",
-      "apps/chrome_app_delegate.h",
-      "apps/chrome_app_window_client.cc",
-      "apps/chrome_app_window_client.h",
-      "apps/directory_access_confirmation_dialog.cc",
-      "apps/directory_access_confirmation_dialog.h",
       "autofill/autofill_context_menu_manager.cc",
       "autofill/autofill_context_menu_manager.h",
       "autofill/autofill_popup_controller_impl.cc",
@@ -2021,6 +2014,8 @@ static_library("ui") {
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/apps",
+      "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
@@ -2140,6 +2135,11 @@ static_library("ui") {
       "//chrome/browser/lens/region_search",
 
       "//chrome/browser/task_manager:impl",
+
+      # TODO(crbug.com/359593415): Remove allow_circular_includes_from.
+      # //c/b/ui/apps/directory_access_confirmation_dialog.cc includes
+      # //c/b/iu/tab_modal_confirm_dialog_delegate.h.
+      "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",

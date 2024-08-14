@@ -4251,6 +4251,8 @@ static_library("browser") {
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/apps",
+      "//chrome/browser/ui/apps:impl",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/lens",
@@ -4358,6 +4360,13 @@ static_library("browser") {
 
       # TODO(crbug.com/345487716): Remove this circular dependency.
       "//chrome/browser/ui/views/side_panel",
+
+      # TODO(crbug.com/359593415): //c/b/ui/apps/chrome_app_delegate.cc includes
+      # - //c/b/app_mode/app_mode_utils.h,
+      # - //c/b/lifetime/termination_notification.h,
+      # - //c/b/file_system_access/file_system_access_permission_request_manager.h
+      # ... and more. Remove circular include entry when these directories get modularized.
+      "//chrome/browser/ui/apps:impl",
 
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",
