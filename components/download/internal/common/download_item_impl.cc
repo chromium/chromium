@@ -1681,7 +1681,7 @@ void DownloadItemImpl::Start(
       RecordParallelizableDownloadCount(NEW_DOWNLOAD_COUNT,
                                         IsParallelDownloadEnabled());
     }
-    RecordDownloadMimeType(mime_type_);
+    RecordDownloadMimeType(mime_type_, transient_);
     DownloadContent file_type = DownloadContentFromMimeType(mime_type_, false);
     DownloadConnectionSecurity state = CheckDownloadConnectionSecurity(
         new_create_info.url(), new_create_info.url_chain);
@@ -1691,7 +1691,7 @@ void DownloadItemImpl::Start(
     if (!delegate_->IsOffTheRecord()) {
       RecordDownloadCountWithSource(NEW_DOWNLOAD_COUNT_NORMAL_PROFILE,
                                     download_source_);
-      RecordDownloadMimeTypeForNormalProfile(mime_type_);
+      RecordDownloadMimeTypeForNormalProfile(mime_type_, transient_);
     }
   }
 

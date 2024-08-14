@@ -64,6 +64,11 @@ chromium-metrics-reviews@google.com.
   <variant name="UserValidated"/>
 </variants>
 
+<variants name="TransientType">
+  <variant name="NonTransient"/>
+  <variant name="Transient"/>
+</variants>
+
 <histogram name="Download.Android.OpenDialog.Events"
     enum="OpenDownloadDialogEvent" expires_after="2024-12-31">
   <owner>qinmin@chromium.org</owner>
@@ -1149,6 +1154,30 @@ chromium-metrics-reviews@google.com.
     platforms. Warning: This histogram had expired from 2022-05-01 to
     2022-08-15, data may be missing.
   </summary>
+</histogram>
+
+<histogram name="Download.Start.ContentType.NormalProfile.{TransientType}"
+    enum="DownloadContentType" expires_after="2025-01-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records content types of the downloads that are started in non-incognito
+    profile, divided by whether the download is transient. This histogram is
+    logged when a download is started. Logged on Android only.
+  </summary>
+  <token key="TransientType" variants="TransientType"/>
+</histogram>
+
+<histogram name="Download.Start.ContentType.{TransientType}"
+    enum="DownloadContentType" expires_after="2025-01-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records content types of the downloads, divided by whether the download is
+    transient. This histogram is logged when a download is started. Logged on
+    Android only.
+  </summary>
+  <token key="TransientType" variants="TransientType"/>
 </histogram>
 
 <histogram name="Download.Start.PerProfileType" enum="BrowserProfileType"

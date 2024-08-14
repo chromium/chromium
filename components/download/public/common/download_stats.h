@@ -200,11 +200,13 @@ DownloadContentFromMimeType(const std::string& mime_type_string,
 
 // Records the mime type of the download.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadMimeType(
-    const std::string& mime_type);
+    const std::string& mime_type,
+    bool is_transient);
 
 // Records the mime type of the download for normal profile.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadMimeTypeForNormalProfile(
-    const std::string& mime_type);
+    const std::string& mime_type,
+    bool is_transient);
 
 // Record overall bandwidth stats at the file end.
 // Does not count in any hash computation or file open/close time.
