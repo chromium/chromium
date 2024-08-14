@@ -1382,6 +1382,11 @@ gpu::GLCapabilities GLES2DecoderPassthroughImpl::GetGLCapabilities() {
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = feature_info_->feature_flags().ext_disjoint_timer_query;
 
+  if (feature_info_->workarounds().webgl_or_caps_max_texture_size) {
+    caps.max_texture_size =
+        std::min(caps.max_texture_size,
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
+  }
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
   return caps;

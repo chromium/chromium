@@ -225,6 +225,7 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.max_renderbuffer_size = kMaxRenderbufferSize;
       gl_capabilities_.max_texture_image_units = kMaxTextureImageUnits;
       capabilities_.max_texture_size = kMaxTextureSize;
+      gl_capabilities_.max_texture_size = kMaxTextureSize;
       gl_capabilities_.max_varying_vectors = kMaxVaryingVectors;
       gl_capabilities_.max_vertex_attribs = kMaxVertexAttribs;
       gl_capabilities_.max_vertex_texture_image_units =

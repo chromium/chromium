@@ -805,7 +805,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = gl_capabilities_.max_texture_image_units;
       return true;
     case GL_MAX_TEXTURE_SIZE:
-      *params = capabilities_.max_texture_size;
+      *params = gl_capabilities_.max_texture_size;
       return true;
     case GL_MAX_VARYING_VECTORS:
       *params = gl_capabilities_.max_varying_vectors;

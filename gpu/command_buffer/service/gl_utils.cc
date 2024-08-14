@@ -198,6 +198,8 @@ void PopulateGLCapabilities(GLCapabilities* caps,
     shader_precision->precision = precision;
   });
 
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps->max_texture_size);
+
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
                 &caps->max_combined_texture_image_units);
   glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &caps->max_cube_map_texture_size);

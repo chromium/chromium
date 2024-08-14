@@ -181,6 +181,8 @@ struct GPU_EXPORT GLCapabilities {
   bool occlusion_query_boolean = false;
   bool timer_queries = false;
 
+  // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
+  int max_texture_size = 0;
   bool sync_query = false;
 };
 
