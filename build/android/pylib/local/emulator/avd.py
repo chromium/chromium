@@ -318,6 +318,11 @@ class AvdConfig:
     return os.path.join(self.emulator_sdk_root, 'emulator', 'emulator')
 
   @property
+  def crashreport_path(self):
+    """The path to the crashreport binary."""
+    return os.path.join(self.emulator_sdk_root, 'emulator', 'crashreport')
+
+  @property
   def qemu_img_path(self):
     """The path to the qemu-img binary.
 
@@ -958,6 +963,7 @@ class _AvdInstance:
     self._avd_name = avd_config.avd_name
     self._emulator_home = avd_config.emulator_home
     self._emulator_path = avd_config.emulator_path
+    self._crashreport_path = avd_config.crashreport_path
     self._emulator_proc = None
     self._emulator_serial = None
     self._emulator_device = None
@@ -1067,6 +1073,8 @@ class _AvdInstance:
           'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '1',
           # Sets the emulator configuration directory
           'ANDROID_EMULATOR_HOME': self._emulator_home,
+          # emulator tools like crashreport need $USER info to locate data.
+          'USER': os.environ.get('USER'),
       }
       if 'DISPLAY' in os.environ:
         emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
@@ -1138,6 +1146,7 @@ class _AvdInstance:
       if enable_network:
         _EnableNetwork(self.device)
     except base_error.BaseError as e:
+      self.UploadCrashreport()
       raise AvdStartException(str(e)) from e
 
   def Stop(self, force=False):
@@ -1169,6 +1178,16 @@ class _AvdInstance:
       self._emulator_proc = None
       self._emulator_serial = None
       self._emulator_device = None
+
+  def UploadCrashreport(self):
+    # The crashreport binary only exists in newer emulator releases.
+    if not os.path.exists(self._crashreport_path):
+      return
+
+    logging.info('Uploading local crashing reports.')
+    output = cmd_helper.GetCmdOutput([self._crashreport_path, '-u'])
+    for line in output.splitlines():
+      logging.info('  %s', line)
 
   def GetSnapshotName(self):
     """Return the snapshot name to load/save.
