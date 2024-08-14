@@ -38,7 +38,6 @@
 #include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -221,14 +220,12 @@ StyleEngine::StyleEngine(Document& document)
           MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
-      resolver_(MakeGarbageCollected<StyleResolver>(document)),
-      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
-      owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
+      resolver_(MakeGarbageCollected<StyleResolver>(document)) {
   if (document.GetFrame()) {
     global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
-    if (const auto* owner = document.GetFrame()->Owner()) {
+    if (const FrameOwner* owner = document.GetFrame()->Owner()) {
       owner_color_scheme_ = owner->GetColorScheme();
     }
 
@@ -241,17 +238,6 @@ StyleEngine::StyleEngine(Document& document)
       viewport_resolver_ =
           MakeGarbageCollected<ViewportStyleResolver>(document);
     }
-
-    DCHECK(document.GetSettings());
-    preferred_color_scheme_ = document.GetSettings()->GetPreferredColorScheme();
-    force_dark_mode_enabled_ =
-        document.GetSettings()->GetForceDarkModeEnabled();
-    UpdateColorSchemeMetrics();
-
-    forced_colors_ = document.GetSettings()->GetInForcedColors()
-                         ? ForcedColors::kActive
-                         : ForcedColors::kNone;
-    UpdateForcedBackgroundColor();
   }
 
   UpdateColorScheme();
