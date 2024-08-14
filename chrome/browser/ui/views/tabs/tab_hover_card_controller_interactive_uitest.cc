@@ -115,6 +115,13 @@ class TabHoverCardInteractiveUiTest
     MemorySaverInteractiveTestMixin::TearDownOnMainThread();
   }
 
+  MultiStep FinishTabstripAnimations() {
+    return Steps(WaitForShow(kTabStripElementId),
+                 WithView(kTabStripElementId, [](TabStrip* tab_strip) {
+                   tab_strip->StopAnimating(true);
+                 }));
+  }
+
   auto HoverTabAt(int index) {
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/358199067): Fix for mac
@@ -123,10 +130,8 @@ class TabHoverCardInteractiveUiTest
 #else
     const char kTabToHover[] = "Tab to hover";
     return Steps(
-        WithView(kTabStripElementId,
-                 [](TabStrip* tab_strip) { tab_strip->StopAnimating(true); }),
-        NameDescendantViewByType<Tab>(kBrowserViewElementId, kTabToHover,
-                                      index),
+        FinishTabstripAnimations(),
+        NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover, index),
         MoveMouseTo(kTabToHover));
 #endif
   }
@@ -174,7 +179,10 @@ class TabHoverCardInteractiveUiTest
 #endif
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        MAYBE_HoverCardHidesOnAnyKeyPressInSameWindow) {
-  RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
+  RunTestSequence(InstrumentTab(kFirstTabContents, 0),
+                  NavigateWebContents(kFirstTabContents,
+                                      GURL(chrome::kChromeUINewTabURL)),
+                  HoverTabAt(0), CheckHovercardIsOpen(),
                   Check(base::BindLambdaForTesting([=, this]() {
                     return ui_test_utils::SendKeyPressSync(
                         browser(), ui::VKEY_DOWN, false, false, false, false);
@@ -186,8 +194,11 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        HoverCardHidesOnMouseExit) {
-  RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTab(),
-                  CheckHovercardIsClosed());
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUINewTabURL)),
+      HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTab(),
+      CheckHovercardIsClosed());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -257,8 +268,11 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        WidgetNotVisibleOnMousePressAfterHover) {
-  RunTestSequence(HoverTabAt(0), CheckHovercardIsOpen(),
-                  SelectTab(kTabStripElementId, 0), CheckHovercardIsClosed());
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUINewTabURL)),
+      HoverTabAt(0), CheckHovercardIsOpen(), SelectTab(kTabStripElementId, 0),
+      CheckHovercardIsClosed());
 }
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
