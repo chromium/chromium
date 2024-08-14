@@ -840,7 +840,8 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
     // that would be spanned by our children after animations complete. This
     // allows tabs to resize directly with window resizes instead of mediating
     // that through animation.
-    minimum_width = layout_helper_->CalculateMinimumWidth();
+    minimum_width = override_available_width_for_tabs_.value_or(
+        layout_helper_->CalculateMinimumWidth());
   }
 
   return gfx::Size(minimum_width.value(), GetLayoutConstant(TAB_STRIP_HEIGHT));
