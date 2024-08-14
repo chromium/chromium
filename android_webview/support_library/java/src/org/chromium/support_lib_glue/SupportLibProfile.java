@@ -121,7 +121,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     }
 
     @Override
-    public void clearPrefetch(String url, ValueCallback<Boolean> callback) {
+    public void clearPrefetch(String url, ValueCallback<Void> callback) {
         recordApiCall(ApiCall.CLEAR_PREFETCH_CACHE);
         mProfileImpl.clearPrefetch(url, callback);
     }

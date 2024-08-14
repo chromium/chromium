@@ -30,5 +30,5 @@ public interface ProfileBoundaryInterface {
             /* PrefetchCallbackBoundaryInterface */ InvocationHandler prefetchCallback,
             Executor callbackExecutor);
 
-    void clearPrefetch(String url, ValueCallback<Boolean> callback);
+    void clearPrefetch(String url, ValueCallback<Void> callback);
 }

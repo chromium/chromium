@@ -84,7 +84,7 @@ public class Profile {
         // TODO(334016945): do the actual implementation
     }
 
-    public void clearPrefetch(String url, ValueCallback<Boolean> resultCallback) {
+    public void clearPrefetch(String url, ValueCallback<Void> resultCallback) {
         // TODO(334016945): do the actual implementation
     }
 }
