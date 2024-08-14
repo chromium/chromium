@@ -21,7 +21,7 @@ std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
   // fuzzer input.
   return std::make_unique<JPEGImageDecoder>(
       ImageDecoder::kAlphaPremultiplied, ColorBehavior::kTransformToSRGB,
-      ImageDecoder::kNoDecodedImageByteLimit);
+      cc::AuxImage::kDefault, ImageDecoder::kNoDecodedImageByteLimit);
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

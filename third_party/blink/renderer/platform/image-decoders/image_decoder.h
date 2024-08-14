@@ -411,6 +411,8 @@ class PLATFORM_EXPORT ImageDecoder {
     return premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
   }
 
+  cc::AuxImage GetAuxImage() const { return aux_image_; }
+
   wtf_size_t GetMaxDecodedBytes() const { return max_decoded_bytes_; }
 
   // Sets the "decode failure" flag.  For caller convenience (since so
@@ -453,6 +455,7 @@ class PLATFORM_EXPORT ImageDecoder {
   ImageDecoder(AlphaOption alpha_option,
                HighBitDepthDecodingOption high_bit_depth_decoding_option,
                ColorBehavior color_behavior,
+               cc::AuxImage aux_image,
                wtf_size_t max_decoded_bytes);
 
   // Calculates the most recent frame whose image data may be needed in
@@ -544,6 +547,7 @@ class PLATFORM_EXPORT ImageDecoder {
   const bool premultiply_alpha_;
   const HighBitDepthDecodingOption high_bit_depth_decoding_option_;
   const ColorBehavior color_behavior_;
+  const cc::AuxImage aux_image_;
   ImageOrientationEnum orientation_ = ImageOrientationEnum::kDefault;
   gfx::Size density_corrected_size_;
 

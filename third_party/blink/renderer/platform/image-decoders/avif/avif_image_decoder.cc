@@ -308,7 +308,11 @@ AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
                                    ColorBehavior color_behavior,
                                    wtf_size_t max_decoded_bytes,
                                    AnimationOption animation_option)
-    : ImageDecoder(alpha_option, hbd_option, color_behavior, max_decoded_bytes),
+    : ImageDecoder(alpha_option,
+                   hbd_option,
+                   color_behavior,
+                   cc::AuxImage::kDefault,
+                   max_decoded_bytes),
       animation_option_(animation_option) {}
 
 AVIFImageDecoder::~AVIFImageDecoder() = default;
