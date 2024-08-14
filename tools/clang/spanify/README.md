@@ -82,7 +82,7 @@ and then runs the tool over every configuration in the list of platforms.
 
 1. `--platforms=<comma,separated,list,of,platforms>`
 2. `--skip-building-clang` or `-b` for short, only use if you have already built
-   clang and know nothing has changed, this implicitly adds --keep-build flag,
+   clang and know nothing has changed, this implicitly adds `--keep-build` flag,
    see the flag definition below for more details on its behaviour.
 3. `--skip-rewrite` or `-r` for short, if you've already ran on the platform and
    have the associated `~/scratch` directory you can just skip generating this.
@@ -95,6 +95,10 @@ and then runs the tool over every configuration in the list of platforms.
    You should restore it by running
    `mv third_party/llvm-build-upstream third_party/llvm-build` or running the
    script without `--keep-build`
+6. `--incremental-clang-build` or `-i` for short, will use the already built
+   clang and attempt to only incrementally include changes to the clang plugin,
+   this implicitly adds `--keep-build` flag, see the flag definition above for
+   more details on its behaviour.
 
 The flags are useful to cut down iteration time when working on particular
 parts. If you are modifying the plugin you can't skip the build part, but if you
@@ -133,3 +137,10 @@ run the script again.
 ```bash
 mv third_party/llvm-build-upstream third_party/llvm-build
 ```
+
+Another possible issue is during the `extract_edits.py` step it might complain
+that `~/scratch/rewriter.main.out` doesn't exist. This can happen sometimes
+because the script writes out files to `~/scratch/rewriter-$PLATFORM.main.out`
+and then later uses `cat platform_file >> ~/scratch/rewriter.main.out` and it
+can be unreliable due to the large file size. You can simply create it yourself
+either by appending each platform together or symlinking it together.

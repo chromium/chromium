@@ -117,6 +117,26 @@ class Node:
 
         return Node.key_to_node[node.replacement]
 
+    # This is not parsable by from_string but is useful for debugging the graph
+    # of nodes.
+    def to_debug_string(self) -> str:
+        # include_directory already includes explanatory text so we don't have a
+        # string before its value.
+        result = "is_buffer:{},replacement:{},{},size_info_available:{}".format(
+            self.is_buffer, self.replacement, self.include_directive,
+            self.size_info_available)
+        result += "is_deref_node:{},is_data_change:{},".format(
+            self.is_deref_node, self.is_data_change)
+        # Recursively get neighbors.
+        result += "neighbors:"
+        neighbors = "{"
+        for node in self.neighbors:
+            if len(neighbors) > 1:
+                neighbors += ", "
+            neighbors += node.to_debug_string()
+        neighbors += "}"
+        return result + neighbors
+
     # Static method to get all nodes.
     def all():
         return Node.key_to_node.values()
@@ -257,7 +277,7 @@ def main():
         # Expect a single neighbor.
         # TODO(357433195): In practice, this is not always the case. Investigate
         # why and add the assertion back:
-        # assert (len(node.neighbors) == 1)
+        # assert len(node.neighbors) == 1, "and node: " + node.to_debug_string()
 
         # If the rhs node was visited (i.e rewritten), then we need to apply the
         # data change.
