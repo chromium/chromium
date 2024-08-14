@@ -21,6 +21,7 @@
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -103,6 +104,27 @@ TEST_F(NetworkTrayViewTest, NetworkIconTooltip) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED,
                                        u"wifi"),
             get_tooltip());
+}
+
+TEST_F(NetworkTrayViewTest, AccessibleDescription) {
+  auto cellular =
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "cellular", NetworkType::kCellular, ConnectionStateType::kConnected,
+          50);
+
+  auto cell = mojo::Clone(cellular);
+  cros_network()->AddNetworkAndDevice(std::move(cell));
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SIGNAL_WEAK),
+            network_tray_view()->GetViewAccessibility().GetCachedDescription());
+
+  cellular->type_state->get_cellular()->signal_strength = 150;
+
+  cros_network()->UpdateNetworkProperties(std::move(cellular));
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SIGNAL_STRONG),
+      network_tray_view()->GetViewAccessibility().GetCachedDescription());
 }
 
 // Regression test for http://b/284983806
