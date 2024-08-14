@@ -3161,6 +3161,11 @@ inline constexpr char kKioskTroubleshootingToolsEnabled[] =
 inline constexpr char kKioskBrowserPermissionsAllowedForOrigins[] =
     "policy.kiosk_browser_permissions_allowed_for_origins";
 
+// Pref name to toggle the network prompt at web app kiosk launch when the
+// device is offline and the web app is not offline enabled.
+inline constexpr char kKioskWebAppOfflineEnabled[] =
+    "policy.kiosk_web_app_offline_enabled";
+
 // A boolean pref which determines whether a Web Kiosk can open more than one
 // browser window.
 inline constexpr char kNewWindowsInKioskAllowed[] =

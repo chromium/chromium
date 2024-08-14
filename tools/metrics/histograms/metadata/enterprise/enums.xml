@@ -2156,6 +2156,7 @@ chromium-metrics-reviews@google.com.
   <int value="1290" label="DeviceRestrictionSchedule"/>
   <int value="1291" label="TabCompareSettings"/>
   <int value="1292" label="AdHocCodeSigningForPWAsEnabled"/>
+  <int value="1293" label="KioskWebAppOfflineEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
