@@ -1079,6 +1079,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.WEB_PERMISSIONS_API, "Enables navigator.permissions.query()"),
         Flag.baseFeature(
                 MediaFeatures.BUILT_IN_H264_DECODER, "Controls use of FFmpeg for H.264 decoding"),
+        Flag.baseFeature(
+                BlinkFeatures.DEFER_RENDERER_TASKS_AFTER_INPUT,
+                "If enabled, some renderer tasks will be deferred after discrete input events, e.g."
+                        + " keypress, and the subsequent frame"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
