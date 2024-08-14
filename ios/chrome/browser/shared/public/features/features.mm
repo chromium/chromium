@@ -940,3 +940,7 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kIdentityConfirmationSnackbar,
         /*name=*/"IdentityConfirmationMinTimeSinceSignin",
         /*default_value=*/base::Hours(24)};
+
+BASE_FEATURE(kEnableTraitCollectionRegistration,
+             "EnableTraitCollectionRegistration",
+             base::FEATURE_DISABLED_BY_DEFAULT);

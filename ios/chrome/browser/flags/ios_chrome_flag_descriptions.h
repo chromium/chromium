@@ -333,6 +333,11 @@ extern const char kEnableFollowIPHExpParamsDescription[];
 extern const char kEnableFollowUIUpdateName[];
 extern const char kEnableFollowUIUpdateDescription[];
 
+// Title and description for the flag to enable the registration of customizable
+// lists of UITraits.
+extern const char kEnableTraitCollectionRegistrationName[];
+extern const char kEnableTraitCollectionRegistrationDescription[];
+
 // Title and description for the flag to disable the Lens input selection
 // and camera experience.
 extern const char kDisableLensCameraName[];
