@@ -211,6 +211,9 @@ export enum OutputNavigationType {
   START_OF = 'startOf',
 }
 
+/** Delimiter to use between output values. */
+export const SPACE = ' ';
+
 TestImportManager.exportForTesting(
     OutputAction, OutputEarconAction, OutputNodeSpan, OutputSelectionSpan,
     ['OutputCustomEvent', OutputCustomEvent],

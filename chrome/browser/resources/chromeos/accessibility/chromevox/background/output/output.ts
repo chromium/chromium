@@ -171,7 +171,7 @@ export class Output extends OutputInterface {
 
   /** @return Spannable representing the braille output. */
   get braille(): Spannable {
-    return this.mergeBraille_(this.brailleOutput_.buffer);
+    return BrailleOutput.mergeSpans(this.brailleOutput_.buffer);
   }
 
   /**
@@ -491,7 +491,7 @@ export class Output extends OutputInterface {
   }
 
   private sendBraille_(): void {
-    const buff = this.mergeBraille_(this.brailleOutput_.buffer);
+    const buff = BrailleOutput.mergeSpans(this.brailleOutput_.buffer);
     const selSpan = buff.getSpanInstanceOf(outputTypes.OutputSelectionSpan);
     let startIndex = -1;
     let endIndex = -1;
@@ -871,7 +871,7 @@ export class Output extends OutputInterface {
       });
 
       if (this.formatAsBraille && buff.length) {
-        const nodeSpan = this.mergeBraille_(buff);
+        const nodeSpan = BrailleOutput.mergeSpans(buff);
         nodeSpan.setSpan(
             new outputTypes.OutputNodeSpan(formatNode), 0, nodeSpan.length);
         originalBuff.push(nodeSpan);
@@ -910,7 +910,7 @@ export class Output extends OutputInterface {
 
     // Restore braille and add an annotation for this node.
     if (this.formatOptions_.braille) {
-      const nodeSpan = this.mergeBraille_(buff);
+      const nodeSpan = BrailleOutput.mergeSpans(buff);
       nodeSpan.setSpan(
           new outputTypes.OutputNodeSpan(node), 0, nodeSpan.length);
       originalBuff.push(nodeSpan);
@@ -1308,73 +1308,6 @@ export class Output extends OutputInterface {
   }
 
   /**
-   * Converts the braille |spans| buffer to a single spannable.
-   * @param spans The spans to merge.
-   * @return the merged braille spannable.
-   */
-  private mergeBraille_(spans: Spannable[]): Spannable {
-    let separator = '';  // Changes to space as appropriate.
-    let prevHasInlineNode = false;
-    let prevIsName = false;
-    return spans.reduce((result, cur) => {
-      // Ignore empty spans except when they contain a selection.
-      const hasSelection =
-          cur.getSpanInstanceOf(outputTypes.OutputSelectionSpan);
-      if (cur.length === 0 && !hasSelection) {
-        return result;
-      }
-
-      // For empty selections, we just add the space separator to account for
-      // showing the braille cursor.
-      if (cur.length === 0 && hasSelection) {
-        result.append(cur);
-        result.append(Output.SPACE);
-        separator = '';
-        return result;
-      }
-
-      // Keep track of if there's an inline node associated with
-      // |cur|.
-      const hasInlineNode =
-          cur.getSpansInstanceOf(outputTypes.OutputNodeSpan).some(spannable => {
-            if (!spannable.node) {
-              return false;
-            }
-            return spannable.node.display === 'inline' ||
-                spannable.node.role === RoleType.INLINE_TEXT_BOX;
-          });
-
-      const isName = cur.hasSpan('name');
-
-      // Now, decide whether we should include separators between the previous
-      // span and |cur|.
-      // Never separate chunks without something already there at this point.
-
-      // The only case where we know for certain that a separator is not
-      // needed is when the previous and current values are in-lined and part
-      // of the node's name. In all other cases, use the surrounding
-      // whitespace to ensure we only have one separator between the node
-      // text.
-      if (result.length === 0 ||
-          (hasInlineNode && prevHasInlineNode && isName && prevIsName)) {
-        separator = '';
-      } else if (
-          result.toString()[result.length - 1] === Output.SPACE ||
-          cur.toString()[0] === Output.SPACE) {
-        separator = '';
-      } else {
-        separator = Output.SPACE;
-      }
-
-      prevHasInlineNode = hasInlineNode;
-      prevIsName = isName;
-      result.append(separator);
-      result.append(cur);
-      return result;
-    }, new Spannable());
-  }
-
-  /**
    * @return found OutputAction or if not found, undefined/null.
    */
   override findEarcon(node: AutomationNode, optPrevNode?: AutomationNode):
@@ -1463,13 +1396,6 @@ export class Output extends OutputInterface {
   override get formatAsSpeech(): boolean {
     return this.formatOptions_.speech;
   }
-}
-
-export namespace Output {
-  /**
-   * Delimiter to use between output values.
-   */
-  export const SPACE: string = ' ';
 }
 
 TestImportManager.exportForTesting(Output);

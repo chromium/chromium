@@ -22,7 +22,7 @@ import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {Color} from '../color.js';
 import {Output} from '../output/output.js';
-import {OutputCustomEvent} from '../output/output_types.js';
+import {OutputCustomEvent, SPACE} from '../output/output_types.js';
 
 import {EditableLine} from './editable_line.js';
 import {AutomationEditableText} from './editable_text.js';
@@ -413,11 +413,11 @@ export class RichEditableText extends AutomationEditableText {
         const prefix = value.substring(0, end);
         const suffix = value.substring(end, value.length);
         value = prefix;
-        value.append(Output.SPACE);
+        value.append(SPACE);
         value.append(output.braille);
         if (suffix.length) {
-          if (suffix.toString()[0] !== Output.SPACE) {
-            value.append(Output.SPACE);
+          if (suffix.toString()[0] !== SPACE) {
+            value.append(SPACE);
           }
           value.append(suffix);
         }
@@ -428,7 +428,7 @@ export class RichEditableText extends AutomationEditableText {
     let end = cur.endOffset;
     if (isFirstLine) {
       if (!/\s/.test(value.toString()[value.length - 1])) {
-        value.append(Output.SPACE);
+        value.append(SPACE);
       }
 
       if (isEmpty) {
