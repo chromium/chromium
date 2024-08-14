@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -299,8 +301,9 @@ TEST_F(AccountMenuCoordinatorTest, testSignin) {
 
 // Tests that `triggerAccountSwitchSnackbarWithIdentity` shows a snackbar.
 TEST_F(AccountMenuCoordinatorTest, testSnackbar) {
-  OCMExpect([mock_snackbar_commands_handler_ showSnackbarMessage:[OCMArg any]
-                                                    bottomOffset:0]);
+  OCMExpect([mock_snackbar_commands_handler_
+      showSnackbarMessageOverBrowserToolbar:
+          [OCMArg isKindOfClass:[MDCSnackbarMessage class]]]);
   [coordinator_ triggerAccountSwitchSnackbarWithIdentity:kPrimaryIdentity];
 }
 
