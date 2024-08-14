@@ -18,6 +18,8 @@ static_library("system_web_apps") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
