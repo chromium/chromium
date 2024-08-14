@@ -126,51 +126,13 @@
                                   cachedTabsInfo:
                                       (tabs_closure_util::WebStateIDToTime)
                                           cachedTabsInfo {
-  __weak QuickDeleteCoordinator* weakSelf = self;
-  [_viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf
-                               animateTabsClosureWithBeginTime:beginTime
-                                                       endTime:endTime
-                                                cachedTabsInfo:cachedTabsInfo];
-                         }];
-}
+  CHECK_EQ(Browser::Type::kRegular, self.browser->type());
 
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  [self disconnect];
-  [self dismissQuickDelete];
-}
-
-#pragma mark - QuickDeleteBrowsingDataDelegate
-
-- (void)stopBrowsingDataPage {
-  [_browsingDataCoordinator stop];
-  _browsingDataCoordinator = nil;
-}
-
-#pragma mark - Private
-
-// Trigger the animation of the closure of tabs with last navigation between
-// [`beginTime`, `endTime`[. Uses `cachedTabsInfo` to faciliate filtering of the
-// tabs to be closed.
-- (void)animateTabsClosureWithBeginTime:(base::Time)beginTime
-                                endTime:(base::Time)endTime
-                         cachedTabsInfo:(tabs_closure_util::WebStateIDToTime)
-                                            cachedTabsInfo {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandsHandler
-      displayTabGridInMode:TabGridOpeningMode::kRegular];
-
-  id<TabsAnimationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabsAnimationCommands);
-
-  CHECK(self.browser->type() == Browser::Type::kRegular);
-  // TODO(crbug.com/335387869): Consider only returning tabs not in tab groups.
+  // Get the active and inactive WebStates and the TabGroups of WebStates with a
+  // last navigation timestamp between `beginTime` and `endTime`. This
+  // information will be used by the tabs closure animation.
+  // TODO(crbug.com/335387869): Consider only returning tabs not in tab groups
+  // for `activeTabsToClose`.
   std::set<web::WebStateID> activeTabsToClose =
       tabs_closure_util::GetTabsToClose(self.browser->GetWebStateList(),
                                         beginTime, endTime, cachedTabsInfo);
@@ -192,9 +154,63 @@
       BrowsingDataRemoverFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
+
+  __weak QuickDeleteCoordinator* weakSelf = self;
+  ProceduralBlock dismissCompletionBlock = ^() {
+    [weakSelf animateTabsClosureWithBeginTime:beginTime
+                                      endTime:endTime
+                                   activeTabs:activeTabsToClose
+                                       groups:tabGroupsWithTabsToClose
+                              allInactiveTabs:allInactiveTabsWillClose
+                          browsingDataRemover:browsingDataRemover];
+  };
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:dismissCompletionBlock];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self disconnect];
+  [self dismissQuickDelete];
+}
+
+#pragma mark - QuickDeleteBrowsingDataDelegate
+
+- (void)stopBrowsingDataPage {
+  [_browsingDataCoordinator stop];
+  _browsingDataCoordinator = nil;
+}
+
+#pragma mark - Private
+
+// Triggers the tabs closure animation on the tab grid for the WebStates in
+// `tabsToClose`, for the groups in `groupsWithTabsToClose`, and if
+// `animateAllInactiveTabs` is true, then for the inactive tabs banner. It also
+// closes all WebStates with a last navigation between [`beginTime`, `endTime`[
+// in all browsers through `browsingDataRemover` after the animation has run.
+- (void)
+    animateTabsClosureWithBeginTime:(base::Time)beginTime
+                            endTime:(base::Time)endTime
+                         activeTabs:(std::set<web::WebStateID>)activeTabsToClose
+                             groups:(std::map<tab_groups::TabGroupId,
+                                              std::set<int>>)
+                                        tabGroupsWithTabsToClose
+                    allInactiveTabs:(BOOL)animateAllInactiveTabs
+                browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover {
+  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandsHandler
+      displayTabGridInMode:TabGridOpeningMode::kRegular];
+
+  id<TabsAnimationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabsAnimationCommands);
+
   [handler animateTabsClosureForTabs:activeTabsToClose
                               groups:tabGroupsWithTabsToClose
-                     allInactiveTabs:allInactiveTabsWillClose
+                     allInactiveTabs:animateAllInactiveTabs
                    completionHandler:^{
                      browsingDataRemover->RemoveInRange(
                          beginTime, endTime, BrowsingDataRemoveMask::CLOSE_TABS,
