@@ -58,14 +58,20 @@ void IOBluetoothPreferenceSetControllerPowerState(int state);
 @interface BluetoothDevicesConnectListener : NSObject {
  @private
   // The BluetoothAdapterMac that owns |self|.
-  raw_ptr<device::BluetoothAdapterMac> _adapter;
+  base::WeakPtr<device::BluetoothAdapterMac> _adapter;
 
   // The OS mechanism used to subscribe to and unsubscribe from any Bluetooth
   // device connect notification.
   IOBluetoothUserNotification* __weak _connectNotification;
+
+  // This UI thread task runner should be used to invoke any functions on the
+  // adapter object because the connect notification might be delivered on a
+  // worker thread.
+  scoped_refptr<base::SingleThreadTaskRunner> _ui_task_runner;
 }
 
-- (instancetype)initWithAdapter:(device::BluetoothAdapterMac*)adapter;
+- (instancetype)initWithAdapter:
+    (base::WeakPtr<device::BluetoothAdapterMac>)adapter;
 - (void)deviceConnected:(IOBluetoothUserNotification*)notification
                  device:(IOBluetoothDevice*)device;
 - (void)stopListening;
@@ -74,9 +80,12 @@ void IOBluetoothPreferenceSetControllerPowerState(int state);
 
 @implementation BluetoothDevicesConnectListener
 
-- (instancetype)initWithAdapter:(device::BluetoothAdapterMac*)adapter {
+- (instancetype)initWithAdapter:
+    (base::WeakPtr<device::BluetoothAdapterMac>)adapter {
+  CHECK(adapter);
   if ((self = [super init])) {
     _adapter = adapter;
+    _ui_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
 
     _connectNotification = [IOBluetoothDevice
         registerForConnectNotifications:self
@@ -90,8 +99,10 @@ void IOBluetoothPreferenceSetControllerPowerState(int state);
 
 - (void)deviceConnected:(IOBluetoothUserNotification*)notification
                  device:(IOBluetoothDevice*)device {
-  _adapter->DeviceConnected(
-      std::make_unique<device::BluetoothClassicDeviceMac>(_adapter, device));
+  _ui_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&device::BluetoothAdapterMac::OnConnectNotification,
+                     _adapter, device));
 }
 
 - (void)stopListening {
@@ -276,18 +287,13 @@ void BluetoothAdapterMac::ClassicDiscoveryStopped(bool unexpected) {
     observer.AdapterDiscoveringChanged(this, false);
 }
 
+void BluetoothAdapterMac::OnConnectNotification(IOBluetoothDevice* device) {
+  DeviceConnected(
+      std::make_unique<device::BluetoothClassicDeviceMac>(this, device));
+}
+
 void BluetoothAdapterMac::DeviceConnected(
     std::unique_ptr<BluetoothDevice> device) {
-  // This function might be called on a worker thread, but many observers of
-  // BluetoothAdapter expect to be called on the main thread. Post a task to the
-  // main thread if not running there already.
-  if (!ui_task_runner_->BelongsToCurrentThread()) {
-    ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BluetoothAdapterMac::DeviceConnected,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(device)));
-    return;
-  }
   std::string device_address = device->GetAddress();
   BLUETOOTH_LOG(EVENT) << "Device connected: name: "
                        << device->GetNameForDisplay()
@@ -337,8 +343,8 @@ void BluetoothAdapterMac::LazyInitialize() {
   classic_discovery_manager_.reset(
       BluetoothDiscoveryManagerMac::CreateClassic(this));
   BluetoothLowEnergyAdapterApple::LazyInitialize();
-  connect_listener_ =
-      [[BluetoothDevicesConnectListener alloc] initWithAdapter:this];
+  connect_listener_ = [[BluetoothDevicesConnectListener alloc]
+      initWithAdapter:weak_ptr_factory_.GetWeakPtr()];
   PollAdapter();
 }
 
