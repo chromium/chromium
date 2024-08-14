@@ -31,7 +31,6 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
