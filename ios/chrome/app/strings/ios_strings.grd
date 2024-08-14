@@ -5291,7 +5291,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_EMPTY_TITLE" desc="Title shown above a message on the Incognito tab switcher when there are no Incognito tabs. [iOS only]">
         You'll find your Incognito tabs here
       </message>
-      <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_TITLE" desc="The accessibility label of the Incognito Tabs page in the tab grid UI. [iOS only]">
+      <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_TITLE" desc="The accessibility label of the Incognito Tabs page in the tab grid UI. [iOS only][Read by Text-to-Speech]" meaning="This is the page containing the incognito tabs.">
         Incognito Tabs
       </message>
       <message name="IDS_IOS_TAB_GRID_INCOGNITO_TABS_UNAVAILABLE_MESSAGE" desc="Message shown in the Incognito Tabs page of the tab grid when the IncognitoModeAvailability enterprise policy is set to disabled. [iOS only]">
@@ -5481,9 +5481,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_ENABLE_SYNC_TITLE" desc="Title label to enable sync for user. [Length: 30em] [iOS only]">
           Enable sync
-      </message>
-      <message name="IDS_IOS_TAB_SWITCHER_HEADER_INCOGNITO_TABS" desc="Label shown to select the Incognito tabs panel, as opposed to the Non Incognito panel and the Other Devices panel. [Length: 17em] [iOS only]">
-        Incognito Tabs
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_HEADER_NON_INCOGNITO_TABS" desc="Label shown to select the Non Incognito tabs panel, as opposed to the Incognito panel and the Other Devices panel. [Length: 17em] [iOS only]">
         Open Tabs
