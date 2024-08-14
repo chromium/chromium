@@ -348,6 +348,10 @@ class Dispatcher : public content::RenderThreadObserver,
   // generated on failure.
   std::map<ExtensionId, std::string> extension_load_errors_;
 
+  // ExtensionIds for extensions that were loaded, but then unloaded later.
+  // Used for metrics purposes.
+  std::set<ExtensionId> unloaded_extensions_;
+
   // All the bindings contexts that are currently loaded for this renderer.
   // There is zero or one for each v8 context.
   std::unique_ptr<ScriptContextSet> script_context_set_;

@@ -883,6 +883,8 @@ void Dispatcher::LoadExtensions(
       NOTREACHED_IN_MIGRATION();
     }
 
+    unloaded_extensions_.erase(extension->id());
+
     if (worker_activation_token.has_value()) {
       extension_registry->SetWorkerActivationToken(
           extension, std::move(*worker_activation_token));
@@ -924,6 +926,8 @@ void Dispatcher::UnloadExtension(const ExtensionId& extension_id) {
     NOTREACHED_IN_MIGRATION();
     return;
   }
+
+  unloaded_extensions_.insert(extension_id);
 
   ExtensionsRendererClient::Get()->OnExtensionUnloaded(extension_id);
 
