@@ -2073,6 +2073,14 @@ TEST_F(ManagePasswordsUIControllerTest, InvalidPasskeyDeleted) {
       password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE);
 }
 
+TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyUpdatedBubble) {
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasskeyUpdated();
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {

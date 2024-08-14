@@ -133,6 +133,10 @@ class PasswordsClientUIDelegate {
   // that to the user.
   virtual void OnPasskeyDeleted() = 0;
 
+  // Called when a passkey has just been updated to display a confirmation of
+  // that to the user.
+  virtual void OnPasskeyUpdated() = 0;
+
  protected:
   virtual ~PasswordsClientUIDelegate() = default;
 };

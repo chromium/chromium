@@ -86,6 +86,9 @@ enum State {
 
   // Passkey was successfully deleted.
   PASSKEY_DELETED_CONFIRMATION_STATE,
+
+  // Passkey was successfully updated.
+  PASSKEY_UPDATED_CONFIRMATION_STATE,
 };
 
 }  // namespace password_manager::ui

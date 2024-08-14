@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_deleted_confirmation_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_updated_confirmation_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -159,6 +160,10 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
              password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE) {
     view =
         new PasskeyDeletedConfirmationView(web_contents, anchor_view, reason);
+  } else if (model_state ==
+             password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE) {
+    view =
+        new PasskeyUpdatedConfirmationView(web_contents, anchor_view, reason);
   } else {
     NOTREACHED_NORETURN();
   }

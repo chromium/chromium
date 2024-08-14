@@ -105,6 +105,9 @@ class ManagePasswordsState {
   // Move to PASSKEY_DELETED_CONFIRMATION_STATE.
   void OnPasskeyDeleted();
 
+  // Move to PASSKEY_UPDATED_CONFIRMATION_STATE.
+  void OnPasskeyUpdated();
+
   // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
   void OnPasswordMovable(
