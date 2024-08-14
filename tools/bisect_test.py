@@ -318,29 +318,34 @@ class AndroidReleaseBuildTest(unittest.TestCase):
     self.assertEqual(mock_GsutilList.call_count, 2)
 
 
-class OfficialBuildTest(unittest.TestCase):
+class ArchiveBuildWithCommitPositionTest(unittest.TestCase):
 
-  @maybe_patch.object(bisect_builds,
-                      'GetRevisionFromVersion',
-                      return_value=1313161)
-  @maybe_patch.object(bisect_builds,
-                      'GetChromiumRevision',
-                      return_value=999999999)
+  def setUp(self):
+    patch.multiple(bisect_builds.ArchiveBuildWithCommitPosition,
+                   __abstractmethods__=set(),
+                   build_type='release').start()
+
+  @maybe_patch('bisect-builds.GetRevisionFromVersion', return_value=1313161)
+  @maybe_patch('bisect-builds.GetChromiumRevision', return_value=999999999)
   def test_should_convert_revision_as_commit_position(
       self, mock_GetChromiumRevision, mock_GetRevisionFromVersion):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '127.0.6533.74'])
-    build = bisect_builds.OfficialBuild(options)
+    build = bisect_builds.ArchiveBuildWithCommitPosition(options)
     self.assertEqual(build.good_revision, 1313161)
     self.assertEqual(build.bad_revision, 999999999)
     mock_GetRevisionFromVersion.assert_called_once_with('127.0.6533.74')
     mock_GetChromiumRevision.assert_called()
 
+
+class OfficialBuildTest(unittest.TestCase):
+
   def test_should_lookup_path_context(self):
     options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '0', '-b', '10'])
+        ['-o', '-a', 'linux64', '-g', '0', '-b', '10'])
     self.assertEqual(options.archive, 'linux64')
-    build = bisect_builds.OfficialBuild(options)
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.OfficialBuild)
     self.assertEqual(build.binary_name, 'chrome')
     self.assertEqual(build.listing_platform_dir, 'linux-builder-perf/')
     self.assertEqual(build.archive_name, 'chrome-perf-linux.zip')
@@ -353,9 +358,10 @@ class OfficialBuildTest(unittest.TestCase):
                ])
   def test_get_rev_list(self, mock_GsutilList):
     options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '1313161', '-b', '1313163'])
-    build = bisect_builds.OfficialBuild(options)
-    self.assertEqual(build._get_rev_list(None), list(range(1313161, 1313164)))
+        ['-o', '-a', 'linux64', '-g', '1313161', '-b', '1313163'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.OfficialBuild)
+    self.assertEqual(build.get_rev_list(), list(range(1313161, 1313164)))
     mock_GsutilList.assert_called_once_with(
         'gs://chrome-test-builds/official-by-commit/linux-builder-perf/')
 
@@ -366,7 +372,8 @@ class SnapshotBuildTest(unittest.TestCase):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '0', '-b', '10'])
     self.assertEqual(options.archive, 'linux64')
-    build = bisect_builds.SnapshotBuild(options)
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
     self.assertEqual(build.binary_name, 'chrome')
     self.assertEqual(build.listing_platform_dir, 'Linux_x64/')
     self.assertEqual(build.archive_name, 'chrome-linux.zip')
@@ -394,11 +401,12 @@ class SnapshotBuildTest(unittest.TestCase):
 
   @maybe_patch('urllib.request.urlopen',
                return_value=io.StringIO(CommonDataXMLContent))
-  @patch.object(bisect_builds, 'GetChromiumRevision', return_value=1313185)
+  @patch('bisect-builds.GetChromiumRevision', return_value=1313185)
   def test_get_rev_list(self, mock_GetChromiumRevision, mock_urlopen):
     options, args = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1313161', '-b', '1313185'])
-    build = bisect_builds.SnapshotBuild(options)
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
     rev_list = build.get_rev_list()
     mock_urlopen.assert_any_call(
         'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
@@ -406,61 +414,77 @@ class SnapshotBuildTest(unittest.TestCase):
     self.assertEqual(mock_urlopen.call_count, 1)
     self.assertEqual(rev_list, [1313161, 1313163, 1313185])
 
+  @patch('bisect-builds.SnapshotBuild._fetch_and_parse',
+         return_value=([int(s)
+                        for s in sorted([str(x) for x in range(1, 11)])], None))
+  def test_get_rev_list_should_start_from_a_marker(self, mock_fetch_and_parse):
+    options, args = bisect_builds.ParseCommandLine(
+        ['-a', 'linux64', '-g', '0', '-b', '9'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    rev_list = build._get_rev_list(0, 9)
+    self.assertEqual(rev_list, list(range(1, 10)))
+    mock_fetch_and_parse.assert_called_once_with(
+        'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
+        '?delimiter=/&prefix=Linux_x64/&marker=Linux_x64/0')
+    mock_fetch_and_parse.reset_mock()
+    rev_list = build._get_rev_list(1, 9)
+    self.assertEqual(rev_list, list(range(1, 10)))
+    mock_fetch_and_parse.assert_called_once_with(
+        'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
+        '?delimiter=/&prefix=Linux_x64/&marker=Linux_x64/1')
+
+  @patch('bisect-builds.SnapshotBuild._fetch_and_parse',
+         return_value=([int(s)
+                        for s in sorted([str(x) for x in range(1, 11)])], None))
+  def test_get_rev_list_should_scan_all_pages(self, mock_fetch_and_parse):
+    options, args = bisect_builds.ParseCommandLine(
+        ['-a', 'linux64', '-g', '3', '-b', '11'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.SnapshotBuild)
+    rev_list = build._get_rev_list(0, 11)
+    self.assertEqual(sorted(rev_list), list(range(1, 11)))
+    mock_fetch_and_parse.assert_called_once_with(
+        'http://commondatastorage.googleapis.com/chromium-browser-snapshots/'
+        '?delimiter=/&prefix=Linux_x64/')
 
 class ASANBuildTest(unittest.TestCase):
 
   CommonDataXMLContent = '''<?xml version='1.0' encoding='UTF-8'?>
     <ListBucketResult xmlns='http://doc.s3.amazonaws.com/2006-03-01'>
       <Name>chromium-browser-asan</Name>
-      <Prefix>linux-release</Prefix>
-      <Marker/>
+      <Prefix>mac-release/asan-mac-release</Prefix>
+      <Marker></Marker>
       <NextMarker></NextMarker>
+      <Delimiter>.zip</Delimiter>
       <IsTruncated>true</IsTruncated>
-      <Contents>
-        <Key>linux-release/asan-symbolized-linux-release-131722.zip</Key>
-        <Generation>1394037704890000</Generation>
-        <MetaGeneration>3</MetaGeneration>
-        <LastModified>2014-03-05T16:41:44.883Z</LastModified>
-        <ETag>"0a9571ae451f4b510aebd38b1810ffce"</ETag>
-        <Size>1020894259</Size>
-      </Contents>
-      <Contents>
-        <Key>linux-release/asan-symbolized-linux-release-131727.zip</Key>
-        <Generation>1394037705035000</Generation>
-        <MetaGeneration>3</MetaGeneration>
-        <LastModified>2014-03-05T16:41:44.923Z</LastModified>
-        <ETag>"ee91342f9745640479146b5bb32fb1d4"</ETag>
-        <Size>1020872693</Size>
-      </Contents>
-      <Contents>
-        <Key>linux-release/asan-symbolized-linux-release-131728.zip</Key>
-        <Generation>1394037705141000</Generation>
-        <MetaGeneration>3</MetaGeneration>
-        <LastModified>2014-03-05T16:41:45.047Z</LastModified>
-        <ETag>"cfea42b6f3d5ca7f75d8a2fdb94a0df6"</ETag>
-        <Size>1020871851</Size>
-      </Contents>
+      <CommonPrefixes>
+        <Prefix>mac-release/asan-mac-release-1313186.zip</Prefix>
+      </CommonPrefixes>
+      <CommonPrefixes>
+        <Prefix>mac-release/asan-mac-release-1313195.zip</Prefix>
+      </CommonPrefixes>
+      <CommonPrefixes>
+        <Prefix>mac-release/asan-mac-release-1313210.zip</Prefix>
+      </CommonPrefixes>
     </ListBucketResult>
   '''
 
   @maybe_patch('urllib.request.urlopen',
                return_value=io.StringIO(CommonDataXMLContent))
   def test_get_rev_list(self, mock_urlopen):
-    # TODO: Last available bisect revision for linux is 398598.
     options, args = bisect_builds.ParseCommandLine(
-        ['-a', 'linux64', '-g', '131722', '-b', '131730'])
-    # TODO: The archive name of linux platform for ASAN is actually linux,
-    # however it is not listed in option supported list. Will fix in following
-    # CLs.
-    options.archive = 'linux'
-    build = bisect_builds.ASANBuild(options)
+        ['--asan', '-a', 'mac', '-g', '1313161', '-b', '1313210'])
+    build = bisect_builds.create_archive_build(options)
+    self.assertIsInstance(build, bisect_builds.ASANBuild)
     rev_list = build.get_rev_list()
-    print(mock_urlopen.call_args_list)
+    # print(mock_urlopen.call_args_list)
     mock_urlopen.assert_any_call(
         'http://commondatastorage.googleapis.com/chromium-browser-asan/'
-        '?delimiter=&prefix=linux-release'
-        '&marker=linux-release/asan-symbolized-linux-release-131722')
-    self.assertEqual(rev_list, [131722, 131727, 131728])
+        '?delimiter=.zip&prefix=mac-release/asan-mac-release'
+        '&marker=mac-release/asan-mac-release-1313161.zip')
+    self.assertEqual(mock_urlopen.call_count, 1)
+    self.assertEqual(rev_list, [1313186, 1313195, 1313210])
 
 
 if __name__ == '__main__':

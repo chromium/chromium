@@ -14,7 +14,6 @@ it will ask you whether it is good or bad before continuing the search.
 
 import abc
 import base64
-import bisect
 import importlib
 import json
 import optparse
@@ -527,8 +526,6 @@ class ArchiveBuild(abc.ABC):
     self.archive_name = path_context.get('archive_name')
     self.archive_extract_dir = path_context.get('archive_extract_dir')
 
-    self.githash_svn_dict = {}
-
   @property
   @abc.abstractmethod
   def build_type(self):
@@ -777,35 +774,21 @@ class OfficialBuild(ArchiveBuildWithCommitPosition):
   def build_type(self):
     return 'official'
 
-  def _get_listing_url(self, marker=None):
-    # This is only used as cache_dict_key for official build, as it's not
-    # download from commondatastorage.
-    marker_param = ''
-    if marker:
-      marker_param = '&marker=' + str(marker)
-    return (PERF_BASE_URL + '/?prefix=' + self.listing_platform_dir +
-            marker_param)
+  def _get_listing_url(self):
+    return '/'.join((PERF_BASE_URL, self.listing_platform_dir))
 
   def _get_rev_list(self, min_rev=None, max_rev=None):
     # For official builds, it's getting the list from perf build bucket.
-    minrev = min(self.good_revision, self.bad_revision)
-    maxrev = max(self.good_revision, self.bad_revision)
-    perf_bucket = '%s/%s' % (PERF_BASE_URL, self.listing_platform_dir)
+    # Since it's cheap to get full list, we are returning the full list for
+    # caching.
     revision_re = re.compile(r'%s_(\d+)\.zip' % (self.archive_extract_dir))
-    revision_files = GsutilList(perf_bucket)
+    revision_files = GsutilList(self._get_listing_url())
     revision_numbers = []
     for revision_file in revision_files:
       revision_num = revision_re.search(revision_file)
       if revision_num:
         revision_numbers.append(int(revision_num[1]))
-    final_list = []
-    for revision_number in sorted(revision_numbers):
-      if revision_number > maxrev:
-        break
-      if revision_number < minrev:
-        continue
-      final_list.append(revision_number)
-    return final_list
+    return revision_numbers
 
   @property
   def _rev_list_cache_key(self):
@@ -822,17 +805,16 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
   def build_type(self):
     return 'snapshot'
 
-  def _GetMarkerForRev(self, revision):
+  def _get_marker_for_revision(self, revision):
     return '%s%d' % (self.listing_platform_dir, revision)
 
-  def _FetchAndParse(self, url):
+  def _fetch_and_parse(self, url):
     """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
     next-marker is not None, then the listing is a partial listing and another
     fetch should be performed with next-marker being the marker= GET
     parameter."""
     handle = urllib.request.urlopen(url)
     document = ElementTree.parse(handle)
-
     # All nodes in the tree are namespaced. Get the root's tag name to extract
     # the namespace. Etree does namespaces as |{namespace}tag|.
     root_tag = document.getroot().tag
@@ -840,7 +822,6 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
     if end_ns_pos == -1:
       raise Exception('Could not locate end namespace for directory index')
     namespace = root_tag[:end_ns_pos + 1]
-
     # Find the prefix (_listing_platform_dir) and whether or not the list is
     # truncated.
     prefix_len = len(document.find(namespace + 'Prefix').text)
@@ -850,66 +831,63 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
       next_marker = document.find(namespace + 'NextMarker').text
     # Get a list of all the revisions.
     revisions = []
-    githash_svn_dict = {}
+    revision_re = re.compile(r'(\d+)')
     all_prefixes = document.findall(namespace + 'CommonPrefixes/' + namespace +
                                     'Prefix')
     # The <Prefix> nodes have content of the form of
     # |_listing_platform_dir/revision/|. Strip off the platform dir and the
     # trailing slash to just have a number.go
     for prefix in all_prefixes:
-      revnum = prefix.text[prefix_len:-1]
-      try:
-        revnum = int(revnum)
-        revisions.append(revnum)
-      # Notes:
-      # Ignore hash in chromium-browser-snapshots as they are invalid
-      # Resulting in 404 error in fetching pages:
-      # https://chromium.googlesource.com/chromium/src/+/[rev_hash]
-      except ValueError:
-        pass
-    return (revisions, next_marker, githash_svn_dict)
+      match = revision_re.search(prefix.text[prefix_len:])
+      if match:
+        revisions.append(int(match[1]))
+    return revisions, next_marker
 
   def get_last_change_url(self):
     """Returns a URL to the LAST_CHANGE file."""
     return self.base_url + '/' + self.listing_platform_dir + 'LAST_CHANGE'
 
   def _get_rev_list(self, min_rev=None, max_rev=None):
-    """The actual method to get revision list without cache.
-
-    This works by parsing the Google Storage directory listing into a list of
-    revision numbers.
-    """
-
-    # Fetch the first list of revisions.
-    if min_rev:
-      revisions = []
-      # Optimization: Start paging at the last known revision (local cache).
-      next_marker = self._GetMarkerForRev(min_rev)
-      # Optimization: Stop paging at the last known revision (remote).
-      last_change_rev = GetChromiumRevision(self.get_last_change_url())
-      if min_rev == last_change_rev:
-        return []
+    # This method works by parsing the Google Storage directory listing into a
+    # list of revision numbers. This method can return a full revision list for
+    # a full scan.
+    if not max_rev:
+      max_rev = GetChromiumRevision(self.get_last_change_url())
+    # The commondatastorage API listing the files by alphabetical order instead
+    # of numerical order (e.g. 1, 10, 2, 3, 4). That starting or breaking the
+    # pagination from a known position is only valid when the number of digits
+    # of min_rev == max_rev.
+    start_marker = None
+    next_marker = None
+    if min_rev is not None and max_rev is not None and len(str(min_rev)) == len(
+        str(max_rev)):
+      start_marker = next_marker = self._get_marker_for_revision(min_rev)
     else:
-      (revisions, next_marker,
-       new_dict) = self._FetchAndParse(self._get_listing_url())
-      self.githash_svn_dict.update(new_dict)
-      last_change_rev = None
+      max_rev = None
 
-    # If the result list was truncated, refetch with the next marker. Do this
-    # until an entire directory listing is done.
-    while next_marker:
+    revisions = []
+    while True:
       sys.stdout.write('\rFetching revisions at marker %s' % next_marker)
       sys.stdout.flush()
-
-      next_url = self._get_listing_url(next_marker)
-      (new_revisions, next_marker, new_dict) = self._FetchAndParse(next_url)
+      new_revisions, next_marker = self._fetch_and_parse(
+          self._get_listing_url(next_marker))
       revisions.extend(new_revisions)
-      self.githash_svn_dict.update(new_dict)
-      if last_change_rev and last_change_rev in new_revisions:
+      if max_rev and new_revisions and max_rev <= max(new_revisions):
+        break
+      if not next_marker:
         break
     sys.stdout.write('\r')
     sys.stdout.flush()
-    return revisions
+    # We can only ensure the revisions have no gap (due to the alphabetical
+    # order) between min_rev and max_rev.
+    if start_marker or next_marker:
+      return [
+          x for x in revisions if ((min_rev is None or min_rev <= x) and (
+              max_rev is None or x <= max_rev))
+      ]
+    # Unless we did a full scan. `not start_marker and not next_marker`
+    else:
+      return revisions
 
   def _get_listing_url(self, marker=None):
     """Returns the URL for a directory listing, with an optional marker."""
@@ -926,15 +904,12 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
 
 class ASANBuild(SnapshotBuild):
   """ASANBuilds works like SnapshotBuild which fetch from commondatastorage, but
-  with a different directory format as implemented in _FetchAndParse."""
+  with a different listing url."""
 
   def __init__(self, options):
     super().__init__(options)
     self.base_url = ASAN_BASE_URL
     self.asan_build_type = 'release'
-    # convert good and bad to commit position as int.
-    self.good_revision = GetRevision(self.good_revision)
-    self.bad_revision = GetRevision(self.bad_revision)
 
   @property
   def build_type(self):
@@ -951,6 +926,8 @@ class ASANBuild(SnapshotBuild):
 
   def GetASANBaseName(self):
     """Returns the base name of the ASAN zip file."""
+    # TODO: These files were not update since 2016 for linux, 2021 for win.
+    # Need to confirm if it's moved.
     if 'linux' in self.platform:
       return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
                                         self.asan_build_type)
@@ -966,49 +943,16 @@ class ASANBuild(SnapshotBuild):
     marker_param = ''
     if marker:
       marker_param = '&marker=' + str(marker)
-    prefix = '%s-%s' % (self.GetASANPlatformDir(), self.asan_build_type)
-    return self.base_url + '/?delimiter=&prefix=' + prefix + marker_param
+    prefix = '%s-%s/%s' % (self.GetASANPlatformDir(), self.asan_build_type,
+                           self.GetASANBaseName())
+    # This is a hack for delimiter to make commondata API return file path as
+    # prefix that can reuse the code of SnapshotBuild._fetch_and_parse.
+    return self.base_url + '/?delimiter=.zip&prefix=' + prefix + marker_param
 
-  def _GetMarkerForRev(self, revision):
+  def _get_marker_for_revision(self, revision):
     # The build type is hardcoded as release in the original code.
-    return '%s-%s/%s-%d' % (self.GetASANPlatformDir(), self.asan_build_type,
-                            self.GetASANBaseName(), revision)
-
-  def _FetchAndParse(self, url):
-    """Fetches a URL and returns a 2-Tuple of ([revisions], next-marker). If
-    next-marker is not None, then the listing is a partial listing and another
-    fetch should be performed with next-marker being the marker= GET
-    parameter."""
-    handle = urllib.request.urlopen(url)
-    document = ElementTree.parse(handle)
-
-    # All nodes in the tree are namespaced. Get the root's tag name to extract
-    # the namespace. Etree does namespaces as |{namespace}tag|.
-    root_tag = document.getroot().tag
-    end_ns_pos = root_tag.find('}')
-    if end_ns_pos == -1:
-      raise Exception('Could not locate end namespace for directory index')
-    namespace = root_tag[:end_ns_pos + 1]
-
-    next_marker = None
-    is_truncated = document.find(namespace + 'IsTruncated')
-    if is_truncated is not None and is_truncated.text.lower() == 'true':
-      next_marker = document.find(namespace + 'NextMarker').text
-    # Get a list of all the revisions.
-    revisions = []
-    githash_svn_dict = {}
-    asan_regex = re.compile(r'.*%s-(\d+)\.zip$' % (self.GetASANBaseName()))
-    # Non ASAN builds are in a <revision> directory. The ASAN builds are
-    # flat
-    all_prefixes = document.findall(namespace + 'Contents/' + namespace + 'Key')
-    for prefix in all_prefixes:
-      m = asan_regex.match(prefix.text)
-      if m:
-        try:
-          revisions.append(int(m.group(1)))
-        except ValueError:
-          pass
-    return (revisions, next_marker, githash_svn_dict)
+    return '%s-%s/%s-%d.zip' % (self.GetASANPlatformDir(), self.asan_build_type,
+                                self.GetASANBaseName(), revision)
 
 
 def create_archive_build(options, device=None):
