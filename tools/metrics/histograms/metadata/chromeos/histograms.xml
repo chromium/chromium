@@ -3006,6 +3006,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     reporting is enabled it will be recorded once per daemon lifetime.
   </summary>
   <token key="Bpf">
+    <variant name="File" summary="File BPF"/>
     <variant name="Network" summary="Network BPF"/>
     <variant name="Process" summary="Process BPF"/>
   </token>
@@ -3094,6 +3095,28 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     Records the status response of all events sent by the CrOS secagentd daemon.
     Emits either a success or the failure reason. It is recorded once per XDR
     event.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.SHA256ComputeTime" units="100ms"
+    expires_after="2025-03-31">
+  <owner>jasonling@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records the amount of time it takes to compute a SHA256 hash. SHA256 hashes
+    are computed for each file, process, and network event, unless the value is
+    available in the cache.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Secagentd.SHA256InputSize" units="KiB"
+    expires_after="2025-03-31">
+  <owner>jasonling@google.com</owner>
+  <owner>cros-enterprise-security@google.com</owner>
+  <summary>
+    Records the number of kibibytes a SHA256 hash is computed on. SHA256 hashes
+    are computed for each file, process, and network event, unless the value is
+    available in the cache.
   </summary>
 </histogram>
 
