@@ -12,8 +12,6 @@ namespace {
 const char kChromeUINewTabURL[] = "chrome://newtab/";
 }  // namespace
 
-const char kChromeUINewTabURL[] = "chrome://newtab/";
-
 bool AreLocalIdsPersisted() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return true;

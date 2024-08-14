@@ -13,9 +13,6 @@
 
 namespace tab_groups {
 
-// New Tab URL that works for all platforms.
-extern const char kChromeUINewTabURL[];
-
 // Whether the local IDs are persisted, which is true for Android / iOS, but
 // false in desktop.
 bool AreLocalIdsPersisted();
