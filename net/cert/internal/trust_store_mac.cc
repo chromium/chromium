@@ -11,7 +11,9 @@
 
 #include <Security/Security.h>
 
+#include <map>
 #include <string_view>
+#include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -19,6 +21,7 @@
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -62,6 +65,33 @@ enum class TrustStatus {
   // Certificate is blocked / explicitly distrusted.
   DISTRUSTED
 };
+
+bssl::CertificateTrust TrustStatusToCertificateTrust(TrustStatus trust_status) {
+  switch (trust_status) {
+    case TrustStatus::TRUSTED: {
+      // Mac trust settings don't distinguish between trusted anchors and
+      // trusted leafs, return a trust record valid for both, which will
+      // depend on the context the certificate is encountered in.
+      bssl::CertificateTrust trust =
+          bssl::CertificateTrust::ForTrustAnchorOrLeaf()
+              .WithEnforceAnchorExpiry()
+              .WithEnforceAnchorConstraints()
+              .WithRequireAnchorBasicConstraints();
+      return trust;
+    }
+    case TrustStatus::DISTRUSTED:
+      return bssl::CertificateTrust::ForDistrusted();
+    case TrustStatus::UNSPECIFIED:
+      return bssl::CertificateTrust::ForUnspecified();
+    case TrustStatus::UNKNOWN:
+      // UNKNOWN is an implementation detail of TrustImpl and should never be
+      // returned.
+      NOTREACHED_IN_MIGRATION();
+      break;
+  }
+
+  return bssl::CertificateTrust::ForUnspecified();
+}
 
 // Returns trust status of usage constraints dictionary |trust_dict| for a
 // certificate that |is_self_issued|.
@@ -396,7 +426,9 @@ class TrustDomainCacheFullCerts {
 
   // Returns a bssl::CertIssuerSource containing all the certificates that are
   // present in |domain_|.
-  bssl::CertIssuerSource& cert_issuer_source() { return cert_issuer_source_; }
+  bssl::CertIssuerSourceStatic& cert_issuer_source() {
+    return cert_issuer_source_;
+  }
 
  private:
   void HistogramTrustDomainCertCount(size_t count) const {
@@ -565,6 +597,8 @@ class TrustStoreMac::TrustImpl {
   virtual void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                                 bssl::ParsedCertificateList* issuers) {}
   virtual void InitializeTrustCache() = 0;
+  virtual std::vector<PlatformTrustStore::CertWithTrust>
+  GetAllUserAddedCerts() = 0;
 };
 
 // TrustImplDomainCacheFullCerts uses SecTrustSettingsCopyCertificates to get
@@ -599,6 +633,12 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
 
+    return IsCertTrustedImpl(cert, cert_hash);
+  }
+
+  TrustStatus IsCertTrustedImpl(const bssl::ParsedCertificate* cert,
+                                const SHA256HashValue& cert_hash)
+      EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     // Evaluate user trust domain, then admin. User settings can override
     // admin (and both override the system domain, but we don't check that).
     for (TrustDomainCacheFullCerts* trust_domain_cache :
@@ -627,6 +667,43 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     MaybeInitializeCache();
   }
 
+  std::vector<PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override {
+    base::AutoLock lock(cache_lock_);
+    MaybeInitializeCache();
+
+    std::vector<net::PlatformTrustStore::CertWithTrust> results;
+
+    // The same cert might be present in both user_domain_cache_ and
+    // admin_domain_cache_ so we need to dedupe and only include each cert in
+    // the results once.
+    std::map<base::span<const uint8_t>,
+             std::shared_ptr<const bssl::ParsedCertificate>>
+        all_trusted_certs;
+    for (auto& cert : user_domain_cache_.cert_issuer_source().Certs()) {
+      all_trusted_certs[cert->der_cert()] = std::move(cert);
+    }
+    for (auto& cert : admin_domain_cache_.cert_issuer_source().Certs()) {
+      all_trusted_certs[cert->der_cert()] = std::move(cert);
+    }
+    for (const auto& [key, cert] : all_trusted_certs) {
+      SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
+      results.emplace_back(base::ToVector(cert->der_cert()),
+                           TrustStatusToCertificateTrust(
+                               IsCertTrustedImpl(cert.get(), cert_hash)));
+    }
+
+    // InitializeIntermediatesCache already ensures that certs in the domain
+    // caches are not duplicated in the intemediate cert source, so we don't
+    // need to check for duplicates here.
+    for (const auto& cert : intermediates_cert_issuer_source_.Certs()) {
+      results.emplace_back(base::ToVector(cert->der_cert()),
+                           bssl::CertificateTrust::ForUnspecified());
+    }
+
+    return results;
+  }
+
  private:
   // (Re-)Initialize the cache if necessary. Must be called after acquiring
   // |cache_lock_| and before accessing any of the |*_domain_cache_| members.
@@ -653,7 +730,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     // intermediates cache is exclusive of any certs in trust domain caches.
     if (trust_changed || certs_changed) {
       certs_iteration_ = keychain_certs_iteration;
-      IntializeIntermediatesCache();
+      InitializeIntermediatesCache();
     }
     if (trust_changed) {
       // Histogram of total init time for the case where both the trust cache
@@ -664,7 +741,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     }
   }
 
-  void IntializeIntermediatesCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
+  void InitializeIntermediatesCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     cache_lock_.AssertAcquired();
 
     base::ElapsedTimer timer;
@@ -810,6 +887,11 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
 
+    return IsCertTrustedImpl(cert_hash);
+  }
+
+  TrustStatus IsCertTrustedImpl(const SHA256HashValue& cert_hash)
+      EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     auto cache_iter = trust_status_cache_.find(cert_hash);
     if (cache_iter == trust_status_cache_.end())
       return TrustStatus::UNSPECIFIED;
@@ -827,6 +909,21 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
   void InitializeTrustCache() override {
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
+  }
+
+  std::vector<PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override {
+    base::AutoLock lock(cache_lock_);
+    MaybeInitializeCache();
+
+    std::vector<net::PlatformTrustStore::CertWithTrust> results;
+    for (const auto& cert : cert_issuer_source_.Certs()) {
+      SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
+      results.emplace_back(
+          base::ToVector(cert->der_cert()),
+          TrustStatusToCertificateTrust(IsCertTrustedImpl(cert_hash)));
+    }
+    return results;
   }
 
  private:
@@ -989,37 +1086,12 @@ void TrustStoreMac::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 
 bssl::CertificateTrust TrustStoreMac::GetTrust(
     const bssl::ParsedCertificate* cert) {
-  TrustStatus trust_status = trust_cache_->IsCertTrusted(cert);
-  switch (trust_status) {
-    case TrustStatus::TRUSTED: {
-      // Mac trust settings don't distinguish between trusted anchors and
-      // trusted leafs, return a trust record valid for both, which will
-      // depend on the context the certificate is encountered in.
-      bssl::CertificateTrust trust =
-          bssl::CertificateTrust::ForTrustAnchorOrLeaf()
-              .WithEnforceAnchorExpiry()
-              .WithEnforceAnchorConstraints()
-              .WithRequireAnchorBasicConstraints();
-      return trust;
-    }
-    case TrustStatus::DISTRUSTED:
-      return bssl::CertificateTrust::ForDistrusted();
-    case TrustStatus::UNSPECIFIED:
-      return bssl::CertificateTrust::ForUnspecified();
-    case TrustStatus::UNKNOWN:
-      // UNKNOWN is an implementation detail of TrustImpl and should never be
-      // returned.
-      NOTREACHED_IN_MIGRATION();
-      break;
-  }
-
-  return bssl::CertificateTrust::ForUnspecified();
+  return TrustStatusToCertificateTrust(trust_cache_->IsCertTrusted(cert));
 }
 
-std::vector<net::PlatformTrustStore::CertWithTrust>
+std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreMac::GetAllUserAddedCerts() {
-  // TODO(crbug.com/40928765): implement this.
-  return {};
+  return trust_cache_->GetAllUserAddedCerts();
 }
 
 }  // namespace net
