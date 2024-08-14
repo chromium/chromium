@@ -352,22 +352,10 @@ void ContextImplDml::ReadBuffer(
   HRESULT hr = S_OK;
 
   // Map entire buffer to readback the output data.
-  if (adapter_->IsUMA()) {
-    // Buffer was apart of a previous command list and is now ready to be
-    // mapped.
-    if (adapter_->command_queue()->GetCompletedValue() >=
-        src_buffer->last_submission_fence_value()) {
-      ContextImplDml::OnReadbackComplete(src_buffer->buffer(), src_buffer_size,
-                                         std::move(callback), hr);
-    } else {
-      // Buffer to read back was used in a pending submission but could be
-      // mapped once that submission completes. This avoids creating a staging
-      // buffer when readBuffer() is called immediately after dispatch().
-      ComPtr<ID3D12Resource> buffer_to_map = src_buffer->buffer();
-      adapter_->command_queue()->WaitAsync(base::BindOnce(
-          &ContextImplDml::OnReadbackComplete, weak_factory_.GetWeakPtr(),
-          std::move(buffer_to_map), src_buffer_size, std::move(callback)));
-    }
+  if (adapter_->IsUMA() && adapter_->command_queue()->GetCompletedValue() >=
+                               src_buffer->last_submission_fence_value()) {
+    ContextImplDml::OnReadbackComplete(src_buffer->buffer(), src_buffer_size,
+                                       std::move(callback), hr);
     return;
   }
 
