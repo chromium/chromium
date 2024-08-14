@@ -16,6 +16,7 @@ multi_builder_test(async (t, builder, otherBuilder) => {
           builder.pad(inputFromOtherBuilder, beginningPadding, endingPadding));
 }, '[pad] throw if input is from another builder');
 
+const label = 'pad_xxx';
 const tests = [
   {
     name:
@@ -34,6 +35,7 @@ const tests = [
     input: {dataType: 'float32', dimensions: []},
     beginningPadding: [],
     endingPadding: [],
+    options: {label}
   },
   {
     name:
@@ -44,6 +46,7 @@ const tests = [
     options: {
       mode: 'edge',
       value: 0,
+      label: label,
     },
   },
   {
@@ -54,6 +57,7 @@ const tests = [
     endingPadding: [1, 2, 0],
     options: {
       mode: 'reflection',
+      label: label,
     },
   },
   {
@@ -63,6 +67,7 @@ const tests = [
     endingPadding: [3294967295, 2],
     options: {
       mode: 'reflection',
+      label: label,
     },
   },
 ];
@@ -79,10 +84,10 @@ tests.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(
-            TypeError,
+        const regrexp = new RegExp('\\[' + label + '\\]');
+        assert_throws_with_label(
             () => builder.pad(
-                input, test.beginningPadding, test.endingPadding,
-                test.options));
+                input, test.beginningPadding, test.endingPadding, test.options),
+            regrexp);
       }
     }, test.name));

@@ -6,4 +6,6 @@
 
 validateInputFromAnotherBuilder('tanh');
 
-validateUnaryOperation('tanh', floatingPointTypes);
+const label = 'tanh-xxx';
+const regrexp = new RegExp('\\[' + label + '\\]');
+validateUnaryOperation('tanh', floatingPointTypes, label, regrexp);

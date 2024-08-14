@@ -351,11 +351,14 @@ tests.forEach(
             assert_equals(output.dataType(), test.output.dataType);
             assert_array_equals(output.shape(), test.output.dimensions);
           } else {
-            assert_throws_js(
-                TypeError,
+            const label = 'gru_cell_xxx';
+            options.label = label;
+            const regrexp = new RegExp('\\[' + label + '\\]');
+            assert_throws_with_label(
                 () => builder.gruCell(
-                    input, weight, recurrentWeight, hiddenState, test.hiddenSize,
-                    options));
+                    input, weight, recurrentWeight, hiddenState,
+                    test.hiddenSize, options),
+                regrexp);
           }
         }, test.name));
 

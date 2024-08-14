@@ -111,8 +111,12 @@ tests.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(
-            TypeError, () => builder.where(condition, trueValue, falseValue));
+        const label = 'where_123';
+        const options = {label};
+        const regrexp = new RegExp('\\[' + label + '\\]');
+        assert_throws_with_label(
+            () => builder.where(condition, trueValue, falseValue, options),
+            regrexp);
       }
     }, test.name));
 

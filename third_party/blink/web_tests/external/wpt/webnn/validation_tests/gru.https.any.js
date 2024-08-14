@@ -337,11 +337,14 @@ tests.forEach(
           assert_array_equals(outputs[i].shape(), test.outputs[i].dimensions);
         }
       } else {
-        assert_throws_js(
-            TypeError,
+        const label = 'gru_xxx';
+        options.label = label;
+        const regrexp = new RegExp('\\[' + label + '\\]');
+        assert_throws_with_label(
             () => builder.gru(
                 input, weight, recurrentWeight, test.steps, test.hiddenSize,
-                options));
+                options),
+            regrexp);
       }
     }, test.name));
 

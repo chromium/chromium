@@ -8,6 +8,9 @@ validateInputFromAnotherBuilder('elu');
 
 validateSingleInputOperation('elu');
 
+const label = 'elu_xxx';
+const regrexp = new RegExp('\\[' + label + '\\]');
+
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
   const options = {alpha: 1.0};
@@ -20,17 +23,23 @@ promise_test(async t => {
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const options = {alpha: -1.0};
+  const options = {
+    alpha: -1.0,
+    label: label,
+  };
   const input =
       builder.input('input', {dataType: 'float32', dimensions: [1, 2, 3]});
-  assert_throws_js(TypeError, () => builder.elu(input, options));
+  assert_throws_with_label(() => builder.elu(input, options), regrexp);
 }, '[elu] Throw if options.alpha < 0');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);
-  const options = {alpha: 0};
+  const options = {
+    alpha: 0,
+    label: label,
+  };
   const input = builder.input('input', {dataType: 'float32', dimensions: [1]});
-  assert_throws_js(TypeError, () => builder.elu(input, options));
+  assert_throws_with_label(() => builder.elu(input, options), regrexp);
 }, '[elu] Throw if options.alpha == 0');
 
 promise_test(async t => {

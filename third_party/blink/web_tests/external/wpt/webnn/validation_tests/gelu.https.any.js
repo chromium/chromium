@@ -6,4 +6,6 @@
 
 validateInputFromAnotherBuilder('gelu');
 
-validateSingleInputOperation('gelu');
+const label = 'gelu_123';
+const regrexp = new RegExp('\\[' + label + '\\]');
+validateSingleInputOperation('gelu', label, regrexp);

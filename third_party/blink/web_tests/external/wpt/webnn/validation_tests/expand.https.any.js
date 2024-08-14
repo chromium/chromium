@@ -13,6 +13,8 @@ multi_builder_test(async (t, builder, otherBuilder) => {
       TypeError, () => builder.expand(inputFromOtherBuilder, newShape));
 }, '[expand] throw if input is from another builder');
 
+const label = 'xxx_expand';
+
 const tests = [
   {
     name: '[expand] Test with 0-D scalar to 3-D tensor.',
@@ -44,11 +46,13 @@ const tests = [
         '[expand] Throw if the input shapes are the same rank but not broadcastable.',
     input: {dataType: 'uint32', dimensions: [3, 6, 2]},
     newShape: [4, 3, 5],
+    options: {label}
   },
   {
     name: '[expand] Throw if the input shapes are not broadcastable.',
     input: {dataType: 'uint32', dimensions: [5, 4]},
     newShape: [5],
+    options: {label}
   },
   {
     name: '[expand] Throw if the number of new shapes is too large.',
@@ -63,16 +67,20 @@ tests.forEach(
       const input = builder.input(
           'input',
           {dataType: test.input.dataType, dimensions: test.input.dimensions});
-      const options = {};
-      if (test.axis) {
-        options.axis = test.axis;
-      }
 
       if (test.output) {
         const output = builder.expand(input, test.newShape);
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(TypeError, () => builder.expand(input, test.newShape));
+        const options = {...test.options};
+        if (options.label) {
+          const regrexp = new RegExp('\\[' + label + '\\]');
+          assert_throws_with_label(
+              () => builder.expand(input, test.newShape, options), regrexp);
+        } else {
+          assert_throws_js(
+              TypeError, () => builder.expand(input, test.newShape, options));
+        }
       }
     }, test.name));

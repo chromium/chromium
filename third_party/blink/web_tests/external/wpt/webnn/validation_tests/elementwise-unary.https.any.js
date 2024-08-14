@@ -13,6 +13,8 @@ kElementwiseUnaryOperators.forEach((operatorName) => {
   validateInputFromAnotherBuilder(operatorName);
 });
 
+const label = 'elementwise_unary_op';
+const regrexp = new RegExp('\\[' + label + '\\]');
 kElementwiseUnaryOperators.forEach((operatorName) => {
-  validateSingleInputOperation(operatorName);
+  validateSingleInputOperation(operatorName, label, regrexp);
 });

@@ -36,7 +36,17 @@ tests_without_axis.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(TypeError, () => builder.softmax(input));
+        const options = {
+          label: 'softmax_xxx',
+        };
+        try {
+          builder.softmax(input, options);
+        } catch (e) {
+          assert_equals(e.name, 'TypeError');
+          const error_message = e.message;
+          const regrexp = /\[softmax_xxx\]/;
+          assert_not_equals(error_message.match(regrexp), null);
+        }
       }
     }, test.name));
 
@@ -85,7 +95,11 @@ tests.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(TypeError, () => builder.softmax(input, test.axis));
+        const label = 'softmax_xxx';
+        const options = {label};
+        const regrexp = new RegExp('\\[' + label + '\\]');
+        assert_throws_with_label(
+            () => builder.softmax(input, test.axis, options), regrexp);
       }
     }, test.name));
 

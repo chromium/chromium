@@ -280,13 +280,10 @@ tests.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        try {
-          builder.batchNormalization(input, mean, variance, test.options);
-        } catch (e) {
-          assert_equals(e.name, 'TypeError');
-          const error_message = e.message;
-          const regrexp = /\[batchNormalization_\?_123\]/;
-          assert_not_equals(error_message.match(regrexp), null);
-        }
+        const regrexp = /\[batchNormalization_\?_123\]/;
+        assert_throws_with_label(
+            () =>
+                builder.batchNormalization(input, mean, variance, test.options),
+            regrexp);
       }
     }, test.name));

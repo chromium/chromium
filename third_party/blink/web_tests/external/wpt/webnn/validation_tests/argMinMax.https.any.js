@@ -86,14 +86,9 @@ function runTests(operatorName, tests) {
         assert_equals(output.dataType(), 'int32');
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        try {
-          builder[operatorName](input, axis, test.options);
-        } catch (e) {
-          assert_equals(e.name, 'TypeError');
-          const error_message = e.message;
-          const regrexp = /\[arg_min_max_1_\!\]/;
-          assert_not_equals(error_message.match(regrexp), null);
-        }
+        const regrexp = /\[arg_min_max_1_\!\]/;
+        assert_throws_with_label(
+            () => builder[operatorName](input, axis, test.options), regrexp);
       }
     }, test.name.replace('[argMin/Max]', `[${operatorName}]`));
   });

@@ -36,6 +36,8 @@ const kNoTypeRestrictReductionOperators = [
   'reduceMin',
 ];
 
+const label = 'reduce_op_xxx';
+
 const allReductionOperatorsTests = [
   {
     name: '[reduce] Test reduce with default options.',
@@ -66,6 +68,7 @@ const allReductionOperatorsTests = [
     input: {dataType: 'float32', dimensions: [1, 2, 5, 5]},
     options: {
       axes: [4],
+      label: label,
     },
   },
   {
@@ -73,6 +76,7 @@ const allReductionOperatorsTests = [
     input: {dataType: 'float32', dimensions: [1, 2, 5, 5]},
     options: {
       axes: [0, 1, 1],
+      label: label,
     },
   },
 ];
@@ -83,6 +87,7 @@ const kFloatRestrictOperatorsTests = [
     input: {dataType: 'int32', dimensions: [1, 2, 5, 5]},
     options: {
       axes: [0, 1],
+      label: label,
     },
   },
 ];
@@ -114,6 +119,7 @@ const kFloatInt32Uint32Int64Uint64RestrictOperatorsTests = [
     input: {dataType: 'int8', dimensions: [1, 2, 5, 5]},
     options: {
       axes: [0, 1],
+      label: label,
     },
   },
 ];
@@ -154,8 +160,9 @@ function runReductionTests(operatorName, tests) {
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(
-            TypeError, () => builder[operatorName](input, test.options));
+        const regrexp = new RegExp('\\[' + label + '\\]');
+        assert_throws_with_label(
+            () => builder[operatorName](input, test.options), regrexp);
       }
     }, test.name.replace('[reduce]', `[${operatorName}]`));
   });

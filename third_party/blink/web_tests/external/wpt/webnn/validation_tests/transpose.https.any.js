@@ -6,6 +6,7 @@
 
 validateInputFromAnotherBuilder('transpose');
 
+const label = 'transpose-2';
 const tests = [
   {
     name: '[transpose] Test building transpose with default options.',
@@ -22,23 +23,34 @@ const tests = [
     name:
         '[transpose] Throw if permutation\'s size is not the same as input\'s rank.',
     input: {dataType: 'int32', dimensions: [1, 2, 4]},
-    options: {permutation: [0, 2, 3, 1]},
+    options: {
+      permutation: [0, 2, 3, 1],
+      label: label,
+    },
   },
   {
     name: '[transpose] Throw if two values in permutation are same.',
     input: {dataType: 'int32', dimensions: [1, 2, 3, 4]},
-    options: {permutation: [0, 2, 3, 2]},
+    options: {
+      permutation: [0, 2, 3, 2],
+      label: label,
+    },
   },
   {
     name:
         '[transpose] Throw if any value in permutation is not in the range [0,input\'s rank).',
     input: {dataType: 'int32', dimensions: [1, 2, 3, 4]},
-    options: {permutation: [0, 1, 2, 4]},
+    options: {
+      permutation: [0, 1, 2, 4],
+      label: label,
+    },
   },
   {
     name: '[transpose] Throw if any value in permutation is negative.',
     input: {dataType: 'int32', dimensions: [1, 2, 3, 4]},
-    options: {permutation: [0, -1, 2, 3]},
+    options: {
+      permutation: [0, -1, 2, 3],
+    },
   }
 ];
 
@@ -53,7 +65,13 @@ tests.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(
-            TypeError, () => builder.transpose(input, test.options));
+        const options = {...test.options};
+        if (options.label) {
+          const regrexp = new RegExp('\\[' + label + '\\]');
+          assert_throws_with_label(
+              () => builder.transpose(input, options), regrexp);
+        } else {
+          assert_throws_js(TypeError, () => builder.transpose(input, options));
+        }
       }
     }, test.name));

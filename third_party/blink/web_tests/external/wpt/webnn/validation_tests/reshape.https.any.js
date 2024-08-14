@@ -74,7 +74,10 @@ tests.forEach(
         assert_equals(output.dataType(), test.output.dataType);
         assert_array_equals(output.shape(), test.output.dimensions);
       } else {
-        assert_throws_js(
-            TypeError, () => builder.reshape(input, test.newShape));
+        const label = 'reshape_xxx';
+        const options = {label};
+        const regrexp = new RegExp('\\[' + label + '\\]');
+        assert_throws_with_label(
+            () => builder.reshape(input, test.newShape, options), regrexp);
       }
     }, test.name));
