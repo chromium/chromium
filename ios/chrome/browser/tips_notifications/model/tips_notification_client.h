@@ -51,13 +51,13 @@ class TipsNotificationClient : public PushNotificationClient {
   // if there isn't one.
   void GetPendingRequest(GetPendingRequestCallback callback);
 
-  // Clears any existing request(s) and requests a new notification if the
-  // conditions are right.
-  void ClearAndMaybeRequestNotification(base::OnceClosure callback);
+  // Called when a pending request is found. Or called with `nil` when none is
+  // found.
+  void OnPendingRequestFound(UNNotificationRequest* request);
 
-  // Clears any previously requested notification(s), and calls `completion`.
-  void ClearNotification(base::OnceClosure callback);
-  void OnNotificationCleared(UNNotificationRequest* request);
+  // Checks for any pending requests and schedules the next notification if
+  // none are pending and there are any left in inventory.
+  void CheckAndMaybeRequestNotification(base::OnceClosure callback);
 
   // Request a new tips notification, if the conditions are right (i.e. the
   // user has opted-in, etc).

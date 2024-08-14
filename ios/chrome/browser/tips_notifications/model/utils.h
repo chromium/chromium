@@ -75,17 +75,21 @@ std::optional<TipsNotificationType> ParseTipsNotificationType(
 
 // Returns a newly generated notification request, with the given type and
 // a trigger appropriate for a Tips notification.
-UNNotificationRequest* TipsNotificationRequest(TipsNotificationType type);
+UNNotificationRequest* TipsNotificationRequest(
+    TipsNotificationType type,
+    TipsNotificationUserType user_type);
 
 // Returns the notification content for a given Tips notification type.
 UNNotificationContent* ContentForTipsNotificationType(
     TipsNotificationType type);
 
 // Returns the time delta used to trigger Tips notifications.
-base::TimeDelta TipsNotificationTriggerDelta();
+base::TimeDelta TipsNotificationTriggerDelta(
+    TipsNotificationUserType user_type);
 
 // Returns a trigger to be used when requesting a Tips notification.
-UNNotificationTrigger* TipsNotificationTrigger();
+UNNotificationTrigger* TipsNotificationTrigger(
+    TipsNotificationUserType user_type);
 
 // Returns a bitfield indicating which types of notifications should be
 // enabled. Bits are assigned based on the enum `TipsNotificationType`.

@@ -147,7 +147,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
   // If the app is not yet foreground active, store the notification type and
   // handle it later when the app becomes foreground active.
   if (IsSceneLevelForegroundActive()) {
-    ClearAndMaybeRequestNotification(base::DoNothing());
+    CheckAndMaybeRequestNotification(base::DoNothing());
   }
 }
 
@@ -185,10 +185,10 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
   if (user_type_ == TipsNotificationUserType::kUnknown) {
     ClassifyUser();
   }
-  ClearAndMaybeRequestNotification(std::move(closure));
+  CheckAndMaybeRequestNotification(std::move(closure));
 }
 
-void TipsNotificationClient::ClearAndMaybeRequestNotification(
+void TipsNotificationClient::CheckAndMaybeRequestNotification(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   permitted_ = IsPermitted();
@@ -196,16 +196,17 @@ void TipsNotificationClient::ClearAndMaybeRequestNotification(
     HandleNotificationInteraction(interacted_type_.value());
   }
 
-  // If we're no longer in the first 3 weeks, exit early to avoid incurring
-  // the cost of checking delivered and requested notifications.
-  if (!IsFirstRunRecent(base::Days(21))) {
+  // If the user hasn't opted-in, exit early to avoid incurring the cost of
+  // checking delivered and requested notifications.
+  if (!permitted_) {
     std::move(closure).Run();
     return;
   }
 
-  ClearNotification(
-      base::BindOnce(&TipsNotificationClient::MaybeRequestNotification,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(closure)));
+  GetPendingRequest(
+      base::BindOnce(&TipsNotificationClient::OnPendingRequestFound,
+                     weak_ptr_factory_.GetWeakPtr())
+          .Then(std::move(closure)));
 }
 
 // static
@@ -230,42 +231,25 @@ void TipsNotificationClient::GetPendingRequest(
       getPendingNotificationRequestsWithCompletionHandler:completion];
 }
 
-void TipsNotificationClient::ClearNotification(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GetPendingRequest(
-      base::BindOnce(&TipsNotificationClient::OnNotificationCleared,
-                     weak_ptr_factory_.GetWeakPtr())
-          .Then(std::move(callback)));
-}
-
-void TipsNotificationClient::OnNotificationCleared(
+void TipsNotificationClient::OnPendingRequestFound(
     UNNotificationRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request) {
     MaybeLogTriggeredNotification();
     MaybeLogDismissedNotification();
     interacted_type_ = std::nullopt;
+    MaybeRequestNotification(base::DoNothing());
     return;
   }
 
   MaybeLogDismissedNotification();
   interacted_type_ = std::nullopt;
-  std::optional<TipsNotificationType> type = ParseTipsNotificationType(request);
-  if (type.has_value()) {
-    MarkNotificationTypeNotSent(type.value());
-    base::UmaHistogramEnumeration("IOS.Notifications.Tips.Cleared",
-                                  type.value());
-  }
-  [UNUserNotificationCenter.currentNotificationCenter
-      removePendingNotificationRequestsWithIdentifiers:@[
-        kTipsNotificationId
-      ]];
 }
 
 void TipsNotificationClient::MaybeRequestNotification(
     base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsFirstRunRecent(base::Days(14)) || !permitted_) {
+  if (!permitted_) {
     std::move(completion).Run();
     return;
   }
@@ -306,7 +290,7 @@ void TipsNotificationClient::MaybeRequestNotification(
 void TipsNotificationClient::RequestNotification(TipsNotificationType type,
                                                  base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UNNotificationRequest* request = TipsNotificationRequest(type);
+  UNNotificationRequest* request = TipsNotificationRequest(type, user_type_);
 
   auto completion_block = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
@@ -317,14 +301,13 @@ void TipsNotificationClient::RequestNotification(TipsNotificationType type,
   [UNUserNotificationCenter.currentNotificationCenter
       addNotificationRequest:request
        withCompletionHandler:completion_block];
+  MarkNotificationTypeSent(type);
 }
 
 void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
                                                      NSError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!error) {
-    MarkNotificationTypeSent(type);
-  } else {
+  if (error) {
     base::RecordAction(
         base::UserMetricsAction("IOS.Notifications.Tips.NotSentError"));
   }
@@ -380,9 +363,12 @@ bool TipsNotificationClient::ShouldSendSignin() {
 }
 
 bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
+  Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
+    return false;
+  }
   PrefService* local_prefs = GetApplicationContext()->GetLocalState();
-  PrefService* user_prefs =
-      GetSceneLevelForegroundActiveBrowser()->GetBrowserState()->GetPrefs();
+  PrefService* user_prefs = browser->GetBrowserState()->GetPrefs();
   if (!set_up_list_utils::IsSetUpListActive(local_prefs, user_prefs)) {
     return false;
   }
@@ -390,7 +376,8 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
   // The Set Up List only shows for 14 days after FirstRun, so this
   // notification should only be requested 14 days minus the trigger interval
   // after FirstRun.
-  if (!IsFirstRunRecent(base::Days(14) - TipsNotificationTriggerDelta())) {
+  if (!IsFirstRunRecent(base::Days(14) -
+                        TipsNotificationTriggerDelta(user_type_))) {
     return false;
   }
   return !set_up_list_prefs::AllItemsComplete(local_prefs);
@@ -598,8 +585,8 @@ bool TipsNotificationClient::IsPermitted() {
 void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool newpermitted_ = IsPermitted();
-  if (permitted_ != newpermitted_) {
-    ClearAndMaybeRequestNotification(base::DoNothing());
+  if (permitted_ != newpermitted_ && IsSceneLevelForegroundActive()) {
+    CheckAndMaybeRequestNotification(base::DoNothing());
   }
 }
 

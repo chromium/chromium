@@ -52,6 +52,18 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
   }
 }
 
+// Returns the default trigger TimeDelta for the given `user_type`.
+base::TimeDelta DefaultTriggerDelta(TipsNotificationUserType user_type) {
+  switch (user_type) {
+    case TipsNotificationUserType::kUnknown:
+      return base::Days(3);
+    case TipsNotificationUserType::kLessEngaged:
+      return base::Days(21);
+    case TipsNotificationUserType::kActiveSeeker:
+      return base::Days(7);
+  }
+}
+
 // A bitfield with all notification types from the enum enabled.
 constexpr int kAllNotificationBits =
     (1 << (int(TipsNotificationType::kMaxValue) + 1)) - 1;
@@ -94,11 +106,13 @@ std::optional<TipsNotificationType> ParseTipsNotificationType(
   return static_cast<TipsNotificationType>(type.integerValue);
 }
 
-UNNotificationRequest* TipsNotificationRequest(TipsNotificationType type) {
+UNNotificationRequest* TipsNotificationRequest(
+    TipsNotificationType type,
+    TipsNotificationUserType user_type) {
   return [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
                     content:ContentForTipsNotificationType(type)
-                    trigger:TipsNotificationTrigger()];
+                    trigger:TipsNotificationTrigger(user_type)];
 }
 
 UNNotificationContent* ContentForTipsNotificationType(
@@ -113,15 +127,18 @@ UNNotificationContent* ContentForTipsNotificationType(
   return content;
 }
 
-base::TimeDelta TipsNotificationTriggerDelta() {
+base::TimeDelta TipsNotificationTriggerDelta(
+    TipsNotificationUserType user_type) {
   return GetFieldTrialParamByFeatureAsTimeDelta(
       kIOSTipsNotifications, kIOSTipsNotificationsTriggerTimeParam,
-      kTipsNotificationDefaultTriggerDelta);
+      DefaultTriggerDelta(user_type));
 }
 
-UNNotificationTrigger* TipsNotificationTrigger() {
+UNNotificationTrigger* TipsNotificationTrigger(
+    TipsNotificationUserType user_type) {
   return [UNTimeIntervalNotificationTrigger
-      triggerWithTimeInterval:TipsNotificationTriggerDelta().InSecondsF()
+      triggerWithTimeInterval:TipsNotificationTriggerDelta(user_type)
+                                  .InSecondsF()
                       repeats:NO];
 }
 

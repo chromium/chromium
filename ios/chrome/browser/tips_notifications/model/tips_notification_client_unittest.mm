@@ -122,7 +122,8 @@ class TipsNotificationClientTest : public PlatformTest {
 
   // Returns a mock UNNotification for the given notification `type`.
   id MockNotification(TipsNotificationType type) {
-    UNNotificationRequest* request = TipsNotificationRequest(type);
+    UNNotificationRequest* request =
+        TipsNotificationRequest(type, TipsNotificationUserType::kUnknown);
     id mock_notification = OCMClassMock([UNNotification class]);
     OCMStub([mock_notification request]).andReturn(request);
     return mock_notification;
@@ -253,26 +254,6 @@ TEST_F(TipsNotificationClientTest, HandleNotificationReception) {
 // Tests that RegisterActionalableNotifications returns an empty array.
 TEST_F(TipsNotificationClientTest, RegisterActionableNotifications) {
   EXPECT_EQ(client_->RegisterActionableNotifications().count, 0u);
-}
-
-// Tests that the client clears any previously requested notifications.
-TEST_F(TipsNotificationClientTest, ClearNotification) {
-  UNNotificationRequest* request =
-      TipsNotificationRequest(TipsNotificationType::kDefaultBrowser);
-  StubGetPendingRequests(@[ request ]);
-  StubGetDeliveredNotifications(@[]);
-  OCMExpect([mock_notification_center_
-      removePendingNotificationRequestsWithIdentifiers:[OCMArg any]]);
-  ExpectNotificationRequest([OCMArg any]);
-
-  base::RunLoop run_loop;
-  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Cleared",
-                                       TipsNotificationType::kDefaultBrowser,
-                                       1);
 }
 
 // Tests that the client can register a Default Browser notification.
