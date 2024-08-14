@@ -1349,6 +1349,9 @@ bool VideoFrame::HasMappableGpuBuffer() const {
 bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeGpuMemoryBuffer();
+  } else if (is_mappable_si_enabled_) {
+    CHECK(shared_images_[0]);
+    return !shared_images_[0]->IsSharedMemoryForVideoFrame();
   } else if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
   }
