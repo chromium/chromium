@@ -8,6 +8,7 @@
 #import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 
@@ -18,6 +19,24 @@ const base::TimeDelta kDeviceSwitcherWaitTimeout = base::Seconds(1);
 DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
     const ClassificationResult* device_switcher_result,
     const ClassificationResult* shopper_result) {
+  std::string forced_device_switcher_label =
+      experimental_flags::GetSegmentForForcedDeviceSwitcherExperience();
+  std::string forced_shopper_label =
+      experimental_flags::GetSegmentForForcedShopperExperience();
+
+  // If an experience is forced via the iOS Experimental Settings or in Chrome's
+  // command line flags, return the corresponding segment. Used for manual and
+  // automated testing.
+  if (forced_device_switcher_label == DeviceSwitcherModel::kDesktopLabel) {
+    return DefaultBrowserUserSegment::kDesktopUser;
+  }
+  if (forced_device_switcher_label == DeviceSwitcherModel::kAndroidPhoneLabel) {
+    return DefaultBrowserUserSegment::kAndroidSwitcher;
+  }
+  if (forced_shopper_label == kShoppingUserUmaName) {
+    return DefaultBrowserUserSegment::kShopper;
+  }
+
   if (device_switcher_result &&
       device_switcher_result->status == PredictionStatus::kSucceeded) {
     if (std::find(device_switcher_result->ordered_labels.begin(),

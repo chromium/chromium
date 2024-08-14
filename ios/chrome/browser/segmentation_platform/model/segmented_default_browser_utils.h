@@ -31,7 +31,9 @@ enum class DefaultBrowserUserSegment {
 };
 
 // Utility function to determine the `DefaultBrowserUserSegment` based on user's
-// device switcher and shopping user segment `ClassificationResult`.
+// device switcher and shopping user segment `ClassificationResult`. The segment
+// returned can be forced through the experimental settings. To force the
+// Shopper label, the forced Device Switcher label must be unset.
 DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
     const ClassificationResult* device_switcher_result,
     const ClassificationResult* shopper_result);
