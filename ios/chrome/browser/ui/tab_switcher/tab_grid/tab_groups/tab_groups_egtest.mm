@@ -233,6 +233,16 @@ id<GREYMatcher> CreateTabGroupCancelButtonMatcher() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns the matcher for the tab group snack bar.
+id<GREYMatcher> TabGroupSnackBarMatcher(int tabGroupCount) {
+  NSString* messageLabel =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, tabGroupCount));
+  return grey_allOf(
+      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
+      grey_text(messageLabel), nil);
+}
+
 // Matcher for tab group grid cell for the given `group_name`.
 id<GREYMatcher> TabGroupGridCellMatcher(NSString* group_name,
                                         NSInteger tab_count) {
@@ -599,6 +609,10 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           l10n_util::GetPluralNSStringF(
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
+
+  // Check that the snackbar is not dislpayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarMatcher(1)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests closing a group from the group's context menu action in the grid.
@@ -618,6 +632,10 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           l10n_util::GetPluralNSStringF(
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
+
+  // Check that the snackbar is dislpayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarMatcher(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests ungrouping of a group from the overflow menu in the group view.
@@ -752,11 +770,13 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
 
-  // The IPH is shown.
+  // The snackbar is not shown, the IPH is shown.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarMatcher(1)]
+      assertWithMatcher:grey_nil()];
 
   // Check that the second close doesn't trigger the IPH.
   [ChromeEarlGrey openNewTab];
@@ -771,11 +791,13 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
 
-  // The IPH is *not* shown.
+  // The snackbar is shown, the IPH is not shown.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_TAB_GRID_SAVED_TAB_GROUPS)]
       assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarMatcher(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the creation of a new group in selection mode.
@@ -940,6 +962,10 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           l10n_util::GetPluralNSStringF(
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
+
+  // Check that the snackbar is dislpayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupSnackBarMatcher(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap Undo button.
   [[EarlGrey selectElementWithMatcher:TabGridUndoCloseAllButton()]
