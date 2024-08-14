@@ -86,11 +86,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "version_py",
-            "command_prefix": "python3 ../../build/util/version.py ",
-            "inputs": [
-                "build/util/android_chrome_version.py",
-                "build/util/LASTCHANGE",
-            ],
+            "command_prefix": "python3 ../../build/util/version.py",
             "remote": config.get(ctx, "cog"),
             "canonicalize_dir": True,
             "timeout": "2m",
