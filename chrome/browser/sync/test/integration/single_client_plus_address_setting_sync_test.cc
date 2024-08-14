@@ -25,7 +25,7 @@
 
 namespace {
 
-constexpr char kIsEnabledSettingName[] = "plus_address.is_enabled";
+constexpr char kIsEnabledSettingName[] = "has_feature_enabled";
 
 using plus_addresses::CreateSettingSpecifics;
 using plus_addresses::HasBoolSetting;
@@ -205,9 +205,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   ASSERT_FALSE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
   GetPlusAddressSettingService()->SetHasAcceptedNotice();
   EXPECT_TRUE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
-  EXPECT_TRUE(FakeServerSpecificsChecker(
-                  HasBoolSetting("plus_address.has_accepted_notice", true))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerSpecificsChecker(HasBoolSetting("has_accepted_notice", true))
+          .Wait());
 }
 
 // ChromeOS does not support signing out of the primary account.

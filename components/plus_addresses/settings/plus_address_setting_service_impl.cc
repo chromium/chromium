@@ -24,11 +24,8 @@ namespace plus_addresses {
 namespace {
 
 // Setting names - must be in sync with the server.
-// TODO(crbug.com/342089839): Agree upon names with server-side team.
-constexpr std::string_view kPlusAddressEnabledSetting =
-    "plus_address.is_enabled";
-constexpr std::string_view kAcceptedNoticeSetting =
-    "plus_address.has_accepted_notice";
+constexpr std::string_view kPlusAddressEnabledSetting = "has_feature_enabled";
+constexpr std::string_view kAcceptedNoticeSetting = "has_accepted_notice";
 
 }  // namespace
 

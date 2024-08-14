@@ -59,9 +59,9 @@ class PlusAddressSettingServiceImplTest : public testing::Test {
 };
 
 TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
-  ON_CALL(bridge(), GetSetting("plus_address.is_enabled"))
+  ON_CALL(bridge(), GetSetting("has_feature_enabled"))
       .WillByDefault(
-          Return(CreateSettingSpecifics("plus_address.is_enabled", true)));
+          Return(CreateSettingSpecifics("has_feature_enabled", true)));
   // For settings that the client knows about, the correct values are returned.
   EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
   // For settings that the client hasn't received, defaults are returned.
@@ -69,8 +69,8 @@ TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
 }
 
 TEST_F(PlusAddressSettingServiceImplTest, SetValue) {
-  EXPECT_CALL(bridge(), WriteSetting(HasBoolSetting(
-                            "plus_address.has_accepted_notice", true)));
+  EXPECT_CALL(bridge(),
+              WriteSetting(HasBoolSetting("has_accepted_notice", true)));
   service().SetHasAcceptedNotice();
 }
 
