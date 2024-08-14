@@ -4,19 +4,35 @@
 
 #include "chrome/common/webui_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/common/webui_url_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace {
+constexpr char kResource1[] = "/resource1.j";
+constexpr char kResource2[] = "/resource2.j";
+constexpr char kResource3[] = "/resource3.j";
+}  // namespace
 
 class WebUIUtilTest : public ::testing::Test,
                       public ::testing::WithParamInterface<bool> {
  public:
   WebUIUtilTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebUICodeCache,
-        {{"RestrictedWebUICodeCache", GetParam() ? "true" : "false"}});
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kWebUICodeCache, {}},
+           {features::kRestrictedWebUICodeCache,
+            {{"RestrictedWebUICodeCacheResources",
+              base::StrCat({kResource1, ",", kResource2})}}}},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{features::kWebUICodeCache, {}}}, {features::kWebUICodeCache});
+    }
   }
 
  private:
@@ -24,17 +40,15 @@ class WebUIUtilTest : public ::testing::Test,
 };
 
 TEST_P(WebUIUtilTest, ShouldUseCodeCacheForWebUIUrl) {
-#if !BUILDFLAG(IS_ANDROID)
   // Only specifically targeted resources should participate if the restricted
   // code cache flag is enabled.
   EXPECT_TRUE(chrome::ShouldUseCodeCacheForWebUIUrl(
-      GURL(chrome::kChromeUITabSearchURL)));
-  EXPECT_EQ(!GetParam(), chrome::ShouldUseCodeCacheForWebUIUrl(
-                             GURL(chrome::kChromeUIAboutURL)));
-#else
-  EXPECT_TRUE(
-      chrome::ShouldUseCodeCacheForWebUIUrl(GURL(chrome::kChromeUIAboutURL)));
-#endif
+      content::GetWebUIURL(base::StrCat({"host", kResource1}))));
+  EXPECT_TRUE(chrome::ShouldUseCodeCacheForWebUIUrl(
+      content::GetWebUIURL(base::StrCat({"host", kResource2}))));
+  EXPECT_EQ(!GetParam(),
+            chrome::ShouldUseCodeCacheForWebUIUrl(
+                content::GetWebUIURL(base::StrCat({"host", kResource3}))));
 }
 
 INSTANTIATE_TEST_SUITE_P(
