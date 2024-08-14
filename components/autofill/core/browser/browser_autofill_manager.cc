@@ -66,6 +66,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
@@ -1292,6 +1293,16 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // acquires focus on page load). Therefore, this is a temporary workaround
     // that should be deleted with crbug.com/349982907.
     autofill_field->set_was_focused(true);
+  }
+
+  if (AutofillPredictionImprovementsDelegate* delegate =
+          client().GetAutofillPredictionImprovementsDelegate();
+      trigger_source ==
+      AutofillSuggestionTriggerSource::kPredictionImprovements) {
+    delegate->ExtractImprovedPredictionsForFormFields(
+        form, base::BindRepeating(&BrowserAutofillManager::FillOrPreviewField,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 
   // Once the user triggers autofill from the context menu, this event is

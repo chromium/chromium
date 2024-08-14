@@ -27,13 +27,17 @@ class ChromeAutofillPredictionImprovementsClient
       const ChromeAutofillPredictionImprovementsClient&) = delete;
   ~ChromeAutofillPredictionImprovementsClient() override;
 
-  // Returns the page context. Which is a string summary of it.
-  void GetPageContext(
-      autofill_prediction_improvements::AutofillPredictionImprovementsClient::
-          PageContextCallback callback) override;
-  // Returns the Prediction Improvements manager.
+  // Creates a `ChromeAutofillPredictionImprovementsClient` for `web_contents`
+  // if allowed.
+  static std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
+  MaybeCreateForWebContents(content::WebContents* web_contents);
+
+  // AutofillPredictionImprovementsClient:
+  void GetAXTree(AXTreeCallback callback) override;
   autofill_prediction_improvements::AutofillPredictionImprovementsManager&
   GetManager() override;
+  autofill_prediction_improvements::AutofillPredictionImprovementsFillingEngine*
+  GetFillingEngine() override;
 
  protected:
   explicit ChromeAutofillPredictionImprovementsClient(
@@ -42,6 +46,10 @@ class ChromeAutofillPredictionImprovementsClient
  private:
   friend class content::WebContentsUserData<
       ChromeAutofillPredictionImprovementsClient>;
+
+  std::unique_ptr<autofill_prediction_improvements::
+                      AutofillPredictionImprovementsFillingEngine>
+      filling_engine_;
 
   autofill_prediction_improvements::AutofillPredictionImprovementsManager
       manager_{this};

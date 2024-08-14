@@ -5,27 +5,35 @@
 #ifndef COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 
-#include <string>
+#include "base/functional/callback_forward.h"
 
-#include "base/functional/callback.h"
+namespace optimization_guide::proto {
+class AXTreeUpdate;
+}
 
 namespace autofill_prediction_improvements {
 
+class AutofillPredictionImprovementsFillingEngine;
 class AutofillPredictionImprovementsManager;
 
 // An interface for embedder actions, e.g. Chrome on Desktop.
 class AutofillPredictionImprovementsClient {
  public:
-  // The callback to extract the page context.
-  using PageContextCallback = base::OnceCallback<void(const std::string&)>;
+  // The callback to extract the accessibility tree snapshot.
+  using AXTreeCallback =
+      base::OnceCallback<void(optimization_guide::proto::AXTreeUpdate)>;
 
   virtual ~AutofillPredictionImprovementsClient() = default;
 
-  // Returns the page context. Which is a string summary of the page.
-  virtual void GetPageContext(PageContextCallback callback) = 0;
+  // Calls `callback` with the accessibility tree snapshot.
+  virtual void GetAXTree(AXTreeCallback callback) = 0;
 
-  // Returns the `AutofillPredictionImprovements` associated with this client.
+  // Returns the `AutofillPredictionImprovementsManager` associated with this
+  // client.
   virtual AutofillPredictionImprovementsManager& GetManager() = 0;
+
+  // Returns the filling engine associated with the client's web contents.
+  virtual AutofillPredictionImprovementsFillingEngine* GetFillingEngine() = 0;
 };
 
 }  // namespace autofill_prediction_improvements

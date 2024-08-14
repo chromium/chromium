@@ -19,7 +19,7 @@
 #include "url/origin.h"
 
 namespace autofill_prediction_improvements {
-class AutofillPredictionImprovementsFillingEngine;
+class AutofillPredictionImprovementsFillingEngineImpl;
 }  // namespace autofill_prediction_improvements
 
 namespace autofill {
@@ -333,7 +333,7 @@ class FormData {
     friend class FormFiller;
     friend class internal::FormForest;
     friend class autofill_prediction_improvements::
-        AutofillPredictionImprovementsFillingEngine;
+        AutofillPredictionImprovementsFillingEngineImpl;
   };
   std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
     return fields_;

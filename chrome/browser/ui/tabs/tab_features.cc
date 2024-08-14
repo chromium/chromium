@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -99,6 +100,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         user_annotations::UserAnnotationsWebContentsObserver::
             MaybeCreateForWebContents(tab.GetContents());
 
+    chrome_autofill_prediction_improvements_client_ =
+        ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
+            tab.GetContents());
+
     if (!profile->IsIncognitoProfile()) {
       commerce_ui_tab_helper_ =
           CreateCommerceUiTabHelper(tab.GetContents(), profile);
@@ -171,6 +176,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     user_annotations_web_contents_observer_ =
         user_annotations::UserAnnotationsWebContentsObserver::
             MaybeCreateForWebContents(new_contents);
+  }
+  if (chrome_autofill_prediction_improvements_client_) {
+    chrome_autofill_prediction_improvements_client_ =
+        ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
+            new_contents);
   }
 }
 

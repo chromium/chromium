@@ -87,7 +87,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/autofill_prediction_improvements/buildflags.h"
 #include "components/compose/buildflags.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -131,6 +130,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -139,22 +139,20 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
-#endif
-
-#if BUILDFLAG(ENABLE_AUTOFILL_PREDICTION_IMPROVEMENTS)
-#include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -278,17 +276,19 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
 
 AutofillPredictionImprovementsDelegate*
 ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
-#if BUILDFLAG(ENABLE_AUTOFILL_PREDICTION_IMPROVEMENTS)
+#if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           features::kAutofillPredictionImprovementsEnabled)) {
     return nullptr;
   }
-  auto* client = ChromeAutofillPredictionImprovementsClient::FromWebContents(
-      web_contents());
-  return client ? &client->GetManager() : nullptr;
-#else
-  return nullptr;
+  if (tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
+          web_contents()->GetOutermostWebContents())) {
+    ChromeAutofillPredictionImprovementsClient* client =
+        tab->GetTabFeatures()->chrome_autofill_prediction_improvements_client();
+    return client ? &client->GetManager() : nullptr;
+  }
 #endif
+  return nullptr;
 }
 
 void ChromeAutofillClient::OfferPlusAddressCreation(

@@ -901,6 +901,8 @@ static_library("test_support") {
     "mock_autofill_optimization_guide.h",
     "mock_autofill_plus_address_delegate.cc",
     "mock_autofill_plus_address_delegate.h",
+    "mock_autofill_prediction_improvements_delegate.cc",
+    "mock_autofill_prediction_improvements_delegate.h",
     "mock_merchant_promo_code_manager.cc",
     "mock_merchant_promo_code_manager.h",
     "mock_single_field_form_fill_router.cc",

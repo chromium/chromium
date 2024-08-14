@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 
 #include <optional>
 #include <vector>
@@ -85,8 +85,8 @@ optimization_guide::proto::FormData ToFormDataProto(
 
 }  // namespace
 
-AutofillPredictionImprovementsFillingEngine::
-    AutofillPredictionImprovementsFillingEngine(
+AutofillPredictionImprovementsFillingEngineImpl::
+    AutofillPredictionImprovementsFillingEngineImpl(
         optimization_guide::OptimizationGuideModelExecutor* model_executor,
         user_annotations::UserAnnotationsService* user_annotations_service)
     : model_executor_(model_executor),
@@ -94,26 +94,27 @@ AutofillPredictionImprovementsFillingEngine::
   CHECK(model_executor_);
   CHECK(user_annotations_service_);
 }
-AutofillPredictionImprovementsFillingEngine::
-    ~AutofillPredictionImprovementsFillingEngine() = default;
+AutofillPredictionImprovementsFillingEngineImpl::
+    ~AutofillPredictionImprovementsFillingEngineImpl() = default;
 
-void AutofillPredictionImprovementsFillingEngine::GetPredictions(
+void AutofillPredictionImprovementsFillingEngineImpl::GetPredictions(
     autofill::FormData form_data,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
-    base::OnceCallback<void(base::expected<autofill::FormData, bool>)>
-        callback) {
-  user_annotations_service_->RetrieveAllEntries(base::BindOnce(
-      &AutofillPredictionImprovementsFillingEngine::OnUserAnnotationsRetrieved,
-      weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
-      std::move(ax_tree_update), std::move(callback)));
+    PredictionsReceivedCallback callback) {
+  user_annotations_service_->RetrieveAllEntries(
+      base::BindOnce(&AutofillPredictionImprovementsFillingEngineImpl::
+                         OnUserAnnotationsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
+                     std::move(ax_tree_update), std::move(callback)));
 }
 
-void AutofillPredictionImprovementsFillingEngine::OnUserAnnotationsRetrieved(
-    autofill::FormData form_data,
-    optimization_guide::proto::AXTreeUpdate ax_tree_update,
-    base::OnceCallback<void(base::expected<autofill::FormData, bool>)> callback,
-    std::vector<optimization_guide::proto::UserAnnotationsEntry>
-        user_annotations) {
+void AutofillPredictionImprovementsFillingEngineImpl::
+    OnUserAnnotationsRetrieved(
+        autofill::FormData form_data,
+        optimization_guide::proto::AXTreeUpdate ax_tree_update,
+        PredictionsReceivedCallback callback,
+        std::vector<optimization_guide::proto::UserAnnotationsEntry>
+            user_annotations) {
   // If no user annotations, just return the callback with the original form.
   if (user_annotations.empty()) {
     std::move(callback).Run(std::move(form_data));
@@ -135,14 +136,14 @@ void AutofillPredictionImprovementsFillingEngine::OnUserAnnotationsRetrieved(
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, request,
       base::BindOnce(
-          &AutofillPredictionImprovementsFillingEngine::OnModelExecuted,
+          &AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted,
           weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
           std::move(callback)));
 }
 
-void AutofillPredictionImprovementsFillingEngine::OnModelExecuted(
+void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
     autofill::FormData form_data,
-    base::OnceCallback<void(base::expected<autofill::FormData, bool>)> callback,
+    PredictionsReceivedCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!execution_result.has_value()) {
@@ -164,7 +165,7 @@ void AutofillPredictionImprovementsFillingEngine::OnModelExecuted(
 }
 
 // static
-void AutofillPredictionImprovementsFillingEngine::FillFormDataWithResponse(
+void AutofillPredictionImprovementsFillingEngineImpl::FillFormDataWithResponse(
     autofill::FormData& form_data,
     const optimization_guide::proto::FilledFormData& form_data_proto) {
   std::vector<autofill::FormFieldData>& fields =

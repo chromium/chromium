@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGER_H_
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGER_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
 
 namespace autofill_prediction_improvements {
 
@@ -36,11 +36,23 @@ class AutofillPredictionImprovementsManager
       const autofill::FormFieldData& field) override;
   void ExtractImprovedPredictionsForFormFields(
       const autofill::FormData& form,
-      base::OnceCallback<void(bool success)> finished_callback) override;
+      FillPredictionsCallback fill_callback) override;
 
  private:
+  void OnReceivedAXTree(const autofill::FormData& form,
+                        FillPredictionsCallback fill_callback,
+                        optimization_guide::proto::AXTreeUpdate);
+
+  // The unexpected value is always `false` if there was an error retrieving
+  // predictions.
+  void OnReceivedPredictions(FillPredictionsCallback fill_callback,
+                             base::expected<autofill::FormData, bool>);
+
   // A raw reference to the client, which owns `this` and therefore outlives it.
   const raw_ref<AutofillPredictionImprovementsClient> client_;
+
+  base::WeakPtrFactory<AutofillPredictionImprovementsManager> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill_prediction_improvements

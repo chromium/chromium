@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 
 #include <memory>
 
@@ -48,16 +48,17 @@ class MockModelExecutor
               (override));
 };
 
-class AutofillPredictionImprovementsFillingEngineTest : public testing::Test {
+class AutofillPredictionImprovementsFillingEngineImplTest
+    : public testing::Test {
  public:
   void SetUp() override {
     user_annotations_service_ =
         std::make_unique<user_annotations::TestUserAnnotationsService>();
-    engine_ = std::make_unique<AutofillPredictionImprovementsFillingEngine>(
+    engine_ = std::make_unique<AutofillPredictionImprovementsFillingEngineImpl>(
         &model_executor_, user_annotations_service_.get());
   }
 
-  AutofillPredictionImprovementsFillingEngine* engine() {
+  AutofillPredictionImprovementsFillingEngineImpl* engine() {
     return engine_.get();
   }
 
@@ -72,10 +73,10 @@ class AutofillPredictionImprovementsFillingEngineTest : public testing::Test {
   testing::NiceMock<MockModelExecutor> model_executor_;
   std::unique_ptr<user_annotations::TestUserAnnotationsService>
       user_annotations_service_;
-  std::unique_ptr<AutofillPredictionImprovementsFillingEngine> engine_;
+  std::unique_ptr<AutofillPredictionImprovementsFillingEngineImpl> engine_;
 };
 
-TEST_F(AutofillPredictionImprovementsFillingEngineTest, EndToEnd) {
+TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   // Seed user annotations service with entries.
   optimization_guide::proto::UserAnnotationsEntry entry;
   entry.set_key("label");
@@ -130,7 +131,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineTest, EndToEnd) {
   EXPECT_TRUE(filled_field_response2.value().empty());
 }
 
-TEST_F(AutofillPredictionImprovementsFillingEngineTest,
+TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
        NoUserAnnotationEntries) {
   // Seed user annotations service explicitly with no entries.
   user_annotations_service()->ReplaceAllEntries({});
@@ -156,7 +157,8 @@ TEST_F(AutofillPredictionImprovementsFillingEngineTest,
   EXPECT_TRUE(filled_field_response.value().empty());
 }
 
-TEST_F(AutofillPredictionImprovementsFillingEngineTest, ModelExecutionError) {
+TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
+       ModelExecutionError) {
   // Seed user annotations service with entries.
   optimization_guide::proto::UserAnnotationsEntry entry;
   entry.set_key("label");
@@ -191,7 +193,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineTest, ModelExecutionError) {
   EXPECT_FALSE(form_data_or_err.has_value());
 }
 
-TEST_F(AutofillPredictionImprovementsFillingEngineTest,
+TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
        ModelExecutionWrongTypeReturned) {
   // Seed user annotations service with entries.
   optimization_guide::proto::UserAnnotationsEntry entry;

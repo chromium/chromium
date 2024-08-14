@@ -16,6 +16,15 @@ class FormFieldData;
 // //components/autofill/autofill_prediction_improvements.
 class AutofillPredictionImprovementsDelegate {
  public:
+  using FillPredictionsCallback =
+      base::RepeatingCallback<void(mojom::ActionPersistence action_persistence,
+                                   mojom::FieldActionType action_type,
+                                   const FormData& form,
+                                   const FormFieldData& field,
+                                   const std::u16string& value,
+                                   SuggestionType type,
+                                   std::optional<FieldType> field_type_used)>;
+
   virtual ~AutofillPredictionImprovementsDelegate() = default;
 
   // Returns the prediction improvements suggestions if available for the
@@ -31,10 +40,11 @@ class AutofillPredictionImprovementsDelegate {
   // logging.
   virtual bool UsedImprovedPredictionsForField(const FormFieldData& field) = 0;
 
-  // Stores the predictions for all fields in `form`.
+  // Receives the predictions for all fields in `form`, then calls
+  // `fill_callback` on each field.
   virtual void ExtractImprovedPredictionsForFormFields(
       const FormData& form,
-      base::OnceCallback<void(bool success)> finished_callback) = 0;
+      FillPredictionsCallback fill_callback) = 0;
 };
 
 }  // namespace autofill
