@@ -1169,12 +1169,6 @@ class AutofillMetrics {
       const FormStructure& form,
       const AutofillField& field);
 
-  // Records if the page was translated upon form submission.
-  static void LogFieldParsingPageTranslationStatusMetric(bool metric);
-
-  // Records the visible page language upon form submission.
-  static void LogFieldParsingTranslatedFormLanguageMetric(std::string_view);
-
   static const char* GetMetricsSyncStateSuffix(PaymentsSigninState sync_state);
 
   // Records whether a document collected phone number, and/or used WebOTP,

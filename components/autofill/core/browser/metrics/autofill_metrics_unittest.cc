@@ -5891,51 +5891,6 @@ TEST_F(AutofillMetricsTest, GetFieldTypeUserEditStatusMetric) {
   EXPECT_EQ(expected_result, actual_result);
 }
 
-// Validate that correct page language values are taken from
-// |AutofillClient| and logged upon form submission.
-TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
-  FormData form;
-  CreateSimpleForm(autofill_client_->form_origin(), form);
-
-  // Set up language state.
-  translate::LanguageDetectionDetails language_detection_details;
-  language_detection_details.adopted_language = "ub";
-  autofill_manager().OnLanguageDetermined(language_detection_details);
-  autofill_client_->GetLanguageState()->SetSourceLanguage("ub");
-  autofill_client_->GetLanguageState()->SetCurrentLanguage("ub");
-  int language_code = 'u' * 256 + 'b';
-
-  base::HistogramTester histogram_tester;
-  SubmitForm(form);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage", language_code, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ParsedFieldTypesWasPageTranslated", false, 1);
-}
-
-// Validate that invalid language codes (with disallowed symbols in this case)
-// get logged as invalid.
-TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
-  FormData form;
-  CreateSimpleForm(autofill_client_->form_origin(), form);
-
-  // Set up language state.
-  translate::LanguageDetectionDetails language_detection_details;
-  language_detection_details.adopted_language = "en";
-  autofill_manager().OnLanguageDetermined(language_detection_details);
-  autofill_client_->GetLanguageState()->SetSourceLanguage("en");
-  autofill_client_->GetLanguageState()->SetCurrentLanguage("other");
-
-  base::HistogramTester histogram_tester;
-  SubmitForm(form);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage", 0, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ParsedFieldTypesWasPageTranslated", true, 1);
-}
-
 // Base class for cross-frame filling metrics, in particular for
 // Autofill.CreditCard.SeamlessFills.*.
 class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {

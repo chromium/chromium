@@ -345,15 +345,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
   return FillDataType::kUndefined;
 }
 
-void LogLanguageMetrics(const translate::LanguageState* language_state) {
-  if (language_state) {
-    AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
-        language_state->current_language());
-    AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(
-        language_state->IsPageTranslated());
-  }
-}
-
 void LogAutocompletePredictionCollisionTypeMetrics(
     const FormStructure& form_structure) {
   for (size_t i = 0; i < form_structure.field_count(); i++) {
@@ -845,9 +836,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       << Br{} << "known_success: " << known_success << Br{} << "timestamp: "
       << form_submitted_timestamp.since_origin().InMilliseconds() << Br{}
       << "source: " << SubmissionSourceToString(source) << Br{} << form;
-
-  // Always upload page language metrics.
-  LogLanguageMetrics(client().GetLanguageState());
 
   // Always let the value patterns metric upload data.
   LogValuePatternsMetric(form);

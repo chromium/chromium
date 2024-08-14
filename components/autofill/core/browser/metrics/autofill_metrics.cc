@@ -3093,20 +3093,6 @@ AutofillMetrics::UkmTimestampPin::~UkmTimestampPin() {
 }
 
 // static
-void AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(bool metric) {
-  base::UmaHistogramBoolean("Autofill.ParsedFieldTypesWasPageTranslated",
-                            metric);
-}
-
-// static
-void AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
-    std::string_view locale) {
-  base::UmaHistogramSparse(
-      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage",
-      language::LanguageUsageMetrics::ToLanguageCodeHash(locale));
-}
-
-// static
 void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
     ukm::UkmRecorder* recorder,
     ukm::SourceId source_id,
