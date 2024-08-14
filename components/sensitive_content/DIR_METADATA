@@ -1,0 +1,5 @@
+team_email: "chrome-autofill-team@google.com"
+os: ANDROID
+buganizer {
+    component_id: 472
+}
