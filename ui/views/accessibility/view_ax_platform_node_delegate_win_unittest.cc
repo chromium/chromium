@@ -679,18 +679,14 @@ TEST_F(ViewAXPlatformNodeDelegateWinTableTest, TableCellAttributes) {
 
   // These strings should NOT contain rowindex or colindex, since those
   // imply an ARIA override.
-  EXPECT_EQ(
-      get_attributes(1, 1),
-      L"name-from:attribute;explicit-name:true;sort:none;class:AXVirtualView;");
-  EXPECT_EQ(
-      get_attributes(1, 2),
-      L"name-from:attribute;explicit-name:true;sort:none;class:AXVirtualView;");
+  EXPECT_EQ(get_attributes(1, 1),
+            L"explicit-name:true;sort:none;class:AXVirtualView;");
+  EXPECT_EQ(get_attributes(1, 2),
+            L"explicit-name:true;sort:none;class:AXVirtualView;");
   EXPECT_EQ(get_attributes(2, 1),
-            L"hidden:true;name-from:attribute;explicit-name:true;class:"
-            L"AXVirtualView;");
+            L"hidden:true;explicit-name:true;class:AXVirtualView;");
   EXPECT_EQ(get_attributes(2, 2),
-            L"hidden:true;name-from:attribute;explicit-name:true;class:"
-            L"AXVirtualView;");
+            L"hidden:true;explicit-name:true;class:AXVirtualView;");
 }
 
 }  // namespace test

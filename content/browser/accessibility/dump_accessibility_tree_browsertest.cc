@@ -3107,28 +3107,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPermission) {
   RunHtmlTest(FILE_PATH_LITERAL("permission.html"));
 }
 
-class DumpAccessibilityTreeWithProhibitedNamesTest
-    : public YieldingParserDumpAccessibilityTreeTest {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
-    // Explicitly enable feature that repairs accessible names on roles where it
-    // prohibited, moving to description.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "AccessibilityProhibitedNames");
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityTreeWithProhibitedNamesTest,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
-    DumpAccessibilityTreeTestPassToString());
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithProhibitedNamesTest,
-                       AccessibilityProhibitedName) {
-  RunHtmlTest(FILE_PATH_LITERAL("prohibited-name.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
   RunHtmlTest(FILE_PATH_LITERAL("popover-api.html"));
 }

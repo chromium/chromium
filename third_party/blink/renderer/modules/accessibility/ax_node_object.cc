@@ -4845,7 +4845,6 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::blink::NameFrom::kContents:
     case ax::mojom::blink::NameFrom::kProhibited:
-    case ax::mojom::blink::NameFrom::kProhibitedAndRedundant:
       break;
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:
@@ -4861,7 +4860,6 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
     case ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::blink::NameFrom::kContents:
     case ax::mojom::blink::NameFrom::kProhibited:
-    case ax::mojom::blink::NameFrom::kProhibitedAndRedundant:
       break;
     case ax::mojom::blink::NameFrom::kAttribute:
     case ax::mojom::blink::NameFrom::kCaption:

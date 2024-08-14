@@ -4610,10 +4610,6 @@ data/accessibility/html/progress-expected-mac.txt
 data/accessibility/html/progress-expected-uia-win.txt
 data/accessibility/html/progress-expected-win.txt
 data/accessibility/html/progress.html
-data/accessibility/html/prohibited-name-expected-auralinux.txt
-data/accessibility/html/prohibited-name-expected-blink.txt
-data/accessibility/html/prohibited-name-expected-win.txt
-data/accessibility/html/prohibited-name.html
 data/accessibility/html/q-expected-android-assist-data.txt
 data/accessibility/html/q-expected-android-external.txt
 data/accessibility/html/q-expected-android.txt

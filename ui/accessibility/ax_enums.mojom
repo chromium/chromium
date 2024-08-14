@@ -1307,13 +1307,8 @@ enum NameFrom {
   // the figcaption element in a figure, or another View present in the UI.
   kRelatedElement,
 
-  // Applies to roles that cannot be named as per the ARIA spec, where the
-  // name may be repaired by moving to the description.
+  // Applies to roles that cannot be named as per the ARIA spec.
   kProhibited,
-
-  // Applies to roles that cannot be named as per the ARIA spec, where the
-  // name would have been redundant with the inner text.
-  kProhibitedAndRedundant,
 
   // The name comes from the title attribute (HTML), the title element (SVG),
   // or a View's tooltip.

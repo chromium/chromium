@@ -1168,8 +1168,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIA2Attributes) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_NE(nullptr, attributes.Get());
   attributes_str = std::wstring(attributes.Get(), attributes.Length());
-  EXPECT_EQ(L"checkable:true;name-from:attribute;explicit-name:true;",
-            attributes_str);
+  EXPECT_EQ(L"checkable:true;explicit-name:true;", attributes_str);
 
   manager.reset();
 }

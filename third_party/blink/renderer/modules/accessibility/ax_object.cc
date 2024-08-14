@@ -4400,15 +4400,8 @@ String AXObject::SimplifyName(const String& str,
     if (RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
       // Prohibited names are repaired by moving them to the description field,
       // where they will not override the contents of the element for screen
-      // reader users. Exception: if it would be redundant with the inner
-      // contents, then the name is stripped out rather than repaired.
+      // reader users.
       name_from = ax::mojom::blink::NameFrom::kProhibited;
-      // If already redundant with inner text, do not repair to description
-      if (name_from == ax::mojom::blink::NameFrom::kContents ||
-          simplified ==
-              GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
-        name_from = ax::mojom::blink::NameFrom::kProhibitedAndRedundant;
-      }
       return "";
     }
   }
