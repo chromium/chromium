@@ -73,134 +73,153 @@ grit("extensions_renderer_resources") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "browser/api/declarative/test_rules_registry.cc",
+    "browser/api/declarative/test_rules_registry.h",
+    "browser/api_test_utils.cc",
+    "browser/api_test_utils.h",
+    "browser/api_unittest.cc",
+    "browser/api_unittest.h",
+    "browser/content_verifier/test_utils.cc",
+    "browser/content_verifier/test_utils.h",
+    "browser/extension_error_test_util.cc",
+    "browser/extension_error_test_util.h",
+    "browser/extensions_test.cc",
+    "browser/extensions_test.h",
+    "browser/mock_extension_system.cc",
+    "browser/mock_extension_system.h",
+    "browser/mock_external_provider.cc",
+    "browser/mock_external_provider.h",
+    "browser/scoped_ignore_content_verifier_for_test.cc",
+    "browser/scoped_ignore_content_verifier_for_test.h",
+    "browser/test_event_router.cc",
+    "browser/test_event_router.h",
+    "browser/test_extension_registry_observer.cc",
+    "browser/test_extension_registry_observer.h",
+    "browser/test_extensions_browser_client.cc",
+    "browser/test_extensions_browser_client.h",
+    "browser/test_image_loader.cc",
+    "browser/test_image_loader.h",
+    "browser/test_management_policy.cc",
+    "browser/test_management_policy.h",
+    "common/extension_builder.cc",
+    "common/extension_builder.h",
+    "common/manifest_test.cc",
+    "common/manifest_test.h",
+    "common/permissions/mock_manifest_permission.cc",
+    "common/permissions/mock_manifest_permission.h",
+    "common/permissions/permission_message_test_util.cc",
+    "common/permissions/permission_message_test_util.h",
+    "common/scoped_testing_manifest_handler_registry.cc",
+    "common/scoped_testing_manifest_handler_registry.h",
+    "renderer/test_extensions_renderer_client.cc",
+    "renderer/test_extensions_renderer_client.h",
+    "test/extension_background_page_waiter.cc",
+    "test/extension_background_page_waiter.h",
+    "test/extension_state_tester.cc",
+    "test/extension_state_tester.h",
+    "test/extension_test_message_listener.cc",
+    "test/extension_test_message_listener.h",
+    "test/extension_test_notification_observer.cc",
+    "test/extension_test_notification_observer.h",
+    "test/flakiness_test_util.h",
+    "test/logging_timer.cc",
+    "test/logging_timer.h",
+    "test/permissions_manager_waiter.cc",
+    "test/permissions_manager_waiter.h",
+    "test/result_catcher.cc",
+    "test/result_catcher.h",
+    "test/test_content_script_load_waiter.cc",
+    "test/test_content_script_load_waiter.h",
+    "test/test_context_data.cc",
+    "test/test_context_data.h",
+    "test/test_extension_dir.cc",
+    "test/test_extension_dir.h",
+    "test/test_extensions_client.cc",
+    "test/test_extensions_client.h",
+    "test/test_permission_message_provider.cc",
+    "test/test_permission_message_provider.h",
+  ]
+
+  deps = [
+    ":extensions_resources",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/common:buildflags",
+    "//components/crx_file",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/update_client",
+    "//components/user_prefs",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//extensions/browser/api",
+    "//extensions/browser/api/storage:settings_namespace",
+    "//extensions/browser/updater",
+    "//extensions/common",
+    "//extensions/common:core_api_provider",
+    "//extensions/common/api",
+    "//extensions/common/api:extensions_features",
+    "//extensions/renderer",
+    "//net:test_support",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/cld_3/src/src:cld_3",
+    "//third_party/zlib/google:zip",
+  ]
+
+  if (enable_platform_apps) {
+    sources += [
+      "browser/app_window/test_app_window_contents.cc",
+      "browser/app_window/test_app_window_contents.h",
+    ]
+  }
+
+  if (enable_guest_view) {
+    sources += [
+      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
+      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",
+    ]
+
+    deps += [ "//components/guest_view/browser:test_support" ]
+  }
+
+  # TODO(https://crbug.com/356905053): The following files don't compile cleanly
+  # with desktop-android. Either make them compile, or determine they should
+  # not be included and place them under a more appropriate if-block.
+  if (enable_extensions) {
+    sources += [
+      "browser/api/storage/settings_test_util.cc",
+      "browser/api/storage/settings_test_util.h",
+      "browser/test_runtime_api_delegate.cc",
+      "browser/test_runtime_api_delegate.h",
+    ]
+  }
+
+  # Generally, //extensions should not depend on //chromeos. However, a number
+  # of the APIs and the extensions shell already do. We should try to avoid
+  # expanding these dependencies.
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/login/login_state" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros:test_support" ]
+  }
+
+  public_deps = [ "//content/public/browser" ]
+}
+
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
-  static_library("test_support") {
-    testonly = true
-    sources = [
-      "browser/api/declarative/test_rules_registry.cc",
-      "browser/api/declarative/test_rules_registry.h",
-      "browser/api/storage/settings_test_util.cc",
-      "browser/api/storage/settings_test_util.h",
-      "browser/api_test_utils.cc",
-      "browser/api_test_utils.h",
-      "browser/api_unittest.cc",
-      "browser/api_unittest.h",
-      "browser/app_window/test_app_window_contents.cc",
-      "browser/app_window/test_app_window_contents.h",
-      "browser/content_verifier/test_utils.cc",
-      "browser/content_verifier/test_utils.h",
-      "browser/extension_error_test_util.cc",
-      "browser/extension_error_test_util.h",
-      "browser/extensions_test.cc",
-      "browser/extensions_test.h",
-      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.cc",
-      "browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h",
-      "browser/mock_extension_system.cc",
-      "browser/mock_extension_system.h",
-      "browser/mock_external_provider.cc",
-      "browser/mock_external_provider.h",
-      "browser/scoped_ignore_content_verifier_for_test.cc",
-      "browser/scoped_ignore_content_verifier_for_test.h",
-      "browser/test_event_router.cc",
-      "browser/test_event_router.h",
-      "browser/test_extension_registry_observer.cc",
-      "browser/test_extension_registry_observer.h",
-      "browser/test_extensions_browser_client.cc",
-      "browser/test_extensions_browser_client.h",
-      "browser/test_image_loader.cc",
-      "browser/test_image_loader.h",
-      "browser/test_management_policy.cc",
-      "browser/test_management_policy.h",
-      "browser/test_runtime_api_delegate.cc",
-      "browser/test_runtime_api_delegate.h",
-      "common/extension_builder.cc",
-      "common/extension_builder.h",
-      "common/manifest_test.cc",
-      "common/manifest_test.h",
-      "common/permissions/mock_manifest_permission.cc",
-      "common/permissions/mock_manifest_permission.h",
-      "common/permissions/permission_message_test_util.cc",
-      "common/permissions/permission_message_test_util.h",
-      "common/scoped_testing_manifest_handler_registry.cc",
-      "common/scoped_testing_manifest_handler_registry.h",
-      "renderer/test_extensions_renderer_client.cc",
-      "renderer/test_extensions_renderer_client.h",
-      "test/extension_background_page_waiter.cc",
-      "test/extension_background_page_waiter.h",
-      "test/extension_state_tester.cc",
-      "test/extension_state_tester.h",
-      "test/extension_test_message_listener.cc",
-      "test/extension_test_message_listener.h",
-      "test/extension_test_notification_observer.cc",
-      "test/extension_test_notification_observer.h",
-      "test/flakiness_test_util.h",
-      "test/logging_timer.cc",
-      "test/logging_timer.h",
-      "test/permissions_manager_waiter.cc",
-      "test/permissions_manager_waiter.h",
-      "test/result_catcher.cc",
-      "test/result_catcher.h",
-      "test/test_content_script_load_waiter.cc",
-      "test/test_content_script_load_waiter.h",
-      "test/test_context_data.cc",
-      "test/test_context_data.h",
-      "test/test_extension_dir.cc",
-      "test/test_extension_dir.h",
-      "test/test_extensions_client.cc",
-      "test/test_extensions_client.h",
-      "test/test_permission_message_provider.cc",
-      "test/test_permission_message_provider.h",
-    ]
-
-    deps = [
-      ":extensions_resources",
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/common:buildflags",
-      "//components/crx_file",
-      "//components/guest_view/browser:test_support",
-      "//components/keyed_service/content",
-      "//components/pref_registry",
-      "//components/prefs:test_support",
-      "//components/sync_preferences:test_support",
-      "//components/update_client",
-      "//components/user_prefs",
-      "//content/public/common",
-      "//content/test:test_support",
-      "//extensions/browser",
-      "//extensions/browser:test_support",
-      "//extensions/browser/api",
-      "//extensions/browser/api/storage:settings_namespace",
-      "//extensions/browser/updater",
-      "//extensions/common",
-      "//extensions/common:core_api_provider",
-      "//extensions/common/api",
-      "//extensions/common/api:extensions_features",
-      "//extensions/renderer",
-      "//net:test_support",
-      "//services/network/public/mojom",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/cld_3/src/src:cld_3",
-      "//third_party/zlib/google:zip",
-    ]
-
-    # Generally, //extensions should not depend on //chromeos. However, a number
-    # of the APIs and the extensions shell already do. We should try to avoid
-    # expanding these dependencies.
-    if (is_chromeos_ash) {
-      deps += [ "//chromeos/ash/components/login/login_state" ]
-    }
-
-    if (is_chromeos_lacros) {
-      deps += [ "//chromeos/lacros:test_support" ]
-    }
-
-    public_deps = [ "//content/public/browser" ]
-  }
-
   repack("shell_and_test_pak") {
     testonly = true
 

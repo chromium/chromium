@@ -368,7 +368,8 @@ static_library("test_support") {
   # support pieces into here and eventually merge this with the
   # `enable_extensions` block above.
   if (enable_desktop_android_extensions) {
-    deps += [
+    public_deps += [
+      "//extensions:test_support",
       "//extensions/browser:test_support",
       "//extensions/common:test_support",
     ]
