@@ -2477,7 +2477,7 @@ bool AXNodeObject::IsControl() const {
 
   auto* element = DynamicTo<Element>(node);
   return ((element && element->IsFormControlElement()) ||
-          AXObject::IsARIAControl(RawAriaRole()));
+          ui::IsControl(RawAriaRole()));
 }
 
 bool AXNodeObject::IsAutofillAvailable() const {

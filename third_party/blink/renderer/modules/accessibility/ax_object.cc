@@ -7423,24 +7423,6 @@ bool AXObject::OnNativeShowContextMenuAction() {
 }
 
 // static
-bool AXObject::IsARIAControl(ax::mojom::blink::Role aria_role) {
-  return IsARIAInput(aria_role) ||
-         aria_role == ax::mojom::blink::Role::kButton ||
-         aria_role == ax::mojom::blink::Role::kComboBoxMenuButton ||
-         aria_role == ax::mojom::blink::Role::kSlider;
-}
-
-// static
-bool AXObject::IsARIAInput(ax::mojom::blink::Role aria_role) {
-  return aria_role == ax::mojom::blink::Role::kRadioButton ||
-         aria_role == ax::mojom::blink::Role::kCheckBox ||
-         aria_role == ax::mojom::blink::Role::kTextField ||
-         aria_role == ax::mojom::blink::Role::kSwitch ||
-         aria_role == ax::mojom::blink::Role::kSearchBox ||
-         aria_role == ax::mojom::blink::Role::kTextFieldWithComboBox;
-}
-
-// static
 bool AXObject::IsFrame(const Node* node) {
   auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node);
   if (!frame_owner)
