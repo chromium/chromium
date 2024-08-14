@@ -2154,4 +2154,57 @@ TEST_F(ComputedStyleTest, ZoomInheritance) {
   ASSERT_TRUE(true) << "Test passes if it doesn't hit a DCHECK.";
 }
 
+TEST_F(ComputedStyleTest, ColorSchemeFlagsIsNormal) {
+  Document& document = GetDocument();
+  ColorSchemeHelper color_scheme_helper(document);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="normal" style="color-scheme: normal"></div>
+    <div id="light" style="color-scheme: light"></div>
+    <div id="dark" style="color-scheme: dark"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument()
+                  .getElementById(AtomicString("normal"))
+                  ->ComputedStyleRef()
+                  .ColorSchemeFlagsIsNormal());
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("light"))
+                   ->ComputedStyleRef()
+                   .ColorSchemeFlagsIsNormal());
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("dark"))
+                   ->ComputedStyleRef()
+                   .ColorSchemeFlagsIsNormal());
+}
+
+TEST_F(ComputedStyleTest, ColorSchemeFlagsIsNormal_WithMeta) {
+  Document& document = GetDocument();
+  ColorSchemeHelper color_scheme_helper(document);
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+
+  document.body()->setInnerHTML(R"HTML(
+    <meta name="color-scheme" content="light">
+    <div id="normal" style="color-scheme: normal"></div>
+    <div id="light" style="color-scheme: light"></div>
+    <div id="dark" style="color-scheme: dark"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("normal"))
+                   ->ComputedStyleRef()
+                   .ColorSchemeFlagsIsNormal());
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("light"))
+                   ->ComputedStyleRef()
+                   .ColorSchemeFlagsIsNormal());
+  EXPECT_FALSE(GetDocument()
+                   .getElementById(AtomicString("dark"))
+                   ->ComputedStyleRef()
+                   .ColorSchemeFlagsIsNormal());
+}
+
 }  // namespace blink

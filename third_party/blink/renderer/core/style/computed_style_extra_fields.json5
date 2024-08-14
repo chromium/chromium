@@ -936,6 +936,8 @@
       invalidate: ["accent-color", "background-current-color", "border-visual", "paint"],
     },
     {
+      // This flag is set if both the computed value of color-scheme is 'normal'
+      // and the page's supported color-schemes is 'normal'.
       name: "ColorSchemeFlagsIsNormal",
       field_template: "primitive",
       type_name: "bool",

@@ -3058,11 +3058,9 @@ void ComputedStyleBuilder::SetUsedColorScheme(
 
   SetColorSchemeForced(forced_scheme);
 
-  if (RuntimeEnabledFeatures::UsedColorSchemeRootScrollbarsEnabled()) {
-    const bool is_normal =
-        flags == static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
-    SetColorSchemeFlagsIsNormal(is_normal);
-  }
+  const bool is_normal =
+      flags == static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
+  SetColorSchemeFlagsIsNormal(is_normal);
 }
 
 CSSVariableData* ComputedStyleBuilder::GetVariableData(
