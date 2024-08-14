@@ -13,6 +13,8 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/controls/button/button.h"
@@ -94,6 +96,25 @@ TEST_F(ImageButtonFactoryWidgetTest,
   AddImageButton(CreateVectorImageButtonWithNativeTheme(
       Button::PressedCallback(), vector_icons::kEditIcon, kSize));
   EXPECT_EQ(kSize, button()->GetImage(Button::STATE_NORMAL).width());
+}
+
+TEST_F(ImageButtonFactoryWidgetTest, AccessibleCheckedStateChange) {
+  auto toggle_image_button =
+      CreateVectorToggleImageButton(Button::PressedCallback());
+  ui::AXNodeData data;
+  const ui::ImageModel& image =
+      ui::ImageModel::FromVectorIcon(gfx::VectorIcon(), 23, 56);
+  toggle_image_button->SetToggledImageModel(Button::STATE_NORMAL, image);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kNone);
+
+  toggle_image_button->SetToggled(true);
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  toggle_image_button->SetToggled(false);
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
 }  // namespace views
