@@ -661,7 +661,8 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
   }
 }
 
-TEST_F(GlanceablesTaskViewTest, CheckButtonAccessibleDefaultActionVerb) {
+TEST_F(GlanceablesTaskViewTest,
+       CheckButtonAccessibleDefaultActionVerbAndCheckedState) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
@@ -683,12 +684,14 @@ TEST_F(GlanceablesTaskViewTest, CheckButtonAccessibleDefaultActionVerb) {
   view->SetCheckedForTest(true);
   data = ui::AXNodeData();
   check_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
   EXPECT_EQ(data.GetDefaultActionVerb(),
             ax::mojom::DefaultActionVerb::kUncheck);
 
   view->SetCheckedForTest(false);
   data = ui::AXNodeData();
   check_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
 }
 

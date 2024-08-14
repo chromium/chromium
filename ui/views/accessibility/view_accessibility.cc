@@ -721,7 +721,11 @@ void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
 }
 
 void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
+  if (checked_state == data_.GetCheckedState()) {
+    return;
+  }
   data_.SetCheckedState(checked_state);
+  NotifyEvent(ax::mojom::Event::kCheckedStateChanged, true);
 }
 
 void ViewAccessibility::RemoveCheckedState() {

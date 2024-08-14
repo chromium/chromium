@@ -225,22 +225,14 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_MARK_COMPLETED_ACCESSIBLE_NAME));
     SetAndUpdateAccessibleDefaultActionVerb();
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::ImageButton::GetAccessibleNodeData(node_data);
-
-    const ax::mojom::CheckedState checked_state =
-        checked_ ? ax::mojom::CheckedState::kTrue
-                 : ax::mojom::CheckedState::kFalse;
-    node_data->SetCheckedState(checked_state);
+    UpdateAccessibleCheckedState();
   }
 
   void SetChecked(bool checked) {
     checked_ = checked;
     UpdateImage();
+    UpdateAccessibleCheckedState();
     SetAndUpdateAccessibleDefaultActionVerb();
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
   }
 
   bool checked() const { return checked_; }
@@ -258,6 +250,12 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
     SetDefaultActionVerb(checked_ ? ax::mojom::DefaultActionVerb::kUncheck
                                   : ax::mojom::DefaultActionVerb::kCheck);
     UpdateAccessibleDefaultActionVerb();
+  }
+
+  void UpdateAccessibleCheckedState() {
+    GetViewAccessibility().SetCheckedState(
+        checked_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
   }
 
   bool checked_ = false;
