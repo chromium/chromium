@@ -16,15 +16,16 @@
 #include "chrome/browser/search_resumption/jni_headers/SearchResumptionModuleBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
-using base::android::JavaRef;
+using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace search_resumption_module {
-SearchResumptionModuleBridge::SearchResumptionModuleBridge(JNIEnv* env,
-                                                           jobject jobj,
-                                                           Profile* profile)
-    : java_object_(env, env->NewWeakGlobalRef(jobj)) {
+SearchResumptionModuleBridge::SearchResumptionModuleBridge(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj,
+    Profile* profile)
+    : java_object_(env, jobj) {
   CHECK(!profile->IsOffTheRecord());
   start_suggest_service_ =
       StartSuggestServiceFactory::GetInstance()->GetForBrowserContext(profile);
@@ -57,7 +58,7 @@ SearchResumptionModuleBridge::~SearchResumptionModuleBridge() = default;
 
 void SearchResumptionModuleBridge::OnSuggestionsReceived(
     std::vector<QuerySuggestion> suggestions) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   std::vector<const std::u16string*> titles;
   titles.reserve(suggestions.size());
   std::vector<const GURL*> urls;
