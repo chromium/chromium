@@ -20,8 +20,7 @@ ChromeAccountManagerServiceObserverBridge::
 ChromeAccountManagerServiceObserverBridge::
     ~ChromeAccountManagerServiceObserverBridge() {}
 
-void ChromeAccountManagerServiceObserverBridge::OnIdentityListChanged(
-    bool notify_user) {
+void ChromeAccountManagerServiceObserverBridge::OnIdentityListChanged() {
   if ([observer_ respondsToSelector:@selector(identityListChanged)]) {
     [observer_ identityListChanged];
   }

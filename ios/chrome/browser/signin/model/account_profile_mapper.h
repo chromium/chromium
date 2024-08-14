@@ -34,11 +34,8 @@ class AccountProfileMapper : public SystemIdentityManagerObserver {
     Observer() = default;
     ~Observer() override = default;
 
-    // Called when the list of identity has changed. If `notify_user` is true,
-    // the identity changed due to an external source; this means that a first
-    // party Google application has added or removed identities, or the identity
-    // token is invalid.
-    virtual void OnIdentityListChanged(bool notify_user) {}
+    // Called when the list of identity has changed.
+    virtual void OnIdentityListChanged() {}
 
     // Called when information about `identity` (such as the name or the image)
     // have been updated.
@@ -91,7 +88,7 @@ class AccountProfileMapper : public SystemIdentityManagerObserver {
 
  private:
   // SystemIdentityManagerObserver implementation.
-  void OnIdentityListChanged(bool notify_user) final;
+  void OnIdentityListChanged() final;
   void OnIdentityUpdated(id<SystemIdentity> identity) final;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
@@ -164,7 +161,7 @@ class AccountProfileMapper : public SystemIdentityManagerObserver {
 
   // Invokes `OnIdentityListChanged(...)` for all observers for `profile_index`
   // profile.
-  void NotifyIdentityListChanged(bool notify_user, size_t profile_index);
+  void NotifyIdentityListChanged(size_t profile_index);
   // Invokes `OnIdentityUpdated(...)` for all observers for `profile_index`
   // profile.
   void NotifyIdentityUpdated(id<SystemIdentity> identity, size_t profile_index);

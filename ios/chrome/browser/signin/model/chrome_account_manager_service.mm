@@ -159,6 +159,17 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 
 }  // anonymous namespace.
 
+void ChromeAccountManagerService::Observer::OnIdentityListChanged() {
+  // Need to call `OnIdentityListChanged(bool)` until
+  // `InternalDriveService`, `InternalPhotosService` are migrated.
+  OnIdentityListChanged(/*notify_user=*/false);
+}
+
+void ChromeAccountManagerService::Observer::OnIdentityListChanged(
+    bool notify_user) {
+  NOTREACHED_IN_MIGRATION();
+}
+
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* pref_service,
     size_t profile_index)
@@ -273,9 +284,9 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ChromeAccountManagerService::OnIdentityListChanged(bool notify_user) {
+void ChromeAccountManagerService::OnIdentityListChanged() {
   for (auto& observer : observer_list_) {
-    observer.OnIdentityListChanged(notify_user);
+    observer.OnIdentityListChanged();
   }
 }
 
@@ -302,10 +313,7 @@ void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
 
 void ChromeAccountManagerService::UpdateRestriction() {
   restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
-  // We want to notify the user that the account list has been updated. This
-  // might provide notifications with no changes (if the new restriction doesn't
-  // change the account list).
-  OnIdentityListChanged(/*notify_user=*/true);
+  OnIdentityListChanged();
 }
 
 ResizedAvatarCache*

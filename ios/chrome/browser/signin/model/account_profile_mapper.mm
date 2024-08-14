@@ -71,11 +71,11 @@ void AccountProfileMapper::IterateOverIdentities(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&AccountProfileMapper::NotifyIdentityListChanged,
-                       GetWeakPtr(), /*notify_user=*/true, index));
+                       GetWeakPtr(), index));
   }
 }
 
-void AccountProfileMapper::OnIdentityListChanged(bool notify_user) {
+void AccountProfileMapper::OnIdentityListChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSMutableSet* known_gaia_ids_before_iteration =
       [NSMutableSet setWithArray:profile_index_per_gaia_id_.allKeys];
@@ -97,7 +97,7 @@ void AccountProfileMapper::OnIdentityListChanged(bool notify_user) {
   // If the identities have been updated or added, the profile observers need to
   // be notified about identity list changes.
   for (size_t profile_index : profile_indexes_to_notify) {
-    NotifyIdentityListChanged(notify_user, profile_index);
+    NotifyIdentityListChanged(profile_index);
   }
 }
 
@@ -107,7 +107,7 @@ void AccountProfileMapper::OnIdentityUpdated(id<SystemIdentity> identity) {
   // Test if the identity can be assigned to a profile.
   CheckIdentityProfile(identity, &profile_indexes_to_notify);
   for (size_t profile_index : profile_indexes_to_notify) {
-    NotifyIdentityListChanged(/*notify_user=*/true, profile_index);
+    NotifyIdentityListChanged(profile_index);
   }
   NSNumber* profile_index_number = profile_index_per_gaia_id_[identity.gaiaID];
   if (profile_index_number) {
@@ -219,7 +219,7 @@ void AccountProfileMapper::HostedDomainedFetched(id<SystemIdentity> identity,
   }
   // Notify observers for all the profile that were updated.
   for (size_t profile_index : profile_indexes_to_notify) {
-    NotifyIdentityListChanged(/*notify_user=*/true, profile_index);
+    NotifyIdentityListChanged(profile_index);
   }
 }
 
@@ -291,15 +291,14 @@ void AccountProfileMapper::RemoveIdentityFromProfile(
   profile_indexes_to_notify->insert(profile_index_number.unsignedLongValue);
 }
 
-void AccountProfileMapper::NotifyIdentityListChanged(bool notify_user,
-                                                     size_t profile_index) {
+void AccountProfileMapper::NotifyIdentityListChanged(size_t profile_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = observer_lists_per_profile_index_.find(profile_index);
   if (it == observer_lists_per_profile_index_.end()) {
     return;
   }
   for (Observer& observer : it->second) {
-    observer.OnIdentityListChanged(notify_user);
+    observer.OnIdentityListChanged();
   }
 }
 

@@ -39,7 +39,7 @@ class MockObserver : public AccountProfileMapper::Observer {
   MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
-  MOCK_METHOD1(OnIdentityListChanged, void(bool));
+  MOCK_METHOD0(OnIdentityListChanged, void());
 };
 
 }  // namespace
@@ -102,11 +102,11 @@ TEST_F(AccountProfileMapperTest, TestWithThreeIdentitiesOneProfile) {
       system_identity_manager_, /*profile_count=*/1);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, /*profile_index=*/0);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(google_identity);
   // Check profile identities and observer.
   NSArray* expected_identities =
@@ -129,9 +129,9 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoProfiles) {
   account_profile_mapper_->AddObserver(&mock_observer0, /*profile_index=*/0);
   testing::StrictMock<MockObserver> mock_observer1;
   account_profile_mapper_->AddObserver(&mock_observer1, /*profile_index=*/1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
   // Check #0 profile identities and observer.
   NSArray* expected_identities0 = @[ gmail_identity1, gmail_identity2 ];
@@ -160,11 +160,11 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesOneManagedTwoProfiles) {
   account_profile_mapper_->AddObserver(&mock_observer0, /*profile_index=*/0);
   testing::StrictMock<MockObserver> mock_observer1;
   account_profile_mapper_->AddObserver(&mock_observer1, /*profile_index=*/1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
-  EXPECT_CALL(mock_observer1, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer1, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(google_identity);
   // Check #0 profile identities and observer.
   NSArray* expected_identities0 = @[ gmail_identity1, gmail_identity2 ];
@@ -196,13 +196,13 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoManagedTwoProfiles) {
   account_profile_mapper_->AddObserver(&mock_observer0, /*profile_index=*/0);
   testing::StrictMock<MockObserver> mock_observer1;
   account_profile_mapper_->AddObserver(&mock_observer1, /*profile_index=*/1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
-  EXPECT_CALL(mock_observer1, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer1, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(google_identity);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(chromium_identity);
   // Check #0 profile identities and observer.
   NSArray* expected_identities0 =
@@ -231,15 +231,15 @@ TEST_F(AccountProfileMapperTest, TestRemoveIdentity) {
   account_profile_mapper_->AddObserver(&mock_observer0, /*profile_index=*/0);
   testing::StrictMock<MockObserver> mock_observer1;
   account_profile_mapper_->AddObserver(&mock_observer1, /*profile_index=*/1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity1);
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(gmail_identity2);
-  EXPECT_CALL(mock_observer1, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer1, OnIdentityListChanged()).Times(1);
   system_identity_manager_->AddIdentity(google_identity);
 
   // Remove an identity.
-  EXPECT_CALL(mock_observer0, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
   base::RunLoop run_loop;
   auto forget_callback = base::BindOnce(
       [](base::RunLoop* run_loop, NSError* error) {
@@ -260,7 +260,7 @@ TEST_F(AccountProfileMapperTest, TestRemoveIdentity) {
               GetIdentitiesForProfile(/*profile_index=*/1));
 
   // Remove the managed identity.
-  EXPECT_CALL(mock_observer1, OnIdentityListChanged(_)).Times(1);
+  EXPECT_CALL(mock_observer1, OnIdentityListChanged()).Times(1);
   system_identity_manager_->ForgetIdentity(google_identity, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   // Check #0 profile identities and observer.

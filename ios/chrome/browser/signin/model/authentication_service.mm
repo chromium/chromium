@@ -495,7 +495,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
   }
 }
 
-void AuthenticationService::OnIdentityListChanged(bool) {
+void AuthenticationService::OnIdentityListChanged() {
   ClearAccountSettingsPrefsOfRemovedAccounts();
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&

@@ -47,7 +47,7 @@ class ChromeAccountManagerServiceObserverBridgeTest : public PlatformTest {
 // Tests that `onIdentityListChanged` is forwarded.
 TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityListChanged) {
   OCMExpect([test_observer_ identityListChanged]);
-  observer_bridge_->OnIdentityListChanged(/*notify_user=*/false);
+  observer_bridge_->OnIdentityListChanged();
 }
 
 // Tests that `onIdentityChanged` is forwarded.

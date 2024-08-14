@@ -30,7 +30,7 @@ FakeSystemIdentity* chromium_identity2 =
 class ChromeAccountManagerServiceObserver
     : public ChromeAccountManagerService::Observer {
  public:
-  void OnIdentityListChanged(bool notify_user) final {
+  void OnIdentityListChanged() final {
     on_identity_list_changed_called_count += 1;
   }
   void OnIdentityUpdated(id<SystemIdentity> identity) final {
