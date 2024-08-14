@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer description='Illegal aria-label' nameFrom=prohibited descriptionFrom=prohibitedNameRepair
+++++++++staticText name='Illegal aria-label moves to description'
+++++++++++inlineTextBox name='Illegal aria-label moves to description'
+++++++genericContainer
+++++++++staticText name='Redundant aria-label ignored'
+++++++++++inlineTextBox name='Redundant aria-label ignored'
+++++++genericContainer description='Manual description' nameFrom=prohibited descriptionFrom=ariaDescription
+++++++++staticText name='Some inner content'
+++++++++++inlineTextBox name='Some inner content'
