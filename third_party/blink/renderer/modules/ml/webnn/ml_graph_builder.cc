@@ -563,11 +563,27 @@ MLOperand* BuildArgMinMax(MLGraphBuilder* builder,
 MLOperand* BuildElementWiseBinary(
     MLGraphBuilder* builder,
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
+    const webnn::SupportedDataTypes& data_type_constraint,
     const MLOperand* a,
     const MLOperand* b,
     const MLOperatorOptions* options,
     ExceptionState& exception_state) {
   const std::string label = options->label().Utf8();
+  if (!data_type_constraint.Has(a->DataType())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        String(NotSupportedArgumentTypeError("a", a->DataType(),
+                                             data_type_constraint)));
+    return nullptr;
+  }
+  if (!data_type_constraint.Has(b->DataType())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        String(NotSupportedArgumentTypeError("b", b->DataType(),
+                                             data_type_constraint)));
+    return nullptr;
+  }
+
   if (a->DataType() != b->DataType()) {
     exception_state.ThrowTypeError(
         String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
@@ -1163,15 +1179,16 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   return output;
 }
 
-#define BUILD_ELEMENTWISE_BINARY_OP(op, op_kind)                           \
-  MLOperand* MLGraphBuilder::op(const MLOperand* a, const MLOperand* b,    \
-                                const MLOperatorOptions* options,          \
-                                ExceptionState& exception_state) {         \
-    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);       \
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);       \
-    return BuildElementWiseBinary(                                         \
-        this, webnn::mojom::blink::ElementWiseBinary::Kind::op_kind, a, b, \
-        options, exception_state);                                         \
+#define BUILD_ELEMENTWISE_BINARY_OP(op, op_kind)                        \
+  MLOperand* MLGraphBuilder::op(const MLOperand* a, const MLOperand* b, \
+                                const MLOperatorOptions* options,       \
+                                ExceptionState& exception_state) {      \
+    THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);    \
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);    \
+    return BuildElementWiseBinary(                                      \
+        this, webnn::mojom::blink::ElementWiseBinary::Kind::op_kind,    \
+        ml_context_->GetProperties().data_type_limits.op##_input, a, b, \
+        options, exception_state);                                      \
   }
 
 BUILD_ELEMENTWISE_BINARY_OP(add, kAdd)
@@ -1183,9 +1200,31 @@ BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
 BUILD_ELEMENTWISE_BINARY_OP(pow, kPow)
 BUILD_ELEMENTWISE_BINARY_OP(equal, kEqual)
 BUILD_ELEMENTWISE_BINARY_OP(greater, kGreater)
-BUILD_ELEMENTWISE_BINARY_OP(greaterOrEqual, kGreaterOrEqual)
 BUILD_ELEMENTWISE_BINARY_OP(lesser, kLesser)
-BUILD_ELEMENTWISE_BINARY_OP(lesserOrEqual, kLesserOrEqual)
+
+MLOperand* MLGraphBuilder::greaterOrEqual(const MLOperand* a,
+                                          const MLOperand* b,
+                                          const MLOperatorOptions* options,
+                                          ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);
+  return BuildElementWiseBinary(
+      this, webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual,
+      ml_context_->GetProperties().data_type_limits.greater_or_equal_input, a,
+      b, options, exception_state);
+}
+
+MLOperand* MLGraphBuilder::lesserOrEqual(const MLOperand* a,
+                                         const MLOperand* b,
+                                         const MLOperatorOptions* options,
+                                         ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs({a, b}), nullptr);
+  return BuildElementWiseBinary(
+      this, webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual,
+      ml_context_->GetProperties().data_type_limits.lesser_or_equal_input, a, b,
+      options, exception_state);
+}
 
 #define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                          \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,                  \
@@ -1222,7 +1261,8 @@ MLOperand* MLGraphBuilder::logicalNot(const MLOperand* input,
   return BuildElementWiseUnaryOperator(
       this, exception_state,
       webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot,
-      webnn::DataTypeConstraint::kUint8, input, options);
+      ml_context_->GetProperties().data_type_limits.logical_not_input, input,
+      options);
 }
 
 MLOperand* MLGraphBuilder::cast(const MLOperand* input,

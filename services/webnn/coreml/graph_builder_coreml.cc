@@ -391,11 +391,6 @@ struct MilDataTypeMap<int32_t> {
       CoreML::Specification::MILSpec::DataType::INT32;
 };
 template <>
-struct MilDataTypeMap<int8_t> {
-  static constexpr CoreML::Specification::MILSpec::DataType value =
-      CoreML::Specification::MILSpec::DataType::INT8;
-};
-template <>
 struct MilDataTypeMap<Float16> {
   static constexpr CoreML::Specification::MILSpec::DataType value =
       CoreML::Specification::MILSpec::DataType::FLOAT16;
@@ -429,13 +424,6 @@ template <>
 void SetTensorValueForImmediateValue<Float16>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
     base::span<const Float16> value) {
-  tensor.mutable_bytes()->mutable_values()->assign(
-      base::as_string_view(base::as_bytes(value)));
-}
-template <>
-void SetTensorValueForImmediateValue<int8_t>(
-    CoreML::Specification::MILSpec::TensorValue& tensor,
-    base::span<const int8_t> value) {
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
@@ -642,10 +630,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
       OperandDataType::kFloat32, OperandDataType::kFloat16,
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
 
-  static constexpr SupportedDataTypes kNegSupportedDataTypes{
-      OperandDataType::kFloat32, OperandDataType::kFloat16,
-      OperandDataType::kInt32, OperandDataType::kInt8};
-
   static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes{
       OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
 
@@ -661,6 +645,20 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
        /*concat_inputs=*/kFloatsAndInt32,
+       /*add_input=*/kFloatsAndInt32,
+       /*sub_input=*/kFloatsAndInt32,
+       /*mul_input=*/kFloatsAndInt32,
+       /*div_input=*/kFloatsAndInt32,
+       /*max_input=*/kFloatsAndInt32,
+       /*min_input=*/kFloatsAndInt32,
+       /*pow_input=*/kFloatsAndInt32,
+       /*equal_input=*/kFloatsAndInt32,
+       /*greater_input=*/kFloatsAndInt32,
+       /*greater_or_equal_input=*/kFloatsAndInt32,
+       /*lesser_input=*/kFloatsAndInt32,
+       /*lesser_or_equal_input=*/kFloatsAndInt32,
+       /*logical_not_input=*/DataTypeConstraint::kUint8,
+       /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloatsAndInt32,
        /*ceil_input=*/DataTypeConstraint::kFloat16To32,
        /*cos_input=*/DataTypeConstraint::kFloat16To32,
@@ -669,7 +667,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*floor_input=*/DataTypeConstraint::kFloat16To32,
        /*identity_input=*/kFloatsAndInt32,
        /*log_input=*/DataTypeConstraint::kFloat16To32,
-       /*neg_input=*/kNegSupportedDataTypes,
+       /*neg_input=*/kFloatsAndInt32,
        /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
        /*sin_input=*/DataTypeConstraint::kFloat16To32,
        /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
@@ -1547,14 +1545,83 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
 
-  std::string operand_op_name = OpKindToString(kind);
-
   const OperandInfo& lhs_operand_info = GetOperandInfo(lhs_operand_id);
+  const OperandDataType input_data_type =
+      MILDataTypeToOperandType(lhs_operand_info.mil_data_type);
 
-  if (!kFloatsAndInt32DataTypes.contains(lhs_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        operand_op_name,
-        MILDataTypeToOperandType(lhs_operand_info.mil_data_type)));
+  switch (kind) {
+    case mojom::ElementWiseBinary::Kind::kAdd: {
+      CHECK(
+          context_properties_.data_type_limits.add_input.Has(input_data_type));
+      op->set_type(kOpAddTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kDiv: {
+      CHECK(
+          context_properties_.data_type_limits.div_input.Has(input_data_type));
+      op->set_type(kOpDivideTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMul: {
+      CHECK(
+          context_properties_.data_type_limits.mul_input.Has(input_data_type));
+      op->set_type(kOpMultiplyTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kSub: {
+      CHECK(
+          context_properties_.data_type_limits.sub_input.Has(input_data_type));
+      op->set_type(kOpSubtractTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMax: {
+      CHECK(
+          context_properties_.data_type_limits.max_input.Has(input_data_type));
+      op->set_type(kOpMaximumTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMin: {
+      CHECK(
+          context_properties_.data_type_limits.min_input.Has(input_data_type));
+      op->set_type(kOpMinimumTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kPow: {
+      CHECK(
+          context_properties_.data_type_limits.pow_input.Has(input_data_type));
+      op->set_type(kOpPowerTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kEqual: {
+      CHECK(context_properties_.data_type_limits.equal_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreater: {
+      CHECK(context_properties_.data_type_limits.greater_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalGreater);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
+      CHECK(context_properties_.data_type_limits.greater_or_equal_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalGreaterEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesser: {
+      CHECK(context_properties_.data_type_limits.lesser_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalLess);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
+      CHECK(context_properties_.data_type_limits.lesser_or_equal_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalLessEqual);
+      break;
+    }
   }
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
@@ -1564,10 +1631,8 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
       base::Overloaded{[&](uint64_t rhs_operand_id) {
                          const OperandInfo& rhs_operand_info =
                              GetOperandInfo(rhs_operand_id);
-                         // TODO: crbug.com/345271830 - use context_properties
-                         // to check.
-                         CHECK(kFloatsAndInt32DataTypes.contains(
-                             rhs_operand_info.mil_data_type));
+                         CHECK_EQ(lhs_operand_info.mil_data_type,
+                                  rhs_operand_info.mil_data_type);
                          SetInputWithName(*op->mutable_inputs(), kOpParamY,
                                           rhs_operand_info.coreml_name);
                        },
@@ -1576,57 +1641,6 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
                                            rhs_value);
                        }},
       rhs_operand);
-
-  switch (kind) {
-    case mojom::ElementWiseBinary::Kind::kAdd: {
-      op->set_type(kOpAddTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kDiv: {
-      op->set_type(kOpDivideTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kMul: {
-      op->set_type(kOpMultiplyTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kSub: {
-      op->set_type(kOpSubtractTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kMax: {
-      op->set_type(kOpMaximumTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kMin: {
-      op->set_type(kOpMinimumTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kPow: {
-      op->set_type(kOpPowerTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kEqual: {
-      op->set_type(kOpLogicalEqual);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kGreater: {
-      op->set_type(kOpLogicalGreater);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
-      op->set_type(kOpLogicalGreaterEqual);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kLesser: {
-      op->set_type(kOpLogicalLess);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
-      op->set_type(kOpLogicalLessEqual);
-      break;
-    }
-  }
 
   if (IsLogicalElementWiseBinary(kind)) {
     // The output of logical binary ops need to be cast from a boolean
@@ -1775,9 +1789,6 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
         case CoreML::Specification::MILSpec::DataType::INT32:
           negative_one_value = CreateScalarImmediateValue<int32_t>(-1);
           break;
-        case CoreML::Specification::MILSpec::DataType::INT8:
-          negative_one_value = CreateScalarImmediateValue<int8_t>(-1);
-          break;
         default:
           NOTREACHED_NORETURN();
       }
@@ -1788,8 +1799,8 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
           mojom::ElementWiseBinary::Kind::kMul, block);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      CHECK_EQ(input_data_type,
-               CoreML::Specification::MILSpec::DataType::UINT8);
+      CHECK(context_properties_.data_type_limits.logical_not_input.Has(
+          input_operand_data_type));
       ASSIGN_OR_RETURN(uint64_t cast_to_bool_operand_id,
                        GenerateInternalOperandInfo(
                            CoreML::Specification::MILSpec::DataType::BOOL,

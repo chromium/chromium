@@ -39,6 +39,24 @@ struct DataTypeLimits {
 
   SupportedDataTypes concat_inputs;
 
+  // Element-wise binary ops.
+  SupportedDataTypes add_input;
+  SupportedDataTypes sub_input;
+  SupportedDataTypes mul_input;
+  SupportedDataTypes div_input;
+  SupportedDataTypes max_input;
+  SupportedDataTypes min_input;
+  SupportedDataTypes pow_input;
+
+  // Element-wise logical ops.
+  SupportedDataTypes equal_input;
+  SupportedDataTypes greater_input;
+  SupportedDataTypes greater_or_equal_input;
+  SupportedDataTypes lesser_input;
+  SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_not_input;
+  SupportedDataTypes logical_output;
+
   // Element-wise unary ops.
   SupportedDataTypes abs_input;
   SupportedDataTypes ceil_input;

@@ -747,6 +747,7 @@ bool ValidateConv2d(const ContextProperties& context_properties,
 }
 
 bool ValidateElementWiseBinaryDataTypes(
+    const ContextProperties& context_properties,
     const mojom::Operand* lhs,
     const mojom::Operand* rhs,
     const mojom::Operand* output,
@@ -768,10 +769,48 @@ bool ValidateElementWiseBinaryDataTypes(
     }
   }
 
-  return true;
+  switch (operation.kind) {
+    case mojom::ElementWiseBinary::Kind::kAdd:
+      return context_properties.data_type_limits.add_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kSub:
+      return context_properties.data_type_limits.sub_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kMul:
+      return context_properties.data_type_limits.mul_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kDiv:
+      return context_properties.data_type_limits.div_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kMax:
+      return context_properties.data_type_limits.max_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kMin:
+      return context_properties.data_type_limits.min_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kPow:
+      return context_properties.data_type_limits.pow_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kEqual:
+      return context_properties.data_type_limits.equal_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kGreater:
+      return context_properties.data_type_limits.greater_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+      return context_properties.data_type_limits.greater_or_equal_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLesser:
+      return context_properties.data_type_limits.lesser_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+      return context_properties.data_type_limits.lesser_or_equal_input.Has(
+          lhs->descriptor.data_type());
+  }
 }
 
-bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
+bool ValidateElementWiseBinary(const ContextProperties& context_properties,
+                               const IdToOperandMap& id_to_operand_map,
                                const mojom::ElementWiseBinary& operation,
                                base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation.lhs_operand_id) ||
@@ -789,7 +828,8 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  if (!ValidateElementWiseBinaryDataTypes(a, b, output, operation)) {
+  if (!ValidateElementWiseBinaryDataTypes(context_properties, a, b, output,
+                                          operation)) {
     return false;
   }
 
@@ -864,9 +904,10 @@ bool ValidateElementWiseUnary(const ContextProperties& context_properties,
           id_to_operand_map, operation,
           context_properties.data_type_limits.log_input, processed_operands);
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
-      return ValidateUnaryOperation(id_to_operand_map, operation,
-                                    DataTypeConstraint::kUint8,
-                                    processed_operands);
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.logical_not_input,
+          processed_operands);
     case mojom::ElementWiseUnary::Kind::kNeg:
       return ValidateUnaryOperation(
           id_to_operand_map, operation,
@@ -1892,7 +1933,7 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateConv2d(context_properties, id_to_operand_map,
                             *operation.get_conv2d(), processed_operands);
     case mojom::Operation::Tag::kElementWiseBinary:
-      return ValidateElementWiseBinary(id_to_operand_map,
+      return ValidateElementWiseBinary(context_properties, id_to_operand_map,
                                        *operation.get_element_wise_binary(),
                                        processed_operands);
     case mojom::Operation::Tag::kElu:

@@ -271,44 +271,71 @@ GraphBuilderTflite::CreateAndBuild(ContextProperties context_properties,
 ContextProperties GraphBuilderTflite::GetContextProperties() {
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   static constexpr SupportedDataTypes kFloat32{OperandDataType::kFloat32};
-  static constexpr SupportedDataTypes kAbsSupportedDataTypes{
-      OperandDataType::kFloat32, OperandDataType::kInt32};
-  static constexpr SupportedDataTypes kNegSupportedDataTypes{
+  static constexpr SupportedDataTypes kFloat32AndInt32To64{
       OperandDataType::kFloat32, OperandDataType::kInt32,
       OperandDataType::kInt64};
+  static constexpr SupportedDataTypes kFloat32AndInts32AndInt64{
+      OperandDataType::kFloat32, OperandDataType::kInt32,
+      OperandDataType::kUint32, OperandDataType::kInt64};
+  static constexpr SupportedDataTypes kFloat32AndInt32{
+      OperandDataType::kFloat32, OperandDataType::kInt32};
+  static constexpr SupportedDataTypes kFloat32AndInt32To64AndUint8{
+      OperandDataType::kFloat32, OperandDataType::kInt32,
+      OperandDataType::kInt64, OperandDataType::kUint8};
+  static constexpr SupportedDataTypes kFloat32AndInt8To64AndUint32{
+      OperandDataType::kFloat32, OperandDataType::kInt32,
+      OperandDataType::kUint32, OperandDataType::kInt64,
+      OperandDataType::kInt8};
+  static constexpr SupportedDataTypes kFloat32AndInt8To32AndUint8{
+      OperandDataType::kFloat32, OperandDataType::kInt32,
+      OperandDataType::kInt8, OperandDataType::kUint8};
+  static constexpr SupportedDataTypes kFloat32AndInt8To64AndUint8{
+      OperandDataType::kFloat32, OperandDataType::kInt64,
+      OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
   static constexpr SupportedDataTypes kEluSupportedDataTypes{
       OperandDataType::kFloat32, OperandDataType::kInt8};
   static constexpr SupportedDataTypes kSliceSupportedDataTypes{
       OperandDataType::kFloat32, OperandDataType::kInt64,
       OperandDataType::kInt32,   OperandDataType::kUint32,
       OperandDataType::kInt8,    OperandDataType::kUint8};
-  static constexpr SupportedDataTypes kSplitSupportedDataTypes{
-      OperandDataType::kFloat32, OperandDataType::kInt64,
-      OperandDataType::kInt32, OperandDataType::kInt8, OperandDataType::kUint8};
   return ContextProperties(
       InputOperandLayout::kNhwc,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
-       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       /*arg_min_max_input=*/kFloat32AndInt8To32AndUint8,
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
        /*concat_inputs=*/SupportedDataTypes::All(),
-       /*abs_input=*/kAbsSupportedDataTypes,
+       /*add_input=*/kFloat32AndInt32To64,
+       /*sub_input=*/kFloat32AndInt32To64,
+       /*mul_input=*/kFloat32AndInts32AndInt64,
+       /*div_input=*/kFloat32AndInt32,
+       /*max_input=*/kFloat32AndInt32To64,
+       /*min_input=*/kFloat32AndInt32To64,
+       /*pow_input=*/kFloat32AndInt32,
+       /*equal_input=*/kFloat32AndInt32To64AndUint8,
+       /*greater_input=*/kFloat32AndInt32To64,
+       /*greater_or_equal_input=*/kFloat32AndInt32To64,
+       /*lesser_input=*/kFloat32AndInt32To64,
+       /*lesser_or_equal_input=*/kFloat32AndInt32To64,
+       /*logical_not_input=*/DataTypeConstraint::kUint8,
+       /*logical_output=*/DataTypeConstraint::kUint8,
+       /*abs_input=*/kFloat32AndInt32,
        /*ceil_input=*/kFloat32,
        /*cos_input=*/kFloat32,
        /*erf_input=*/kFloat32,
        /*exp_input=*/kFloat32,
        /*floor_input=*/kFloat32,
        // Identity is emulated by reshape.
-       /*identity_input=*/SupportedDataTypes::All(),
+       /*identity_input=*/kFloat32AndInt8To64AndUint8,
        /*log_input=*/kFloat32,
-       /*neg_input=*/kNegSupportedDataTypes,
+       /*neg_input=*/kFloat32AndInt32To64,
        /*reciprocal_input=*/kFloat32,
        /*sin_input=*/kFloat32,
        /*sqrt_input=*/kFloat32,
        /*tan_input=*/kFloat32,
        /*elu_input=*/kEluSupportedDataTypes,
-       /*gather_input=*/SupportedDataTypes::All(),
-       /*gather_indices=*/SupportedDataTypes::All(),
+       /*gather_input=*/kFloat32AndInt8To64AndUint8,
+       /*gather_indices=*/DataTypeConstraint::kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/kFloat32,
        /*leaky_relu_input=*/kFloat32,
        /*relu_input=*/kFloat32,
@@ -317,9 +344,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*softmax_input=*/kFloat32,
        /*softplus_input=*/kFloat32,
        /*softsign_input=*/kFloat32,
-       /*split_input=*/kSplitSupportedDataTypes,
+       /*split_input=*/kFloat32AndInt8To64AndUint8,
        /*where_condition=*/DataTypeConstraint::kUint8,
-       /*where_value=*/SupportedDataTypes::All()});
+       /*where_value=*/kFloat32AndInt8To64AndUint32});
 }
 
 GraphBuilderTflite::GraphBuilderTflite(ContextProperties context_properties,
@@ -1337,42 +1364,68 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
 
 auto GraphBuilderTflite::SerializeElementWiseBinary(
     const mojom::ElementWiseBinary& op) -> OperatorOffset {
+  const OperandDataType input_data_type =
+      GetOperand(op.lhs_operand_id).descriptor.data_type();
   ::tflite::BuiltinOperator code;
   switch (op.kind) {
     case mojom::ElementWiseBinary::Kind::kAdd:
+      CHECK(
+          context_properties_.data_type_limits.add_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_ADD;
       break;
     case mojom::ElementWiseBinary::Kind::kSub:
+      CHECK(
+          context_properties_.data_type_limits.sub_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_SUB;
       break;
     case mojom::ElementWiseBinary::Kind::kMul:
+      CHECK(
+          context_properties_.data_type_limits.mul_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_MUL;
       break;
     case mojom::ElementWiseBinary::Kind::kDiv:
+      CHECK(
+          context_properties_.data_type_limits.div_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_DIV;
       break;
     case mojom::ElementWiseBinary::Kind::kMax:
+      CHECK(
+          context_properties_.data_type_limits.max_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_MAXIMUM;
       break;
     case mojom::ElementWiseBinary::Kind::kMin:
+      CHECK(
+          context_properties_.data_type_limits.min_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_MINIMUM;
       break;
     case mojom::ElementWiseBinary::Kind::kPow:
+      CHECK(
+          context_properties_.data_type_limits.pow_input.Has(input_data_type));
       code = ::tflite::BuiltinOperator_POW;
       break;
     case mojom::ElementWiseBinary::Kind::kEqual:
+      CHECK(context_properties_.data_type_limits.equal_input.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kGreater:
+      CHECK(context_properties_.data_type_limits.greater_input.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_GREATER;
       break;
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+      CHECK(context_properties_.data_type_limits.greater_or_equal_input.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_GREATER_EQUAL;
       break;
     case mojom::ElementWiseBinary::Kind::kLesser:
+      CHECK(context_properties_.data_type_limits.lesser_input.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_LESS;
       break;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+      CHECK(context_properties_.data_type_limits.lesser_or_equal_input.Has(
+          input_data_type));
       code = ::tflite::BuiltinOperator_LESS_EQUAL;
       break;
   }
@@ -1448,7 +1501,8 @@ auto GraphBuilderTflite::SerializeElementWiseUnary(
                                      input_tensor_index, output_tensor_index);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      CHECK_EQ(input_data_type, OperandDataType::kUint8);
+      CHECK(context_properties_.data_type_limits.logical_not_input.Has(
+          input_data_type));
       return SerializeLogicalNot(op);
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {

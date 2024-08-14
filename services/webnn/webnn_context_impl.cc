@@ -144,13 +144,13 @@ base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
 
 ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
     ContextProperties backend_context_properties) {
-  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes = {
-      OperandDataType::kInt32, OperandDataType::kUint32,
-      OperandDataType::kInt64};
-
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
+  backend_context_properties.data_type_limits.logical_not_input.RetainAll(
+      DataTypeConstraint::kUint8);
+  backend_context_properties.data_type_limits.logical_output.RetainAll(
+      DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.abs_input.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.ceil_input.RetainAll(
@@ -175,11 +175,10 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.tan_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
-
   backend_context_properties.data_type_limits.elu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
-      kGatherIndicesSupportedDataTypes);
+      DataTypeConstraint::kGatherIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.leaky_relu_input.RetainAll(

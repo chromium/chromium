@@ -32,6 +32,12 @@ dictionary MLArgMinMaxSupportLimits {
   MLSupportLimits output;
 };
 
+dictionary MLBinarySupportLimits {
+  MLSupportLimits a;
+  MLSupportLimits b;
+  MLSupportLimits output;
+};
+
 dictionary MLConcatSupportLimits {
   MLSupportLimits inputs;
 };
@@ -39,6 +45,11 @@ dictionary MLConcatSupportLimits {
 dictionary MLGatherSupportLimits {
   MLSupportLimits input;
   MLSupportLimits indices;
+};
+
+dictionary MLLogicalNotSupportLimits {
+  MLSupportLimits a;
+  MLSupportLimits output;
 };
 
 dictionary MLSingleInputSupportLimits {
@@ -60,6 +71,23 @@ dictionary MLOpSupportLimits {
   MLArgMinMaxSupportLimits argMin;
   MLArgMinMaxSupportLimits argMax;
   MLConcatSupportLimits concat;
+
+  // Element-wise binary ops.
+  MLBinarySupportLimits add;
+  MLBinarySupportLimits sub;
+  MLBinarySupportLimits mul;
+  MLBinarySupportLimits div;
+  MLBinarySupportLimits max;
+  MLBinarySupportLimits min;
+  MLBinarySupportLimits pow;
+
+  // Element-wise logical ops.
+  MLBinarySupportLimits equal;
+  MLBinarySupportLimits greater;
+  MLBinarySupportLimits greaterOrEqual;
+  MLBinarySupportLimits lesser;
+  MLBinarySupportLimits lesserOrEqual;
+  MLLogicalNotSupportLimits logicalNot;
 
   // Element-wise unary ops.
   MLSingleInputSupportLimits abs;

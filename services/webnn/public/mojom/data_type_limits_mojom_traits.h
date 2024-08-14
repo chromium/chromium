@@ -34,6 +34,62 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.concat_inputs;
   }
+  static webnn::SupportedDataTypes add_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.add_input;
+  }
+  static webnn::SupportedDataTypes sub_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.sub_input;
+  }
+  static webnn::SupportedDataTypes mul_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.mul_input;
+  }
+  static webnn::SupportedDataTypes div_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.div_input;
+  }
+  static webnn::SupportedDataTypes max_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.max_input;
+  }
+  static webnn::SupportedDataTypes min_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.min_input;
+  }
+  static webnn::SupportedDataTypes pow_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.pow_input;
+  }
+  static webnn::SupportedDataTypes equal_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.equal_input;
+  }
+  static webnn::SupportedDataTypes greater_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.greater_input;
+  }
+  static webnn::SupportedDataTypes greater_or_equal_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.greater_or_equal_input;
+  }
+  static webnn::SupportedDataTypes lesser_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.lesser_input;
+  }
+  static webnn::SupportedDataTypes lesser_or_equal_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.lesser_or_equal_input;
+  }
+  static webnn::SupportedDataTypes logical_not_input(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.logical_not_input;
+  }
+  static webnn::SupportedDataTypes logical_output(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.logical_output;
+  }
   static webnn::SupportedDataTypes abs_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.abs_input;
@@ -149,8 +205,20 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadArgMinMaxInput(&out->arg_min_max_input) &&
            data.ReadArgMinMaxOutput(&out->arg_min_max_output) &&
            data.ReadConcatInputs(&out->concat_inputs) &&
-           data.ReadEluInput(&out->elu_input) &&
-           data.ReadGatherInput(&out->gather_input) &&
+           data.ReadAddInput(&out->add_input) &&
+           data.ReadSubInput(&out->sub_input) &&
+           data.ReadMulInput(&out->mul_input) &&
+           data.ReadDivInput(&out->div_input) &&
+           data.ReadMaxInput(&out->max_input) &&
+           data.ReadMinInput(&out->min_input) &&
+           data.ReadPowInput(&out->pow_input) &&
+           data.ReadEqualInput(&out->equal_input) &&
+           data.ReadGreaterInput(&out->greater_input) &&
+           data.ReadGreaterOrEqualInput(&out->greater_or_equal_input) &&
+           data.ReadLesserInput(&out->lesser_input) &&
+           data.ReadLesserOrEqualInput(&out->lesser_or_equal_input) &&
+           data.ReadLogicalNotInput(&out->logical_not_input) &&
+           data.ReadLogicalOutput(&out->logical_output) &&
            data.ReadAbsInput(&out->abs_input) &&
            data.ReadCeilInput(&out->ceil_input) &&
            data.ReadCosInput(&out->cos_input) &&
@@ -164,6 +232,8 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadSinInput(&out->sin_input) &&
            data.ReadSqrtInput(&out->sqrt_input) &&
            data.ReadTanInput(&out->tan_input) &&
+           data.ReadEluInput(&out->elu_input) &&
+           data.ReadGatherInput(&out->gather_input) &&
            data.ReadGatherIndices(&out->gather_indices) &&
            data.ReadGeluInput(&out->gelu_input) &&
            data.ReadLeakyReluInput(&out->leaky_relu_input) &&
