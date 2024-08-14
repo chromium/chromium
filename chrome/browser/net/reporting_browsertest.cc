@@ -5,7 +5,9 @@
 #include <memory>
 #include <string>
 
+#include "base/base_switches.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -336,6 +338,27 @@ class EnterpriseReportingBrowserTest : public policy::PolicyTest {
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       preflight_response_;
   std::unique_ptr<net::test_server::ControllableHttpResponse> payload_response_;
+};
+
+class HistogramReportingBrowserTest : public BaseReportingBrowserTest {
+ public:
+  HistogramReportingBrowserTest() = default;
+
+  HistogramReportingBrowserTest(const HistogramReportingBrowserTest&) = delete;
+  HistogramReportingBrowserTest& operator=(
+      const HistogramReportingBrowserTest&) = delete;
+
+  ~HistogramReportingBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam()) {
+      command_line->AppendSwitch(switches::kNoErrorDialogs);
+    }
+    BaseReportingBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 base::Value::List ParseReportUpload(const std::string& payload) {
@@ -1072,6 +1095,40 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingBrowserTest,
   EXPECT_EQ(expectedReport, actualReport);
 }
 
+IN_PROC_BROWSER_TEST_P(HistogramReportingBrowserTest,
+                       CrashReportUnresponsiveHistogram) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::HistogramTester histogram_tester;
+
+  // Navigate to reporting-enabled page.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send("\r\n");
+  original_response()->Done();
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+  std::string_view histogram_name =
+      "ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome";
+
+  if (GetParam()) {
+    histogram_tester.ExpectBucketCount(histogram_name, /*kDropped*/ 1,
+                                       /*expected_count*/ 1);
+  } else {
+    histogram_tester.ExpectBucketCount(histogram_name,
+                                       /*kPotentiallyQueued */ 0,
+                                       /*expected_count*/ 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          NonIsolatedReportingBrowserTest,
@@ -1079,3 +1136,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          JSCallStackReportingBrowserTest,
                          ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, HistogramReportingBrowserTest, ::testing::Bool());

@@ -7904,6 +7904,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome"
+    enum="CrashRepHandlingOutcome" expires_after="2025-01-24">
+  <owner>iclelland@chromium.org</owner>
+  <owner>issackjohn@microsoft.com</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    Tracks the outcome of crash reports for unresponsive renderers. Including
+    when error dialogs are suppressed (e.g., running with --noerrdialogs),
+    specifically categorizing the reports as either potentially queued for
+    sending or dropped. This metric helps evaluate the potential impact of
+    automatically sending crash reports in the scenario where the error dialogs
+    are suppressed, aiming to improve crash report send rates without
+    overwhelming the system with duplicates.
+
+    Recorded once for each visible WebContents when it is observed to be
+    unresponsive.
+  </summary>
+</histogram>
+
 <histogram name="ReportingAndNEL.WinGetLastErrorInitializeDB"
     enum="WinGetLastError" expires_after="2024-07-14">
   <owner>wfh@chromium.org</owner>

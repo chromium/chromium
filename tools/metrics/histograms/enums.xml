@@ -3824,6 +3824,20 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="250477278" label="(Delphi exception)"/>
 </enum>
 
+<!-- LINT.IfChange(CrashRepHandlingOutcome) -->
+
+<enum name="CrashRepHandlingOutcome">
+  <summary>
+    Tracks the outcome of crash reports where the reason is unresponsive.
+    Specifically, it indicates whether the suppression of the dialog resulted in
+    a crash report being dropped.
+  </summary>
+  <int value="0" label="kPotentiallyQueued"/>
+  <int value="1" label="kDropped"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/web_contents/web_contents_impl.cc:CrashRepHandlingOutcome) -->
+
 <enum name="CredentialManagerMediationRequirement">
   <int value="0" label="Optional"/>
   <int value="1" label="Silent"/>
