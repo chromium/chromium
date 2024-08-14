@@ -129,10 +129,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                                GetObservationCallback get_observation_callback);
 
   // FileSystemAccessChangeSource::RawChangeObserver:
-  void OnRawChange(
-      const storage::FileSystemURL& changed_url,
-      bool error,
-      const FileSystemAccessChangeSource::ChangeInfo& change_info) override;
+  void OnRawChange(const storage::FileSystemURL& changed_url,
+                   bool error,
+                   const FileSystemAccessChangeSource::ChangeInfo& change_info,
+                   const FileSystemAccessWatchScope& scope) override;
   void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
 
   // Subscriber this instance to raw changes from `source`.

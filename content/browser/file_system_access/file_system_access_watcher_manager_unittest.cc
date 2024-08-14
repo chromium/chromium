@@ -172,6 +172,13 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
     NotifyOfChange(std::move(relative_path), error, change_info);
   }
 
+  void Signal(const storage::FileSystemURL& changed_url,
+              bool error = false,
+              ChangeInfo change_info = ChangeInfo()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    NotifyOfChange(changed_url, error, change_info);
+  }
+
   void set_initialization_result(
       blink::mojom::FileSystemAccessErrorPtr result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -686,28 +693,32 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   source_for_file.Signal();
   source_for_dir.Signal(/*relative_path=*/file_path.BaseName());
 
-  // TODO(crbug.com/321980367): It would be nice if the watcher manager
-  // could consolidate these changes....
-
   Change expected_change{file_url, ChangeInfo()};
-  std::list<Change> expected_changes = {expected_change, expected_change};
+  std::list<Change> expected_changes = {expected_change};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_changes))(
         accumulator.changes());
   }));
 }
 
-TEST_F(FileSystemAccessWatcherManagerTest, OverlappingObservationScopes) {
-  base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
-  base::FilePath file_path = dir_path.AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+TEST_F(FileSystemAccessWatcherManagerTest,
+       OverlappingObservationScopesForBucketFileSystem) {
+  ASSERT_OK_AND_ASSIGN(auto default_bucket,
+                       CreateSandboxFileSystemAndGetDefaultBucket());
 
-  FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
-                              dir_url, /*is_recursive=*/true),
-                          file_system_context_);
+  auto dir_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("dir"));
+  dir_url.SetBucket(default_bucket);
+
+  auto file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("dir/foo"));
+  file_url.SetBucket(default_bucket);
+
+  FakeChangeSource source(
+      FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems(),
+      file_system_context_);
   watcher_manager().RegisterSource(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
 
@@ -735,12 +746,72 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingObservationScopes) {
       file_accumulator.observation()));
 
   // Only observed by `dir_accumulator`.
-  source.Signal();
+  source.Signal(dir_url);
   // Observed by both accumulators.
-  source.Signal(/*relative_path=*/file_path.BaseName());
+  source.Signal(file_url);
 
   std::list<Change> expected_dir_changes = {{dir_url, ChangeInfo()},
                                             {file_url, ChangeInfo()}};
+  std::list<Change> expected_file_changes = {{file_url, ChangeInfo()}};
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(testing::ContainerEq(expected_dir_changes))(
+               dir_accumulator.changes()) &&
+           testing::Matches(testing::ContainerEq(expected_file_changes))(
+               file_accumulator.changes());
+  }));
+}
+
+TEST_F(FileSystemAccessWatcherManagerTest,
+       OnlyReceiveChangesWhenSourceAndObservationUrlsMatchForLocalFileSystem) {
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
+  auto dir_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  base::FilePath file_path = dir_path.AppendASCII("foo");
+  auto file_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+
+  FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
+                              dir_url, /*is_recursive=*/true),
+                          file_system_context_);
+  watcher_manager().RegisterSource(&source);
+  EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
+                                        blink::mojom::FileSystemAccessErrorPtr>>
+      get_dir_observation_future;
+  watcher_manager().GetDirectoryObservation(
+      dir_url, /*is_recursive=*/true, get_dir_observation_future.GetCallback());
+  EXPECT_TRUE(get_dir_observation_future.Get().has_value());
+
+  ChangeAccumulator dir_accumulator(get_dir_observation_future.Take().value());
+  EXPECT_TRUE(watcher_manager().HasObservationForTesting(
+      dir_accumulator.observation()));
+
+  FakeChangeSource file_source(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
+  watcher_manager().RegisterSource(&file_source);
+  EXPECT_TRUE(watcher_manager().HasSourceForTesting(&file_source));
+  base::test::TestFuture<base::expected<std::unique_ptr<Observation>,
+                                        blink::mojom::FileSystemAccessErrorPtr>>
+      get_file_observation_future;
+  watcher_manager().GetFileObservation(
+      file_url, get_file_observation_future.GetCallback());
+  EXPECT_TRUE(get_file_observation_future.Get().has_value());
+
+  ChangeAccumulator file_accumulator(
+      get_file_observation_future.Take().value());
+  EXPECT_TRUE(watcher_manager().HasObservationForTesting(
+      file_accumulator.observation()));
+
+  // Only observed by `dir_accumulator`.
+  source.Signal();
+  // Only observed by the `file_accumulator`.
+  file_source.Signal();
+
+  // The directory accumulator should receive changes for both the directory
+  // and the file url. No duplicate changes should be reported.
+  std::list<Change> expected_dir_changes = {{dir_url, ChangeInfo()}};
   std::list<Change> expected_file_changes = {{file_url, ChangeInfo()}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_dir_changes))(
