@@ -235,7 +235,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // ScrollBarController overrides:

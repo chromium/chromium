@@ -51,6 +51,7 @@ class AccessiblePaneViewFocusSearch : public FocusSearch {
 AccessiblePaneView::AccessiblePaneView()
     : last_focused_view_tracker_(std::make_unique<ViewTracker>()) {
   focus_search_ = std::make_unique<AccessiblePaneViewFocusSearch>(this);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
 }
 
 AccessiblePaneView::~AccessiblePaneView() {
@@ -220,11 +221,6 @@ void AccessiblePaneView::SetVisible(bool flag) {
 
 void AccessiblePaneView::RequestFocus() {
   SetPaneFocusAndFocusDefault();
-}
-
-void AccessiblePaneView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kPane;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

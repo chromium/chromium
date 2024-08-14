@@ -601,6 +601,15 @@ TEST_F(ScrollViewTest, VerticallScrollbarDoesNotAppearIfDisabled) {
   EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
 }
 
+TEST_F(ScrollViewTest, AccessibleProperties) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+  InstallContents();
+
+  ui::AXNodeData data;
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kScrollView);
+}
+
 // Verifies the scrollbars are added as necessary.
 // If on Mac, test the non-overlay scrollbars.
 TEST_F(ScrollViewTest, ScrollBars) {
