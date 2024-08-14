@@ -15,7 +15,7 @@ namespace {
 // shown without further instructions.
 BASE_FEATURE(kDelegatedSourceListInfoText,
              "DelegatedSourceListInfoText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::u16string GetMessageText(DesktopMediaList::Type type) {
   switch (type) {
