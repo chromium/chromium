@@ -196,7 +196,9 @@ static bool BlockHeightConstrained(const LayoutBlock* block) {
         style.OverflowY() != EOverflow::kHidden) {
       return false;
     }
-    if (style.Height().IsSpecified() || style.MaxHeight().IsSpecified() ||
+    if (!style.Height().HasAutoOrContentOrIntrinsic() ||
+        !(style.MaxHeight().HasAutoOrContentOrIntrinsic() ||
+          style.MaxHeight().IsNone()) ||
         block->IsOutOfFlowPositioned()) {
       // Some sites (e.g. wikipedia) set their html and/or body elements to
       // height:100%, without intending to constrain the height of the content
@@ -246,7 +248,8 @@ static bool BlockSuppressesAutosizing(const LayoutBlock* block) {
 static bool HasExplicitWidth(const LayoutBlock* block) {
   // FIXME: This heuristic may need to be expanded to other ways a block can be
   // wider or narrower than its parent containing block.
-  return block->Style() && block->StyleRef().Width().IsSpecified();
+  return block->Style() &&
+         !block->StyleRef().Width().HasAutoOrContentOrIntrinsic();
 }
 
 static LayoutObject* GetParent(const LayoutObject* object) {
