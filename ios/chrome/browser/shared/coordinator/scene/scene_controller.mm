@@ -1823,7 +1823,7 @@ using UserFeedbackDataCallback =
     return;
   }
   if (self.signinCoordinator) {
-    // As of M121, the CHECK above is known to fire in various cases. The goal
+    // As of M121, the CHECK bellow is known to fire in various cases. The goal
     // of the histograms below is to detect the number of incorrect cases and
     // for which of the access points they are triggered.
     base::UmaHistogramEnumeration(
@@ -1833,6 +1833,9 @@ using UserFeedbackDataCallback =
         "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
         self.signinCoordinator.accessPoint,
         signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    // The goal of this histogram is to understand if the issue is related to
+    // a double tap (duration less than 1s), or if `self.signinCoordinator`
+    // is not visible anymore on the screen (duration more than 1s).
     const base::TimeDelta duration =
         base::TimeTicks::Now() - self.signinCoordinator.creationTimeTicks;
     UmaHistogramTimes("Signin.ShowSigninCoordinatorWhenAlreadyPresent."
