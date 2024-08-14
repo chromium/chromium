@@ -44,6 +44,7 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               ConsumeBudget,
               (int,
                const PrivateAggregationBudgetKey&,
+               int,
                base::OnceCallback<void(RequestResult)>),
               (override));
 

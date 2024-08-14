@@ -168,8 +168,16 @@ void PrivateAggregationManagerImpl::OnReportRequestDetailsReceivedFromHost(
     return;
   }
 
+  CHECK(!contributions.empty());
+  int minimum_value_for_metrics =
+      base::ranges::min(
+          contributions, /*comp=*/{}, /*proj=*/
+          &blink::mojom::AggregatableReportHistogramContribution::value)
+          .value;
+
   budgeter_->ConsumeBudget(
-      budget_needed.ValueOrDie(), std::move(budget_key), /*on_done=*/
+      budget_needed.ValueOrDie(), std::move(budget_key),
+      minimum_value_for_metrics, /*on_done=*/
       // Unretained is safe as the `budgeter_` is owned by `this`.
       base::BindOnce(
           &PrivateAggregationManagerImpl::OnConsumeBudgetReturned,
@@ -191,8 +199,8 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     PrivateAggregationBudgeter::RequestResult request_result) {
   RecordBudgeterResultHistogram(request_result);
 
-  // TODO(alexmt): Consider allowing a subset of contributions to be sent if
-  // there's insufficient budget for them all.
+  // TODO(crbug.com/355271550): Consider allowing a subset of contributions to
+  // be sent if there's insufficient budget for them all.
   if (request_result == PrivateAggregationBudgeter::RequestResult::kApproved) {
     CHECK(!contributions.empty());
     RecordManagerResultHistogram(RequestResult::kSentWithContributions);

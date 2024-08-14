@@ -1333,6 +1333,23 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.PrivateAggregation.Budgeter.EnoughBudgetForAnyValueIfNotEnoughOverall"
+    enum="Boolean" expires_after="2025-01-24">
+  <owner>alexmt@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    When the result of a request to consume budget for the Private Aggregation
+    API fails due to insufficient budget, records whether there was still
+    sufficient budget remaining for the minimum value of the histogram
+    contributions being tested. In other words, if we tested each histogram
+    contribution individually for the report (instead of the report as a whole),
+    would any have been approved? Recorded for each individual aggregatable
+    report request that fails in this way (but not each individual histogram
+    contribution).
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
     units="counts" expires_after="2025-01-26">
   <owner>alexmt@chromium.org</owner>
