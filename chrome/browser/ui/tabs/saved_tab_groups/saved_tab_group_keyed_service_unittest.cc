@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/utils.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -983,7 +984,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
       tabstrip->group_model()->GetTabGroup(group_id)->ListTabs();
   EXPECT_EQ(2u, grouped_tabs.length());
   for (auto index = grouped_tabs.start(); index < grouped_tabs.end(); ++index) {
-    EXPECT_TRUE(TabGroupSyncUtils::IsURLValidForSavedTabGroups(
+    EXPECT_TRUE(IsURLValidForSavedTabGroups(
         tabstrip->GetWebContentsAt(index)->GetURL()));
   }
 }

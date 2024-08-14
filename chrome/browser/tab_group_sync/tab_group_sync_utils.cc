@@ -4,7 +4,7 @@
 
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 
-#include "chrome/common/webui_url_constants.h"
+#include "components/saved_tab_groups/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_request_headers.h"
 
@@ -48,11 +48,6 @@ bool TabGroupSyncUtils::IsSaveableNavigation(
   }
 
   return IsURLValidForSavedTabGroups(navigation_handle->GetURL());
-}
-
-// static
-bool TabGroupSyncUtils::IsURLValidForSavedTabGroups(const GURL& gurl) {
-  return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(chrome::kChromeUINewTabURL);
 }
 
 }  // namespace tab_groups

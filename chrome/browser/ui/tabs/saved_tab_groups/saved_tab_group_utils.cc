@@ -29,10 +29,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -396,8 +398,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
   // in order to protect from filesystem access or chrome settings page use,
   // replace the URL with the new tab page, when creating from sync or an
   // unsaved group.
-  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(
-          contents->GetVisibleURL())) {
+  if (!IsURLValidForSavedTabGroups(contents->GetVisibleURL())) {
     return SavedTabGroupTab(GURL(chrome::kChromeUINewTabURL), u"Unsavable tab",
                             saved_tab_group_id,
                             /*position=*/std::nullopt);

@@ -8,6 +8,9 @@
 #include "components/saved_tab_groups/types.h"
 
 namespace tab_groups {
+namespace {
+const char kChromeUINewTabURL[] = "chrome://newtab/";
+}  // namespace
 
 bool AreLocalIdsPersisted() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -33,6 +36,10 @@ std::optional<LocalTabGroupID> LocalTabGroupIDFromString(
 
   return tab_groups::TabGroupId::FromRawToken(token.value());
 #endif
+}
+
+bool IsURLValidForSavedTabGroups(const GURL& gurl) {
+  return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(kChromeUINewTabURL);
 }
 
 }  // namespace tab_groups

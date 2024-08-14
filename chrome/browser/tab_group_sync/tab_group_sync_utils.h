@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_UTILS_H_
 #define CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_UTILS_H_
 
-#include "url/gurl.h"
-
 namespace content {
 class NavigationHandle;
 }
@@ -19,10 +17,6 @@ class TabGroupSyncUtils {
   // can be reloaded later on another machine.
   static bool IsSaveableNavigation(
       content::NavigationHandle* navigation_handle);
-
-  // Returns whether the tab's URL is viable for saving in a saved tab
-  // group.
-  static bool IsURLValidForSavedTabGroups(const GURL& gurl);
 };
 
 }  // namespace tab_groups

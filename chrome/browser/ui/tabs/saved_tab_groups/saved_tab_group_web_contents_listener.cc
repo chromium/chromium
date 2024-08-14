@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/utils.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -104,7 +105,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   }
 
   // Dont navigate to the new URL if its not valid for sync.
-  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(url)) {
+  if (!IsURLValidForSavedTabGroups(url)) {
     return;
   }
 

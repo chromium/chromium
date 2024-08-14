@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/utils.h"
 #include "content/public/browser/web_contents.h"
 
 namespace tab_groups {
@@ -139,7 +140,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   SavedTabGroupTab tab =
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(web_contents,
                                                                 saved_guid_);
-  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(tab.url())) {
+  if (!IsURLValidForSavedTabGroups(tab.url())) {
     tab.SetURL(GURL(chrome::kChromeUINewTabURL));
   }
 
@@ -329,7 +330,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
                                                     Browser* browser,
                                                     int index_in_tabstrip) {
   GURL url_to_open = tab.url();
-  if (!TabGroupSyncUtils::IsURLValidForSavedTabGroups(url_to_open)) {
+  if (!IsURLValidForSavedTabGroups(url_to_open)) {
     url_to_open = GURL(chrome::kChromeUINewTabURL);
   }
 
