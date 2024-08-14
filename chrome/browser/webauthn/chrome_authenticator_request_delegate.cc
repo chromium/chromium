@@ -667,14 +667,24 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-
+  bool is_passkey_updated = false;
   for (const auto& passkey :
        passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
-                             passkey.user_id().end()) == user_id) {
+                             passkey.user_id().end()) == user_id &&
+        (passkey.user_name() != name ||
+         passkey.user_display_name() != display_name)) {
       passkey_store->UpdatePasskey(
           passkey.credential_id(),
           {.user_name = name, .user_display_name = display_name});
+      is_passkey_updated = true;
+    }
+  }
+  if (is_passkey_updated) {
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      manage_passwords_ui_controller->OnPasskeyUpdated();
     }
   }
 }

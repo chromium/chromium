@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -39,6 +40,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -701,6 +703,62 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
   // Check if the name and displayName of the passkey reported was updated.
   EXPECT_EQ(passkey->user_name(), "Pepito");
   EXPECT_EQ(passkey->user_display_name(), "Pepito The Cat");
+
+  password_manager::ui::State model_state =
+      PasswordsModelDelegateFromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->GetState();
+
+  // Check if the Passkey Updated bubble showed up.
+  EXPECT_EQ(model_state,
+            password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+                       ReportCurrentUserDetailsWithNoChanges) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  // Set up GPM Passkey.
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+  // Reports the user ID that matches the passkey created with the
+  // current user details.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      R"(
+  navigator.credentials.report({
+    publicKey: {
+      rpId: "www.example.com",
+      currentUserDetails:{
+        userId: "AQIDBA",
+        name: "flandre",
+        displayName: "Flandre Scarlet",
+      }
+    }
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )"));
+
+  auto passkey = passkey_model->GetPasskeyByCredentialId(
+      "www.example.com",
+      std::string(reinterpret_cast<const char*>(kCredentialID), 16));
+
+  // Check if the name and displayName of the passkey reported did not change.
+  EXPECT_EQ(passkey->user_name(), kUsername1);
+  EXPECT_EQ(passkey->user_display_name(), kDisplayName1);
+
+  password_manager::ui::State model_state =
+      PasswordsModelDelegateFromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents())
+          ->GetState();
+
+  // If the model_state is INACTIVE_STATE, it means that UpdatePasskey didn't
+  // run, and hence the Passkey Updated bubble did not show up.
+  EXPECT_EQ(model_state, password_manager::ui::INACTIVE_STATE);
 }
 
 class WebAuthnHintsTest : public WebAuthnBrowserTest {
