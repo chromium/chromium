@@ -240,7 +240,7 @@ function getSeaPenPromptingTile(): SeaPenPromptingTile {
     type: TileType.SEA_PEN_PROMPTING,
     preview: [{
       url:
-          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_freeform.jpg',
     }],
   };
 }
