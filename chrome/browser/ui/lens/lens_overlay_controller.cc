@@ -951,7 +951,7 @@ LensOverlayController::CreateLensQueryController(
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     const SkBitmap& screenshot,
-    SkBitmap rgb_screenshot,
+    const std::string& data_uri,
     lens::PaletteId color_palette,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
@@ -961,7 +961,7 @@ LensOverlayController::OverlayInitializationData::OverlayInitializationData(
     const lens::proto::LensOverlayInteractionResponse& interaction_response,
     lens::mojom::CenterRotatedBoxPtr selected_region)
     : current_screenshot_(screenshot),
-      current_rgb_screenshot_(std::move(rgb_screenshot)),
+      current_screenshot_data_uri_(data_uri),
       color_palette_(color_palette),
       page_url_(page_url),
       page_title_(page_title),
@@ -1035,7 +1035,6 @@ void LensOverlayController::CaptureScreenshot() {
   }
 
   state_ = State::kScreenshot;
-
   // Side panel is now full closed, take screenshot and open overlay.
   view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
@@ -1089,18 +1088,13 @@ void LensOverlayController::DidCaptureScreenshot(
     return;
   }
 
-  // Convert bitmap from color type `kBGRA_8888_SkColorType` into a new Bitmap
-  // with color type `kRGBA_8888_SkColorType` which will allow the bitmap to
-  // render properly in the WebUI.
-  sk_sp<SkColorSpace> srgb_color_space = bitmap.colorSpace()->makeSRGBGamma();
-  SkImageInfo rgb_info = bitmap.info()
-                             .makeColorType(kRGBA_8888_SkColorType)
-                             .makeColorSpace(SkColorSpace::MakeSRGB());
-  SkBitmap rgb_bitmap;
-  rgb_bitmap.setInfo(rgb_info);
-  rgb_bitmap.allocPixels(rgb_info);
-  if (!rgb_bitmap.writePixels(bitmap.pixmap())) {
-    // TODO(b/334185985): Handle case when channel swapping fails.
+  // Encode the screenshot so we can transform it into a data URI for the WebUI.
+  scoped_refptr<base::RefCountedBytes> data;
+  lens::LensOverlayClientLogs client_logs;
+  if (!lens::EncodeImage(
+          bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
+          &data, client_logs)) {
+    // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
     CloseUISync(
         lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);
     return;
@@ -1136,7 +1130,8 @@ void LensOverlayController::DidCaptureScreenshot(
   }
 
   initialization_data_ = std::make_unique<OverlayInitializationData>(
-      bitmap, std::move(rgb_bitmap), color_palette, page_url, page_title);
+      bitmap, webui::MakeDataURIForImage(data->as_vector(), "jpeg"),
+      color_palette, page_url, page_title);
   AddBoundingBoxesToInitializationData(all_bounds);
 
   ShowOverlay();
@@ -1360,7 +1355,7 @@ void LensOverlayController::InitializeOverlayUI(
   // `state_`.
   CHECK(page_);
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
-  page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
+  page_->ScreenshotDataUriReceived(init_data.current_screenshot_data_uri_);
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));
   }

@@ -508,11 +508,10 @@ class LensOverlayController : public LensSearchboxClient,
     // bound to the overlay controller. The only required fields are the
     // screenshot, data URI, and the page information if the data is allowed
     // to be shared. The rest of the fields are optional because the overlay
-    // does not require any server response data for use. rgb_screenshot passes
-    // ownership of the Bitmap to OverlayInitializationData.
+    // does not require any server response data for use.
     OverlayInitializationData(
         const SkBitmap& screenshot,
-        SkBitmap rgb_screenshot,
+        const std::string& data_uri,
         lens::PaletteId color_palette,
         std::optional<GURL> page_url,
         std::optional<std::string> page_title,
@@ -534,12 +533,8 @@ class LensOverlayController : public LensSearchboxClient,
     }
 
     // The screenshot that is currently being rendered by the WebUI.
-    // current_screenshot_ is in native format and is needed to encode JPEGs to
-    // send to the server. current_rgb_screenshot_ is in RGBA color type and
-    // used to display in the WebUI. current_rgb_screenshot_ cannot be used to
-    // encode JPEGs because the JPEG encoder expects the native color format.
     SkBitmap current_screenshot_;
-    SkBitmap current_rgb_screenshot_;
+    std::string current_screenshot_data_uri_;
 
     // The dynamic color palette identifier based on the screenshot.
     lens::PaletteId color_palette_;

@@ -119,10 +119,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   static get properties() {
     return {
-      isScreenshotRendered: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
       isResized: {
         type: Boolean,
         reflectToAttribute: true,
@@ -181,8 +177,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     };
   }
 
-  // Whether the screenshot has finished loading in.
-  private isScreenshotRendered: boolean = false;
   // Whether the selection overlay is its initial size, or has changed size.
   private isResized: boolean = false;
   private isInitialSize: boolean = true;
@@ -504,7 +498,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private onImageLoad() {
-    this.isScreenshotRendered = true;
     // The image is loaded, but not necessarily rendered to the user. To avoid
     // adding the background scrim too early and it being noticeable to the
     // user, we wait for two animation frames before notifying that the image is

@@ -174,11 +174,6 @@ constexpr char kCloseSearchBubbleScript[] =
     "const closeButton = appRoot.getElementById('closeButton');"
     "closeButton.click();})();";
 
-// Returns true if the screenshot is loaded into the WebUI.
-constexpr char kScreenshotLoadedScript[] =
-    "document.querySelector('lens-overlay-app').shadowRoot.querySelector('lens-"
-    "selection-overlay').getBoundingClientRect().width > 0";
-
 constexpr char kTestSuggestSignals[] = "suggest_signals";
 
 constexpr char kStartTimeQueryParamKey[] = "qsubts";
@@ -219,10 +214,10 @@ const lens::mojom::CenterRotatedBoxPtr kTestRegion =
 
 class LensOverlayPageFake : public lens::mojom::LensPage {
  public:
-  void ScreenshotDataReceived(const SkBitmap& screenshot) override {
-    last_received_screenshot_ = screenshot;
+  void ScreenshotDataUriReceived(const std::string& data_uri) override {
+    last_received_screenshot_data_uri_ = data_uri;
     // Do the real call on the open WebUI we intercepted.
-    overlay_page_->ScreenshotDataReceived(screenshot);
+    overlay_page_->ScreenshotDataUriReceived(data_uri);
   }
 
   void ObjectsReceived(
@@ -270,7 +265,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   // call real functions on the WebUI.
   mojo::Remote<lens::mojom::LensPage> overlay_page_;
 
-  SkBitmap last_received_screenshot_;
+  std::string last_received_screenshot_data_uri_;
   std::optional<lens::mojom::OverlayThemePtr> last_received_theme_;
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
@@ -560,22 +555,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
 
-  // Waits for the WebUI to have rendered the screenshot.
-  void WaitForScreenshotLoaded() {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return content::EvalJs(GetOverlayWebContents()->GetPrimaryMainFrame(),
-                             kScreenshotLoadedScript)
-          .ExtractBool();
-    }));
-  }
-
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
     auto* overlay_web_contents = GetOverlayWebContents();
-
-    // We need to wait until the selection overlay is ready to handle events.
-    // This happens once the screenshot is loaded in.
-    WaitForScreenshotLoaded();
-
     // We should wait for the main frame's hit-test data to be ready before
     // sending the click event below to avoid flakiness.
     content::WaitForHitTestData(overlay_web_contents->GetPrimaryMainFrame());
@@ -908,8 +889,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
   // Verify screenshot was encoded and passed to WebUI.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  EXPECT_FALSE(
-      fake_controller->fake_overlay_page_.last_received_screenshot_.empty());
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
@@ -3582,8 +3563,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   // Verify screenshot was encoded and passed to WebUI.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  EXPECT_FALSE(
-      fake_controller->fake_overlay_page_.last_received_screenshot_.empty());
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
 
   // Verify expected color palette was identified, fallback expected
   // with the page being mostly colorless.
@@ -3623,8 +3604,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
 
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(
-      fake_controller->fake_overlay_page_.last_received_screenshot_.empty());
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_screenshot_data_uri_.empty());
   EXPECT_FALSE(
       fake_controller->fake_overlay_page_.last_received_theme_.has_value());
 
@@ -3639,8 +3620,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
 
   // Verify screenshot was encoded and passed to WebUI.
-  EXPECT_FALSE(
-      fake_controller->fake_overlay_page_.last_received_screenshot_.empty());
+  EXPECT_FALSE(fake_controller->fake_overlay_page_
+                   .last_received_screenshot_data_uri_.empty());
 
   // Verify expected color palette was identified.
   ASSERT_EQ(lens::PaletteId::kTangerine, controller->color_palette());
@@ -3667,8 +3648,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
 
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(
-      fake_controller->fake_overlay_page_.last_received_screenshot_.empty());
+  EXPECT_TRUE(fake_controller->fake_overlay_page_
+                  .last_received_screenshot_data_uri_.empty());
 
   // Showing UI should change the state to screenshot and eventually to starting
   // WebUI.
