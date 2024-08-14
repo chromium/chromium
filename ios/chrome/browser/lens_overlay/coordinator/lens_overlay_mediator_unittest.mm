@@ -73,17 +73,6 @@ class LensOverlayMediatorTest : public PlatformTest {
   OCMockObject<LensToolbarConsumer>* mock_toolbar_consumer_;
 };
 
-TEST_F(LensOverlayMediatorTest, ShouldPushURLToConsumerOnSelection) {
-  GURL testURL = GURL("http://test.com");
-
-  [mediator_ selectionUI:nil
-             performedSelection:nil
-      constructedResultsPageURL:testURL
-                 suggestSignals:@"test_iil"];
-
-  EXPECT_EQ(mock_result_consumer_.lastPushedURL, testURL);
-}
-
 TEST_F(LensOverlayMediatorTest, ShouldRouteTheImageToTheConsumerWhenStarted) {
   __block BOOL didReceiveSnapshot = false;
 

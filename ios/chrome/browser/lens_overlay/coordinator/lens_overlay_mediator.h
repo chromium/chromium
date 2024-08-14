@@ -10,10 +10,11 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_omnibox_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_snapshot_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 
+@protocol LensOverlayCommands;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
 namespace web {
@@ -22,12 +23,15 @@ class WebState;
 
 /// Main mediator for Lens Overlay.
 /// Manages data flow between Selection, Omnibox and Results.
-@interface LensOverlayMediator : NSObject <LensOmniboxMutator,
+@interface LensOverlayMediator : NSObject <ChromeLensOverlayDelegate,
+                                           LensOmniboxMutator,
                                            LensOmniboxClientDelegate,
-                                           LensOverlaySelectionDelegate,
                                            OmniboxFocusDelegate>
 
 @property(nonatomic, weak) id<LensOverlayResultConsumer> resultConsumer;
+
+// Handler for the Lens Overlay commands;
+@property(nonatomic, weak) id<LensOverlayCommands> commandsHandler;
 
 // Consumer for the captured snapshot image.
 @property(nonatomic, weak) id<LensOverlaySnapshotConsumer> snapshotConsumer;

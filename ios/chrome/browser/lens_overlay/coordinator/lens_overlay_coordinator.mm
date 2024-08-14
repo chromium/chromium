@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -25,11 +25,16 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -46,7 +51,7 @@
   LensOverlayContainerViewController* _containerViewController;
 
   /// Selection view controller.
-  LensOverlaySelectionPlaceholderViewController* _selectionViewController;
+  UIViewController<ChromeLensOverlay>* _selectionViewController;
 
   /// The mediator for lens overlay.
   LensOverlayMediator* _mediator;
@@ -63,27 +68,37 @@
   OmniboxCoordinator* _omniboxCoordinator;
 }
 
-#pragma mark - properties
+#pragma mark - Helpers
 
-- (void)createUIWithSnapshot:(UIImage*)snapshot {
+// Returns whether the UI was created succesfully.
+- (BOOL)createUIWithSnapshot:(UIImage*)snapshot {
   [self createContainerViewController];
-  [self createSelectionViewController];
+
+  [self createSelectionViewControllerWithSnapshot:snapshot];
+  if (!_selectionViewController) {
+    return NO;
+  }
+
   [self createMediator];
 
   // Wire up consumers and delegates
   _containerViewController.selectionViewController = _selectionViewController;
-  _selectionViewController.delegate = _mediator;
-  _mediator.snapshotConsumer = _selectionViewController;
+  [_selectionViewController setLensOverlayDelegate:_mediator];
+  _mediator.commandsHandler = self;
 
   [_mediator startWithSnapshot:snapshot];
+  [_selectionViewController start];
+
+  return YES;
 }
 
-- (void)createSelectionViewController {
+- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot {
   if (_selectionViewController) {
     return;
   }
+  LensConfiguration* config = [self createLensConfiguration];
   _selectionViewController =
-      [[LensOverlaySelectionPlaceholderViewController alloc] init];
+      ios::provider::NewChromeLensOverlay(snapshot, config);
 }
 
 - (void)createContainerViewController {
@@ -160,8 +175,12 @@
   _associatedTabHelper->SetLensOverlayShown(true);
 
   UIImage* snapshot = [self captureSnapshot];
-  [self createUIWithSnapshot:snapshot];
-  [self showLensUI:animated];
+  BOOL success = [self createUIWithSnapshot:snapshot];
+  if (success) {
+    [self showLensUI:animated];
+  } else {
+    [self destroyLensUI:NO];
+  }
 }
 
 - (void)showLensUI:(BOOL)animated {
@@ -236,6 +255,30 @@
 
 #pragma mark - private
 
+// Lens needs to have visibility into the user's identity and whether the search
+// should be incognito or not.
+- (LensConfiguration*)createLensConfiguration {
+  Browser* browser = self.browser;
+  LensConfiguration* configuration = [[LensConfiguration alloc] init];
+  BOOL isIncognito = browser->GetBrowserState()->IsOffTheRecord();
+  configuration.isIncognito = isIncognito;
+  configuration.singleSignOnService =
+      GetApplicationContext()->GetSingleSignOnService();
+  // TODO(crbug.com/359115242): Use proper entrypoint for Lens Overlay.
+  configuration.entrypoint = LensEntrypoint::NewTabPage;
+
+  if (!isIncognito) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForBrowserState(
+            browser->GetBrowserState());
+    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
+        ::signin::ConsentLevel::kSignin);
+    configuration.identity = identity;
+  }
+
+  return configuration;
+}
+
 - (void)startResultPage {
   Browser* browser = self.browser;
   ChromeBrowserState* browserState = browser->GetBrowserState();
@@ -270,6 +313,11 @@
   ];
   sheet.prefersGrabberVisible = YES;
 
+  // TODO(crbug.com/359124093): Temporary workaround as
+  // `presentViewController:` loads the view asynchronously on the main thread.
+  // `_resultViewController` needs to first be loaded to avoid crashing by
+  // calling `setEditView:`.
+  [_resultViewController loadViewIfNeeded];
   [_containerViewController presentViewController:_resultViewController
                                          animated:YES
                                        completion:nil];
@@ -328,6 +376,7 @@
   [self stopResultPage];
   _containerViewController = nil;
   [_mediator disconnect];
+  _selectionViewController = nil;
   _mediator = nil;
 }
 

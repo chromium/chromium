@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
+#import "ios/chrome/test/providers/lens/test_lens_overlay_controller.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
@@ -40,8 +41,7 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
 UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
     UIImage* snapshot,
     LensConfiguration* config) {
-  // Lens is not supported for tests.
-  return nil;
+  return [[TestLensOverlayController alloc] init];
 }
 
 bool IsLensSupported() {

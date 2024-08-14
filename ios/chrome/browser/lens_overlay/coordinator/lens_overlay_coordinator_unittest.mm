@@ -16,6 +16,11 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -43,9 +48,18 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     scoped_window_.Get().rootViewController = root_view_controller_;
 
     // Browser state
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
     ChromeBrowserState* browser_state =
-        browser_state_manager_.AddBrowserStateWithBuilder(
-            TestChromeBrowserState::Builder());
+        browser_state_manager_.AddBrowserStateWithBuilder(std::move(builder));
+
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state, std::make_unique<FakeAuthenticationServiceDelegate>());
+
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state);
 
     browser_ = std::make_unique<TestBrowser>(browser_state);
     dispatcher_ = [[CommandDispatcher alloc] init];
@@ -75,6 +89,15 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     // Mark the only web state as active.
     browser_.get()->GetWebStateList()->InsertWebState(std::move(web_state_));
     browser_.get()->GetWebStateList()->ActivateWebStateAt(0);
+
+    // Log in with a fake identity.
+    id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* fake_system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    fake_system_identity_manager->AddIdentity(identity);
+    authentication_service->SignIn(
+        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     // Wait for the base view controller to be presented.
     base_view_controller_.modalPresentationStyle =
