@@ -159,6 +159,9 @@ class PickerViewTest : public AshTestBase {
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
   using FakeSearchFunction =
+      base::RepeatingCallback<void(std::u16string_view query,
+                                   SearchResultsCallback callback)>;
+  using FakeCategorySearchFunction =
       base::RepeatingCallback<void(SearchResultsCallback callback)>;
 
   struct Options {
@@ -166,7 +169,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     std::vector<PickerSearchResult> zero_state_suggested_results;
     FakeSearchFunction search_function;
     base::RepeatingClosure stop_search_function;
-    FakeSearchFunction category_results_function;
+    FakeCategorySearchFunction category_results_function;
     PickerActionType action_type = PickerActionType::kInsert;
     std::vector<PickerSearchResult> emoji_results;
     std::vector<std::string> suggested_emojis;
@@ -204,7 +207,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     if (options_.search_function.is_null()) {
       std::move(callback).Run({});
     } else {
-      options_.search_function.Run(std::move(callback));
+      options_.search_function.Run(query, std::move(callback));
     }
   }
 
@@ -484,7 +487,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultInsertsResult) {
     base::test::TestFuture<void> future;
     FakePickerViewDelegate delegate({
         .search_function = base::BindLambdaForTesting(
-            [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            [&](std::u16string_view query,
+                FakePickerViewDelegate::SearchResultsCallback callback) {
               future.SetValue();
               callback.Run({
                   PickerSearchResultsSection(
@@ -534,7 +538,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultOpensResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -605,7 +610,8 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -772,7 +778,8 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
 TEST_F(PickerViewTest, EmptySearchFieldSwitchesToCategoryViewFromSeeMore) {
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [](std::u16string_view query,
+             FakePickerViewDelegate::SearchResultsCallback callback) {
             callback.Run({
                 PickerSearchResultsSection(PickerSectionType::kLinks, {},
                                            /*has_more_results=*/true),
@@ -801,7 +808,8 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesToCategoryViewFromSeeMore) {
 TEST_F(PickerViewTest, CategoryViewFromSeeMoreHasResults) {
   FakePickerViewDelegate delegate(
       {.search_function = base::BindLambdaForTesting(
-           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+           [&](std::u16string_view query,
+               FakePickerViewDelegate::SearchResultsCallback callback) {
              callback.Run({
                  PickerSearchResultsSection(PickerSectionType::kLinks, {},
                                             /*has_more_results=*/true),
@@ -848,7 +856,8 @@ TEST_F(PickerViewTest,
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -871,7 +880,8 @@ TEST_F(PickerViewTest,
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
           }),
   });
@@ -896,7 +906,8 @@ TEST_F(PickerViewTest, SearchingFromCategoryDoesNotImmediatelySwitchToResults) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -930,7 +941,8 @@ TEST_F(PickerViewTest,
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
           }),
   });
@@ -965,7 +977,8 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
   FakePickerViewDelegate::SearchResultsCallback search_callback;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             search_callback = std::move(callback);
             search_called.SetValue();
           }),
@@ -997,7 +1010,8 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
   base::test::TestFuture<void> search2_called;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
                   PickerSearchResultsSection(PickerSectionType::kLinks, {},
@@ -1037,7 +1051,8 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
   FakePickerViewDelegate::SearchResultsCallback search2_callback;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
                   PickerSearchResultsSection(PickerSectionType::kLocalFiles, {},
@@ -1080,7 +1095,8 @@ TEST_F(PickerViewTest, ShowsNoResultsBeforeTimeout) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1102,7 +1118,8 @@ TEST_F(PickerViewTest, ShowsNoResultsAfterTimeout) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1123,7 +1140,8 @@ TEST_F(PickerViewTest, ShowsNoResultsWithNoIllustration) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1151,7 +1169,8 @@ TEST_F(PickerViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1173,7 +1192,8 @@ TEST_F(PickerViewTest, NoMainResultsAndSomeEmojisIsAnnounced) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kExpressions},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
       .emoji_results = {PickerSearchResult::Emoji(u"😊"),
@@ -1196,7 +1216,8 @@ TEST_F(PickerViewTest, DoesNotClearResultsBeforeTimeout) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1228,7 +1249,8 @@ TEST_F(PickerViewTest, ClearsResultsAfterTimeout) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1259,7 +1281,8 @@ TEST_F(PickerViewTest, ClearsResultsWhenQueryClearedNoCategory) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1287,7 +1310,8 @@ TEST_F(PickerViewTest, ClearsResultsWhenQueryClearedWithCategory) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(std::move(callback));
           }),
   });
@@ -1327,7 +1351,8 @@ TEST_F(PickerViewTest, StopsSearchWhenQueryClearedNoCategory) {
   base::test::TestFuture<void> stop_search_future;
   FakePickerViewDelegate delegate(
       {.search_function = base::BindLambdaForTesting(
-           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+           [&](std::u16string_view query,
+               FakePickerViewDelegate::SearchResultsCallback callback) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
@@ -1347,7 +1372,8 @@ TEST_F(PickerViewTest, StopsSearchWhenQueryClearedWithCategory) {
   FakePickerViewDelegate delegate(
       {.available_categories = {PickerCategory::kLinks},
        .search_function = base::BindLambdaForTesting(
-           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+           [&](std::u16string_view query,
+               FakePickerViewDelegate::SearchResultsCallback callback) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
@@ -1384,7 +1410,8 @@ TEST_F(PickerViewTest, StopsSearchWhenBackButtonPressed) {
   FakePickerViewDelegate delegate(
       {.available_categories = {PickerCategory::kLinks},
        .search_function = base::BindLambdaForTesting(
-           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+           [&](std::u16string_view query,
+               FakePickerViewDelegate::SearchResultsCallback callback) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
@@ -1423,7 +1450,8 @@ TEST_F(PickerViewTest, StopsSearchWhenCategorySelectedOnZeroStateDuringSearch) {
   FakePickerViewDelegate delegate(
       {.available_categories = {PickerCategory::kLinks},
        .search_function = base::BindLambdaForTesting(
-           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+           [&](std::u16string_view query,
+               FakePickerViewDelegate::SearchResultsCallback callback) {
              search_future.SetValue();
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
@@ -1454,7 +1482,8 @@ TEST_F(PickerViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
   base::test::TestFuture<void> stop_search_future;
   FakePickerViewDelegate delegate(
       {.search_function = base::BindLambdaForTesting(
-           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+           [&](std::u16string_view query,
+               FakePickerViewDelegate::SearchResultsCallback callback) {
              search_future.SetValue(std::move(callback));
            }),
        .stop_search_function = stop_search_future.GetRepeatingCallback()});
@@ -1536,7 +1565,8 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -1577,7 +1607,8 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   base::HistogramTester histogram;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&, this](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&, this](std::u16string_view query,
+                    FakePickerViewDelegate::SearchResultsCallback callback) {
             // The search automatically publishes results after burn-in + 50ms,
             // so publish "burn in results" before that.
             task_environment()->FastForwardBy(PickerController::kBurnInPeriod);
@@ -1607,7 +1638,8 @@ TEST_F(PickerViewTest, RecordsSearchLatencyWhenResultsAreAutomaticallyCleared) {
   base::HistogramTester histogram;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&, this](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&, this](std::u16string_view query,
+                    FakePickerViewDelegate::SearchResultsCallback callback) {
             task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
           }),
   });
@@ -1826,7 +1858,8 @@ TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(PickerSectionType::kLinks, {},
@@ -1849,7 +1882,8 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -1918,7 +1952,8 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesSearchResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2114,7 +2149,8 @@ TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2146,7 +2182,8 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResultsWithEmojiBar) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kExpressions},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2185,7 +2222,8 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResultsWithoutEmojiBar) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2221,7 +2259,8 @@ TEST_F(PickerViewTest, ShiftTabNavigatesToClearButton) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2256,7 +2295,8 @@ TEST_F(PickerViewTest, DownArrowKeyNavigatesFromClearButtonToSearchResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2354,7 +2394,8 @@ TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2386,7 +2427,8 @@ TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(PickerSectionType::kLinks, {},
@@ -2416,7 +2458,8 @@ TEST_F(PickerViewTest, KeyNavigationToSeeMoreResults) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2497,7 +2540,8 @@ TEST_F(PickerViewTest,
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(PickerSectionType::kLinks, {},
@@ -2530,7 +2574,8 @@ TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPageWithNoIllustration) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({});
           }),
@@ -2664,7 +2709,8 @@ TEST_F(PickerViewTest, EnterDuringBurnInOnZeroState) {
   FakePickerViewDelegate delegate({
       .zero_state_suggested_results = {PickerSearchResult::Text(u"zero state")},
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
           }),
   });
@@ -2702,7 +2748,8 @@ TEST_F(PickerViewTest, EnterOnSearchResults) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(callback);
           }),
   });
@@ -2750,7 +2797,8 @@ TEST_F(PickerViewTest, EnterDuringBurnInOnSearchResults) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue(callback);
           }),
   });
@@ -2796,7 +2844,8 @@ TEST_F(PickerViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
@@ -2832,7 +2881,8 @@ TEST_F(PickerViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
-          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+          [&](std::u16string_view query,
+              FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
