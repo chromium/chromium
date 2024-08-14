@@ -51,6 +51,11 @@ void ScopedAutofillManagersObservation::Reset() {
   autofill_manager_observations_.RemoveAllObservations();
 }
 
+content::WebContents* ScopedAutofillManagersObservation::web_contents() {
+  ContentAutofillDriverFactory* factory = factory_observation_.GetSource();
+  return factory ? factory->web_contents() : nullptr;
+}
+
 void ScopedAutofillManagersObservation::OnContentAutofillDriverFactoryDestroyed(
     ContentAutofillDriverFactory& factory) {
   Reset();

@@ -4,14 +4,17 @@
 
 #include "chrome/browser/user_annotations/user_annotations_web_contents_observer.h"
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+
+#include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/compose/buildflags.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -23,9 +26,10 @@ namespace user_annotations {
 UserAnnotationsWebContentsObserver::UserAnnotationsWebContentsObserver(
     content::WebContents* web_contents,
     user_annotations::UserAnnotationsService* user_annotations_service)
-    : content::WebContentsObserver(web_contents),
-      user_annotations_service_(user_annotations_service) {
-  CHECK(user_annotations_service_);
+    : user_annotations_service_(CHECK_DEREF(user_annotations_service)) {
+  autofill_managers_observation_.Observe(
+      web_contents, autofill::ScopedAutofillManagersObservation::
+                        InitializationPolicy::kObservePreexistingManagers);
 }
 
 UserAnnotationsWebContentsObserver::~UserAnnotationsWebContentsObserver() =
@@ -50,27 +54,8 @@ UserAnnotationsWebContentsObserver::MaybeCreateForWebContents(
     return nullptr;
   }
 
-  return base::WrapUnique<UserAnnotationsWebContentsObserver>(
-      new UserAnnotationsWebContentsObserver(web_contents,
-                                             user_annotations_service));
-}
-
-void UserAnnotationsWebContentsObserver::RenderFrameCreated(
-    content::RenderFrameHost* rfh) {
-  autofill::ContentAutofillDriver* driver =
-      autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
-  if (driver) {
-    driver->GetAutofillManager().AddObserver(this);
-  }
-}
-
-void UserAnnotationsWebContentsObserver::RenderFrameDeleted(
-    content::RenderFrameHost* rfh) {
-  autofill::ContentAutofillDriver* driver =
-      autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
-  if (driver) {
-    driver->GetAutofillManager().RemoveObserver(this);
-  }
+  return std::make_unique<UserAnnotationsWebContentsObserver>(
+      web_contents, user_annotations_service);
 }
 
 void UserAnnotationsWebContentsObserver::OnFormSubmitted(
@@ -80,7 +65,7 @@ void UserAnnotationsWebContentsObserver::OnFormSubmitted(
     return;
   }
 
-  web_contents()->RequestAXTreeSnapshot(
+  autofill_managers_observation_.web_contents()->RequestAXTreeSnapshot(
       base::BindOnce(&UserAnnotationsWebContentsObserver::OnAXTreeSnapshotted,
                      weak_ptr_factory_.GetWeakPtr(), form),
       ui::kAXModeWebContentsOnly,

@@ -71,6 +71,9 @@ class ScopedAutofillManagersObservation final
   // Resets all observations.
   void Reset();
 
+  // Returns the `WebContents` whose factory it is observing.
+  content::WebContents* web_contents();
+
  private:
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(

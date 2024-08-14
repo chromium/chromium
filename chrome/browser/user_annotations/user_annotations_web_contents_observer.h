@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace ui {
 struct AXTreeUpdate;
@@ -20,13 +20,15 @@ namespace user_annotations {
 
 class UserAnnotationsService;
 
-// A WebContentsObserver that listens to events that may require persisting a
-// user annotation, such as a form submission, and propagates them to the
+// A class that listens to events that may require persisting a user annotation,
+// such as a form submission, and propagates them to the
 // `UserAnnotationsKeyedService` for persistence.
 class UserAnnotationsWebContentsObserver
-    : public content::WebContentsObserver,
-      public autofill::AutofillManager::Observer {
+    : public autofill::AutofillManager::Observer {
  public:
+  UserAnnotationsWebContentsObserver(
+      content::WebContents* web_contents,
+      user_annotations::UserAnnotationsService* user_annotations_service);
   ~UserAnnotationsWebContentsObserver() override;
 
   // Creates a `UserAnnotationsWebContentsObserver` for `web_contents` if
@@ -34,26 +36,22 @@ class UserAnnotationsWebContentsObserver
   static std::unique_ptr<UserAnnotationsWebContentsObserver>
   MaybeCreateForWebContents(content::WebContents* web_contents);
 
-  // content::WebContentsObserver:
-  void RenderFrameCreated(content::RenderFrameHost* rfh) override;
-  void RenderFrameDeleted(content::RenderFrameHost* rfh) override;
-
   // autofill::AutofillManager::Observer:
   void OnFormSubmitted(autofill::AutofillManager& manager,
                        const autofill::FormData& form) override;
 
  private:
-  UserAnnotationsWebContentsObserver(
-      content::WebContents* web_contents,
-      user_annotations::UserAnnotationsService* user_annotations_service);
-
   // Callback invoked when AXTree for the frame has been snapshotted.
   void OnAXTreeSnapshotted(const autofill::FormData& form,
                            const ui::AXTreeUpdate& snapshot);
 
   // The service for storing user annotations. Owned by the profile that owns
   // the web contents. Guaranteed to outlive `this`.
-  raw_ptr<UserAnnotationsService> user_annotations_service_;
+  const raw_ref<UserAnnotationsService> user_annotations_service_;
+
+  // Helper for observing all AutofillManagers of a WebContents.
+  autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
+      this};
 
   // Factory to create weak pointers.
   base::WeakPtrFactory<UserAnnotationsWebContentsObserver> weak_ptr_factory_{
