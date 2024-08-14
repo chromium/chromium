@@ -1831,7 +1831,7 @@ BASE_FEATURE(kLacrosExtensionPrinting,
 // recency, instead of fetching them using drive's ItemSuggest API.
 BASE_FEATURE(kLauncherContinueSectionWithRecents,
              "LauncherContinueSectionWithRecents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Same as `kLauncherContinueSectionWithRecents`, but used to enable the feature
 // via finch, while ensuring minimum Chrome version - i.e. to avoid finch config
