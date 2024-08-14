@@ -49,6 +49,9 @@ icons = [
   "thumb_up.svg",
   "thumb_up_filled.svg",
   "time_created.svg",
+  "volume_down.svg",
+  "volume_mute.svg",
+  "volume_off.svg",
   "volume_up.svg",
 ]
 
