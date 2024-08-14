@@ -38,8 +38,10 @@
 <translation id="2662028055331606429">Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Siirry sivustolle</translation>
 <translation id="2677748264148917807">Poistu</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Luotu <ph name="NUM_HOURS_ONE" /> tunti sitten}other{Luotu <ph name="NUM_HOURS_MANY" /> tuntia sitten}}</translation>
 <translation id="2801787514987684416">Näytetäänkö kaupan tiedot?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> välilehti suljettu}other{<ph name="MANY_CLOSED" /> välilehteä suljettu}}</translation>
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
 <translation id="2928243913527329289">Google | Tietoja tästä kaupasta</translation>
 <translation id="2977480621796371840">Poista ryhmästä</translation>
@@ -50,6 +52,7 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Välilehtiryhmän (<ph name="COLOR_NAME" />) värikuvake</translation>
 <translation id="3194464645767632461">arvio</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CHANGED" /> välilehteä muutettu}}</translation>
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>
 <translation id="3322827343001922122">Avaa välilehtiryhmän toimintovalikko välilehtiryhmälle <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
@@ -71,6 +74,7 @@
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="427987768447457592">Uusi välilehtiryhmä</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_CHANGED" /> välilehteä muutettu, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="4371591986692297148">Ei aktiivinen</translation>
 <translation id="4460014764210899310">Poista ryhmittely</translation>
 <translation id="4590027107044272416">Voit nyt avata uuden välilehden täällä</translation>
@@ -92,6 +96,7 @@
 <translation id="5076161749301278626">Näytetäänkö kaupan arvostelut?</translation>
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
 <translation id="5094423602314093681">Poistetaanko välilehdet ja ryhmä?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty}other{<ph name="MANY_ADDED" /> välilehteä lisätty}}</translation>
 <translation id="5161254044473106830">Nimike vaaditaan</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="5339733443032484186">Viimeisin välilehti</translation>
@@ -100,6 +105,7 @@
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Sulje välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
+<translation id="5627941783489838464">Ei välilehtipäivityksiä</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Palauta välilehti}other{Palauta välilehdet}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
 <translation id="575494663145460764">Haluatko ilmoituksia hinnanalennuksista?</translation>
@@ -124,6 +130,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Siirrä välilehti vasemmalle</translation>
 <translation id="6615455863669487791">Näytä</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> välilehteä muutettu}other{<ph name="MANY_CHANGED" /> välilehteä muutettu}}</translation>
 <translation id="6694634756612002311">Muuta jakamisvalintoja</translation>
 <translation id="6744956528665271406">Muokkaa ryhmän väriä</translation>
 <translation id="6856809498882026482">Piilota monivalintatila</translation>
@@ -165,6 +172,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Asetukset</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> välilehti lisätty, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> välilehteä lisätty, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="8631711675211020168">Kaikki menettävät välittömästi pääsyn välilehtiryhmään <ph name="GROUP_NAME" />, ja se poistetaan kaikilta laitteilta</translation>
 <translation id="8633025649649592204">Uusimmat tapahtumat</translation>
 <translation id="870736955561925754">Suljetaanko välilehti ja poistetaanko ryhmä?</translation>

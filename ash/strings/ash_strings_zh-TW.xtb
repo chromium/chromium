@@ -34,6 +34,7 @@
 <translation id="1104621072296271835">完成連結可進一步提升裝置效能</translation>
 <translation id="1111021433905331574">你可以在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
 <translation id="1117719261843403176">切換行動數據。<ph name="STATE" />。</translation>
+<translation id="1122849163460178706">試試查詢</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
 <translation id="1129383337808748948">重新整理<ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">最近的相片</translation>
@@ -899,6 +900,7 @@
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安裝的應用程式，已暫停</translation>
 <translation id="4228078597006700451">未設定控制選項</translation>
+<translation id="4230560241506423345">新增</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">總覽模式</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -1445,7 +1447,6 @@
 <translation id="6032620807120418574">點擊任一處即可錄製全螢幕畫面</translation>
 <translation id="6040071906258664830">錄音麥克風已<ph name="STATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
-<translation id="6042308850641462728">更多</translation>
 <translation id="6043212731627905357">這個顯示器與你的 <ph name="DEVICE_TYPE" /> 不相容 (這是不支援的顯示器)。</translation>
 <translation id="6043994281159824495">立即登出</translation>
 <translation id="6045629311476491587">正由 <ph name="APP_COUNT" /> 個應用程式使用</translation>
@@ -2109,7 +2110,7 @@
 <translation id="8375916635258623388">這部 <ph name="DEVICE_NAME" /> 會自動連結到你的手機</translation>
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8382715499079447151">檢視防護</translation>
-<translation id="8383614331548401927">歡迎回顧</translation>
+<translation id="8383614331548401927">歡迎頁面要事回顧</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">你的家長已鎖定這部裝置</translation>
 <translation id="8401850874595457088">輸入語言選單</translation>

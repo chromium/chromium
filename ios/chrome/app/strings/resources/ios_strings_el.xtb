@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">Αντιγραφή εικόνας</translation>
 <translation id="1608337082864370066">Αναζήτηση για την αντιγραμμένη εικόνα</translation>
 <translation id="1612730193129642006">Εμφάνιση πλέγματος καρτελών</translation>
+<translation id="1612754831519568745">Αυτή τη στιγμή, η Ασφαλής περιήγηση είναι απενεργοποιημένη. Προστατευτείτε από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622717322707146952">Επιλέξτε Προσθήκη στο Ημερολόγιο Google ή Προσθήκη στο Ημερολόγιο Apple.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> επαναχρησιμοποιημένοι κωδικοί πρόσβασης</translation>
 <translation id="1636234353664774105">Λάβετε λεπτομερείς οδηγίες για τον προορισμό σας αξιοποιώντας τη λεπτομερή καθοδήγηση με τη λειτουργία πλοήγησης</translation>
+<translation id="1641068175940982148">Άνοιγμα ομάδας <ph name="GROUP_TITLE" />, Ομάδα <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Ασφαλής περιήγηση</translation>
 <translation id="1641316430523156212">Ακολουθώ</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
@@ -402,6 +404,7 @@
 <translation id="2952246431280799028">Αγγίξτε παρατεταμένα μια διεύθυνση.</translation>
 <translation id="2952278131021475699">Αναζήτηση με κάμερα στο Lens</translation>
 <translation id="2958718410589002129">Κωδικοί πρόσβασης</translation>
+<translation id="2963044753825419640">Να επιτρέπεται στους ιστοτόπους και τις εφαρμογές να αναβαθμίζουν αυτόματα τους υπάρχοντες λογαριασμούς για τη χρήση κλειδιών πρόσβασης, όταν είναι διαθέσιμα</translation>
 <translation id="2964349545761222050">Αποκλεισμός cookie τρίτου μέρους</translation>
 <translation id="2965328226365382335">Τελευταία 15 λεπτά</translation>
 <translation id="2969979262385602596">Αποτυχία σύνδεσης. Δοκιμάστε ξανά αργότερα.</translation>
@@ -759,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Μόνο σε αυτήν τη συσκευή, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="4766112107778026136">Discover και παρακολούθηση</translation>
+<translation id="4769198578611055647">Σας βοηθά να έχετε πρόσβαση σε αποθηκευμένα κλειδιά πρόσβασης σε οποιαδήποτε συσκευή</translation>
 <translation id="4775879719735953715">Προεπιλεγμένο πρόγραμμα περιήγησης</translation>
 <translation id="4779732376610430319">Μετάβαση στις Ρυθμίσεις…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1046,7 @@
 <translation id="6067849159007176401">Προσθήκη προστασίας περιήγησης</translation>
 <translation id="607620096698446287">Δεν ήταν δυνατή η μεταφόρτωση του αρχείου <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">Επιλογή καρτελών</translation>
+<translation id="6089212833343035912">PIN Διαχείρισης κωδικών πρόσβασης Google</translation>
 <translation id="6100617279104942061">Έχετε συνδεθεί ως <ph name="USER_EMAIL" />. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="6103540626693881831">Κρυπτογράφηση στη συσκευή</translation>
 <translation id="6119050551270742952">Ιστοσελίδα σε ανώνυμη περιήγηση</translation>
@@ -1262,6 +1267,7 @@
 <translation id="7022197654033719543">Πληροφορίες ιστοτόπου</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="704692552158601232">Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης</translation>
+<translation id="7051147526307793383">Να επιτρέπονται οι αυτόματες αναβαθμίσεις κλειδιών πρόσβασης</translation>
 <translation id="7055240621761583113">Αυτόματη συμπλήρωση κωδικού πρόσβασης</translation>
 <translation id="7063811929043357292">Ο λογαριασμός σου είναι υπό τη διαχείριση του γονέα σου.
 <ph name="BEGIN_LINK" />Μάθε περισσότερα<ph name="END_LINK" /></translation>
@@ -1337,6 +1343,7 @@
 <translation id="7470908168505178757">Ομάδα καρτελών. Συμπτύχθηκε.</translation>
 <translation id="7472734401283673885">Επων. εταιρείας</translation>
 <translation id="7473891865547856676">Όχι, ευχαριστώ</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 ομάδα καρτελών έκλεισε και αποθηκεύτηκε}other{{count} ομάδες καρτελών έκλεισαν και αποθηκεύτηκαν}}</translation>
 <translation id="7488874549363591659">Παραδόθηκε</translation>
 <translation id="7491131399623468277">Μετάβαση στις Ρυθμίσεις…</translation>
 <translation id="749854780843431406">Μπορείτε να ανοίξετε μια νέα καρτέλα χρησιμοποιώντας το κουμπί <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>

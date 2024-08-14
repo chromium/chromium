@@ -125,6 +125,7 @@
 <translation id="1605658421715042784">نسخ الصورة</translation>
 <translation id="1608337082864370066">البحث عن الصورة التي نسختها</translation>
 <translation id="1612730193129642006">عرض شبكة علامة التبويب</translation>
+<translation id="1612754831519568745">ميزة "التصفّح الآمن" غير مفعَّلة حاليًا. يمكنك حماية متصفّحك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622717322707146952">‏اختَر "الإضافة إلى تقويم Google" أو "الإضافة إلى تقويم Apple".</translation>
 <translation id="1626771852476987600">كلمات المرور المستخدَمة لحساب آخر: ‫<ph name="COUNT" /></translation>
@@ -1343,6 +1344,7 @@
 <translation id="7470908168505178757">مجموعة علامات تبويب تم تصغيرها</translation>
 <translation id="7472734401283673885">اسم الشركة</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
+<translation id="7477974514217962959">{count,plural, =1{تم إغلاق مجموعة علامات تبويب واحدة وحفظها}zero{تم إغلاق {count} مجموعة علامات تبويب وحفظها}two{تم إغلاق مجموعتَي علامات تبويب ({count}) وحفظهما}few{تم إغلاق {count} مجموعات علامات تبويب وحفظها}many{تم إغلاق {count} مجموعة علامات تبويب وحفظها}other{تم إغلاق {count} مجموعة علامات تبويب وحفظها}}</translation>
 <translation id="7488874549363591659">تم التسليم</translation>
 <translation id="7491131399623468277">الانتقال إلى الإعدادات…</translation>
 <translation id="749854780843431406">يمكنك فتح علامة تبويب جديدة من خلال الزر "<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />".</translation>

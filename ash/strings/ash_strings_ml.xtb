@@ -1208,7 +1208,7 @@
 <translation id="523505283826916779">ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ</translation>
 <translation id="5238719049014159442">ലോഞ്ചർ തുറക്കുക/അടയ്ക്കുക</translation>
 <translation id="5240725217819182328">ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പുകൾക്കുള്ളിലെ നിർദ്ദിഷ്ട പേജുകളിലേക്കോ പ്രവർത്തനങ്ങളിലേക്കോ ഉള്ള അതിവേഗ ആക്‌സസ്</translation>
-<translation id="5243355658487390559">തിരയൽ തീയതി</translation>
+<translation id="5243355658487390559">തീയതി തിരയുക</translation>
 <translation id="5245201184978705914">ട്രാൻസ്ക്രിപ്റ്റ് സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
 <translation id="5251174953851719648">ഉള്ളടക്കം റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> എന്ന് പേരുള്ള ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
@@ -1450,7 +1450,6 @@
 <translation id="6032620807120418574">പൂർണ്ണ സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ എവിടെയെങ്കിലും ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="6040071906258664830">മൈക്രോഫോൺ റെക്കോർഡ് ചെയ്യുക <ph name="STATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
-<translation id="6042308850641462728">കൂടുതൽ</translation>
 <translation id="6043212731627905357">ഈ മോണിറ്റർ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ പ്രവർത്തിക്കുന്നില്ല (മോണിറ്റർ ഇതിൽ പ്രവർത്തിക്കില്ല).</translation>
 <translation id="6043994281159824495">ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ആപ്പുകൾ ഉപയോഗിച്ചു</translation>

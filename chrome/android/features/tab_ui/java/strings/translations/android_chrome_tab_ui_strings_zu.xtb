@@ -38,8 +38,10 @@
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso</translation>
 <translation id="266935134738038806">Vakashela isayithi</translation>
 <translation id="2677748264148917807">Hamba</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe, kushintshwe engu-<ph name="ANY_CHANGED" />, kuvalwe okungu-<ph name="ANY_CLOSED" />}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />, kuvalwe okungu-<ph name="ANY_CLOSED" />}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />, kuvalwe okungu-<ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Kusungulwe ehoreni elingu-<ph name="NUM_HOURS_ONE" /> eledlule}one{Kusungulwe emahoreni angu-<ph name="NUM_HOURS_MANY" /> adlule}other{Kusungulwe emahoreni angu-<ph name="NUM_HOURS_MANY" /> adlule}}</translation>
 <translation id="2801787514987684416">Buka ulwazi lwesitoreji?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Ithebhu engu-<ph name="ONE_CLOSED" /> ivaliwe}one{Amathebhu angu-<ph name="MANY_CLOSED" /> avaliwe}other{Amathebhu angu-<ph name="MANY_CLOSED" /> avaliwe}}</translation>
 <translation id="2894757982205307093">Ithebhu entsha kuqembu</translation>
 <translation id="2928243913527329289">I-Google | Mayelana nalesi sitoreji</translation>
 <translation id="2977480621796371840">Susa kusukela kuqembu</translation>
@@ -50,6 +52,7 @@
 <translation id="3052964831964880138">Ukwehla kwentengo engu-<ph name="PRICE_DROP" /> ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Isithonjana sombala wethebhu leqembu esi-<ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">isilinganisela</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe, kushintshwe engu-<ph name="ANY_CHANGED" />}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kushintshwe angu-<ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Uzothola isexwayiso lapho kukhona intengo ephansi kuthebhu evuliwe</translation>
 <translation id="3322827343001922122">Vula imenyu yesenzo seqembu lethebhu le-<ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
@@ -71,6 +74,7 @@
 <translation id="4159784952369912983">Okuphephuli</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngethebhu eli-<ph name="TABS_COUNT_ONE" />.}one{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="427987768447457592">Iqembu lethebhu elisha</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Ithebhu engu-<ph name="ONE_CHANGED" /> ishintshiwe, kuvalwe engu-<ph name="ANY_CLOSED" />}one{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}other{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Akusebenzi</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
 <translation id="4590027107044272416">Manje ungavula ithebhu entsha lapha</translation>
@@ -92,6 +96,7 @@
 <translation id="5076161749301278626">Bona izibuyekezo zesitoreji?</translation>
 <translation id="5082793167783849073">Qhathanisa ngokushesha amakhasi ngokwenza iqembu. Ukuze uqale, thinta uphinde ubambe isixhumanisi.</translation>
 <translation id="5094423602314093681">Susa amathebhu futhi usule iqembu?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe}}</translation>
 <translation id="5161254044473106830">Isihloko siyadingeka</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Vala iqembu lethebhu ngethebhu eli-<ph name="TABS_COUNT_ONE" />}one{Vala iqembu lethebhu ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Vala iqembu lethebhu ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="5339733443032484186">Ithebhu yakho yokugcina</translation>
@@ -100,6 +105,7 @@
 <translation id="5494920125229734069">Khetha konke</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Vala iqembu lethebhu ngethebhu ye-<ph name="TABS_COUNT_ONE" />, umbala <ph name="COLOR_NAME" />.}one{Vala iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}other{Vala iqembu lethebhu ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Buka ulwazi lwesitoreji, inketho itholakala eduze naphezulu kwesikrini</translation>
+<translation id="5627941783489838464">Azikho izibuyekezo zamathebhu</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Buyisela ithebhu}one{Buyisela amathebhu}other{Buyisela amathebhu}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Ilinki engu-<ph name="TABS_COUNT_ONE" /> esuka ku-Chrome}one{Amalinki angu-<ph name="TABS_COUNT_MANY" /> asuka ku-Chrome}other{Amalinki angu-<ph name="TABS_COUNT_MANY" /> asuka ku-Chrome}}</translation>
 <translation id="575494663145460764">Thola izexwayiso zokwehla kwentengo?</translation>
@@ -124,6 +130,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Ithebhu engu-<ph name="ONE_CHANGED" /> ishintshiwe}one{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe}other{Amathebhu angu-<ph name="MANY_CHANGED" /> ashintshiwe}}</translation>
 <translation id="6694634756612002311">Lawula ukwabelana</translation>
 <translation id="6744956528665271406">Hlela umbala weqembu</translation>
 <translation id="6856809498882026482">Fihla imodi yokukhetha okuningi</translation>
@@ -165,6 +172,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Vala ithebhu ekhethiwe engu-<ph name="TABS_COUNT_ONE" />}one{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}other{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8398929769197326728">Ifolda Entsha - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Izilungiselelo</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Ithebhu engu-<ph name="ONE_ADDED" /> ifakiwe, kuvalwe engu-<ph name="ANY_CLOSED" />}one{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}other{Amathebhu angu-<ph name="MANY_ADDED" /> afakiwe, kuvalwe angu-<ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Wonke umuntu uzolahlekelwa ukufinyelela ngokushesha iqembu lethebhu ye-<ph name="GROUP_NAME" /> futhi lizosuswa kuwo wonke amadivayisi</translation>
 <translation id="8633025649649592204">Umsebenzi wakamuva</translation>
 <translation id="870736955561925754">Vala ithebhu futhi usule iqembu?</translation>

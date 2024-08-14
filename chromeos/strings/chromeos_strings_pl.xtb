@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Zasoby tylko na urządzenie <ph name="PRODUCT_NAME" /> są już dostępne</translation>
 <translation id="1022628058306505708">Ziemia</translation>
 <translation id="1026212596705997935">Skrót jest używany do opcji „<ph name="CONFLICT_ACCEL_NAME" />”. Naciśnij nowy skrót. Aby zastąpić pierwotny skrót, naciśnij ten skrót ponownie.</translation>
+<translation id="1030856839388844477">Resetuj użycie danych</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (wątki: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Dostępna jest nowa funkcja. Aby dowiedzieć się więcej, naciśnij klawisz strzałki w górę.</translation>
 <translation id="1049663189809099096">pastelowy żółty</translation>
@@ -1548,6 +1549,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="9087578468327036362">Zgłoś to zapytanie</translation>
 <translation id="9088306295921699330">Obecne wykorzystanie</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Więcej informacji o dacie resetowania</translation>
 <translation id="9100765901046053179">Ustawienia zaawansowane</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>

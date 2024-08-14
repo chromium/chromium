@@ -211,6 +211,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idite na <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pretražujte glasom u Chromeu</translation>
 <translation id="6975725306479268850">Odaberite Chrome za automatsko popunjavanje</translation>
+<translation id="6979238427560462592">Prilagođeni feed koji je Google izradio za vas. Uključuje vijesti, sport i vremensku prognozu.</translation>
 <translation id="7004159181872656283">Pretraživanje vizuelnih elemenata u Chromeu.</translation>
 <translation id="7056826488869329999">Otvara i pokreće sigurnosnu provjeru u Chromeu.</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
@@ -308,6 +309,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
 <translation id="9181628561061032322">Otvaranje nedavne kartice u Chromeu.</translation>
+<translation id="9194404253580584015">Prilagođeni feed koji je Google izradio za vas.</translation>
 <translation id="953008885340860025">Chrome je odjavljen</translation>
 <translation id="97300214378190234">Koristite Chrome svaki put kada dodirnete linkove u drugim aplikacijama.</translation>
 </translationbundle>

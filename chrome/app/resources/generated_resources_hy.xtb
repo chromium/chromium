@@ -2384,7 +2384,6 @@
 <translation id="2674764818721168631">Անջատված է</translation>
 <translation id="2676084251379299915">Այս ընդլայնումն անջատվել է կազմակերպության կանոններով, քանի որ այն այլևս հասանելի չէ Chrome Web Store-ում։</translation>
 <translation id="2678063897982469759">Նորից միացնել</translation>
-<translation id="2678100101831051676">Չհաջողվեց հեռարձակել։</translation>
 <translation id="268053382412112343">Պատ&amp;մություն</translation>
 <translation id="2681124317993121768">Հյուրի պրոֆիլները չեն աջակցվում</translation>
 <translation id="2682498795777673382">Ծնողը փոխել է կարգավորումները</translation>
@@ -2491,7 +2490,6 @@
 <translation id="2743387203779672305">Պատճենել սեղմատախտակին</translation>
 <translation id="274362947316498129">Հավելվածը փորձում է օգտագործել <ph name="DEVICE_NAME" />ը։ Թույլատրելու համար անջատեք <ph name="DEVICE_NAME" />ի գաղտնիության փոխանջատիչը։</translation>
 <translation id="2745080116229976798">Microsoft որակավորված ստորակարգություն</translation>
-<translation id="2747853844543618313">Համոզվեք, որ ընդունել եք ձեր «<ph name="DEVICE_NAME" />» սարքում հեռարձակման հարցումը։</translation>
 <translation id="2749756011735116528">Մուտք գործել <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
@@ -3344,7 +3342,6 @@
 <translation id="3390530051434634135">Նշում՝ <ph name="NOTE" /></translation>
 <translation id="3391721320619127327">ChromeOS Flex-ում ChromeVox Էկրանի ընթերցիչը հիմնականում օգտագործում են տեսողության խնդիրներ ունեցող կամ կույր մարդիկ՝ բրայլյան կամ խոսքի սինթեզատորով էկրանին ցուցադրվող տեքստը կարդալու համար։ Սեղմեք և հինգ վայրկյան պահեք ձայնի ուժգնության կարգավորման երկու կոճակները՝ ChromeVox-ը միացնելու համար։ Երբ ChromeVox-ը միանա, դուք կանցնեք արագ ուղեցույցով։</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
-<translation id="3393582007140394275">Էկրանի հեռարձակման խնդիր</translation>
 <translation id="3394072120086516913">Համակարգիչը միացված է լարով, իսկ հեռարձակման սարքը՝ Wi-Fi-ով</translation>
 <translation id="3394850431319394743">Կայքեր, որոնք ունեն նույնացուցիչներ օգտագործելու թույլտվություն՝ պաշտպանված բովանդակություն նվագարկելու համար</translation>
 <translation id="3396442984945202128">Հաստատել ինքնությունը</translation>
@@ -4774,7 +4771,6 @@
 <translation id="4414232939543644979">Նոր &amp;ինկոգնիտո պատուհան</translation>
 <translation id="4414242853388122273">Չհաջողվեց հեռացնել <ph name="VM_NAME" /> վիրտուալ մեքենան։ Նորից փորձեք։</translation>
 <translation id="4415213869328311284"><ph name="DEVICE_TYPE" /> սարքը պատրաստ է օգտագործման։</translation>
-<translation id="4415245286584082850">Սարքեր չեն գտնվել։ Բացեք օգնության կենտրոնը նոր ներդիրում։</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4415748029120993980">SECG օվալաձև կոր secp384r1 (հայտնի է նաև որպես NIST P-384)</translation>
 <translation id="4415815425191869676">Միշտ ակտիվ պահել այս կայքերը</translation>
@@ -4988,7 +4984,6 @@
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> – Անգործուն ներդիր</translation>
 <translation id="4577995939477504370">«Խոսափող» թույլտվությունն ունեցող հավելվածները և կայքերը, ինչպես նաև համակարգային ծառայությունները կարող են օգտագործել խոսափողը</translation>
 <translation id="4579453506923101210">Ջնջել կապված հեռախոսը</translation>
-<translation id="4579581181964204535">Չհաջողվեց հեռարձակել <ph name="HOST_NAME" /> տիրույթը:</translation>
 <translation id="4579876313423027742">Դիտարկիչի ծանուցումները կարգավորելու համար անցեք <ph name="LINK_BEGIN" />Chrome դիտարկիչի կարգավորումներ<ph name="LINK_END" /></translation>
 <translation id="4580127151758731432">Որքան մեծ է գլխի շարժման ամպլիտուդը, այնքան ավելի հեռու է տեղափոխվում նշորդը</translation>
 <translation id="4580389561674319558">Բոլոր կոնտակտները կարող են տեսնել</translation>
@@ -5858,7 +5853,6 @@
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Ապախմբավորե՞լ ներդիրների խումբը}one{Ապախմբավորե՞լ ներդիրների խումբը}other{Ապախմբավորե՞լ ներդիրների խմբերը}}</translation>
 <translation id="5230190638672215545">Մուտքագրեք «uow»՝ «ươ» ստանալու համար</translation>
 <translation id="5230516054153933099">Պատուհան</translation>
-<translation id="5231427103154766313">Կանգնեցրեք հեռարձակումը հեռակառավարման վահանակի միջոցով։</translation>
 <translation id="5233019165164992427">NaCl-ի վրիպազերծման միացք</translation>
 <translation id="5233231016133573565">Գործընթացի ID</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
@@ -7740,7 +7734,6 @@
 <translation id="6635674640674343739">Չհաջողվեց միանալ։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="663569763553406962">Տեսեք, թե ինչ ընդլայնումներ կարող են կարդալ կամ փոխել կայքը</translation>
 <translation id="6635944431854494329">Սեփականատերը կարող է կառավարել այս գործառույթը՝ անցնելով Կարգավորումներ &gt; Լրացուցիչ &gt; Ավտոմատ ուղարկել օգտագործման և դիագնոստիկ տվյալները Google-ին։</translation>
-<translation id="6636572589916466933">Ընդունեք ձեր «<ph name="DEVICE_NAME" />» սարքում հեռարձակման հարցումը։</translation>
 <translation id="6636623428211296678">Ստորև ծանոթացեք այլ կարգավորումների կամ ավարտեք ստուգումը</translation>
 <translation id="6639554308659482635">SQLite հիշողություն</translation>
 <translation id="6640268266988685324">Բացել ներդիր</translation>
@@ -8353,6 +8346,7 @@
 <translation id="7068591156533195518"><ph name="APP_NAME" /> հավելվածն ու ևս մի քանիսը հասանելի չեն ձեր <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="706949303827219454">Բացում է անվտանգության կարգավորումների էջը նոր ներդիրում</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Նոր գաղտնաբառ այս կայքի համար}one{Նոր գաղտնաբառ այս կայքի համար}other{Նոր գաղտնաբառեր այս կայքի համար}}</translation>
+<translation id="7070144569727915108">համակարգային կարգավորումներ</translation>
 <translation id="7070484045139057854">Ընդլայնումը կարող է ընթերցել և փոփոխել կայքի տվյալները</translation>
 <translation id="7072010813301522126">Դյուրանցման անվանումը</translation>
 <translation id="7072078320324181561">Տեղորոշման թույլտվություն ունեցող հավելվածներն ու կայքերը, ինչպես նաև համակարգային ծառայությունները կարող են օգտագործել ձեր տեղադրության տվյալները <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -8525,7 +8519,6 @@
 <translation id="7212097698621322584">Մուտքագրեք ձեր ընթացիկ PIN կոդը՝ այն փոխելու համար: Եթե չգիտեք ձեր PIN կոդը, զրոյացրեք անվտանգության բանալու կարգավորումները և նշեք նոր PIN կոդ։</translation>
 <translation id="7214047272988222011">Թույլատրված է – <ph name="PERMISSION_DETAILS" />։ Միացրեք <ph name="LINK_BEGIN" />համակարգի տեսախցիկի հասանելիությունը<ph name="LINK_END" />։</translation>
 <translation id="721490496276866468">Ներմուծել գաղտնաբառերը</translation>
-<translation id="7218514093816577632">Համոզվեք, որ ծանուցումները միացված են ձեր <ph name="DEVICE_NAME" /> սարքում։</translation>
 <translation id="7219254577985949841">Ջնջե՞լ կայքի տվյալները</translation>
 <translation id="7219473482981809164">Մենք գտել ենք մի քանի պրոֆիլ, որոնք հասանելի են ներբեռնման համար։ Շարունակելուց առաջ ընտրեք պրոֆիլները, որոնք ուզում եք ներբեռնել։</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Թույլ գաղտնաբառեր չկան}=1{1 թույլ գաղտնաբառ}one{{NUM_WEAK} թույլ գաղտնաբառ}other{{NUM_WEAK} թույլ գաղտնաբառ}}</translation>
@@ -9664,7 +9657,6 @@
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վեր սլաք։</translation>
 <translation id="8030169304546394654">Անջատված է</translation>
 <translation id="8030852056903932865">Հաստատել</translation>
-<translation id="8032244173881942855">Չհաջողվեց հեռարձակել ներդիրը:</translation>
 <translation id="8032569120109842252">Հետևում եք</translation>
 <translation id="8033827949643255796">ընտրվեց</translation>
 <translation id="8033958968890501070">Ժամանակը սպառվել է</translation>
@@ -10127,7 +10119,6 @@
 <translation id="8356409598322585307">Դուք արդեն գրանցել եք այս սարքը։ Այն նորից գրանցելու կարիք չկա։</translation>
 <translation id="8357388086258943206">Լինուքսը տեղադրելիս սխալ առաջացավ</translation>
 <translation id="8358685469073206162">Վերականգնե՞լ էջերը:</translation>
-<translation id="8358912028636606457">Ներդիրի ձայնի հեռարձակումն այս սարքում չի աջակցվում:</translation>
 <translation id="835951711479681002">Պահել իմ Google հաշվում</translation>
 <translation id="8360140320636871023">Անհատականացրեք ձեր էկրանի թեման</translation>
 <translation id="8360267485906769442">«Կարծիք հայտնել» կոճակ</translation>
@@ -10910,6 +10901,7 @@
 <translation id="8918900204934259333">Հավելվածը տեղադրվում է…</translation>
 <translation id="891931289445130855">Ջնջել տվյալները և թույլտվությունները</translation>
 <translation id="8920133120839850939">Ընտրեք «Այլ ժեստեր» ներդիրը, այնուհետև միացրեք «Էջերի թերթում» կարգավորումը՝ հետ ու առաջ անցնելու համար</translation>
+<translation id="8922348435910470639">Կրկնակի ամրագրված</translation>
 <translation id="8922624386829239660">Տեղափոխել էկրանը, երբ մկնիկը դիպչի էկրանի եզրերին</translation>
 <translation id="8923880975836399332">Մուգ փիրուզագույն</translation>
 <translation id="8925124370124776087">Անվանագոտին թաքցված է</translation>
@@ -11336,7 +11328,6 @@
 <translation id="923467487918828349">Ցույց տալ բոլորը</translation>
 <translation id="923900195646492191">{NUM_EXTENSIONS,plural, =1{Այն կառավարելու համար բացեք Ընդլայնումները}one{Այն կառավարելու համար բացեք Ընդլայնումները}other{Դրանք կառավարելու համար բացեք Ընդլայնումները}}</translation>
 <translation id="924818813611903184">Կառավարել լեզուները ChromeOS-ի կարգավորումներում</translation>
-<translation id="925270020047573546">Համակարգչից ձայնի հեռարձակումն այս սարքում չի աջակցվում։</translation>
 <translation id="925575170771547168">Կայքերի կողմից պահված <ph name="TOTAL_USAGE" /> ծավալով տվյալները կջնջվեն</translation>
 <translation id="930268624053534560">Մանրամասն ժամադրոշմներ</translation>
 <translation id="930551443325541578">Մուտքագրման կրկնություն և առոգանության նշաններ</translation>

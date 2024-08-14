@@ -359,6 +359,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2318576281648121272">Hôm nay <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , danh mục kết quả tìm kiếm</translation>
 <translation id="2322173485024759474">Lùi một ký tự</translation>
+<translation id="2326112202058075478">Hiện thêm biểu tượng cảm xúc khác</translation>
 <translation id="2335091074961603075">Chromebook hoặc thiết bị Bluetooth của bạn đang dùng phiên bản Bluetooth cũ. Sử dụng micrô gắn trong để có chất lượng âm thanh tốt hơn.</translation>
 <translation id="2339073806695260576">Hãy nhấn vào nút bút cảm ứng trên giá để ghi chú, chụp ảnh màn hình, sử dụng con trỏ laser hoặc kính lúp.</translation>
 <translation id="2341729377289034582">Đã khóa theo chiều dọc</translation>
@@ -405,6 +406,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="246052086404491029">Xem chi tiết</translation>
 <translation id="2465145153332031561">Tình trạng pin: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, số chu kỳ: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Xác nhận độ phân giải</translation>
+<translation id="2475783092753560388">Chèn <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Đã xảy ra lôi</translation>
 <translation id="2478076885740497414">Cài đặt ứng dụng</translation>
 <translation id="2482878487686419369">Thông báo</translation>
@@ -451,6 +453,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2620900772667816510">Bluetooth có độ phân giải siêu cao</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="2624588537172718173">Âm thanh trên thiết bị và micrô</translation>
+<translation id="2632041654177296509">Hiện tất cả <ph name="CATEGORY_NAME" /></translation>
 <translation id="263399434338050016">"Chọn tất cả"</translation>
 <translation id="2644422758626431000">Ghim cửa sổ sang bên trái</translation>
 <translation id="2645380101799517405">Chế độ điều khiển</translation>
@@ -540,6 +543,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2968761508099987738">Địa điểm bạn đang ở hiện chưa được hỗ trợ.</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
+<translation id="2980700224869191055">Biểu tượng <ph name="EMOTICON_NAME" /></translation>
 <translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
 <translation id="2992272421330787632">Ẩn mọi đề xuất về nội dung nghe nhìn</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
@@ -727,6 +731,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3619536907358025872">Cài đặt tính năng Chụp ảnh màn hình</translation>
 <translation id="3621202678540785336">Thiết bị vào</translation>
 <translation id="3621712662352432595">Cài đặt âm thanh</translation>
+<translation id="362253242168828226">Biểu tượng cảm xúc <ph name="EMOJI_NAME" /></translation>
 <translation id="3626281679859535460">Độ sáng</translation>
 <translation id="3628323833346754646">Nút phía trước</translation>
 <translation id="3630697955794050612">đang tắt</translation>
@@ -785,6 +790,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3799080171973636491">Bạn đã nhấn phím tắt của tính năng phóng to toàn màn hình. Bạn có muốn bật tính năng này không?</translation>
 <translation id="380165613292957338">Xin chào, tôi có thể trợ giúp gì?</translation>
 <translation id="3804737937830804242">Thu gọn máy ảnh</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 biểu tượng cảm xúc. Không có kết quả nào khác.}other{# biểu tượng cảm xúc. Không có kết quả nào khác.}}</translation>
 <translation id="3824784079442479685">Nếu bạn bật, <ph name="APP_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh sẽ có thể sử dụng máy ảnh. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="3826099427150913765">Chuyển sang mật khẩu</translation>
 <translation id="383058930331066723">Chế độ trình tiết kiệm pin đang bật</translation>
@@ -1333,6 +1339,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5652575806481723716">Có thông báo từ <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">Không gian làm việc 10</translation>
 <translation id="5662709761327382534">Tính năng ghi âm <ph name="CURRENT_STATE" />. Hãy nhấn Enter để chuyển tính năng này sang trạng thái <ph name="NEW_STATE" /></translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Đang kích hoạt</translation>
 <translation id="5672890847723042801">Phần mềm tiện ích</translation>
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
@@ -1450,7 +1457,6 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6032620807120418574">Nhấp vào vị trí bất kỳ để quay toàn màn hình</translation>
 <translation id="6040071906258664830">Ghi âm <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Đóng</translation>
-<translation id="6042308850641462728">Xem thêm</translation>
 <translation id="6043212731627905357">Màn hình này không tương thích với <ph name="DEVICE_TYPE" /> của bạn (màn hình không được hỗ trợ).</translation>
 <translation id="6043994281159824495">Đăng xuất bây giờ</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ứng dụng đã dùng</translation>
@@ -1761,6 +1767,7 @@ Mới cài đặt</translation>
 <translation id="7108254681523785542">Chọn mục cần dán. Bạn có thể nhấn tổ hợp <ph name="SHORTCUT_KEY_NAME" /> + v để xem bảng nhớ tạm.</translation>
 <translation id="7116969082764510092">Không gian làm việc 11</translation>
 <translation id="7118268675952955085">ảnh chụp màn hình</translation>
+<translation id="7118597077555700347">Mở <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Chọn từ hoặc chữ cái tiếp theo</translation>
 <translation id="7126996685418858413">Mở tuần trước</translation>
 <translation id="7130207228079676353">RẤT CÓ THỂ</translation>
@@ -1883,6 +1890,7 @@ Mới cài đặt</translation>
 <translation id="7579778809502851308">Chụp ảnh màn hình</translation>
 <translation id="7593891976182323525">Search hoặc Shift</translation>
 <translation id="7598054670902114203">Tổng quan nhanh về mức sử dụng CPU: <ph name="CPU_USEAGE" />%. Nhiệt độ: <ph name="TEMPERATURE" /> độ C, tốc độ hiện tại: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
+<translation id="7599378375976398913">Đang chèn kết quả đã chọn</translation>
 <translation id="7600875258240007829">Xem tất cả thông báo</translation>
 <translation id="7601417191446344542">Bật lời nhắc về micrô bị tắt?</translation>
 <translation id="7607002721634913082">Đã tạm dừng</translation>
@@ -2073,6 +2081,7 @@ Mới cài đặt</translation>
 <translation id="8198456017687137612">Đang truyền thẻ</translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Bạn vừa tập trung trong <ph name="FOCUSED_TIME" />. Hãy mở trình đơn Cài đặt nhanh để tập trung lần nữa.</translation>
+<translation id="8203224998425013577">Hiện thêm biểu tượng cảm xúc và ảnh GIF khác</translation>
 <translation id="8203795194971602413">Nhấp chuột phải</translation>
 <translation id="8214996719228530800">Kênh Canary</translation>
 <translation id="8219451629189078428">Bạn cần phải luôn bật và kết nối Chromebook với nguồn điện trong thời gian này. Hãy đảm bảo bạn đã cắm chắc chắn cáp bộ sạc hoặc bộ đổi nguồn vào cả Chromebook lẫn ổ cắm điện. Không tắt Chromebook.</translation>
@@ -2173,6 +2182,7 @@ Mới cài đặt</translation>
 <translation id="8615778328722901791">Mở thanh công cụ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Giảm âm lượng</translation>
+<translation id="862543346640737572">Biểu tượng cảm xúc và ảnh GIF</translation>
 <translation id="8627191004499078455">Đã kết nối với <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Cài đặt hỗ trợ tiếp cận</translation>
 <translation id="8634326941504371857">Tệp của bạn trên thiết bị này và Google Drive</translation>

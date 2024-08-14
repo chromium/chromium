@@ -65,6 +65,7 @@
 <translation id="1104860668737945357">ប៊ូតុង "គ្រប់គ្រងពាក្យសម្ងាត់", បើកដំណើរការ ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">ជ្រើសរើស​ការអនុញ្ញាត​សម្រាប់ <ph name="PERMISSION_NAME" /></translation>
+<translation id="1113000785583998331">រក្សាទុក IBAN ឬ?</translation>
 <translation id="1113869188872983271">បកក្រោយការតម្រៀបឡើងវិញ</translation>
 <translation id="1118429183611783760">ការថែទាំ​កម្រាលឥដ្ឋ និង​ម៉ាស៊ីនបូមធូលី</translation>
 <translation id="1122714970786750095">គ្រឿង​អេឡិចត្រូនិក និង​អគ្គិសនី</translation>
@@ -165,6 +166,7 @@
 <translation id="1282358575813748144">ទូក និង​ជលយាន</translation>
 <translation id="1283977499362032052">ប្រវត្តិរូប​សង្ខេប និង​កម្រងស្នាដៃការងារ</translation>
 <translation id="1285320974508926690">មិនបកប្រែគេហទំព័រនេះទៀតឡើយ</translation>
+<translation id="1288259082801959119">អ្វីមួយនឹងបង្ហាញនៅទីនេះ នៅពេលអ្នកជ្រើសរើសអ្វីមួយពីម៉ឺនុយធ្លាក់ចុះនៅខាងក្រោមវា</translation>
 <translation id="1292571435393770077">ទម្រទី 16</translation>
 <translation id="1292701964462482250">"កម្មវិធី​នៅលើ​កុំព្យូទ័រ​របស់អ្នក​កំពុង​បញ្ឈប់ Chrome មិន​ឱ្យ​ភ្ជាប់​ទៅ​អ៊ីនធឺណិត​​ដោយសុវត្ថិភាព" (កុំព្យូទ័រ​ Windows តែ​ប៉ុណ្ណោះ)</translation>
 <translation id="1293797321964802402">ស្រោមសំបុត្រ 9 x 11 អ៊ីង</translation>
@@ -179,6 +181,7 @@
 <translation id="1308113895091915999">មាន​ការផ្ដល់ជូន</translation>
 <translation id="1309375166585231290">មាតាបិតា​របស់អ្នក​មិនទាន់​និយាយ​ថាយល់ព្រមទេ</translation>
 <translation id="1310677614877521969">ការបង្ហោះ​គេហទំព័រ</translation>
+<translation id="1310938305420497484">ជាដំបូង បើកផ្ទាំង រួចចូលមើលគេហទំព័រ</translation>
 <translation id="1314311879718644478">មើលខ្លឹមសារ AR</translation>
 <translation id="1314509827145471431">ភ្ជាប់​ខាងស្ដាំ</translation>
 <translation id="1316805916535763484">វគ្គសិក្សា​លើអ៊ីនធឺណិត​បើកចំហ</translation>
@@ -216,6 +219,7 @@
 <translation id="1363819917331173092">មិនផ្ដល់ការបកប្រែទំព័រ​ជាភាសា<ph name="SOURCE_LANGUAGE" />ទេ</translation>
 <translation id="1364822246244961190">គោលការណ៍​នេះ​ត្រូវបាន​ទប់ស្កាត់ ហើយតម្លៃរបស់វានឹងមិនត្រូវបាន​អើពើទេ។</translation>
 <translation id="1368318639262510626">ហ្គេមដាយណូស័រ។ ដាយណូស័រមានរូបរាងព្រាលគេចពីដើមដំបងយក្ស និងសត្វបក្សីយក្ស ខណៈពេលរត់កាត់វាលរហោស្ថាន។ នៅពេលអ្នកស្ដាប់​ឮសញ្ញាជាសំឡេង សូមចុចដកឃ្លា ដើម្បីលោតរំលងឧបសគ្គ។</translation>
+<translation id="1370751323199669551">ស្វែងយល់បន្ថែមអំពី "ប្រៀបធៀប"។</translation>
 <translation id="1374468813861204354">ការផ្តល់យោបល់</translation>
 <translation id="1375198122581997741">អំពីកំណែ</translation>
 <translation id="1375293861397106342">ជម្រើសទាំងអស់ជាធម្មតា <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -335,6 +339,7 @@
 <translation id="1584492003828271317">នៅ​ពេល​អ្នក​រុករក ថាតើ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​អ្នកមើលឃើញ​ត្រូវបាន​កំណត់ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់គឺអាស្រ័យលើ​ការកំណត់នេះ ការផ្សាយពាណិជ្ជកម្ម​ដែល​ណែនាំ​ដោយ​គេហទំព័រ ការ​កំណត់​ខូគីរបស់​អ្នក និង​ថាតើ​គេហទំព័រ​ដែល​អ្នក​កំពុងមើល​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់</translation>
 <translation id="1586541204584340881">ថាតើកម្មវិធីបន្ថែមណាខ្លះដែលអ្នកបានដំឡើង</translation>
 <translation id="1588438908519853928">ធម្មតា</translation>
+<translation id="159103247796286390">ប្ដូរ​ឈ្មោះតារាង</translation>
 <translation id="1592005682883173041">ការចូលប្រើទិន្នន័យមូលដ្ឋាន</translation>
 <translation id="159274626729231974">មហោស្រព​ភាពយន្ត</translation>
 <translation id="1593359183944365958">270 ដឺក្រេ</translation>
@@ -377,6 +382,7 @@
 <translation id="1662550410081243962">រក្សាទុក និងបំពេញ​វិធីបង់ប្រាក់</translation>
 <translation id="1663943134801823270">បណ្ណ និងអាសយដ្ឋានគឺបានមកពី Chrome ។ អ្នកអាចគ្រប់គ្រងពួកវាបាននៅក្នុង <ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="1664389769577564606">ប៉ូលីមែរសំយោគ Flexo</translation>
+<translation id="166624440456221306">លុបតារាងប្រៀបធៀប</translation>
 <translation id="1668071460721346172">ទទួល​អ៊ីមែល</translation>
 <translation id="1671391448414634642">ទំព័រជា <ph name="SOURCE_LANGUAGE" /> នឹងត្រូវបាន​បកប្រែទៅជា <ph name="TARGET_LANGUAGE" /> ចាប់ពី​ពេលនេះតទៅ។</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ទៅ <ph name="TARGET_LANGUAGE" /></translation>
@@ -1382,6 +1388,8 @@
 <translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3568886473829759308">ចូលប្រើ​គេហទំព័រ ដើម្បីមើល​ព័ត៌មាន ធនធាន ឬ​សេវាកម្ម​ដែលផ្ដល់ដោយ​អាជីវកម្ម។</translation>
 <translation id="3570079787344939099">ការរំកិល និង​ការពង្រីកបង្រួម</translation>
+<translation id="357244642999988503">ដក​ជួរឈរចេញ</translation>
+<translation id="3572827863357388784">នេះគឺជាមុខងារដែលស្ថិតក្នុងដំណាក់កាលពិសោធន៍ ហើយនឹងមិនដំណើរការបានត្រឹមត្រូវជានិច្ចនោះទេ។</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">អនុញ្ញាត​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1818,6 +1826,7 @@
 <translation id="4340810192899866471">នាំចូល​ពី JSON</translation>
 <translation id="4340982228985273705">កុំព្យូទ័រនេះ​មិនត្រូវបាន​រកឃើញ​ថាជា​សហគ្រាស​ដែលបាន​គ្រប់គ្រង​ទេ ដូច្នេះ​គោលការណ៍​អាចដំឡើង​កម្មវិធី​បន្ថែម​ដែលបាន​បង្ហោះដោយ​ស្វ័យប្រវត្តិ​នៅ​លើ Chrome Webstore តែ​ប៉ុណ្ណោះ។ URL កំណែថ្មី​របស់ Chrome Webstore គឺ "<ph name="CWS_UPDATE_URL" />" ។</translation>
 <translation id="4342742994656318294">សួន​កម្សាន្ត</translation>
+<translation id="4344072791302852930">បញ្ចូលផ្ទាំង</translation>
 <translation id="4348834659292907206">ការតភ្ជាប់ទៅ <ph name="SITE" /> មិនមាន​សុវត្ថិភាពទេ</translation>
 <translation id="4349365535725594680">មិនអាច​ចែករំលែក​ខ្លឹមសារសម្ងាត់​បានទេ</translation>
 <translation id="4349810866125026513">មិនអីទេ បង្ហោះ​ចុះ</translation>
@@ -1910,6 +1919,7 @@
 <translation id="4556069465387849460">អ្នកកំពុង​ប្រើ​ការ​ចាក់សោអេក្រង់​សម្រាប់​ការបំពេញ​ពាក្យសម្ងាត់</translation>
 <translation id="4557573143631562971">ធានា​រ៉ាប់រង​ផ្ទះ</translation>
 <translation id="4558551763791394412">សាកល្បងបិទដំណើរការផ្នែកបន្ថែមរបស់អ្នក</translation>
+<translation id="4562155266774382038">ច្រានចោល​ការណែនាំ</translation>
 <translation id="4566017918361049074">ខាង​ក្រៅ</translation>
 <translation id="4569155249847375786">បានផ្ទៀងផ្ទាត់</translation>
 <translation id="457875822857220463">ការបញ្ជូន</translation>
@@ -2224,6 +2234,7 @@
 <translation id="5147633291963801297">មើល​ការធ្លាក់ថ្លៃ​នៅក្នុង​ផ្ទាំង​ចំហៀង</translation>
 <translation id="5148809049217731050">ផ្ងារឡើង</translation>
 <translation id="5148889558173091794">ស្ថាប័នរបស់អ្នក​បានទប់ស្កាត់ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ដោយសារ​វា​បំពាន​គោលការណ៍។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែមអំពីសារប្រុងប្រយ័ត្ននេះ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5153578295462758702">បាត់ព័ត៌មានមួយចំនួន</translation>
 <translation id="5157504274688344097">ហាង​ទំនិញគ្រប់មុខ និងហាងទំនិញទ្រង់ទ្រាយធំ</translation>
 <translation id="5158275234811857234">គម្រប</translation>
 <translation id="5159010409087891077">បើក​ទំព័រ​នៅក្នុង​ផ្ទាំងឯកជន​ថ្មី (⇧⌘N)</translation>
@@ -4183,6 +4194,7 @@
 <translation id="8811470563853401328">រក្សាទុក​អាសយដ្ឋាន​នៅ​ក្នុង​គណនី​ឬ?</translation>
 <translation id="8811725516933141693">វាយបញ្ចូល @gemini ដើម្បី​ជជែក​ជាមួយ Gemini</translation>
 <translation id="8813277370772331957">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
+<translation id="8814547618907885931">មើលតារាងប្រៀបធៀបទាំងអស់</translation>
 <translation id="8814707942599948500">ស្រោមសំបុត្រ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
@@ -4351,6 +4363,7 @@
 <translation id="9141013498910525015">គ្រប់គ្រង​អាសយដ្ឋាន</translation>
 <translation id="9144951720726881238">កាល​បរិច្ឆេទ​ផុតកំណត់៖</translation>
 <translation id="9145910032514306808"><ph name="BEGIN_LINK" />ចូលគណនី<ph name="END_LINK" />ម្ដងទៀត រួច​ត្រឡប់មក​ផ្ទាំងនេះ​វិញ ដើម្បី​ទទួលបាន​ជំនួយ​ក្នុងការ​សរសេរ</translation>
+<translation id="9145936855791010051">ប្រៀបធៀប</translation>
 <translation id="9148507642005240123">បកក្រោយការកែប្រែ</translation>
 <translation id="9148599396704355100">តម្លៃទាប</translation>
 <translation id="9150025764986957246">អ្នកអាច​បញ្ចូលអ្វីៗ​ដូចជា៖</translation>

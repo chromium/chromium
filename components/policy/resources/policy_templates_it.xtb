@@ -476,7 +476,6 @@ Disattiva il criterio solo se si verificano problemi di compatibilità con softw
 <translation id="1369698103169067223">I Glanceables non sono attivati per gli utenti.</translation>
 <translation id="1371626834351873151">La riduzione dello user agent verrà attivata per tutte le origini.</translation>
 <translation id="1371851989348083665">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
-<translation id="1372511977715560169">Controlla l'attivazione della funzionalità <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
 <translation id="1376119291123231789">Attiva modalità di ricarica avanzata della batteria</translation>
 <translation id="1376299650477150211">Consente di impostare un elenco di pattern URL per i siti che specifica i siti per i quali
@@ -1563,7 +1562,6 @@ In genere, questo criterio è disattivato per difendere gli utenti da tentativi 
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> non viene configurato, non è presente alcuna icona per il provider di ricerca.</translation>
 <translation id="2136073175041447267">Configura le unità cloud (Google Drive, Microsoft OneDrive) in <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2140379319368541863">Non consentire "GenAI Wallpaper"</translation>
 <translation id="2144236546337326489">Consenti l'attivazione della continuazione di attività Phone Hub</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
 <translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
@@ -1850,7 +1848,6 @@ Se il criterio non viene configurato, gli utenti possono modificare l'elenco di 
       Se il criterio non viene configurato, <ph name="DEFAULT_CLIPBOARD_SETTING" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
-<translation id="2297432074108752232">Consenti "GenAI VC Background" senza migliorare i modelli di AI</translation>
 <translation id="2299220924812062390">Consente di specificare un elenco dei plug-in attivati</translation>
 <translation id="2299815818824242485">Non consentire ricerche inviate tramite proxy con una protezione maggiore</translation>
 <translation id="2303795211377219696">Attiva la Compilazione automatica per le carte di credito</translation>
@@ -2843,7 +2840,6 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
       Se un sito corrisponde a un pattern URL in questo criterio, i seguenti criteri non saranno presi in considerazione: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
-<translation id="3111315283985318774">Controlla l'attivazione della funzionalità <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3112501357749061018">Un elenco di certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibili per l'autenticazione del server, con vincoli aggiunti al di fuori del certificato. Se non è presente alcun vincolo di un determinato tipo, è consentito qualsiasi nome di quel tipo.
 I certificati devono essere codificati in base64. È necessario specificare almeno un vincolo per ogni certificato.</translation>
 <translation id="3118552207903834734">Consente a un utente di configurare il nome host del suo dispositivo</translation>
@@ -3585,7 +3581,6 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 <translation id="3695204334462456702">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica (opzione deprecata)</translation>
 <translation id="3695706037816556327">Azione alla rimozione del token di sicurezza (ad esempio smart card) per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3696134803170884851">Disattiva i suoni di ricarica</translation>
-<translation id="3699322543136447790">Consenti "GenAI Wallpaper" senza migliorare i modelli di AI</translation>
 <translation id="3699986274986041335">Chiedi ogni volta che un sito vuole ottenere l'autorizzazione per i caratteri locali</translation>
 <translation id="3700193037252896716">La frequenza del riavvio.</translation>
 <translation id="3700318587977845664">La frequenza del controllo della disponibilità di aggiornamenti.</translation>
@@ -7443,13 +7438,6 @@ Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuot
 <translation id="658537215958747575">Consenti a origini idonee di utilizzare Direct Sockets</translation>
 <translation id="6588634282328239769">Visualizza l'URL completo</translation>
 <translation id="6589049539706330510">Attiva il supporto</translation>
-<translation id="6590906503707750118">Questo criterio attiva o disattiva <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> per <ph name="PRODUCT_OS_NAME" />.
-0 = non consentire <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" />.
-
-1 = consenti <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> senza migliorare i modelli di AI.
-
-Se il criterio viene impostato su Unset, la funzionalità <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> è consentita senza migliorare i modelli di AI per gli utenti aziendali ed EDU.
-Nella versione M127, il criterio è stato disattivato per impostazione predefinita per gli utenti aziendali.</translation>
 <translation id="6593025196187527239">Se il criterio viene impostato su True o se non viene configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su False, gli utenti non affiliati non possono utilizzare ARC.
 
 Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione, ad esempio durante l'avvio di ChromeOS.</translation>
@@ -7895,13 +7883,6 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="6929746927224321095">Disattiva la compilazione automatica</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
 <translation id="6932282102911647185">Colore della retroilluminazione della tastiera viola</translation>
-<translation id="6934127980901887540">Questo criterio attiva o disattiva la funzionalità <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> per <ph name="PRODUCT_OS_NAME" />.
-0 = non consentire <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" />.
-
-1 = consenti <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> senza migliorare i modelli di AI.
-
-Se il criterio viene impostato su Unset, la funzionalità <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> è consentita per gli utenti aziendali ed EDU.
-Nella versione M127, il criterio è stato disattivato per impostazione predefinita per gli utenti aziendali.</translation>
 <translation id="6938424179790370595">Se il criterio è impostato su None, la lente d'ingrandimento è disattivata.
 
 Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
@@ -8590,7 +8571,6 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 
       Se viene impostato su Disattivato, nella pagina Nuova scheda non verrà mostrata la comunicazione dell'area centrale, anche se è disponibile.
       </translation>
-<translation id="7457431437931521451">Non consentire "GenAI VC Background"</translation>
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>
 <translation id="7459633275230216698">Consenti finestre di dialogo per la selezione di file</translation>
 <translation id="7462256705280836453">Scegli se è possibile o meno disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti</translation>

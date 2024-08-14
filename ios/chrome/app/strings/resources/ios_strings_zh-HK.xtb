@@ -128,6 +128,7 @@
 <translation id="1622717322707146952">選取「新增至 Google 日曆」或「新增至 Apple 日曆」。</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> 個重複使用的密碼</translation>
 <translation id="1636234353664774105">使用導航功能即時規劃前往目的地的路線</translation>
+<translation id="1641068175940982148">開啟<ph name="GROUP_TITLE" />，一組 <ph name="NUMBER_OF_TABS" />，<ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1641316430523156212">追蹤</translation>
 <translation id="1644574205037202324">記錄</translation>
@@ -403,6 +404,7 @@
 <translation id="2952246431280799028">輕觸並按住地址。</translation>
 <translation id="2952278131021475699">智能鏡頭相機搜尋功能</translation>
 <translation id="2958718410589002129">密碼</translation>
+<translation id="2963044753825419640">允許網站和應用程式自動升級現有帳戶，在可用時使用密鑰</translation>
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
 <translation id="2965328226365382335">前 15 分鐘</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
@@ -760,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，只係喺呢部裝置上面，<ph name="URL" /></translation>
 <translation id="4751645464639803239">新無痕式分頁</translation>
 <translation id="4766112107778026136">探索和追蹤</translation>
+<translation id="4769198578611055647">讓你在任何裝置上存取所儲存的密鑰</translation>
 <translation id="4775879719735953715">預設瀏覽器</translation>
 <translation id="4779732376610430319">前往「設定」…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
@@ -1043,6 +1046,7 @@
 <translation id="6067849159007176401">新增「安全瀏覽」保護功能</translation>
 <translation id="607620096698446287">無法上載 <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">選取分頁</translation>
+<translation id="6089212833343035912">Google 密碼管理工具 PIN</translation>
 <translation id="6100617279104942061">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟設定。</translation>
 <translation id="6103540626693881831">裝置內置加密</translation>
 <translation id="6119050551270742952">目前的網頁已處於無痕模式</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7022197654033719543">網站資料</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="704692552158601232">預設瀏覽器應用程式</translation>
+<translation id="7051147526307793383">允許自動升級密鑰</translation>
 <translation id="7055240621761583113">自動填入密碼</translation>
 <translation id="7063811929043357292">你的帳戶由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

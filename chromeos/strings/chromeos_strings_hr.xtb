@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Sada su dostupni ekskluzivni elementi za <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Protok Zemlje</translation>
 <translation id="1026212596705997935">Prečac se upotrebljava za "<ph name="CONFLICT_ACCEL_NAME" />". Pritisnite novi prečac. Ponovo pritisnite ovaj prečac kako biste zamijenili izvorni prečac.</translation>
+<translation id="1030856839388844477">Poništi potrošnju podatkovnog prometa</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Dostupna je nova značajka, saznajte više pritiskom strelice prema gore.</translation>
 <translation id="1049663189809099096">pastelno žuta</translation>
@@ -1551,6 +1552,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutačna upotreba</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Više informacija o datumu poništavanja</translation>
 <translation id="9100765901046053179">Napredne postavke</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skeniranje stranice <ph name="PAGE_NUMBER" /></translation>

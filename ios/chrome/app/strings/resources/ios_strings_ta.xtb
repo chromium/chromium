@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">படத்தை நகலெடு</translation>
 <translation id="1608337082864370066">நகலெடுத்த படத்தைத் தேடவும்</translation>
 <translation id="1612730193129642006">தாவல் கட்டத்தைக் காட்டும் பட்டன்</translation>
+<translation id="1612754831519568745">பாதுகாப்பு உலாவல் தற்போது முடக்கப்பட்டுள்ளது. ஆபத்தான இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றில் இருந்து பாதுகாப்பைப் பெறுங்கள்.</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1622717322707146952">“Google Calendarரில் சேர்“ அல்லது “Apple Calendarரில் சேர்“ என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="1626771852476987600">ஏற்கெனவே பயன்படுத்திய <ph name="COUNT" /> கடவுச்சொற்கள்</translation>
 <translation id="1636234353664774105">வழிகாட்டல் அம்சம் வழங்கும் படிப்படியான வழி மூலம் நீங்கள் சேரவேண்டிய இடத்திற்கான வழிகளைப் பெறலாம்</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> குழுவைத் திறக்கும், இதில் <ph name="NUMBER_OF_TABS" /> பக்கங்கள் உள்ளன, <ph name="CREATION_TEXT" />.</translation>
 <translation id="1641113438599504367">பாதுகாப்பாக உலாவுதல்</translation>
 <translation id="1641316430523156212">பின்தொடர்</translation>
 <translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
@@ -402,6 +404,7 @@
 <translation id="2952246431280799028">முகவரியைத் தொட்டுப் பிடித்திருக்கவும்.</translation>
 <translation id="2952278131021475699">Lens கேமரா மூலம் தேடுதல்</translation>
 <translation id="2958718410589002129">கடவுச்சொற்கள்</translation>
+<translation id="2963044753825419640">கிடைக்கும்போது கடவுச்சாவிகளைப் பயன்படுத்தும் வகையில் ஏற்கெனவே உள்ள கணக்குகளைத் தானாக மேம்படுத்த இணையதளங்களையும் ஆப்ஸையும் அனுமதிக்கும்</translation>
 <translation id="2964349545761222050">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
 <translation id="2965328226365382335">கடந்த 15 நிமிடங்கள்</translation>
 <translation id="2969979262385602596">உள்நுழைவு தோல்வி. பிறகு மீண்டும் முயற்சிக்கவும்.</translation>
@@ -759,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, இந்தச் சாதனத்தில் மட்டும், <ph name="URL" /></translation>
 <translation id="4751645464639803239">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="4766112107778026136">Discover &amp; பின்தொடர்தல்</translation>
+<translation id="4769198578611055647">சேமிக்கப்பட்டிருக்கும் கடவுச்சாவிகளை எந்தச் சாதனத்திலும் அணுக உங்களுக்கு உதவும்</translation>
 <translation id="4775879719735953715">இயல்புநிலை உலாவி</translation>
 <translation id="4779732376610430319">அமைப்புகளுக்குச் செல்...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1046,7 @@
 <translation id="6067849159007176401">உலாவல் பாதுகாப்பைச் சேருங்கள்</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) ஃபைலைப் பதிவேற்ற முடியவில்லை</translation>
 <translation id="6084848228346514841">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="6089212833343035912">Google Password Manager பின்</translation>
 <translation id="6100617279104942061">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_EMAIL" />. அமைப்புகளைத் திறக்கும்.</translation>
 <translation id="6103540626693881831">சாதன என்க்ரிப்ஷன்</translation>
 <translation id="6119050551270742952">இந்த இணையப் பக்கம் மறைநிலையில் உள்ளது</translation>
@@ -1261,6 +1266,7 @@
 <translation id="7022197654033719543">தளம் குறித்த தகவல்கள்</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="704692552158601232">இயல்பு உலாவி ஆப்ஸ்</translation>
+<translation id="7051147526307793383">தானியங்குக் கடவுச்சாவி மேம்படுத்தல்களை அனுமதி</translation>
 <translation id="7055240621761583113">கடவுச்சொல்லைத் தானாக நிரப்பும்</translation>
 <translation id="7063811929043357292">உங்கள் கணக்கை உங்கள் பெற்றோர் நிர்வகிக்கின்றனர்.
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
@@ -1336,6 +1342,7 @@
 <translation id="7470908168505178757">பக்கக் குழு. சுருக்கப்பட்டுள்ளது.</translation>
 <translation id="7472734401283673885">நிறுவனப் பெயர்</translation>
 <translation id="7473891865547856676">வேண்டாம்</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 பக்கக் குழு மூடப்பட்டு சேமிக்கப்பட்டது}other{{count} பக்கக் குழுக்கள் மூடப்பட்டு சேமிக்கப்பட்டன}}</translation>
 <translation id="7488874549363591659">டெலிவரி செய்யப்பட்டது</translation>
 <translation id="7491131399623468277">அமைப்புகளுக்குச் செல்…</translation>
 <translation id="749854780843431406"><ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> பட்டனில் இருந்து புதிய பக்கத்தைத் திறக்கலாம்.</translation>

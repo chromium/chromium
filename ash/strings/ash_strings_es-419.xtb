@@ -1449,7 +1449,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6032620807120418574">Haz clic en cualquier parte para grabar la pantalla completa</translation>
 <translation id="6040071906258664830">Grabar con el micrófono: <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
-<translation id="6042308850641462728">Más</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
 <translation id="6045629311476491587">En uso por parte de <ph name="APP_COUNT" /> apps</translation>
@@ -2114,7 +2113,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8375916635258623388">Este dispositivo <ph name="DEVICE_NAME" /> y el teléfono se conectarán automáticamente</translation>
 <translation id="8380784334203145311">Buenas noches:</translation>
 <translation id="8382715499079447151">Protección de visualización</translation>
-<translation id="8383614331548401927">Repaso de bienvenida</translation>
+<translation id="8383614331548401927">Inicio inteligente</translation>
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>
 <translation id="8394567579869570560">Tus padres bloquearon este dispositivo</translation>
 <translation id="8401850874595457088">Ingresar al menú de idiomas</translation>

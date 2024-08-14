@@ -34,6 +34,7 @@
 <translation id="1104621072296271835">இணைத்தால், உங்கள் சாதனங்கள் இன்னும் சிறப்பாக வேலை செய்யும்</translation>
 <translation id="1111021433905331574">அமைப்புகள் &gt; <ph name="APP_TITLE" /> என்பதற்குச் சென்று கீபோர்டு பேக்லைட்டின் வண்ணத்தை மாற்றலாம்</translation>
 <translation id="1117719261843403176">மொபைல் டேட்டாவை இயக்கு/முடக்கு. <ph name="STATE" />.</translation>
+<translation id="1122849163460178706">சில உதாரணங்கள்</translation>
 <translation id="112308213915226829">அடுக்கைத் தானாக மறை</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> ஐ ரெஃப்ரெஷ் செய்யுங்கள்</translation>
 <translation id="1142002900084379065">சமீபத்திய படங்கள்</translation>
@@ -902,6 +903,7 @@
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, நிறுவப்பட்ட ஆப்ஸ், இடைநிறுத்தப்பட்டுள்ளது</translation>
 <translation id="4228078597006700451">கண்ட்ரோல்கள் இன்னும் அமைக்கப்படவில்லை</translation>
+<translation id="4230560241506423345">புதிது</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">மேலோட்டப் பயன்முறை</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
@@ -1448,7 +1450,6 @@
 <translation id="6032620807120418574">முழுத்திரையையும் ரெக்கார்டு செய்ய எங்கேனும் கிளிக் செய்யவும்</translation>
 <translation id="6040071906258664830">மைக்ரோஃபோன் மூலம் ரெக்கார்டு செய்யும் <ph name="STATE" /></translation>
 <translation id="6040143037577758943">மூடு</translation>
-<translation id="6042308850641462728">மேலும்</translation>
 <translation id="6043212731627905357">இந்த மானிட்டர் உங்கள் <ph name="DEVICE_TYPE" /> உடன் செயல்படவில்லை (இந்த மானிட்டர் ஆதரிக்கப்படவில்லை).</translation>
 <translation id="6043994281159824495">இப்போது வெளியேறு</translation>
 <translation id="6045629311476491587"><ph name="APP_COUNT" /> ஆப்ஸ் பயன்படுத்துகிறது</translation>

@@ -211,6 +211,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pretražujte glasom u u Chrome-u</translation>
 <translation id="6975725306479268850">Izaberite Chrome za automatsko popunjavanje</translation>
+<translation id="6979238427560462592">Prilagođeni fid koji je za vas napravio Google. Uključujući vesti, sport i vreme.</translation>
 <translation id="7004159181872656283">Pretražite vizuelni materijal u Chrome-u.</translation>
 <translation id="7056826488869329999">Otvara i pokreće Proveru bezbednosti u Chrome-u.</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
@@ -308,6 +309,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>
 <translation id="9181628561061032322">Otvara nedavne kartice u Chrome-u.</translation>
+<translation id="9194404253580584015">Prilagođeni fid koji je Google napravio za vas.</translation>
 <translation id="953008885340860025">Odjavljeni ste iz Chrome-a</translation>
 <translation id="97300214378190234">Koristite Chrome svaki put kada dodirujete linkove u drugim aplikacijama.</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Já estão disponíveis recursos exclusivos do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1026212596705997935">O atalho está a ser usado para "<ph name="CONFLICT_ACCEL_NAME" />". Prima um novo atalho. Para substituir o atalho existente, prima novamente este atalho.</translation>
+<translation id="1030856839388844477">Repor utilização de dados</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nova funcionalidade disponível, utilize a tecla da seta para cima para saber mais.</translation>
 <translation id="1049663189809099096">amarelo pastel</translation>
@@ -1551,6 +1552,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Utilização atual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Mais informações sobre a data de reposição</translation>
 <translation id="9100765901046053179">Definições avançadas</translation>
 <translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>

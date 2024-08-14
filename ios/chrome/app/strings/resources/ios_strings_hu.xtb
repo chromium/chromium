@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">Kép másolása</translation>
 <translation id="1608337082864370066">Másolt kép keresése</translation>
 <translation id="1612730193129642006">Laprács megjelenítése</translation>
+<translation id="1612754831519568745">A Biztonságos Böngészés jelenleg ki van kapcsolva. Védekezzen a veszélyes webhelyekkel, letölthető tartalmakkal és bővítményekkel szemben.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Válassza a „Hozzáadás a Google Naptárhoz” vagy a „Hozzáadás az Apple Naptárhoz” lehetőséget.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> újrafelhasznált jelszó</translation>
 <translation id="1636234353664774105">A navigációs funkció használatával részletes útvonaltervet kaphat úti céljához.</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> megnyitása, <ph name="NUMBER_OF_TABS" /> tartalmú csoport, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="1641316430523156212">Követés</translation>
 <translation id="1644574205037202324">Előzmények</translation>
@@ -402,6 +404,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2952246431280799028">Tartsa lenyomva ujját a kívánt címen.</translation>
 <translation id="2952278131021475699">Lens Kamerás kereső</translation>
 <translation id="2958718410589002129">Jelszavak</translation>
+<translation id="2963044753825419640">Engedélyezi a webhelyeknek és az alkalmazásoknak, hogy automatikusan frissítsék a meglévő fiókokat azonosítókulcs használatára, amennyiben lehetséges</translation>
 <translation id="2964349545761222050">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="2965328226365382335">Az elmúlt 15 perc</translation>
 <translation id="2969979262385602596">Nem sikerült bejelentkezni. Kérjük, próbálja újra később.</translation>
@@ -759,6 +762,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" /> Csak erre az eszközre, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Új inkognitó lap</translation>
 <translation id="4766112107778026136">Discover és követés</translation>
+<translation id="4769198578611055647">Segítségével bármely eszközön hozzáférhet mentett azonosítókulcsaihoz.</translation>
 <translation id="4775879719735953715">Alapértelmezett böngésző</translation>
 <translation id="4779732376610430319">Ugrás a Beállításokhoz…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1046,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6067849159007176401">Böngészési védelem növelése</translation>
 <translation id="607620096698446287">A(z) <ph name="FILENAME" /> (<ph name="FILESIZE" />) feltöltése nem sikerült</translation>
 <translation id="6084848228346514841">Lapok kiválasztása</translation>
+<translation id="6089212833343035912">A Google Jelszókezelő PIN-kódja</translation>
 <translation id="6100617279104942061">Bejelentkezve a következőként: <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
 <translation id="6103540626693881831">Eszközalapú titkosítás</translation>
 <translation id="6119050551270742952">Ez a weboldal inkognitó módban van megnyitva</translation>
@@ -1261,6 +1266,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7022197654033719543">Webhelyadatok</translation>
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="704692552158601232">Alapértelmezett böngésző</translation>
+<translation id="7051147526307793383">Azonosítókulcsra való automatikus frissítések engedélyezése</translation>
 <translation id="7055240621761583113">Jelszó automatikus kitöltése</translation>
 <translation id="7063811929043357292">A fiókodat az egyik szülőd kezeli.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
@@ -1336,6 +1342,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7470908168505178757">Lapcsoport. Összecsukva.</translation>
 <translation id="7472734401283673885">Vállalat neve</translation>
 <translation id="7473891865547856676">Nem, köszönöm</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 lapcsoport bezárva és mentve}other{{count} lapcsoport bezárva és mentve}}</translation>
 <translation id="7488874549363591659">Kézbesítve</translation>
 <translation id="7491131399623468277">Ugrás a Beállításokhoz…</translation>
 <translation id="749854780843431406">Új lapot az <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> gombbal nyithat meg.</translation>

@@ -34,6 +34,7 @@
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
 <translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
 <translation id="1117719261843403176">开启/关闭移动流量。<ph name="STATE" />。</translation>
+<translation id="1122849163460178706">一些值得尝试的查询</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1129383337808748948">刷新“<ph name="CONTENT_TITLE" />”</translation>
 <translation id="1142002900084379065">近期照片</translation>
@@ -901,6 +902,7 @@
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
 <translation id="4228078597006700451">尚未设置控件</translation>
+<translation id="4230560241506423345">新建</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -1446,7 +1448,6 @@
 <translation id="6032620807120418574">点击任意位置即可录制整个屏幕</translation>
 <translation id="6040071906258664830">麦克风录音功能已<ph name="STATE" /></translation>
 <translation id="6040143037577758943">关闭</translation>
-<translation id="6042308850641462728">展开</translation>
 <translation id="6043212731627905357">该显示器与您的<ph name="DEVICE_TYPE" />不兼容（系统不支持该显示器）。</translation>
 <translation id="6043994281159824495">立即退出</translation>
 <translation id="6045629311476491587">被 <ph name="APP_COUNT" /> 款应用使用过</translation>
@@ -1469,7 +1470,7 @@
 <translation id="6099678161144790572">过去一个月内修改过</translation>
 <translation id="6103838137565245112">系统</translation>
 <translation id="610395411842312282">将两个并排窗口设为一组</translation>
-<translation id="6108952804512516814">利用 AI 创作</translation>
+<translation id="6108952804512516814">利用 AI 创建</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />语音识别结果文件已下载完毕</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">色彩校正</translation>
@@ -2354,7 +2355,7 @@
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="981011780479609956">无截止日期</translation>
 <translation id="98120814841227350">转到文档末尾</translation>
-<translation id="98515147261107953">横向</translation>
+<translation id="98515147261107953">风光</translation>
 <translation id="987589956647469042">移动流量已开启</translation>
 <translation id="989374776391122812">摄像头和音频控件</translation>
 <translation id="990277280839877440">已关闭窗口“<ph name="WINDOW_TITILE" />”。</translation>

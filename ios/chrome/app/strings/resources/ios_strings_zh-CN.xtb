@@ -128,6 +128,7 @@
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
 <translation id="1626771852476987600">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
+<translation id="1641068175940982148">打开“<ph name="GROUP_TITLE" />”，分组包含 <ph name="NUMBER_OF_TABS" /> 个标签页，<ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1641316430523156212">关注</translation>
 <translation id="1644574205037202324">历史记录</translation>
@@ -403,6 +404,7 @@
 <translation id="2952246431280799028">轻触并按住相应地址。</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2958718410589002129">密码</translation>
+<translation id="2963044753825419640">允许网站和应用自动将现有账号升级为使用通行密钥（如可用）</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
 <translation id="2965328226365382335">过去 15 分钟</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
@@ -760,6 +762,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />，<ph name="STATE" />，仅在该设备上，<ph name="URL" /></translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4766112107778026136">探索与关注</translation>
+<translation id="4769198578611055647">有助于您在任意设备上访问已保存的通行密钥</translation>
 <translation id="4775879719735953715">默认浏览器</translation>
 <translation id="4779732376610430319">前往“设置”…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /></translation>
@@ -1043,6 +1046,7 @@
 <translation id="6067849159007176401">添加浏览保护功能</translation>
 <translation id="607620096698446287">无法上传“<ph name="FILENAME" />”(<ph name="FILESIZE" />)</translation>
 <translation id="6084848228346514841">选择标签页</translation>
+<translation id="6089212833343035912">Google 密码管理工具 PIN 码</translation>
 <translation id="6100617279104942061">您目前登录的账号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
 <translation id="6103540626693881831">设备端加密</translation>
 <translation id="6119050551270742952">当前网页处于无痕模式</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7022197654033719543">网站信息</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="704692552158601232">默认浏览器应用</translation>
+<translation id="7051147526307793383">允许自动升级通行密钥</translation>
 <translation id="7055240621761583113">自动填充密码</translation>
 <translation id="7063811929043357292">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
