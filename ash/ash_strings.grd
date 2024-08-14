@@ -663,6 +663,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP" desc="The tooltip text to notify that bluetooth is disabled.">
         Bluetooth is off
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP" desc="The tooltip text to notify that bluetooth is unavailable.">
+        Bluetooth is unavailable
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
         {NUM_DEVICES, plural,
          =1 {Connected to a device}
@@ -691,6 +694,9 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT" desc="Bluetooth button label in the status tray popup." meaning="Bluetooth is disabled. [CHAR_LIMIT=14]">
         Off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_SHORT" desc="Bluetooth button label in the status tray popup." meaning="Bluetooth is unavailable. [CHAR_LIMIT=14]">
+        Unavailable
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING" desc="The label used in the tray popup to show bluetooth is discovering devices.">
         Scanning for devices...
