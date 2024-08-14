@@ -31,7 +31,6 @@
 
 namespace ash {
 
-class PickerActionOnNextFocusRequest;
 class PickerAssetFetcher;
 class PickerCapsLockStateView;
 class PickerClient;
@@ -158,7 +157,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                   WidgetTriggerSource trigger_source);
   void CloseWidget();
   void OnFeatureTourLearnMore();
-  void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
   void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
   void InsertResultOnNextFocus(const PickerSearchResult& result);
@@ -174,7 +172,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
-  std::unique_ptr<PickerActionOnNextFocusRequest> action_on_next_focus_request_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
   std::unique_ptr<PickerSuggestionsController> suggestions_controller_;

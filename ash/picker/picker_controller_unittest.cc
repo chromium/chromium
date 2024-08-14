@@ -4,8 +4,10 @@
 
 #include "ash/picker/picker_controller.h"
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -20,14 +22,19 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_feature_tour.h"
+#include "ash/picker/views/picker_search_bar_textfield.h"
+#include "ash/picker/views/picker_search_field_view.h"
+#include "ash/picker/views/picker_view.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/picker/mock_picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,11 +53,18 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+#include "ui/wm/core/focus_controller.h"
 
 namespace ash {
 namespace {
@@ -309,38 +323,143 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
 }
 
 TEST_F(PickerControllerTest,
-       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithNoWindows) {
+  wm::FocusController* focus_controller = Shell::Get()->focus_controller();
+  ASSERT_EQ(focus_controller->GetActiveWindow(), nullptr);
+  ASSERT_EQ(focus_controller->GetFocusedWindow(), nullptr);
+
+  // Show the feature tour.
   PickerFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
-  const views::Button* button = feature_tour.complete_button_for_testing();
-  ASSERT_NE(button, nullptr);
-  LeftClickOn(button);
-  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            feature_tour.widget_for_testing()->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            feature_tour.widget_for_testing()->GetNativeWindow());
 
+  // Complete the feature tour.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  ASSERT_NE(controller().widget_for_testing(), nullptr);
   views::test::WidgetVisibleWaiter(controller().widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            controller().widget_for_testing()->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            controller().widget_for_testing()->GetNativeWindow());
+  auto* view = views::AsViewClass<PickerView>(
+      controller().widget_for_testing()->widget_delegate()->GetContentsView());
+  ASSERT_NE(view, nullptr);
+  EXPECT_TRUE(
+      view->search_field_view_for_testing().textfield_for_testing().HasFocus());
+
+  // Dismiss Picker.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(controller().widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(), nullptr);
+  EXPECT_EQ(focus_controller->GetFocusedWindow(), nullptr);
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
+  std::unique_ptr<views::Widget> test_widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .SetShow(true)
+          .BuildClientOwnsWidget();
+  wm::FocusController* focus_controller = Shell::Get()->focus_controller();
+  ASSERT_EQ(focus_controller->GetActiveWindow(),
+            test_widget->GetNativeWindow());
+  ASSERT_EQ(focus_controller->GetFocusedWindow(),
+            test_widget->GetNativeWindow());
+
+  // Show the feature tour.
+  PickerFeatureTour::RegisterProfilePrefs(client().registry());
+  controller().ToggleWidget();
+  auto& feature_tour = controller().feature_tour_for_testing();
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            feature_tour.widget_for_testing()->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            feature_tour.widget_for_testing()->GetNativeWindow());
+
+  // Complete the feature tour.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  ASSERT_NE(controller().widget_for_testing(), nullptr);
+  views::test::WidgetVisibleWaiter(controller().widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            controller().widget_for_testing()->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            controller().widget_for_testing()->GetNativeWindow());
+  auto* view = views::AsViewClass<PickerView>(
+      controller().widget_for_testing()->widget_delegate()->GetContentsView());
+  ASSERT_NE(view, nullptr);
+  EXPECT_TRUE(
+      view->search_field_view_for_testing().textfield_for_testing().HasFocus());
+
+  // Dismiss Picker.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(controller().widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            test_widget->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            test_widget->GetNativeWindow());
 }
 
 TEST_F(PickerControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithFocus) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(ui::TEXT_INPUT_TYPE_TEXT);
-  input_method->SetFocusedTextInputClient(&input_field);
+  std::unique_ptr<views::Widget> textfield_widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .SetShow(true)
+          .BuildClientOwnsWidget();
+  auto* textfield =
+      textfield_widget->SetContentsView(std::make_unique<views::Textfield>());
+  textfield->GetViewAccessibility().SetName(u"textfield");
+  textfield->RequestFocus();
+  wm::FocusController* focus_controller = Shell::Get()->focus_controller();
+  ASSERT_EQ(focus_controller->GetActiveWindow(),
+            textfield_widget->GetNativeWindow());
+  ASSERT_EQ(focus_controller->GetFocusedWindow(),
+            textfield_widget->GetNativeWindow());
+  ASSERT_TRUE(textfield->HasFocus());
+
+  // Show the feature tour.
   PickerFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
-  // Simulate losing focus from the input field while the feature tour is shown.
-  input_method->DetachTextInputClient(&input_field);
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            feature_tour.widget_for_testing()->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            feature_tour.widget_for_testing()->GetNativeWindow());
+  EXPECT_FALSE(textfield->HasFocus());
+
   // Complete the feature tour.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
-  // Regain focus after the feature tour is complete.
-  input_method->SetFocusedTextInputClient(&input_field);
-
+  ASSERT_NE(controller().widget_for_testing(), nullptr);
   views::test::WidgetVisibleWaiter(controller().widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            controller().widget_for_testing()->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            controller().widget_for_testing()->GetNativeWindow());
+  EXPECT_FALSE(textfield->HasFocus());
+  auto* view = views::AsViewClass<PickerView>(
+      controller().widget_for_testing()->widget_delegate()->GetContentsView());
+  ASSERT_NE(view, nullptr);
+  EXPECT_TRUE(
+      view->search_field_view_for_testing().textfield_for_testing().HasFocus());
+
+  // Dismiss Picker.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+  views::test::WidgetDestroyedWaiter(controller().widget_for_testing()).Wait();
+  EXPECT_EQ(focus_controller->GetActiveWindow(),
+            textfield_widget->GetNativeWindow());
+  EXPECT_EQ(focus_controller->GetFocusedWindow(),
+            textfield_widget->GetNativeWindow());
+  EXPECT_TRUE(textfield->HasFocus());
 }
 
 TEST_F(PickerControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {

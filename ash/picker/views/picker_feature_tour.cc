@@ -12,11 +12,16 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_dialog_delegate_view.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -33,6 +38,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
@@ -96,8 +102,8 @@ ui::ImageModel GetIllustration() {
 
 std::unique_ptr<views::Widget> CreateWidget(
     PickerFeatureTour::EditorStatus editor_status,
-    base::RepeatingClosure learn_more_callback,
-    base::RepeatingClosure completion_callback) {
+    base::OnceClosure learn_more_callback,
+    base::OnceClosure completion_callback) {
   auto feature_tour_dialog =
       views::Builder<SystemDialogDelegateView>()
           .SetBorder(views::CreatePaddedBorder(
@@ -160,8 +166,23 @@ bool PickerFeatureTour::MaybeShowForFirstUse(
     return false;
   }
 
-  widget_ = CreateWidget(editor_status, std::move(learn_more_callback),
-                         std::move(completion_callback));
+  widget_ = CreateWidget(
+      editor_status,
+      base::BindOnce(&PickerFeatureTour::SetOnWindowDeactivatedCallback,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(learn_more_callback)),
+      base::BindOnce(&PickerFeatureTour::SetOnWindowDeactivatedCallback,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(completion_callback)));
+
+  aura::Window* window = widget_->GetNativeWindow();
+  CHECK_NE(window, nullptr);
+  wm::ActivationClient* activation_client =
+      wm::GetActivationClient(window->GetRootWindow());
+  CHECK_NE(activation_client, nullptr);
+  obs_.Reset();
+  obs_.Observe(activation_client);
+
   widget_->Show();
 
   prefs->SetBoolean(kFeatureTourCompletedPref, true);
@@ -194,6 +215,61 @@ const views::Button* PickerFeatureTour::complete_button_for_testing() const {
 
 views::Widget* PickerFeatureTour::widget_for_testing() {
   return widget_.get();
+}
+
+void PickerFeatureTour::OnWindowActivated(ActivationReason reason,
+                                          aura::Window* gained_active,
+                                          aura::Window* lost_active) {
+  RunOnWindowDeactivatedIfNeeded();
+}
+
+void PickerFeatureTour::SetOnWindowDeactivatedCallback(
+    base::OnceClosure callback) {
+  on_window_deactivated_callback_ = std::move(callback);
+
+  RunOnWindowDeactivatedIfNeeded();
+}
+
+void PickerFeatureTour::RunOnWindowDeactivatedIfNeeded() {
+  if (on_window_deactivated_callback_.is_null()) {
+    return;
+  }
+  if (widget_ && obs_.IsObserving() &&
+      widget_->GetNativeWindow() == obs_.GetSource()->GetActiveWindow()) {
+    return;
+  }
+
+  // As of writing, this method is called from two code paths:
+  //
+  // 1. `OnWindowActivated`, which is called from
+  // `wm::FocusController::SetActiveWindow`.
+  // When `OnWindowActivated` is called, the active window should be set... but
+  // we cannot activate any other windows (such as Picker) synchronously due to
+  // being in the middle of `wm::FocusController::SetActiveWindow`'s
+  // "active window stack".
+  // Doing so will cause a `DCHECK` crash in
+  // `wm::FocusController::FocusAndActivateWindow` due to the active window
+  // changing reentrantly. Turning off `DCHECK`s will result in no window
+  // being shown / activated.
+  //
+  // We should only run callbacks after the `SetActiveWindow` "stack" is fully
+  // resolved to avoid this. The only feasible way of doing this is to post a
+  // task.
+  //
+  // 2. `SetOnWindowDeactivatedCallback`, which is passed in as callbacks to
+  // `SystemDialogDelegateView`. Those callbacks are called from
+  // `SystemDialogDelegateView::RunCallbackAndCloseDialog` before the widget is
+  // closed.
+  // Therefore, the active window should still be `widget_`'s native window, so
+  // we should not have gotten to this point.
+  //
+  // However, `SystemDialogDelegateView` behaviour might change in the future.
+  // The worst case would be `SystemDialogDelegateView` changing its behaviour
+  // to call callbacks during `OnWindowDeactivated`, which would be equivalent
+  // to the above code path. Therefore, we should also post a task in this
+  // scenario.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(on_window_deactivated_callback_));
 }
 
 }  // namespace ash
