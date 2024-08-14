@@ -544,16 +544,16 @@ void ChromeAutofillClient::ShowDeleteAddressProfileDialog(
 void ChromeAutofillClient::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AddressProfileSavePromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/40164488): Respect SaveAddressProfilePromptOptions.
   save_update_address_profile_flow_manager_.OfferSave(
-      web_contents(), profile, original_profile,
-      options.is_migration_to_account, std::move(callback));
+      web_contents(), profile, original_profile, is_migration_to_account,
+      std::move(callback));
 #else
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
-      web_contents(), profile, original_profile, options, std::move(callback));
+      web_contents(), profile, original_profile, is_migration_to_account,
+      std::move(callback));
 #endif
 }
 

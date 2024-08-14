@@ -109,7 +109,7 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    AutofillClient::SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   AddressBubblesController::CreateForWebContents(web_contents);
   auto* controller = AddressBubblesController::FromWebContents(web_contents);
@@ -118,18 +118,18 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       is_save_bubble
           // Save address bubble.
           ? base::BindRepeating(ShowSaveBubble, profile,
-                                options.is_migration_to_account)
+                                is_migration_to_account)
           // Update address bubble.
           : base::BindRepeating(ShowUpdateBubble, profile, *original_profile);
   std::u16string page_action_icon_tootip = l10n_util::GetStringUTF16(
-      is_save_bubble ? (options.is_migration_to_account
+      is_save_bubble ? (is_migration_to_account
                             ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
                             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE)
                      : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 
   controller->SetUpAndShowBubble(std::move(show_bubble_view_impl),
-                                 std::move(page_action_icon_tootip), options,
-                                 std::move(callback));
+                                 std::move(page_action_icon_tootip),
+                                 is_migration_to_account, std::move(callback));
 }
 
 // static
@@ -231,7 +231,7 @@ void AddressBubblesController::DoShowBubble() {
 void AddressBubblesController::SetUpAndShowBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
     std::u16string page_action_icon_tootip,
-    AutofillClient::SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
   // Don't show the bubble if it's already visible, and inform the backend.
@@ -258,7 +258,7 @@ void AddressBubblesController::SetUpAndShowBubble(
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
-  is_migration_to_account_ = options.is_migration_to_account;
+  is_migration_to_account_ = is_migration_to_account;
 
   Show();
 }

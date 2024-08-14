@@ -178,7 +178,7 @@ void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
-    SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AddressProfileSavePromptCallback callback) {
   NOTIMPLEMENTED();
 }

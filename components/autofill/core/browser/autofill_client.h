@@ -160,14 +160,6 @@ class AutofillClient {
     std::u16string expiration_date_year;
   };
 
-  // TODO(crbug.com/325440757): Remove after the save-update controller
-  // splitting is done or remove this TODO if a new option is added. Used for
-  // options of save (and update) address profile prompt.
-  struct SaveAddressProfilePromptOptions {
-    // Whether the prompt suggests migration into the user's account.
-    bool is_migration_to_account = false;
-  };
-
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
     PopupOpenArgs();
@@ -386,11 +378,12 @@ class AutofillClient {
   // renders an update prompt where `original_profile` is the address profile
   // that will be updated if the user accepts the update prompt. Runs `callback`
   // once the user makes a decision with respect to the offer-to-save prompt.
-  // `options` carries extra configuration options for the prompt.
+  // `is_migration_to_account` differentiates saving `profile` in browser or
+  // in user's Google account.
   virtual void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) = 0;
 
   // Shows Autofill suggestions with the given `values`, `labels`, `icons`, and

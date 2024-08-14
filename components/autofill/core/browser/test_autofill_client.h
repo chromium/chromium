@@ -281,7 +281,7 @@ class TestAutofillClientTemplate : public T {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
 
   void ShowEditAddressProfileDialog(

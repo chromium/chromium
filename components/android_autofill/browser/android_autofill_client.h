@@ -98,7 +98,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
-      SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
   void ShowEditAddressProfileDialog(
       const autofill::AutofillProfile& profile,

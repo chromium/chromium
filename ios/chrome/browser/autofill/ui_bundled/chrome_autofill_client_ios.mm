@@ -255,9 +255,8 @@ ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/40164489): Respect SaveAddressProfilePromptOptions.
   for (infobars::InfoBar* infobar : infobar_manager_->infobars()) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
         AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
@@ -286,7 +285,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
       profile, original_profile, GetUserEmail(),
-      GetApplicationContext()->GetApplicationLocale(), options,
+      GetApplicationContext()->GetApplicationLocale(), is_migration_to_account,
       std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(

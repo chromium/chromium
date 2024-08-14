@@ -48,10 +48,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
     }
     return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
         *profile_, original_profile, email,
-        /*locale=*/"en-US",
-        AutofillClient::SaveAddressProfilePromptOptions{
-            .is_migration_to_account = is_migration_to_account},
-        callback_.Get());
+        /*locale=*/"en-US", is_migration_to_account, callback_.Get());
   }
 
   std::unique_ptr<AutofillProfile> profile_;
