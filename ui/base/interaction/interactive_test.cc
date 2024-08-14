@@ -287,8 +287,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
 
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
-  return internal::InteractiveTestPrivate::PostTask("FlushEvents()",
-                                                    base::DoNothing());
+  return Steps();
 }
 
 // static

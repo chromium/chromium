@@ -290,12 +290,7 @@ class InteractiveTestApi {
                                                 std::string_view name,
                                                 C&& find_callback);
 
-  // Ensures that the next step does not piggyback on the previous step(s), but
-  // rather, executes on a fresh message loop. Normally, steps will continue to
-  // trigger on the same call stack until a start condition is not met.
-  //
-  // Use sparingly, and only when e.g. re-entrancy issues prevent the test from
-  // otherwise working properly.
+  // DEPRECATED. Under async Kombucha, this is a no-op.
   [[nodiscard]] static MultiStep FlushEvents();
 
   // Adds an observed state with identifier `id` in the current context. Use

@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
+      WaitForShow(kPriceInsightsChipElementId),
       PressButton(kPriceInsightsChipElementId), FlushEvents(),
       CheckView(
           kPriceInsightsChipElementId,
@@ -224,7 +224,7 @@ class PriceInsightsIconViewEngagementTest
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kNonShoppingURL)),
-        FlushEvents(), EnsureNotPresent(kPriceInsightsChipElementId));
+        WaitForHide(kPriceInsightsChipElementId));
   }
 
   void NavigateToAShoppingPage(bool expected_to_show_label) {
@@ -234,7 +234,7 @@ class PriceInsightsIconViewEngagementTest
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kShoppingURL)),
-        FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
+        WaitForShow(kPriceInsightsChipElementId),
         CheckViewProperty(kPriceInsightsChipElementId,
                           &PriceInsightsIconView::ShouldShowLabel,
                           expected_to_show_label));
