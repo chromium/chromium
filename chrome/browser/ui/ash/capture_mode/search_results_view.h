@@ -21,6 +21,13 @@ class SearchResultsView : public AshWebViewImpl {
   SearchResultsView(SearchResultsView&) = delete;
   SearchResultsView& operator=(SearchResultsView&) = delete;
   ~SearchResultsView() override;
+
+  // AshWebViewImpl:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
 };
 
 }  // namespace ash
