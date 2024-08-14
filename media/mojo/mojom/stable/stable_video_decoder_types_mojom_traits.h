@@ -80,6 +80,8 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         return media::stable::mojom::ColorSpacePrimaryID::kWideGamutColorSpin;
       case gfx::ColorSpace::PrimaryID::CUSTOM:
         return media::stable::mojom::ColorSpacePrimaryID::kCustom;
+      case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+        return media::stable::mojom::ColorSpacePrimaryID::kEBU_3213_E;
     }
 
     NOTREACHED_NORETURN();
@@ -137,6 +139,9 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         return true;
       case media::stable::mojom::ColorSpacePrimaryID::kCustom:
         *output = gfx::ColorSpace::PrimaryID::CUSTOM;
+        return true;
+      case media::stable::mojom::ColorSpacePrimaryID::kEBU_3213_E:
+        *output = gfx::ColorSpace::PrimaryID::EBU_3213_E;
         return true;
     }
 

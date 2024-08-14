@@ -153,7 +153,7 @@ gfx::ColorSpace WebRtcToGfxColorSpace(const webrtc::ColorSpace& color_space) {
       primaries = gfx::ColorSpace::PrimaryID::P3;
       break;
     case webrtc::ColorSpace::PrimaryID::kJEDECP22:
-      primaries = gfx::ColorSpace::PrimaryID::INVALID;
+      primaries = gfx::ColorSpace::PrimaryID::EBU_3213_E;
       break;
     default:
       break;
@@ -296,6 +296,9 @@ webrtc::ColorSpace GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space) {
       break;
     case gfx::ColorSpace::PrimaryID::P3:
       primaries = webrtc::ColorSpace::PrimaryID::kSMPTEST432;
+      break;
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+      primaries = webrtc::ColorSpace::PrimaryID::kJEDECP22;
       break;
     default:
       DVLOG(1) << "Unsupported color primaries.";

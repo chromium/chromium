@@ -121,6 +121,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="APPLE_GENERIC_RGB"/>
   <int value="14" label="WIDE_GAMUT_COLOR_SPIN"/>
   <int value="15" label="CUSTOM"/>
+  <int value="16" label="EBU_3213_E"/>
 </enum>
 
 <enum name="ColorSpaceTransferID">

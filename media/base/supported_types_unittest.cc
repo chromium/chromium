@@ -125,6 +125,7 @@ TEST(SupportedTypesTest, IsSupportedVideoType_VP9Primaries) {
       VideoColorSpace::PrimaryID::SMPTEST428_1,
       VideoColorSpace::PrimaryID::SMPTEST431_2,
       VideoColorSpace::PrimaryID::SMPTEST432_1,
+      VideoColorSpace::PrimaryID::EBU_3213_E,
   };
 
   for (int i = 0; i <= (1 << (8 * sizeof(VideoColorSpace::PrimaryID))); i++) {

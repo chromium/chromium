@@ -293,6 +293,7 @@ enum ColorSpacePrimaryID {
   kAppleGenericRGB,
   kWideGamutColorSpin,
   kCustom,
+  [MinVersion=1] kEBU_3213_E,
 };
 
 // Maps to |gfx.mojom.ColorSpaceTransferID|.

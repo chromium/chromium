@@ -85,7 +85,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
     WIDE_GAMUT_COLOR_SPIN,
     // Primaries defined by the primary matrix |custom_primary_matrix_|.
     CUSTOM,
-    kMaxValue = CUSTOM,
+    EBU_3213_E,
+    kMaxValue = EBU_3213_E,
   };
 
   enum class TransferID : uint8_t {

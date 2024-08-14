@@ -130,6 +130,9 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
     case gfx::ColorSpace::PrimaryID::P3:
       primaries = VideoColorSpace::PrimaryID::SMPTEST432_1;
       break;
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+      primaries = VideoColorSpace::PrimaryID::EBU_3213_E;
+      break;
     default:
       break;
   }
@@ -281,8 +284,7 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpaceInternal(
       primary_id = gfx::ColorSpace::PrimaryID::P3;
       break;
     case PrimaryID::EBU_3213_E:
-      // TODO(uzair.jaleel) Need to check this once.
-      primary_id = gfx::ColorSpace::PrimaryID::INVALID;
+      primary_id = gfx::ColorSpace::PrimaryID::EBU_3213_E;
       break;
     case PrimaryID::INVALID:
     case PrimaryID::UNSPECIFIED:

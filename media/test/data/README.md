@@ -588,6 +588,17 @@ AV1 encoded video with GBR colorspace matrix and 4:4:4 chroma sampling.
 ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt gbrp -color_range 2 -colorspace 0 -color_primaries 1 -color_trc 13 -c:v av1 gbrp-av1.mp4
 ```
 
+#### ebu-3213-e-vp9.mp4
+
+VP9 encoded video with `EBU_3213_E` colorspace primary.
+
+NOTE: FFmpeg can't convert a video to `EBU_3213_E` primary directly, the
+workaround is to convert it into `BT470BG` primary first because they should
+be identical, and then tag the primary as `EBU_3213_E` inside the container.
+```
+ffmpeg -f lavfi -i testsrc=s=320x240:r=1:d=1 -pix_fmt yuv420p -vf "colorspace=space=bt470bg:range=tv:primaries=smpte170m:trc=smpte170m:ispace=smpte170m:irange=tv:iprimaries=smpte170m:itrc=smpte170m" -color_range 1 -colorspace 6 -color_primaries 22 -color_trc 6 -c:v vp9 ebu-3213-e-vp9.mp4
+```
+
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
 
