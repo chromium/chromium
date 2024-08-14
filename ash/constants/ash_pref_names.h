@@ -2204,6 +2204,15 @@ inline constexpr char kHandsFreeProfileInputSuperResolution[] =
 inline constexpr char kShortcutCustomizationAllowed[] =
     "ash.shortcut_customization_allowed";
 
+// A dictionary pref used to record the number of times each deprecated
+// accelerator notification has shown.
+inline constexpr char kDeprecatedAcceleratorNotificationsShownCounts[] =
+    "ash.deprecated_accelerator_notifications_shown_counts";
+// A dictionary pref used to record the timestamp each deprecated accelerator
+// notification last shown.
+inline constexpr char kDeprecatedAcceleratorNotificationsLastShown[] =
+    "ash.deprecated_accelerator_notifications_last_shown";
+
 // A `TimeDelta` pref for the session duration Focus Mode should default to.
 // Based off of the last session, if any.
 inline constexpr char kFocusModeSessionDuration[] =

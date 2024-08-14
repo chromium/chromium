@@ -10,6 +10,7 @@
 
 #include "ash/accelerators/accelerator_lookup.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -21,8 +22,11 @@
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_split.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
@@ -178,11 +182,24 @@ const char kFullscreenMagnifierToggleAccelNotificationId[] =
 const char kHighContrastToggleAccelNotificationId[] =
     "chrome://settings/accessibility/highcontrast";
 
+// A nudge/tutorial will not be shown if it already been shown 3 times, or if 24
+// hours have not yet passed since it was last shown.
+constexpr int kNudgeMaxShownCount = 3;
+constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
+
+// We only display notifications for active user sessions (signed-in/guest with
+// desktop ready). Also do not show notifications in signin or lock screen.
+bool IsActiveUserSession() {
+  const auto* session_controller = Shell::Get()->session_controller();
+  return !session_controller->IsUserSessionBlocked();
+}
+
 void MaybeShowDeprecatedAcceleratorNotification(const char* notification_id,
                                                 int message_id,
                                                 int new_shortcut_id,
                                                 ui::Accelerator replacement,
-                                                AcceleratorAction action_id) {
+                                                AcceleratorAction action_id,
+                                                const char* pref_name) {
   const std::vector<AcceleratorDetails> available_accelerators =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           action_id);
@@ -193,6 +210,39 @@ void MaybeShowDeprecatedAcceleratorNotification(const char* notification_id,
     // is not available.
     return;
   }
+
+  if (!IsActiveUserSession()) {
+    return;
+  }
+
+  CHECK(ash::Shell::HasInstance() && Shell::Get()->session_controller());
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  CHECK(prefs);
+
+  const int shown_count =
+      prefs->GetDict(prefs::kDeprecatedAcceleratorNotificationsShownCounts)
+          .FindInt(pref_name)
+          .value_or(0);
+  std::optional<base::Time> last_shown_time = base::ValueToTime(
+      prefs->GetDict(prefs::kDeprecatedAcceleratorNotificationsLastShown)
+          .Find(pref_name));
+
+  // Do not show the nudge more than three times, or if it has already been
+  // shown in the past 24 hours.
+  const base::Time now = base::Time::Now();
+  if ((shown_count >= kNudgeMaxShownCount) ||
+      (last_shown_time.has_value() &&
+       (now - last_shown_time.value()) < kNudgeTimeBetweenShown)) {
+    return;
+  }
+
+  ScopedDictPrefUpdate count_update(
+      prefs, prefs::kDeprecatedAcceleratorNotificationsShownCounts);
+  ScopedDictPrefUpdate time_update(
+      prefs, prefs::kDeprecatedAcceleratorNotificationsLastShown);
+  count_update->Set(pref_name, shown_count + 1);
+  time_update->Set(pref_name, base::TimeToValue(now));
 
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE);

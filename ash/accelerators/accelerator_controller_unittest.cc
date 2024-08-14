@@ -73,6 +73,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
@@ -86,6 +87,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "media/base/media_switches.h"
@@ -3052,6 +3054,11 @@ class DeprecatedAcceleratorTester : public AcceleratorControllerTest {
 };
 
 TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  ScopedDictPrefUpdate time_update(
+      prefs, prefs::kDeprecatedAcceleratorNotificationsLastShown);
+
   for (size_t i = 0; i < kDeprecatedAcceleratorsLength; ++i) {
     const AcceleratorData& entry = kDeprecatedAccelerators[i];
 
@@ -3061,6 +3068,9 @@ TEST_F(DeprecatedAcceleratorTester, TestDeprecatedAcceleratorsBehavior) {
 
     EXPECT_TRUE(IsMessageCenterEmpty());
     ui::Accelerator deprecated_accelerator = CreateAccelerator(entry);
+
+    time_update->Set(data->pref_name,
+                     base::TimeToValue(base::Time::Now() - base::Hours(24)));
     if (data->deprecated_enabled)
       EXPECT_TRUE(ProcessInController(deprecated_accelerator));
     else

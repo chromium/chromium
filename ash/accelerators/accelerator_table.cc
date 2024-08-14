@@ -49,17 +49,20 @@ const AcceleratorData kDeprecatedAccelerators[] = {
 const size_t kNumDeprecatedAcceleratorsDuplicate = 2u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
+// When remove entries from kDeprecatedAcceleratorsData, also clean up their
+// prefs in kDeprecatedAcceleratorNotificationsShownCounts and
+// kDeprecatedAcceleratorNotificationsLastShown.
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
      IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
      ui::Accelerator(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
-     false},
+     false, "show_shortcut_viewer"},
     {AcceleratorAction::kOpenGetHelp,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
-     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false}};
+     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false, "open_get_help"}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
