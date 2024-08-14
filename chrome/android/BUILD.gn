@@ -403,6 +403,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/data_sharing:invitation_dialog_java",
       "//chrome/browser/data_sharing:java",
       "//chrome/browser/data_sharing:shared_image_tiles_java",
+      "//chrome/browser/data_sharing:tab_group_ui_java",
       "//chrome/browser/dependency_injection:java",
       "//chrome/browser/device:java",
       "//chrome/browser/device_reauth/android:java",
@@ -795,8 +796,6 @@ if (current_toolchain == default_toolchain) {
 
     srcjar_deps += [ ":chrome_jni_headers" ]
 
-    sources += data_sharing_java_sources
-
     # Add the actual implementation where necessary so that downstream targets
     # can provide their own implementations.
     jar_excluded_patterns = [ "*/AppHooksImpl.class" ]
@@ -1048,6 +1047,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/data_sharing:java",
       "//chrome/browser/data_sharing:junit",
       "//chrome/browser/data_sharing:shared_image_tiles_java",
+      "//chrome/browser/data_sharing:tab_group_ui_java",
       "//chrome/browser/dependency_injection:java",
       "//chrome/browser/device:java",
       "//chrome/browser/device:junit",
