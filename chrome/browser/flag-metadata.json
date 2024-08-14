@@ -1490,7 +1490,7 @@
   {
     "name": "clear-device-data-on-signout-for-managed-users",
     "owners": [ "esalma@google.com"],
-    "expiry_milestone": 129
+    "expiry_milestone": 130
   },
   {
     "name": "clear-login-database-for-all-migrated-upm-users",
