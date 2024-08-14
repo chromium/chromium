@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -505,6 +506,7 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
 // Handles taps on the close button.
 - (void)onCloseButtonPressed:(id)sender {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_Close"));
   [self.delegate expandedManualFillViewController:self
                               didPressCloseButton:sender];
 }
