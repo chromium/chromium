@@ -57,9 +57,6 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
         ->CreateAndRegisterEntry(window_registry);
   }
 
-  // Add read anything.
-  ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
-
   // Create Search Companion coordinator.
   // Disable runtime checks so that coordinator can monitor the runtime changes
   // in the availability of companion.

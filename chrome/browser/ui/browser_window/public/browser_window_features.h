@@ -10,6 +10,7 @@
 class Browser;
 class BrowserView;
 class ChromeLabsCoordinator;
+class ReadAnythingCoordinator;
 class SidePanelCoordinator;
 class SidePanelUI;
 
@@ -88,6 +89,10 @@ class BrowserWindowFeatures {
     return lens_overlay_entry_point_controller_.get();
   }
 
+  ReadAnythingCoordinator* read_anything_coordinator() {
+    return read_anything_coordinator_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -111,6 +116,8 @@ class BrowserWindowFeatures {
       mv2_disabled_dialog_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
+
+  std::unique_ptr<ReadAnythingCoordinator> read_anything_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

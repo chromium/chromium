@@ -11,6 +11,7 @@
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
@@ -84,10 +85,10 @@ void ReadAnythingSidePanelController::RemoveObserver(
 
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  if (Browser* browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
-    auto* coordinator = ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
-    coordinator->OnReadAnythingSidePanelEntryShown();
-  }
+  auto* coordinator = tab_->GetBrowserWindowInterface()
+                          ->GetFeatures()
+                          .read_anything_coordinator();
+  coordinator->OnReadAnythingSidePanelEntryShown();
   for (ReadAnythingSidePanelController::Observer& obs : observers_) {
     obs.Activate(true);
   }
@@ -95,10 +96,10 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  if (Browser* browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
-    auto* coordinator = ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
-    coordinator->OnReadAnythingSidePanelEntryHidden();
-  }
+  auto* coordinator = tab_->GetBrowserWindowInterface()
+                          ->GetFeatures()
+                          .read_anything_coordinator();
+  coordinator->OnReadAnythingSidePanelEntryHidden();
   for (ReadAnythingSidePanelController::Observer& obs : observers_) {
     obs.Activate(false);
   }

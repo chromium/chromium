@@ -52,23 +52,12 @@ base::TimeDelta kDelaySeconds = base::Seconds(2);
 }  // namespace
 
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
-    : BrowserUserData<ReadAnythingCoordinator>(*browser),
-      delay_timer_(FROM_HERE,
+    : delay_timer_(FROM_HERE,
                    kDelaySeconds,
                    base::BindRepeating(
                        &ReadAnythingCoordinator::OnTabChangeDelayComplete,
-                       base::Unretained(this))) {
-  browser->tab_strip_model()->AddObserver(this);
-  Observe(GetActiveWebContents());
-
-  if (features::IsDataCollectionModeForScreen2xEnabled()) {
-    BrowserList::GetInstance()->AddObserver(this);
-  }
-
-  if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    EmbeddedA11yExtensionLoader::GetInstance()->Init();
-  }
-}
+                       base::Unretained(this))),
+      browser_(browser) {}
 
 ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   local_side_panel_switch_delay_timer_.Stop();
@@ -79,13 +68,25 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
 
   // Deregister Read Anything from the global side panel registry. This removes
   // Read Anything as a side panel entry observer.
-  Browser* browser = &GetBrowser();
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->RemoveObserver(this);
   }
-  browser->tab_strip_model()->RemoveObserver(this);
+  browser_->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
+}
+
+void ReadAnythingCoordinator::Initialize() {
+  browser_->tab_strip_model()->AddObserver(this);
+  Observe(GetActiveWebContents());
+
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    BrowserList::GetInstance()->AddObserver(this);
+  }
+
+  if (features::IsReadAnythingDocsIntegrationEnabled()) {
+    EmbeddedA11yExtensionLoader::GetInstance()->Init();
+  }
 }
 
 void ReadAnythingCoordinator::AddObserver(
@@ -140,9 +141,8 @@ void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
 }
 
 std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
-  Browser* browser = &GetBrowser();
   auto web_view =
-      std::make_unique<ReadAnythingSidePanelWebView>(browser->profile());
+      std::make_unique<ReadAnythingSidePanelWebView>(browser_->profile());
 
   return std::move(web_view);
 }
@@ -205,7 +205,7 @@ void ReadAnythingCoordinator::PrimaryPageChanged(content::Page& page) {
 }
 
 content::WebContents* ReadAnythingCoordinator::GetActiveWebContents() const {
-  return GetBrowser().tab_strip_model()->GetActiveWebContents();
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }
 
 bool ReadAnythingCoordinator::IsActivePageDistillable() const {
@@ -227,7 +227,7 @@ bool ReadAnythingCoordinator::IsActivePageDistillable() const {
 }
 
 void ReadAnythingCoordinator::ActivePageNotDistillable() {
-  GetBrowser().window()->CloseFeaturePromo(
+  browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
   for (Observer& obs : observers_) {
     obs.OnActivePageDistillable(false);
@@ -235,7 +235,7 @@ void ReadAnythingCoordinator::ActivePageNotDistillable() {
 }
 
 void ReadAnythingCoordinator::ActivePageDistillable() {
-  GetBrowser().window()->MaybeShowFeaturePromo(
+  browser_->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
   for (Observer& obs : observers_) {
     obs.OnActivePageDistillable(true);
@@ -255,7 +255,7 @@ void ReadAnythingCoordinator::InstallGDocsHelperExtension() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
   extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(GetBrowser().profile())
+      extensions::ExtensionSystem::Get(browser_->profile())
           ->extension_service();
   if (!service) {
     // In tests, the service might not be created.
@@ -282,7 +282,7 @@ void ReadAnythingCoordinator::RemoveGDocsHelperExtension() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
   extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(GetBrowser().profile())
+      extensions::ExtensionSystem::Get(browser_->profile())
           ->extension_service();
   if (!service) {
     // In tests, the service might not be created.
@@ -304,7 +304,7 @@ void ReadAnythingCoordinator::ActivePageDistillableForTesting() {
 
 void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
   if (!features::IsDataCollectionModeForScreen2xEnabled() ||
-      browser != &GetBrowser()) {
+      browser != browser_) {
     return;
   }
   // This code is called as part of a screen2x data generation workflow, where
@@ -325,5 +325,3 @@ void ReadAnythingCoordinator::OnLocalSidePanelSwitchDelayTimeout() {
 
   RemoveGDocsHelperExtension();
 }
-
-BROWSER_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);

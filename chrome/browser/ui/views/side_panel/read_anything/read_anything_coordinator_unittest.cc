@@ -65,7 +65,7 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
 
     side_panel_coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     read_anything_coordinator_ =
-        ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+        browser()->GetFeatures().read_anything_coordinator();
 
     // Ensure a kReadAnything entry is added to the contextual registry for the
     // first tab.
@@ -277,7 +277,7 @@ class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
 
     side_panel_coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     read_anything_coordinator_ =
-        ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+        browser()->GetFeatures().read_anything_coordinator();
 
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
