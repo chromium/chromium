@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -48,10 +49,14 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/security_state/core/security_state.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -86,7 +91,10 @@ using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
 using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
+using plus_addresses::FakePlusAddressService;
+using plus_addresses::PlusAddressSettingService;
 using plus_addresses::PlusProfile;
+using plus_addresses::test::PlusAddressTestEnvironment;
 using testing::_;
 using testing::ByMove;
 using testing::Eq;
@@ -301,16 +309,38 @@ PasswordForm MakeSavedPassword() {
   return form;
 }
 
+std::unique_ptr<KeyedService> BuildFakePlusAddressService(
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    PlusAddressSettingService* setting_service,
+    content::BrowserContext* context) {
+  return std::make_unique<FakePlusAddressService>(
+      pref_service, identity_manager, setting_service);
+}
+
 }  // namespace
 
 class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
  public:
   PasswordAccessoryControllerTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    features_.InitWithFeatures(
+        {plus_addresses::features::kPlusAddressesEnabled,
+         plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+        {});
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    PlusAddressServiceFactory::GetInstance()->SetTestingFactory(
+        GetBrowserContext(),
+        base::BindRepeating(&BuildFakePlusAddressService,
+                            &plus_environment_.pref_service(),
+                            plus_environment_.identity_env().identity_manager(),
+                            &plus_environment_.setting_service()));
+
     NavigateAndCommit(GURL(kExampleSite));
     FocusWebContentsOnMainFrame();
 
@@ -399,6 +429,12 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return *autofill_client_injector_[web_contents()];
   }
 
+  FakePlusAddressService& plus_address_service() {
+    return *static_cast<FakePlusAddressService*>(
+        PlusAddressServiceFactory::GetForBrowserContext(
+            web_contents()->GetBrowserContext()));
+  }
+
  protected:
   virtual PasswordStoreInterface* CreateInternalAccountPasswordStore() {
     mock_account_password_store_ =
@@ -412,6 +448,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return mock_profile_password_store_.get();
   }
 
+  base::test::ScopedFeatureList features_;
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
@@ -427,6 +464,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     return driver();
   }
 
+  PlusAddressTestEnvironment plus_environment_;
   password_manager::CredentialCache credential_cache_;
   std::unique_ptr<MockPasswordManagerClient> mock_pwd_manager_client_;
   NiceMock<MockPasswordManagerDriver> mock_driver_;
@@ -923,9 +961,6 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
-
   CreateSheetController();
 
   MockAffiliatedPlusProfilesProvider provider;
@@ -948,19 +983,10 @@ TEST_F(PasswordAccessoryControllerTest, AppendsPlusAddressSuggestions) {
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
           .AddPlusAddressSection("foo.com", u"example@gmail")
-          .AppendFooterCommand(generate_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
-          .AppendFooterCommand(select_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
-
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {
@@ -997,19 +1023,10 @@ TEST_F(PasswordAccessoryControllerTest, PlusAddressUsedAsUsername) {
               false, true)
           .AppendField(u"S3cur3", password_for_str(u"example@gmail"), true,
                        false)
-          .AppendFooterCommand(generate_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
-          .AppendFooterCommand(select_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 
 TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
-
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {
@@ -1045,22 +1062,13 @@ TEST_F(PasswordAccessoryControllerTest, BothPlusAddressAndCredentialShown) {
                        /*is_obfuscated=*/false, /*selectable=*/true)
           .AppendField(u"S3cur3", password_for_str(u"foo.bar@gmail"), true,
                        false)
-          .AppendFooterCommand(generate_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
-          .AppendFooterCommand(select_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
           .Build());
 }
 
 // Verify that the action to open plus address creation bottom sheet is appended
 // when the corresponding feature flag is enabled.
 TEST_F(PasswordAccessoryControllerTest,
-       AppendsPlusAddressManualFallbackActions) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
-
+       PlusAddressFillingDisabled_NoPlusAddressesActions) {
   CreateSheetController();
 
   controller()->RefreshSuggestionsForField(
@@ -1069,12 +1077,101 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_EQ(
       controller()->GetSheetData(),
       PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
-          .AppendFooterCommand(generate_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       NoPlusAddressesSaved_NoSelectPlusAddressAction) {
+  CreateSheetController();
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField);
+
+  // Although the plus address filling is enabled, the user doesn't have any
+  // saved plus addresses. The "Select plus address" should not be displayed.
+  plus_address_service().set_is_plus_address_filling_enabled(true);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       PlusAddressFillingEnabled_AppendsSelectPlusAddressAction) {
+  CreateSheetController();
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField);
+
+  plus_address_service().add_plus_profile(
+      plus_addresses::test::CreatePlusProfile());
+  plus_address_service().set_is_plus_address_filling_enabled(true);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
           .AppendFooterCommand(select_plus_address_str(),
                                autofill::AccessoryAction::
                                    SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       NoAffiliatedPlusAddresses_AppendsCreatePlusAddressAction) {
+  CreateSheetController();
+
+  MockAffiliatedPlusProfilesProvider provider;
+  EXPECT_CALL(provider, AddObserver(controller()));
+  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
+
+  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
+      .WillRepeatedly(Return(base::span<const PlusProfile, 0>()));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField);
+
+  // Plus address creation can't be supported while plus address filling is
+  // disabled.
+  plus_address_service().set_is_plus_address_filling_enabled(true);
+  plus_address_service().set_should_offer_plus_address_creation(true);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .AppendFooterCommand(generate_plus_address_str(),
+                               autofill::AccessoryAction::
+                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
+          .Build());
+}
+
+TEST_F(PasswordAccessoryControllerTest,
+       HasAffiliatedPlusAddresses_NoCreatePlusAddressAction) {
+  CreateSheetController();
+
+  MockAffiliatedPlusProfilesProvider provider;
+  EXPECT_CALL(provider, AddObserver);
+  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
+
+  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile()};
+  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
+      .WillRepeatedly(Return(base::span(profiles)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField);
+
+  // Plus address creation can't be supported while plus address filling is
+  // disabled.
+  plus_address_service().set_is_plus_address_filling_enabled(true);
+  plus_address_service().set_should_offer_plus_address_creation(true);
+
+  // Although the plus address creation is supported, the user has an affiliated
+  // plus address for the current domain. The "Create plus address" action
+  // should not be displayed.
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
+          .AddPlusAddressSection("foo.com", u"plus+foo@plus.plus")
           .Build());
 }
 
@@ -1246,8 +1343,12 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kBiometricTouchToFill);
+  features_.Reset();
+  features_.InitWithFeatures(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
+       password_manager::features::kBiometricTouchToFill},
+      {});
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
@@ -1283,8 +1384,12 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kBiometricTouchToFill);
+  features_.Reset();
+  features_.InitWithFeatures(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
+       password_manager::features::kBiometricTouchToFill},
+      {});
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
@@ -1321,8 +1426,12 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kBiometricTouchToFill);
+  features_.Reset();
+  features_.InitWithFeatures(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
+       password_manager::features::kBiometricTouchToFill},
+      {});
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
@@ -1497,9 +1606,6 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
 // corresponding action is triggered.
 TEST_F(PasswordAccessoryControllerTest,
        TriggersPlusAddressCreationBottomSheet) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled);
-
   CreateSheetController();
   controller()->RefreshSuggestionsForField(
       FocusedFieldType::kFillableUsernameField);
@@ -1590,9 +1696,13 @@ TEST_F(PasswordAccessoryControllerTest,
         .RetiresOnSaturation();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  features_.Reset();
+  features_.InitWithFeatures(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled,
+       password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning},
+      {});
   CreateSheetController();
 
   // Set up credentials for filling.
@@ -1627,10 +1737,12 @@ TEST_F(PasswordAccessoryControllerTest, DontShowMigrationSheetlIfDisabled) {
         .RetiresOnSaturation();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
+  features_.Reset();
+  features_.InitWithFeatures(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+      {password_manager::features::
+           kUnifiedPasswordManagerLocalPasswordsMigrationWarning});
   // Set up credentials for filling.
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(

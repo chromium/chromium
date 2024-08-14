@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/android/plus_addresses/all_plus_addresses_bottom_sheet_controller.h"
@@ -51,6 +52,7 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/url_formatter/elide_url.h"
@@ -553,7 +555,9 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
       password_client_(password_client),
       driver_supplier_(std::move(driver_supplier)),
       show_migration_warning_callback_(
-          std::move(show_migration_warning_callback)) {}
+          std::move(show_migration_warning_callback)),
+      plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
+          GetWebContents().GetBrowserContext())) {}
 
 std::vector<FooterCommand>
 PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
@@ -623,14 +627,39 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
 
   if (base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    footer_commands_to_add.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-        autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-    footer_commands_to_add.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
-        autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+    // Both `ContentAutofillClient and this controller are instances of the
+    // `WebContentsUserData`. There's no well-defined destruction order between
+    // two different `WebContentsUserData` objects. That's why
+    // `ContentAutofillClient` cannot be stored in a `raw_ptr` member variable
+    // like `PlusAddressService`.
+    auto* autofill_client =
+        autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
+    if (autofill_client && plus_address_service_) {
+      // Offer plus address creation if it's supported for the current user
+      // session and if the user doesn't have any plus addresses created for the
+      // current domain.
+      if (plus_address_service_->IsPlusAddressCreationEnabled(
+              autofill_client->GetLastCommittedPrimaryMainFrameOrigin(),
+              autofill_client->IsOffTheRecord()) &&
+          plus_profiles_provider_ &&
+          plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
+        footer_commands_to_add.emplace_back(
+            l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
+            autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+      }
+      // Offer the user to select the plus address manually if plus address
+      // filling is supported for the last committed origin and the user has at
+      // least 1 plus address.
+      if (plus_address_service_->IsPlusAddressFillingEnabled(
+              autofill_client->GetLastCommittedPrimaryMainFrameOrigin()) &&
+          !plus_address_service_->GetPlusProfiles().empty()) {
+        footer_commands_to_add.emplace_back(
+            l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID),
+            autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+      }
+    }
   }
 
   return footer_commands_to_add;

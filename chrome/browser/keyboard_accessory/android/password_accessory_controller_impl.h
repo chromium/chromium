@@ -34,6 +34,7 @@ class Profile;
 
 namespace plus_addresses {
 class AllPlusAddressesBottomSheetController;
+class PlusAddressService;
 }  // namespace plus_addresses
 
 // Use either PasswordAccessoryController::GetOrCreate or
@@ -259,6 +260,8 @@ class PasswordAccessoryControllerImpl
   // Callback attempting to display the migration warning when invoked.
   // Used to facilitate injecting a mock bridge in tests.
   ShowMigrationWarningCallback show_migration_warning_callback_;
+
+  const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
 
   std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
       all_plus_addresses_bottom_sheet_controller_;
