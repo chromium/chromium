@@ -3069,18 +3069,6 @@ extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];
 #endif
 
-extern const char kNtpHistoryClustersModuleSuggestionChipHeaderName[];
-extern const char kNtpHistoryClustersModuleSuggestionChipHeaderDescription[];
-
-extern const char kNtpHistoryClustersModuleUseModelRankingName[];
-extern const char kNtpHistoryClustersModuleUseModelRankingDescription[];
-
-extern const char kNtpHistoryClustersModuleTextOnlyName[];
-extern const char kNtpHistoryClustersModuleTextOnlyDescription[];
-
-extern const char kNtpChromeCartHistoryClusterCoexistName[];
-extern const char kNtpChromeCartHistoryClusterCoexistDescription[];
-
 extern const char kNtpMostRelevantTabResumptionModuleName[];
 extern const char kNtpMostRelevantTabResumptionModuleDescription[];
 

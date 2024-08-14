@@ -5295,29 +5295,6 @@ const char kNtpDummyModulesDescription[] =
     "enabled.";
 #endif
 
-const char kNtpHistoryClustersModuleSuggestionChipHeaderName[] =
-    "NTP Journeys Module Suggestion Chip Header ";
-const char kNtpHistoryClustersModuleSuggestionChipHeaderDescription[] =
-    "Shows the historical suggestion chip in the header if enabled.";
-
-const char kNtpHistoryClustersModuleUseModelRankingName[] =
-    "NTP Journeys Module Model Ranking";
-const char kNtpHistoryClustersModuleUseModelRankingDescription[] =
-    "Leverages a machine learning model to rank clusters for the Journeys "
-    "module on the New Tab Page.";
-
-const char kNtpHistoryClustersModuleTextOnlyName[] =
-    "NTP Journeys Module Text Only";
-const char kNtpHistoryClustersModuleTextOnlyDescription[] =
-    "Shows only text (i.e. no images) for Journeys module visits on the New "
-    "Tab Page.";
-
-const char kNtpChromeCartHistoryClusterCoexistName[] =
-    "NTP ChromeCart and Journeys Module Coexist";
-const char kNtpChromeCartHistoryClusterCoexistDescription[] =
-    "Shows ChromeCart module and ChromeCart+Journeys module together when "
-    "available on the New Tab Page.";
-
 const char kNtpMostRelevantTabResumptionModuleName[] =
     "NTP Most Relevant Tab Resumption Module";
 const char kNtpMostRelevantTabResumptionModuleDescription[] =

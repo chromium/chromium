@@ -6277,26 +6277,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "ntp-journeys-module",
-    "owners": [ "romanarora@chromium.org", "mfacey@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "ntp-journeys-module-model-ranking",
-    "owners": [ "sophiechang@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "ntp-journeys-module-suggestion-chip-header",
-    "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 129
-  },
-  {
-    "name": "ntp-journeys-module-text-only",
-    "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ntp-middle-slot-promo-dismissal",
     "owners": [ "pauladedeji@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 111
