@@ -102,12 +102,14 @@ chromium-metrics-reviews@google.com.
     daemon tries to mount a file system.
   </summary>
   <token key="FileSystem">
+    <variant name="exfat"/>
     <variant name="ext2"/>
     <variant name="ext3"/>
     <variant name="ext4"/>
     <variant name="fuse"/>
     <variant name="hfsplus"/>
     <variant name="iso9660"/>
+    <variant name="ntfs"/>
     <variant name="udf"/>
     <variant name="vfat"/>
   </token>
