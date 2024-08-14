@@ -6,14 +6,16 @@ package org.chromium.chrome.browser.suggestions;
 
 import android.app.Activity;
 
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -22,6 +24,32 @@ import org.chromium.url.GURL;
 
 /** Extension of {@link NativePageNavigationDelegate} with suggestions-specific methods. */
 public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateImpl {
+
+    private static final String MOST_VISITED_TILES_RESELECT_LAX_HOST_PARAM = "lax_host";
+    public static final BooleanCachedFieldTrialParameter MOST_VISITED_TILES_RESELECT_LAX_HOST =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
+                    MOST_VISITED_TILES_RESELECT_LAX_HOST_PARAM,
+                    false);
+    private static final String MOST_VISITED_TILES_RESELECT_LAX_PATH_PARAM = "lax_path";
+    public static final BooleanCachedFieldTrialParameter MOST_VISITED_TILES_RESELECT_LAX_PATH =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
+                    MOST_VISITED_TILES_RESELECT_LAX_PATH_PARAM,
+                    false);
+    private static final String MOST_VISITED_TILES_RESELECT_LAX_QUERY_PARAM = "lax_query";
+    public static final BooleanCachedFieldTrialParameter MOST_VISITED_TILES_RESELECT_LAX_QUERY =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
+                    MOST_VISITED_TILES_RESELECT_LAX_QUERY_PARAM,
+                    false);
+    private static final String MOST_VISITED_TILES_RESELECT_LAX_REF_PARAM = "lax_ref";
+    public static final BooleanCachedFieldTrialParameter MOST_VISITED_TILES_RESELECT_LAX_REF =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.MOST_VISITED_TILES_RESELECT,
+                    MOST_VISITED_TILES_RESELECT_LAX_REF_PARAM,
+                    false);
+
     public SuggestionsNavigationDelegate(
             Activity activity,
             Profile profile,
@@ -57,8 +85,15 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
      */
     public boolean maybeSelectTabWithUrl(GURL keyUrl) {
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
-        int index = TabModelUtils.getTabIndexByUrl(tabModel, keyUrl.getSpec());
-        if (index == TabModel.INVALID_TAB_INDEX) return false;
+
+        boolean laxHost = MOST_VISITED_TILES_RESELECT_LAX_HOST.getValue();
+        boolean laxRef = MOST_VISITED_TILES_RESELECT_LAX_REF.getValue();
+        boolean laxQuery = MOST_VISITED_TILES_RESELECT_LAX_QUERY.getValue();
+        boolean laxPath = MOST_VISITED_TILES_RESELECT_LAX_PATH.getValue();
+        UrlSimilarityScorer scorer =
+                new UrlSimilarityScorer(keyUrl, laxHost, laxRef, laxQuery, laxPath);
+        int index = scorer.findTabWithMostSimilarUrl(tabModel);
+        if (index == TabList.INVALID_TAB_INDEX) return false;
 
         tabModel.setIndex(index, TabSelectionType.FROM_USER);
         tabModel.closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());

@@ -2459,6 +2459,37 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"V2 ML (collect data)", kTabResumptionModule_enable_v2_ml,
      std::size(kTabResumptionModule_enable_v2_ml), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kMostVitedTilesReselect_enable_partial_match_arm1[] = {
+        {"lax_host", "true"},
+        {"lax_ref", "true"},
+        {"lax_query", "false"},
+        {"lax_path", "false"},
+};
+const FeatureEntry::FeatureParam
+    kMostVitedTilesReselect_enable_partial_match_arm2[] = {
+        {"lax_host", "true"},
+        {"lax_ref", "true"},
+        {"lax_query", "true"},
+        {"lax_path", "false"},
+};
+const FeatureEntry::FeatureParam
+    kMostVitedTilesReselect_enable_partial_match_arm3[] = {
+        {"lax_host", "true"},
+        {"lax_ref", "true"},
+        {"lax_query", "true"},
+        {"lax_path", "true"},
+};
+const FeatureEntry::FeatureVariation kMostVisitedTilesReselectVariations[] = {
+    {"Partial match Arm 1", kMostVitedTilesReselect_enable_partial_match_arm1,
+     std::size(kMostVitedTilesReselect_enable_partial_match_arm1), nullptr},
+    {"Partial match Arm 2", kMostVitedTilesReselect_enable_partial_match_arm2,
+     std::size(kMostVitedTilesReselect_enable_partial_match_arm2), nullptr},
+    {"Partial match Arm 3", kMostVitedTilesReselect_enable_partial_match_arm3,
+     std::size(kMostVitedTilesReselect_enable_partial_match_arm3), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {
         {"always_show_rationale_before_requesting_permission", "true"},
@@ -7461,7 +7492,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-most-visited-tiles-reselect",
      flag_descriptions::kMostVisitedTilesReselectName,
      flag_descriptions::kMostVisitedTilesReselectDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kMostVisitedTilesReselect)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMostVisitedTilesReselect,
+                                    kMostVisitedTilesReselectVariations,
+                                    "kMostVisitedTilesReselect")},
 
     {"toolbar-phone-cleanup", flag_descriptions::kToolbarPhoneCleanupName,
      flag_descriptions::kToolbarPhoneCleanupDescription, kOsAndroid,

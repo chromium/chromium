@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotif
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedSystemUiCoordinator;
@@ -125,6 +126,10 @@ public class ChromeCachedFlags {
                         ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS,
                         LogoUtils.LOGO_POLISH_LARGE_SIZE,
                         LogoUtils.LOGO_POLISH_MEDIUM_SIZE,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_HOST,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_PATH,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_QUERY,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_REF,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
