@@ -144,6 +144,22 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
   EXPECT_THAT(view.section_list_view_for_testing()->children(), IsEmpty());
 }
 
+TEST_F(PickerSearchResultsViewTest, EmptySearchResultsShowsThrobber) {
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller, &preview_controller);
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kClipboard, {{PickerSearchResult::Text(u"Result")}},
+      /*has_more_results=*/false));
+
+  view.ClearSearchResults();
+
+  EXPECT_TRUE(view.throbber_container_for_testing().GetVisible());
+}
+
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -450,6 +466,20 @@ TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesLoaderView) {
   EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
 }
 
+TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesThrobber) {
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller, &preview_controller);
+
+  view.ClearSearchResults();
+  ASSERT_TRUE(view.SearchStopped({}, u""));
+
+  EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
+}
+
 TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
   MockPickerSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
@@ -480,6 +510,20 @@ TEST_F(PickerSearchResultsViewTest, ShowLoadingShowsLoaderView) {
                    .layer()
                    ->GetAnimator()
                    ->is_animating());
+}
+
+TEST_F(PickerSearchResultsViewTest, ShowSkeletonLoaderHidesThrobber) {
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller, &preview_controller);
+
+  view.ClearSearchResults();
+  view.ShowLoadingAnimation();
+
+  EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
 }
 
 TEST_F(PickerSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
@@ -540,6 +584,21 @@ TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
 
   EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
   EXPECT_THAT(view.section_views_for_testing(), SizeIs(1));
+}
+
+TEST_F(PickerSearchResultsViewTest, AppendResultsHidesThrobber) {
+  MockPickerSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerPreviewBubbleController preview_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller, &preview_controller);
+
+  view.AppendSearchResults({PickerSearchResultsSection(
+      PickerSectionType::kLinks, {PickerSearchResult::Text(u"1")},
+      /*has_more_results=*/false)});
+
+  EXPECT_FALSE(view.throbber_container_for_testing().GetVisible());
 }
 
 TEST_F(PickerSearchResultsViewTest,

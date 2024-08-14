@@ -39,6 +39,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -48,6 +49,8 @@
 
 namespace ash {
 namespace {
+
+constexpr int kThrobberDiameter = 32;
 
 constexpr gfx::Insets kNoResultsViewInsets(24);
 constexpr int kNoResultsIllustrationAndDescriptionSpacing = 16;
@@ -96,6 +99,18 @@ PickerSearchResultsView::PickerSearchResultsView(
 
   skeleton_loader_view_ = AddChildView(
       views::Builder<PickerSkeletonLoaderView>().SetVisible(false).Build());
+
+  throbber_container_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetInsideBorderInsets(kNoResultsViewInsets)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .AddChildren(
+              views::Builder<views::SmoothedThrobber>(
+                  std::make_unique<views::SmoothedThrobber>(kThrobberDiameter))
+                  .CopyAddressTo(&throbber_)
+                  .SetStartDelay(kLoadingAnimationDelay))
+          .Build());
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
@@ -160,6 +175,7 @@ void PickerSearchResultsView::ClearSearchResults() {
   section_list_view_->SetVisible(true);
   no_results_view_->SetVisible(false);
   StopLoadingAnimation();
+  StartThrobber();
   top_results_.clear();
   delegate_->OnSearchResultsViewHeightChanged();
   UpdateAccessibleName();
@@ -168,6 +184,8 @@ void PickerSearchResultsView::ClearSearchResults() {
 void PickerSearchResultsView::AppendSearchResults(
     PickerSearchResultsSection section) {
   StopLoadingAnimation();
+  StopThrobber();
+
   auto* section_view = section_list_view_->AddSection();
   std::u16string section_title =
       GetSectionTitleForPickerSectionType(section.type());
@@ -196,6 +214,7 @@ void PickerSearchResultsView::AppendSearchResults(
 bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
                                             std::u16string description) {
   StopLoadingAnimation();
+  StopThrobber();
   if (!section_views_.empty()) {
     return false;
   }
@@ -211,6 +230,7 @@ bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
 
 void PickerSearchResultsView::ShowLoadingAnimation() {
   ClearSearchResults();
+  StopThrobber();
   skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
   skeleton_loader_view_->SetVisible(true);
   delegate_->OnSearchResultsViewHeightChanged();
@@ -255,6 +275,18 @@ int PickerSearchResultsView::GetIndex(
 void PickerSearchResultsView::SetNumEmojiResultsForA11y(
     size_t num_emoji_results) {
   num_emoji_results_displayed_ = num_emoji_results;
+}
+
+void PickerSearchResultsView::StartThrobber() {
+  throbber_container_->SetVisible(true);
+  throbber_->Start();
+  delegate_->OnSearchResultsViewHeightChanged();
+}
+
+void PickerSearchResultsView::StopThrobber() {
+  throbber_container_->SetVisible(false);
+  throbber_->Stop();
+  delegate_->OnSearchResultsViewHeightChanged();
 }
 
 void PickerSearchResultsView::StopLoadingAnimation() {
