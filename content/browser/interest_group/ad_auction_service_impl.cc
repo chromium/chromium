@@ -943,6 +943,11 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!ad_descriptor) {
     DCHECK(!reporter);
 
+    if (!aborted_by_script) {
+      GetContentClient()->browser()->OnAuctionComplete(&render_frame_host(),
+                                                       std::nullopt);
+    }
+
     std::move(callback).Run(aborted_by_script, /*config=*/std::nullopt);
     if (auction_result_metrics) {
       // `auction_result_metrics` can be null since PageUserData like

@@ -3502,11 +3502,19 @@ bool ChromeContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
 
 void ChromeContentBrowserClient::OnAuctionComplete(
     content::RenderFrameHost* render_frame_host,
-    content::InterestGroupManager::InterestGroupDataKey winner_data_key) {
-  content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
-      render_frame_host, winner_data_key,
-      BrowsingDataModel::StorageType::kInterestGroup,
-      /*blocked=*/false);
+    std::optional<content::InterestGroupManager::InterestGroupDataKey>
+        winner_data_key) {
+  if (winner_data_key) {
+    content_settings::PageSpecificContentSettings::BrowsingDataAccessed(
+        render_frame_host, winner_data_key.value(),
+        BrowsingDataModel::StorageType::kInterestGroup,
+        /*blocked=*/false);
+  }
+  if (auto* observer =
+          page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+              WebContents::FromRenderFrameHost(render_frame_host))) {
+    observer->OnAdAuctionComplete(render_frame_host);
+  }
 }
 
 bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(

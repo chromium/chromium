@@ -457,6 +457,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.Ads.AdPaintTiming.TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction"
+    units="ms" expires_after="2024-12-15">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Records the time from the top frame navigation until the first ad-frame on
+    the page reaches FirstContentfulPaint. Only recorded if a Fledge auction
+    completed (and was not aborted) before the frame was painted. Note that
+    offscreen iframes don't reach FCP until they're scrolled into view, so it
+    can be long.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes" units="KB"
     expires_after="2024-10-20">
   <owner>alexmt@chromium.org</owner>

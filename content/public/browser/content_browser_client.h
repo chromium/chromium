@@ -971,7 +971,8 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void OnAuctionComplete(
       RenderFrameHost* render_frame_host,
-      InterestGroupManager::InterestGroupDataKey data_key);
+      std::optional<content::InterestGroupManager::InterestGroupDataKey>
+          winner_data_key);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

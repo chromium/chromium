@@ -626,6 +626,9 @@ class PageLoadMetricsObserverInterface {
   virtual void OnCustomUserTimingMarkObserved(
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) = 0;
 
+  // Called when a Fledge auction completes.
+  virtual void OnAdAuctionComplete() = 0;
+
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};
 };

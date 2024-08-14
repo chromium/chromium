@@ -223,6 +223,7 @@ class AssertPageLoadMetricsObserver final
   void OnCustomUserTimingMarkObserved(
       const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
           timings) override {}
+  void OnAdAuctionComplete() override {}
 
   // Reference implementations duplicated from PageLoadMetricsObserver
   ObservePolicy ShouldObserveMimeTypeByDefault(

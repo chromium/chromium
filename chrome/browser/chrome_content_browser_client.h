@@ -352,9 +352,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& destination_origin,
       content::PrivacySandboxInvokingAPI invoking_api,
       bool post_impression_reporting) override;
-  void OnAuctionComplete(content::RenderFrameHost* render_frame_host,
-                         content::InterestGroupManager::InterestGroupDataKey
-                             winner_data_key) override;
+  void OnAuctionComplete(
+      content::RenderFrameHost* render_frame_host,
+      std::optional<content::InterestGroupManager::InterestGroupDataKey>
+          winner_data_key) override;
   bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
       AttributionReportingOperation operation,

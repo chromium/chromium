@@ -556,7 +556,8 @@ bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
 
 void ContentBrowserClient::OnAuctionComplete(
     RenderFrameHost* render_frame_host,
-    InterestGroupManager::InterestGroupDataKey data_key) {}
+    std::optional<content::InterestGroupManager::InterestGroupDataKey>
+        winner_data_key) {}
 
 network::mojom::AttributionSupport ContentBrowserClient::GetAttributionSupport(
     AttributionReportingOsApiState state,

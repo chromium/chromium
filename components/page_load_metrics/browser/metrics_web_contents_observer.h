@@ -183,6 +183,9 @@ class MetricsWebContentsObserver
   // whose main frame is `main_rfh`.
   void OnSharedStorageSelectURLCalled(content::RenderFrameHost* main_rfh);
 
+  // Called when a Fledge auction completes.
+  void OnAdAuctionComplete(content::RenderFrameHost* rfh);
+
   // Returns the time this MetricsWebContentsObserver was created.
   base::TimeTicks GetCreated();
 

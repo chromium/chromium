@@ -456,4 +456,11 @@ void PageLoadMetricsForwardObserver::OnCustomUserTimingMarkObserved(
   // observers.
 }
 
+void PageLoadMetricsForwardObserver::OnAdAuctionComplete() {
+  if (!parent_observer_) {
+    return;
+  }
+  parent_observer_->OnAdAuctionComplete();
+}
+
 }  // namespace page_load_metrics
