@@ -152,4 +152,14 @@ public class TabGroupRowView extends LinearLayout {
     void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {
         mTimeAgoResolver = timeAgoResolver;
     }
+
+    void resetSharedState(boolean isShared) {
+        View sharedView = findViewById(R.id.tab_group_row_shared_image_tiles);
+        assert sharedView != null;
+        if (isShared) {
+            sharedView.setVisibility(View.VISIBLE);
+        } else {
+            sharedView.setVisibility(View.GONE);
+        }
+    }
 }

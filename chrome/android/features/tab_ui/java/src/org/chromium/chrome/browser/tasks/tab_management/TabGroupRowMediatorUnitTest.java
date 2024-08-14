@@ -45,7 +45,10 @@ import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupRowMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+@EnableFeatures({
+    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+    ChromeFeatureList.DATA_SHARING_ANDROID
+})
 public class TabGroupRowMediatorUnitTest {
     private static final String SYNC_GROUP_ID1 = "remote one";
 

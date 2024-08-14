@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties for displaying a single tab group row. */
@@ -33,6 +34,9 @@ public class TabGroupRowProperties {
     public static final WritableObjectPropertyKey<Integer> PLUS_COUNT =
             new WritableObjectPropertyKey();
 
+    // Data Sharing properties.
+    public static final WritableBooleanPropertyKey IS_SHARED = new WritableBooleanPropertyKey();
+
     public static final ReadableIntPropertyKey COLOR_INDEX = new ReadableIntPropertyKey();
     // First is the user title, second is the number of tabs.
     public static final ReadableObjectPropertyKey<Pair<String, Integer>> TITLE_DATA =
@@ -52,6 +56,7 @@ public class TabGroupRowProperties {
         ASYNC_FAVICON_BOTTOM_LEFT,
         ASYNC_FAVICON_BOTTOM_RIGHT,
         PLUS_COUNT,
+        IS_SHARED,
         COLOR_INDEX,
         TITLE_DATA,
         CREATION_MILLIS,
