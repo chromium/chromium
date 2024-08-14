@@ -1292,6 +1292,7 @@ policies:
   1291: TabCompareSettings
   1292: AdHocCodeSigningForPWAsEnabled
   1293: KioskWebAppOfflineEnabled
+  1294: GraduationEnablementStatus
 
 atomic_groups:
   1: Homepage

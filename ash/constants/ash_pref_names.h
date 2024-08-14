@@ -2442,6 +2442,12 @@ inline constexpr char kDnsOverHttpsExcludedDomains[] =
 inline constexpr char kDnsOverHttpsIncludedDomains[] =
     "dns_over_https.included_domains";
 
+// Dictionary pref representing information related to whether the Graduation
+// app should be enabled for a user. This corresponds to the policy defined in
+// GraduationEnablementStatus.yaml.
+inline constexpr char kGraduationEnablementStatus[] =
+    "ash.graduation.enablement_status";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

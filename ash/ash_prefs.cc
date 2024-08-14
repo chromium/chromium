@@ -26,6 +26,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/edusumer/graduation_prefs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -149,6 +150,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
   GlanceablesController::RegisterUserProfilePrefs(registry);
+  graduation_prefs::RegisterProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);
   HotspotInfoCache::RegisterProfilePrefs(registry);
   InputDeviceSettingsControllerImpl::RegisterProfilePrefs(registry);
