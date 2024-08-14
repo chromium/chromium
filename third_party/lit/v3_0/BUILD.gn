@@ -25,6 +25,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/browser_switch:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
+    "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/intro:build_ts",
     "//chrome/browser/resources/key_value_pair_viewer_shared:build_ts",
     "//chrome/browser/resources/management:build_ts",
