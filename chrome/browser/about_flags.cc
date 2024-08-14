@@ -11292,6 +11292,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBatteryBadgeIconDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kBatteryBadgeIcon)},
 
+    {"bluetooth-wifi-qs-pod-refresh",
+     flag_descriptions::kBluetoothWifiQSPodRefreshName,
+     flag_descriptions::kBluetoothWifiQSPodRefreshDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kBluetoothWifiQSPodRefresh)},
+
     {"container", flag_descriptions::kContainerName,
      flag_descriptions::kContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstall)},

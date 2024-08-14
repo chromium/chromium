@@ -18016,6 +18016,7 @@ from previous Chrome versions.
   <int value="-1031462369" label="EnableComposeNudgeAtCursor:enabled"/>
   <int value="-1031350684" label="PdfIsolation:disabled"/>
   <int value="-1031000716" label="AppsCollections:enabled"/>
+  <int value="-1030842487" label="BluetoothWifiQSPodRefresh:enabled"/>
   <int value="-1030683709" label="OnlyShowNewShortcutsApp:disabled"/>
   <int value="-1030530357" label="PwaInstallUseBottomSheet:disabled"/>
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
@@ -19552,6 +19553,7 @@ from previous Chrome versions.
   <int value="-376571345" label="FillingAcrossGroupedSites:enabled"/>
   <int value="-376546554"
       label="AndroidNoSurfaceSyncForBrowserControls:enabled"/>
+  <int value="-376322609" label="BluetoothWifiQSPodRefresh:disabled"/>
   <int value="-375342164" label="SafeBrowsingAsyncRealTimeCheck:disabled"/>
   <int value="-374657496" label="OmniboxEnableClipboardProvider:enabled"/>
   <int value="-374423260" label="OmniboxTabSwitchSuggestions:disabled"/>

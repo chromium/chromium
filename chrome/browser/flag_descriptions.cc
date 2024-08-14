@@ -6270,6 +6270,11 @@ const char kBluetoothUseFlossDescription[] =
     "instead of Bluez. This is meant to be used by developers and is not "
     "guaranteed to be stable";
 
+const char kBluetoothWifiQSPodRefreshName[] =
+    "Enable better bluetooth and wifi UI";
+const char kBluetoothWifiQSPodRefreshDescription[] =
+    "Enables better quick settings UI for bluetooth and wifi error states";
+
 const char kBluetoothFlossIsAvailabilityCheckNeededName[] =
     "Floss availability check";
 const char kBluetoothFlossIsAvailabilityCheckNeededDescription[] =

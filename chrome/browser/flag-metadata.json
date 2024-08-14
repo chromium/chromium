@@ -1072,6 +1072,15 @@
     "expiry_milestone": 130
   },
   {
+    "name": "bluetooth-wifi-qs-pod-refresh",
+    "owners": [
+      "bbetini@google.com",
+      "leandre@chromium.org",
+      "amehfooz@chromium.org"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "boarding-pass-detector",
     "owners": ["hanfeng@google.com"],
     "expiry_milestone": 140

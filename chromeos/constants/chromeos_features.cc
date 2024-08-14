@@ -28,6 +28,11 @@ BASE_FEATURE(kBluetoothPhoneFilter,
              "BluetoothPhoneFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables better quick settings UI for bluetooth and wifi error states.
+BASE_FEATURE(kBluetoothWifiQSPodRefresh,
+             "BluetoothWifiQSPodRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables show captive portal signin in a specially flagged popup window.
 BASE_FEATURE(kCaptivePortalPopupWindow,
              "CaptivePortalPopupWindow",
@@ -290,6 +295,10 @@ bool IsApnPoliciesEnabled() {
 
 bool IsBatteryBadgeIconEnabled() {
   return base::FeatureList::IsEnabled(kBatteryBadgeIcon);
+}
+
+bool IsBluetoothWifiQSPodRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
 }
 
 bool IsCaptivePortalPopupWindowEnabled() {

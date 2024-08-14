@@ -3627,6 +3627,9 @@ extern const char kBluetoothFlossCoredumpDescription[];
 extern const char kBluetoothUseFlossName[];
 extern const char kBluetoothUseFlossDescription[];
 
+extern const char kBluetoothWifiQSPodRefreshName[];
+extern const char kBluetoothWifiQSPodRefreshDescription[];
+
 extern const char kBluetoothFlossIsAvailabilityCheckNeededName[];
 extern const char kBluetoothFlossIsAvailabilityCheckNeededDescription[];
 
