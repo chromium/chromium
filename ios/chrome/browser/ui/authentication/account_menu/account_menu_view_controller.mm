@@ -26,8 +26,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -87,7 +86,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  RegisterTableViewCell<TableViewIdentityCell>(self.tableView);
+  RegisterTableViewCell<TableViewAccountCell>(self.tableView);
   RegisterTableViewCell<SettingsImageDetailTextCell>(self.tableView);
   RegisterTableViewCell<TableViewTextCell>(self.tableView);
   [self setUpNavigationController];
@@ -183,10 +182,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
   if (gaiaID) {
     // `itemIdentifier` is a gaia id.
-    TableViewIdentityItem* item =
-        [self.dataSource identityItemForGaiaID:gaiaID];
-    TableViewIdentityCell* cell =
-        DequeueTableViewCell<TableViewIdentityCell>(tableView);
+    TableViewAccountItem* item = [self.dataSource identityItemForGaiaID:gaiaID];
+    TableViewAccountCell* cell =
+        DequeueTableViewCell<TableViewAccountCell>(tableView);
     [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
     cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
     return cell;

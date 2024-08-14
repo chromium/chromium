@@ -22,9 +22,9 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mutator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_cell.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -70,7 +70,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 }
 
 // The only acceptable argument is the ID of a secondary id.
-- (TableViewIdentityItem*)identityItemForGaiaID:(NSString*)gaiaID {
+- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID {
   const FakeSystemIdentity* identity;
   if (gaiaID == kSecondaryIdentity.gaiaID) {
     identity = kSecondaryIdentity;
@@ -79,12 +79,11 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
   } else {
     NOTREACHED_NORETURN();
   }
-  TableViewIdentityItem* item = [[TableViewIdentityItem alloc] initWithType:0];
-  item.identityViewStyle = IdentityViewStyleIdentityChooser;
-  item.gaiaID = identity.gaiaID;
-  item.name = identity.userFullName;
-  item.email = identity.userEmail;
-  item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+  TableViewAccountItem* item =
+      [[TableViewAccountItem alloc] initWithType:SettingsItemTypeAccount];
+  item.text = identity.userFullName;
+  item.detailText = identity.userEmail;
+  item.image = _accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::Regular);
   return item;
 }
@@ -207,7 +206,7 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
   UITableViewCell* secondary_account_cell =
       GetCell(path_for_secondary_account_);
   EXPECT_TRUE(
-      [secondary_account_cell isKindOfClass:[TableViewIdentityCell class]]);
+      [secondary_account_cell isKindOfClass:[TableViewAccountCell class]]);
   ExpectTextAtPath(
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON),
       path_for_add_account_);

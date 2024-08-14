@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_consumer.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -216,14 +216,13 @@ TEST_F(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
 
 // Tests the result of secondaryAccountsGaiaIDs.
 TEST_F(AccountMenuMediatorTest, identityItemForGaiaID) {
-  TableViewIdentityItem* item =
+  TableViewAccountItem* item =
       [mediator_ identityItemForGaiaID:kSecondaryIdentity.gaiaID];
-  EXPECT_NSEQ(item.gaiaID, kSecondaryIdentity.gaiaID);
-  EXPECT_NSEQ(item.name, kSecondaryIdentity.userFullName);
-  EXPECT_NSEQ(item.email, kSecondaryIdentity.userEmail);
-  EXPECT_NSEQ(item.avatar,
+  EXPECT_NSEQ(item.text, kSecondaryIdentity.userFullName);
+  EXPECT_NSEQ(item.detailText, kSecondaryIdentity.userEmail);
+  EXPECT_NSEQ(item.image,
               account_manager_service_->GetIdentityAvatarWithIdentity(
-                  kSecondaryIdentity, IdentityAvatarSize::Regular));
+                  kSecondaryIdentity, IdentityAvatarSize::TableViewIcon));
 }
 
 // Tests the result of primaryAccountEmail.

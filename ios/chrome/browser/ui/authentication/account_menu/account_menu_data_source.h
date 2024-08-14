@@ -13,7 +13,7 @@
 enum class IdentityAvatarSize;
 @class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
-@class TableViewIdentityItem;
+@class TableViewAccountItem;
 
 // Identity data source for AccountMenuTableViewController instance, to
 // manage the model.
@@ -35,7 +35,7 @@ enum class IdentityAvatarSize;
 @property(nonatomic, readonly) NSString* primaryAccountUserFullName;
 
 // The identity for the value at `itemIndex` in the table.
-- (TableViewIdentityItem*)identityItemForGaiaID:(NSString*)gaiaID;
+- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID;
 
 @end
 
