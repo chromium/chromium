@@ -142,7 +142,7 @@ BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
 
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              "ExtractRelatedSearchesFromPrefetchedZPSResponse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables text embeddings to annotated on every page visit and later queried.
 BASE_FEATURE(kQueryInMemoryTextEmbeddings,
