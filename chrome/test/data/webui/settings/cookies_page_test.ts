@@ -257,7 +257,7 @@ suite('CookiesPageTest', function() {
             .querySelector<HTMLElement>(
                 '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
     assertEquals(
-        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoFps'),
+        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoRws'),
         cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
   });
 });

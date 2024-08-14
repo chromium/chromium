@@ -523,7 +523,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   private getMoreActionsLabel_(): string {
     return this.i18n(
-        'firstPartySetsMoreActionsTitle', this.siteGroup.displayName);
+        'relatedWebsiteSetsMoreActionsTitle', this.siteGroup.displayName);
   }
   /**
    * Update the order and data display text for origins.

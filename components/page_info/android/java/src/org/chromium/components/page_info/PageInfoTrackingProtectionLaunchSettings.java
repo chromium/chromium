@@ -274,9 +274,9 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                 : "First Party Sets UI and access should be enabled to show FPS info.";
 
         mRWSInUse.setVisible(true);
-        mRWSInUse.setTitle(R.string.cookie_info_fps_title);
+        mRWSInUse.setTitle(R.string.cookie_info_rws_title);
         mRWSInUse.setSummary(
-                String.format(getString(R.string.cookie_info_fps_summary), rwsInfo.getOwner()));
+                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
         mRWSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
         mRWSInUse.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(

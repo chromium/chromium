@@ -280,7 +280,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     /**
      * Returns a boolean indicating if the RWS info has been shown or not.
      *
-     * @param rwsInfo First Party Sets info to show.
+     * @param rwsInfo Related Website Sets info to show.
      * @param currentOrigin PageInfo current origin.
      * @return a boolean indicating if the RWS info has been shown or not.
      */
@@ -295,9 +295,9 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 : "Related Website Sets UI and access should be enabled to show RWS info.";
 
         mRWSInUse.setVisible(true);
-        mRWSInUse.setTitle(R.string.cookie_info_fps_title);
+        mRWSInUse.setTitle(R.string.cookie_info_rws_title);
         mRWSInUse.setSummary(
-                String.format(getString(R.string.cookie_info_fps_summary), rwsInfo.getOwner()));
+                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
         mRWSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
         mRWSInUse.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(

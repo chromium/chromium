@@ -232,7 +232,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                     getContext()
                             .getResources()
                             .getQuantityString(
-                                    R.plurals.allsites_fps_summary,
+                                    R.plurals.allsites_rws_summary,
                                     mSiteGroup.getRWSInfo().getMembersCount(),
                                     Integer.toString(mSiteGroup.getRWSInfo().getMembersCount()),
                                     rwsInfo.getOwner()));

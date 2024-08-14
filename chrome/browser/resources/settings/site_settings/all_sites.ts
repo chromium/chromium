@@ -584,7 +584,7 @@ export class AllSitesElement extends AllSitesElementBase {
   private getRwsLearnMoreLabel_() {
     const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
     return loadTimeData.getStringF(
-        'siteSettingsFirstPartySetsLearnMore', rwsOwner);
+        'siteSettingsRelatedWebsiteSetsLearnMore', rwsOwner);
   }
   /**
    * Selects the appropriate string to display for clear button based on whether

@@ -887,9 +887,9 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     rws_string =
         base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
             l10n_util::GetStringUTF16(
-                IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL),
+                IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MEMBERSHIP_LABEL),
             "MEMBERS", static_cast<int>(rws_map[etld_plus1].second),
-            "FPS_OWNER", rws_map[etld_plus1].first));
+            "RWS_OWNER", rws_map[etld_plus1].first));
     rwsPolicy = privacy_sandbox_service->IsPartOfManagedFirstPartySet(
         ConvertEtldToSchemefulSite(etld_plus1));
   }
@@ -997,8 +997,8 @@ void SiteSettingsHandler::HandleGetRwsMembershipLabel(
   const std::string label =
       base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(
-              IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL),
-          "MEMBERS", static_cast<int>(num_members), "FPS_OWNER", rws_owner));
+              IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MEMBERSHIP_LABEL),
+          "MEMBERS", static_cast<int>(num_members), "RWS_OWNER", rws_owner));
 
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(label));
 }

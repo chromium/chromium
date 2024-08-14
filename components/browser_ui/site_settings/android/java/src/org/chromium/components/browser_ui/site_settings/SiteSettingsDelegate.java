@@ -188,9 +188,9 @@ public interface SiteSettingsDelegate {
     void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);
 
     /**
-     * Gets the First Party Sets owner hostname given a FPS member origin.
+     * Gets the Related Website Sets owner hostname given a RWS member origin.
      *
-     * @param memberOrigin FPS member origin.
+     * @param memberOrigin RWS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
     String getRelatedWebsiteSetOwner(String memberOrigin);

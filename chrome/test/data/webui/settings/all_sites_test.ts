@@ -1407,7 +1407,7 @@ suite('EnableRelatedWebsiteSets', function() {
         assertEquals(
             [
               loadTimeData.getStringF(
-                  'siteSettingsFirstPartySetsLearnMore', 'foo.com'),
+                  'siteSettingsRelatedWebsiteSetsLearnMore', 'foo.com'),
               loadTimeData.getString('learnMore'),
             ].join(' '),
             relatedWebsiteSetsLearnMore!.innerText.trim());

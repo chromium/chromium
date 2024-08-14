@@ -174,13 +174,13 @@ public class TriStateCookieSettingsPreference extends Preference
                     getResources()
                             .getString(
                                     R.string
-                                            .website_settings_third_party_cookies_page_block_radio_sub_label_fps_enabled));
+                                            .website_settings_third_party_cookies_page_block_radio_sub_label_rws_enabled));
         } else {
             mBlockThirdPartyButton.setDescriptionText(
                     getResources()
                             .getString(
                                     R.string
-                                            .website_settings_third_party_cookies_page_block_radio_sub_label_fps_disabled));
+                                            .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled));
         }
     }
 

@@ -263,7 +263,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       string {
     return this.i18n(
         this.enableFirstPartySetsUI_ ?
-            'cookiePageBlockThirdIncognitoBulTwoFps' :
+            'cookiePageBlockThirdIncognitoBulTwoRws' :
             'thirdPartyCookiesPageBlockIncognitoBulTwo');
   }
 }

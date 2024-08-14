@@ -144,7 +144,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return getContext()
                     .getResources()
                     .getQuantityString(
-                            R.plurals.allsites_fps_list_summary,
+                            R.plurals.allsites_rws_list_summary,
                             rwsInfo.getMembersCount(),
                             Integer.toString(rwsInfo.getMembersCount()),
                             rwsInfo.getOwner());

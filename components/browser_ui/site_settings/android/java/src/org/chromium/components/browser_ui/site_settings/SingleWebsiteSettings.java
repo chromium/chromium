@@ -957,7 +957,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     getContext()
                             .getResources()
                             .getQuantityString(
-                                    R.plurals.allsites_fps_summary,
+                                    R.plurals.allsites_rws_summary,
                                     rwsInfo.getMembersCount(),
                                     Integer.toString(rwsInfo.getMembersCount()),
                                     rwsInfo.getOwner()));
