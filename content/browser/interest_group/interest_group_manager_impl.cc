@@ -695,11 +695,13 @@ void InterestGroupManagerImpl::UpdateLastKAnonymityReported(
 void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
     url::Origin top_level_origin,
     base::Uuid generation_id,
+    base::Time timestamp,
     blink::mojom::AuctionDataConfigPtr config,
     base::OnceCallback<void(BiddingAndAuctionData)> callback) {
   AdAuctionDataLoaderState state;
   state.serializer.SetPublisher(top_level_origin.host());
   state.serializer.SetGenerationId(std::move(generation_id));
+  state.serializer.SetTimestamp(timestamp);
   state.callback = std::move(callback);
   if (config->per_buyer_configs.size() == 0) {
     state.serializer.SetConfig(std::move(config));

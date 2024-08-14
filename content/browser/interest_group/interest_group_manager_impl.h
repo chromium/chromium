@@ -478,6 +478,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetInterestGroupAdAuctionData(
       url::Origin top_level_origin,
       base::Uuid generation_id,
+      base::Time timestamp,
       blink::mojom::AuctionDataConfigPtr config,
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 

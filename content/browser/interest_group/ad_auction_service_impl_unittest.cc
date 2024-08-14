@@ -11310,6 +11310,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(10),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11318,14 +11319,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAARqlZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WJUfiwgAAAAAAAAAVYy7DoJAEAB9/"
-      "RCIr1ZKSwtb73Y3sCh7ZBc0xFhw32L8TiOxsZlmJjO8waFFTNJlBtlqjeJqQnBqFYS6CULS2"
-      "gCb7U68hruRHrkQd7VXoQQk0C9Kz5iHTtpJ2SjdTiwW4+wc5+"
-      "OUq8Ay6ql6RmQpfocD9RbxQn3yRaqdke7/"
-      "Cv94fgB8SY7doAAAAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-      "UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WJMfiwgAAAAAAAAAVYy7DoJAEADPTwLx1WppaUHr3e4GFmWP7IKGGAvuW4zfaSQ2"
+      "NtPMZKY3eLSEWb4soFitUXxLCF6tgdh2UUh6m2Cz3UnQeDfSE1fir/"
+      "aqlIAERlcHxkMcpHd1p3QrWSwld05unnITWWa90MCILNXvcKTREl5ozL7IdTDS/"
+      "V8RHs8P+"
+      "fcPtaAAAABycmVxdWVzdFRpbWVzdGFtcE1zCnRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+      "UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11341,6 +11342,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithNoGroups) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11366,6 +11368,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithEmptyGroup) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11480,6 +11483,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
       /*top_level_origin=*/test_origin_a,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11489,16 +11493,17 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   run_loop.Run();
 
   std::string expected =
-      "AgAAAZ2lZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAa2mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBzOi8v"
-      "YS50ZXN0WJcfiwgAAAAAAAAAdc07DsIwEARQCLlQPvxaOAIFLev1KnFEdiOvSUQHPksOimQK"
-      "hATNFDPSvDgjWI10EAhFytIy9ERGIGiH0g/CxEGfaazYeJmU/"
-      "Mk1DFedG09IjPesNc4e5cZh0Q6exrNjfbhOHKdy+WZsUVY11utNMiyC/yJwu9v/A/"
-      "IfQIyrS8zT6YfKXmqteTfTAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwgAAAAAAAAAJYnRDYMwDA"
-      "VhJMoIjFCkfofEEEflObJTUP+azsKgFeXrTnf18C7Ydx7VMboLtwC30lxOt+"
-      "RlzQJCsXrtHpPKbqR3XuCedixKnuDfbZw4DPJCaWJW2h4M+3ASxj+2Pxv+"
-      "8zJsAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAA";
+      "YS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
+      "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG/"
+      "FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
+      "QsztnV06/"
+      "1PINPrptCdMAAABuaHR0cHM6Ly9iLnRlc3RYcB+"
+      "LCAAAAAAAAAAlidENgzAMBcNILSMwQpH6HRIDjspzZKdF/"
+      "JXOkkER5etOd3sNPtpv7NUzbhfuEX6hsZxuKciSBYRi+"
+      "7VbDCqrkT54gn9ZnZQCIWxuHjh28kZxc1b6PBn25SSMf2wOsfspw2wAAABycmVxdWVzdFRpb"
+      "WVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/UA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(
@@ -11532,6 +11537,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11540,13 +11546,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAOSlZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAPimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
       "YS50ZXN0WF8fiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
-      "U7wkvSg1OTUvuZIxIykzxTm/"
-      "NK+EIaOgKLUsPDOvuCEzKz8zDyzICAC+EO2LTgAAAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-      "QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAA";
+      "U7wkvSg1OTUvuZIhIykzxTm/"
+      "NK+"
+      "EIaOgKLUsPDOvuCEzKz8zDyzICAAUFTd6TgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJ"
+      "sZURlYnVnUmVwb3J0aW5n9AAAAAAAAA"
+      "AAAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11585,6 +11592,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11592,20 +11600,16 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
         run_loop.Quit();
       }));
   run_loop.Run();
-  EXPECT_THAT(base::Base64Encode(msg),
-              testing::StartsWith(
-                  "AgAAARmmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklk"
-                  "eCQwMDAwMDAw"
-                  "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOh"
-                  "bmh0dHBzOi8v"
-                  "YS50ZXN0WGMfiwgAAAAAAAAAa1ycnJhS3JRiaGRskmxiapaSl5ibmpKcWFSc"
-                  "l1SUX16cWhSc"
-                  "mZ6XmFO8JL0oNTk1L7mSMSMpM8U5vzSvhCGjoCi1LDwzr7ghMys/"
-                  "Mw8syAgABWZNKFIAAAB0Y29uc2VudGVkRGVidWdDb25maWeiZXRva2VuZ215"
-                  "VG9rZW5raXND"
-                  "b25zZW50ZWT1dGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAAAA"
-                  "AAAAAAAAAAAA"
-                  "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
+  EXPECT_THAT(
+      base::Base64Encode(msg),
+      testing::StartsWith(
+          "AgAAAS2nZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAw"
+          "MDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0"
+          "dHBzOi8vYS50ZXN0WGMfiwgAAAAAAAAAa1ycnJhS3JRiaGRskmxiapaSl5ibmpKcWFSc"
+          "l1SUX16cWhScmZ6XmFO8JL0oNTk1L7mSISMpM8U5vzSvhCGjoCi1LDwzr7ghMys/"
+          "Mw8syAgAr2OX2VIAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRjb25zZW50ZWREZWJ1Z0Nv"
+          "bmZpZ6JldG9rZW5nbXlUb2tlbmtpc0NvbnNlbnRlZPV0ZW5hYmxlRGVidWdSZXBvcnRp"
+          "bmf1AAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
                                test_origin, testing::ElementsAre("cars"))));
@@ -11643,6 +11647,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11651,13 +11656,12 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAOSlZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAPimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
       "YS50ZXN0WF8fiwgAAAAAAAAAa1yUkpeYm5qSnFhUnJdUlF9enFoUnJmel5hTvCS9KDU5NS+"
-      "5kikjKTPFOb80r4Qho6AotSw8M6+"
-      "4qYkhoYkxxdDI2CQzKz8zDyzNCAAKnN0ZTgAAAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-      "UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAA";
+      "5kiEjKTPFOb80r4Qho6AotSw8M6+"
+      "4qYkhoYkhxdDI2CQzKz8zDyzNCADUWHkHTgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJ"
+      "sZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11701,6 +11705,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
       /*top_level_origin=*/test_origin,
       /*generation_id=*/
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
       /*config=*/blink::mojom::AuctionDataConfig::New(),
       /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
         msg = std::move(data.request);
@@ -11709,16 +11714,15 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAATalZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAUqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WLEfiwgAAAAAAAAAhc4xDoJAEEBR8SSeACJa2VoYEyuMsR52RnYRZjc7C0Q7uInK"
-      "QU1oTLTwAD/v9y8FKP2oawqAEODqKgKhhRCj8cRI/"
-      "pQdWh2Ck02SqDiQhAQw1qGujJg77bxtnLpYWwJmU7BHXKarNTLUhAq8cO5tJ+"
-      "SPpmCoZCw8KWJ1m+"
-      "vc4NY2HGbaeWrPhmUYZo8P3P3A6SQP0fPv3fePKa3hSYveY92wlPcAAAB0ZW5hYmxlRGVidW"
-      "dSZXBvcnRpbmf1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WLEfiwgAAAAAAAAAhc4xDoJAEEDR9SaeACJa2VoYEyuNsR52RnYRZjc7C0Q7uInK"
+      "QU1oTLTwAD/"
+      "v9y8NKP1oaoqAEOHqKwKhuRCjDcRI4XTYtyZGL+"
+      "s01UkkiSlgYmJdWbF32gbXeH1xrgQ8TMEOcZEtV8hQE2oIwnlwnVA42oKhkrEIpIn1TZnc4s"
+      "Y1HJXxgdqzZRkG9fjA3Q+cTfKgnn/vvn9s6SxP2uwNwsI/"
+      "IPcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+      "UAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11840,6 +11844,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -11850,16 +11855,18 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAAXalZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAAYemZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBz"
-        "Oi8vYS50ZXN0WHAfiwgAAAAAAAAAHckxDoMwDEZhyo1obwBHYOjsJFYwKr+"
-        "jOG3FRjgLB0XK8obv1ctTsJNHpTK0PgNoY3ZKxVavW1IwitU2X3BZ/"
-        "8Z5lgj62BUze4bf+8VJmPSL0i0p8+"
-        "8tsENWFTR83JFlbjNoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwgAAAAAAAAAJYnRDYMwDAVh"
-        "JMoIjFCkfofEEEflObJTUP+azsKgFeXrTnf18C7Ydx7VMboLtwC30lxOt+"
-        "RlzQJCsXrtHpPKbqR3XuCedixKnuDfbZw4DPJCaWJW2h4M+3ASxj+2Pxv+"
-        "8zJsAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        "AAAAAAAAAAAA";
+        "Oi8vYS50ZXN0WG0fiwgAAAAAAAAAHclBDkAwEEZhjoQbcAQL62k7YYR/pFPEDmdxUEk3b/"
+        "G95/"
+        "MU7OVWKVW5dQCtzE4p2ex13RSMZE+eDVzU0zj2MoIW+"
+        "8bInuGvYnISOt2RimmLfAwCu2VWQcbyB4RoqwtoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwg"
+        "AAAAAAAAAJYnRDYMwDAXDSC0jMEKR+h0SA47Kc2SnRfyVzpJBEeXrTnd7DT7ab+"
+        "zVM24X7hF+obGcbinIkgWEYvu1Wwwqq5E+eIJ/"
+        "WZ2UAiFsbh44dvJGcXNW+"
+        "jwZ9uUkjH9sDrH7KcNsAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRGVidWdSZXB"
+        "vcnRpbmf1AAAAAA"
+        "AAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(
@@ -11888,6 +11895,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -11898,13 +11906,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAARylZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJcfiwgAAAAAAAAAdc07DsIwEARQCLlQPvxaOAIFLev1KnFEdiOvSUQHPk"
-        "sOimQKhATNFDPSvDgjWI10EAhFytIy9ERGIGiH0g/CxEGfaazYeJmU/"
-        "Mk1DFedG09IjPesNc4e5cZh0Q6exrNjfbhOHKdy+WZsUVY11utNMiyC/yJwu9v/A/"
-        "IfQIyrS8zT6YfKXmqteTfTAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAA"
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
+        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
+        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
+        "QsztnV06/"
+        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+        "UAAAAAAAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -11932,6 +11941,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -11942,14 +11952,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAARylZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJcfiwgAAAAAAAAAdc07DsIwEARQCLlQPvxaOAIFLev1KnFEdiOvSUQHPk"
-        "sOimQKhATNFDPSvDgjWI10EAhFytIy9ERGIGiH0g/CxEGfaazYeJmU/"
-        "Mk1DFedG09IjPesNc4e5cZh0Q6exrNjfbhOHKdy+WZsUVY11utNMiyC/yJwu9v/A/"
-        "IfQIyrS8zT6YfKXmqteTfTAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAA"
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        "AAAAAAAAAAAA";
+        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
+        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
+        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
+        "QsztnV06/"
+        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+        "UAAAAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -11976,6 +11986,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -11986,15 +11997,17 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAAXalZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAAYemZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBz"
-        "Oi8vYS50ZXN0WHAfiwgAAAAAAAAAHckxDoMwDEZhyo1obwBHYOjsJFYwKr+"
-        "jOG3FRjgLB0XK8obv1ctTsJNHpTK0PgNoY3ZKxVavW1IwitU2X3BZ/"
-        "8Z5lgj62BUze4bf+8VJmPSL0i0p8+"
-        "8tsENWFTR83JFlbjNoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwgAAAAAAAAAJYnRDYMwDAVh"
-        "JMoIjFCkfofEEEflObJTUP+azsKgFeXrTnf18C7Ydx7VMboLtwC30lxOt+"
-        "RlzQJCsXrtHpPKbqR3XuCedixKnuDfbZw4DPJCaWJW2h4M+3ASxj+2Pxv+"
-        "8zJsAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        "Oi8vYS50ZXN0WG0fiwgAAAAAAAAAHclBDkAwEEZhjoQbcAQL62k7YYR/pFPEDmdxUEk3b/"
+        "G95/"
+        "MU7OVWKVW5dQCtzE4p2ex13RSMZE+eDVzU0zj2MoIW+"
+        "8bInuGvYnISOt2RimmLfAwCu2VWQcbyB4RoqwtoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwg"
+        "AAAAAAAAAJYnRDYMwDAXDSC0jMEKR+h0SA47Kc2SnRfyVzpJBEeXrTnd7DT7ab+"
+        "zVM24X7hF+obGcbinIkgWEYvu1Wwwqq5E+eIJ/"
+        "WZ2UAiFsbh44dvJGcXNW+"
+        "jwZ9uUkjH9sDrH7KcNsAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRGVidWdSZXB"
+        "vcnRpbmf1AAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(
@@ -12023,6 +12036,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -12033,13 +12047,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAARylZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJcfiwgAAAAAAAAAdc07DsIwEARQCLlQPvxaOAIFLev1KnFEdiOvSUQHPk"
-        "sOimQKhATNFDPSvDgjWI10EAhFytIy9ERGIGiH0g/CxEGfaazYeJmU/"
-        "Mk1DFedG09IjPesNc4e5cZh0Q6exrNjfbhOHKdy+WZsUVY11utNMiyC/yJwu9v/A/"
-        "IfQIyrS8zT6YfKXmqteTfTAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAA"
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
+        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
+        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
+        "QsztnV06/"
+        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+        "UAAAAAAAAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -12063,6 +12078,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -12073,13 +12089,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAARylZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJcfiwgAAAAAAAAAdc07DsIwEARQCLlQPvxaOAIFLev1KnFEdiOvSUQHPk"
-        "sOimQKhATNFDPSvDgjWI10EAhFytIy9ERGIGiH0g/CxEGfaazYeJmU/"
-        "Mk1DFedG09IjPesNc4e5cZh0Q6exrNjfbhOHKdy+WZsUVY11utNMiyC/yJwu9v/A/"
-        "IfQIyrS8zT6YfKXmqteTfTAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAA"
-        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
+        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
+        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
+        "QsztnV06/"
+        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+        "UAAAAAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -12092,7 +12109,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
   {
     blink::mojom::AuctionDataConfigPtr config =
         blink::mojom::AuctionDataConfig::New();
-    config->request_size = 381 + kEncryptionOverhead;
+    config->request_size = 400 + kEncryptionOverhead;
 
     std::vector<uint8_t> msg;
     base::flat_map<url::Origin, std::vector<std::string>> group_names;
@@ -12102,6 +12119,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -12112,15 +12130,17 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAAXalZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAAYemZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBz"
-        "Oi8vYS50ZXN0WHAfiwgAAAAAAAAAHckxDoMwDEZhyo1obwBHYOjsJFYwKr+"
-        "jOG3FRjgLB0XK8obv1ctTsJNHpTK0PgNoY3ZKxVavW1IwitU2X3BZ/"
-        "8Z5lgj62BUze4bf+8VJmPSL0i0p8+"
-        "8tsENWFTR83JFlbjNoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwgAAAAAAAAAJYnRDYMwDAVh"
-        "JMoIjFCkfofEEEflObJTUP+azsKgFeXrTnf18C7Ydx7VMboLtwC30lxOt+"
-        "RlzQJCsXrtHpPKbqR3XuCedixKnuDfbZw4DPJCaWJW2h4M+3ASxj+2Pxv+"
-        "8zJsAAAAdGVuYWJsZURlYnVnUmVwb3J0aW5n9QAA";
+        "Oi8vYS50ZXN0WG0fiwgAAAAAAAAAHclBDkAwEEZhjoQbcAQL62k7YYR/pFPEDmdxUEk3b/"
+        "G95/"
+        "MU7OVWKVW5dQCtzE4p2ex13RSMZE+eDVzU0zj2MoIW+"
+        "8bInuGvYnISOt2RimmLfAwCu2VWQcbyB4RoqwtoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwg"
+        "AAAAAAAAAJYnRDYMwDAXDSC0jMEKR+h0SA47Kc2SnRfyVzpJBEeXrTnd7DT7ab+"
+        "zVM24X7hF+obGcbinIkgWEYvu1Wwwqq5E+eIJ/"
+        "WZ2UAiFsbh44dvJGcXNW+"
+        "jwZ9uUkjH9sDrH7KcNsAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRGVidWdSZXB"
+        "vcnRpbmf1AAAAAA==";
     EXPECT_EQ(expected, base::Base64Encode(msg));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(
@@ -12145,6 +12165,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
         /*generation_id=*/
         base::Uuid::ParseCaseInsensitive(
             "00000000-0000-0000-0000-000000000000"),
+        /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(0),
         /*config=*/config->Clone(),
         /*callback=*/
         base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
@@ -12306,7 +12327,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
                                   R"("generationId": ")"));
   EXPECT_THAT(
       got_str,
-      testing::EndsWith(
+      testing::HasSubstr(
           R"(", )"
           R"("interestGroups": {"https://a.test": )"
           R"(h'1F8B080000000000000075CD3B0EC230100450025C281F7E2D3902455AD6EB)"
@@ -12314,7 +12335,8 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
           R"(8681C80804ED5186519838E8338D251B2F37257F722DC345E7D61312E33DEB8C)"
           R"(B3B55C392CBAD1D3D438D687EBC5712AB33763F3A2ACB0DA6C936111FC1781BB)"
           R"(FDE11FB0FE01C4B83CC7553AFDA05EE2EDA5E5D3000000'}, )"
-          R"("enableDebugReporting": true})"));
+          R"("requestTimestampMs": )"));
+  EXPECT_THAT(got_str, testing::EndsWith(R"(, "enableDebugReporting": true})"));
 
   AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
@@ -12748,13 +12770,14 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
                                   R"("generationId": ")"));
   EXPECT_THAT(
       got_str,
-      testing::EndsWith(
+      testing::HasSubstr(
           R"(", )"
           R"("interestGroups": {"https://a.test": )"
           R"(h'1F8B08000000000000006B5C9C9C9852DC986268646C929297989B9A929C58)"
           R"(549C9754945F5E9C5A149C999E979853BC24BD283539352FB99231232933C539)"
           R"(BF34AF8421A3A028B52C3C33AFB821332B3F330F2CC80800BE10ED8B4E000000)"
-          R"('}, "enableDebugReporting": true})"));
+          R"('}, "requestTimestampMs": )"));
+  EXPECT_THAT(got_str, testing::EndsWith(R"(, "enableDebugReporting": true})"));
 
   std::string response = GetSingleSellerResponse();
 

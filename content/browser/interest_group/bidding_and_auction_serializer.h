@@ -101,6 +101,7 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
   void SetGenerationId(base::Uuid generation_id) {
     generation_id_ = generation_id;
   }
+  void SetTimestamp(base::Time timestamp) { timestamp_ = timestamp; }
   void SetConfig(blink::mojom::AuctionDataConfigPtr config) {
     config_ = std::move(config);
   }
@@ -110,8 +111,8 @@ class CONTENT_EXPORT BiddingAndAuctionSerializer {
 
  private:
   base::Uuid generation_id_;
-  base::Time start_time_;
   std::string publisher_;
+  base::Time timestamp_;
   blink::mojom::AuctionDataConfigPtr config_;
   std::vector<std::pair<url::Origin, std::vector<SingleStorageInterestGroup>>>
       accumulated_groups_;

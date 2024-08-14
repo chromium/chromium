@@ -652,6 +652,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
   state.callback = std::move(callback);
   state.seller = seller;
   state.coordinator = coordinator;
+  state.timestamp = base::Time::Now();
   state.config = std::move(config);
 
   ba_data_callbacks_.push(std::move(state));
@@ -1106,7 +1107,7 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
 
   GetInterestGroupManager().GetInterestGroupAdAuctionData(
       GetTopWindowOrigin(),
-      /* generation_id=*/base::Uuid::GenerateRandomV4(),
+      /* generation_id=*/base::Uuid::GenerateRandomV4(), state.timestamp,
       std::move(state.config),
       base::BindOnce(&AdAuctionServiceImpl::OnGotAuctionData,
                      weak_ptr_factory_.GetWeakPtr(), state.request_id));
