@@ -239,12 +239,22 @@ TEST(RectFTest, CenterPoint) {
 
 TEST(RectFTest, ScaleRect) {
   constexpr RectF input(3, 3, 3, 3);
+  constexpr SizeF size_f(2.0f, 3.0f);
+  constexpr Size size(3, 2);
   EXPECT_RECTF_EQ(RectF(4.5f, 4.5f, 4.5f, 4.5f), ScaleRect(input, 1.5f));
+  EXPECT_RECTF_EQ(RectF(6.0f, 9.0f, 6.0f, 9.0f), ScaleRect(input, size_f));
+  EXPECT_RECTF_EQ(RectF(9.0f, 6.0f, 9.0f, 6.0f), ScaleRect(input, size));
   EXPECT_RECTF_EQ(RectF(0, 0, 0, 0), ScaleRect(input, 0));
 
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
+  constexpr int kMaxInt = std::numeric_limits<int>::max();
   EXPECT_RECTF_EQ(RectF(kMaxFloat, kMaxFloat, kMaxFloat, kMaxFloat),
                   ScaleRect(input, kMaxFloat));
+  EXPECT_RECTF_EQ(RectF(input.x() * static_cast<float>(kMaxInt),
+                        input.y() * static_cast<float>(kMaxInt),
+                        input.width() * static_cast<float>(kMaxInt),
+                        input.height() * static_cast<float>(kMaxInt)),
+                  ScaleRect(input, Size(kMaxInt, kMaxInt)));
 
   RectF nan_rect = ScaleRect(input, std::numeric_limits<float>::quiet_NaN());
   EXPECT_TRUE(std::isnan(nan_rect.x()));
