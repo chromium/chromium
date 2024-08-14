@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 
+#include <cstddef>
+#include <cstring>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -20,17 +25,22 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "crypto/sha2.h"
+#include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -40,7 +50,6 @@ namespace ash {
 
 namespace {
 
-const char kWebstoreDomain[] = "cws.com";
 // Kiosk app crx file download path under web store site.
 const char kCrxDownloadPath[] = "/chromeos/app_mode/webstore/downloads/";
 const char kDetailsURLPrefix[] =
@@ -347,9 +356,7 @@ std::optional<std::string> FakeCWS::CreateItemSnippetStringForApp(
 }
 
 void FakeCWS::SetupWebStoreURL(const GURL& test_server_url) {
-  GURL::Replacements replace_webstore_host;
-  replace_webstore_host.SetHostStr(kWebstoreDomain);
-  web_store_url_ = test_server_url.ReplaceComponents(replace_webstore_host);
+  web_store_url_ = test_server_url;
 
   // Replace part of the item snippets URL with the `web_store_url_` with the
   // embedded test server's port so requests can be handled in `HandleRequest`.
