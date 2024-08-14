@@ -24,9 +24,6 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.concurrent.TimeUnit;
@@ -132,16 +129,8 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
 
     private boolean checkConditions() {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        boolean isSignedIn = identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
-        String accountEmail =
-                (mSigninManager != null)
-                        ? CoreAccountInfo.getEmailFrom(
-                                mSigninManager
-                                        .getIdentityManager()
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                        : null;
+        boolean isSignedIn = SafetyHubUtils.isSignedIn(mProfile);
+        String accountEmail = SafetyHubUtils.getAccountEmail(mProfile);
 
         return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB)
                 && isSignedIn
@@ -164,16 +153,9 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 
-        assert mSigninManager != null;
-        String accountEmail =
-                CoreAccountInfo.getEmailFrom(
-                        mSigninManager
-                                .getIdentityManager()
-                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-
         passwordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                accountEmail,
+                SafetyHubUtils.getAccountEmail(mProfile),
                 count -> {
                     prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
                     notifyCompromisedPasswordCountChanged();

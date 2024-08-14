@@ -165,7 +165,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 sitesWithUnusedPermissionsCount)
                         .with(
                                 SafetyHubModuleProperties.SAFE_BROWSING_STATE,
-                                mDelegate.getSafeBrowsingState())
+                                SafetyHubUtils.getSafeBrowsingState(getProfile()))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -189,7 +189,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
         mSafetyHubFetchService.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
-        if (mDelegate.isSignedIn()) {
+        if (SafetyHubUtils.isSignedIn(getProfile())) {
             mPasswordStoreBridge = new PasswordStoreBridge(getProfile());
             mPasswordStoreBridge.addObserver(this, true);
         }
@@ -553,10 +553,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void updateSafeBrowsingPreference() {
-        @SafeBrowsingState int state = mDelegate.getSafeBrowsingState();
+        @SafeBrowsingState int state = SafetyHubUtils.getSafeBrowsingState(getProfile());
         mSafeBrowsingPropertyModel.set(
                 SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY,
-                mDelegate.isSafeBrowsingManaged());
+                SafetyHubUtils.isSafeBrowsingManaged(getProfile()));
         mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
         mBrowserStateModule.set(SafetyHubModuleProperties.SAFE_BROWSING_STATE, state);
     }
@@ -578,10 +578,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, disabledByPolicy);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.IS_SIGNED_IN, mDelegate.isSignedIn());
+                SafetyHubModuleProperties.IS_SIGNED_IN, SafetyHubUtils.isSignedIn(getProfile()));
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.ACCOUNT_EMAIL, mDelegate.getAccountEmail());
-        if (mDelegate.isSignedIn()) {
+                SafetyHubModuleProperties.ACCOUNT_EMAIL,
+                SafetyHubUtils.getAccountEmail(getProfile()));
+        if (SafetyHubUtils.isSignedIn(getProfile())) {
             mPasswordCheckPropertyModel.set(
                     SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                     v -> {

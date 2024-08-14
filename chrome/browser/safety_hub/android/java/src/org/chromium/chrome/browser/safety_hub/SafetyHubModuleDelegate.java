@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 
 /** A delegate for Safety Hub to handle UI related behaviour. */
 public interface SafetyHubModuleDelegate {
@@ -36,17 +35,6 @@ public interface SafetyHubModuleDelegate {
     void openGooglePlayStore(Context context);
 
     /**
-     * @return The current safe browsing state.
-     */
-    @SafeBrowsingState
-    int getSafeBrowsingState();
-
-    /**
-     * @return Whether the Safe Browsing preference is managed.
-     */
-    boolean isSafeBrowsingManaged();
-
-    /**
      * @param passwordStoreBridge Provides access to stored passwords.
      * @return the total passwords count for Account-level passwords.
      */
@@ -59,15 +47,4 @@ public interface SafetyHubModuleDelegate {
      * @param context used to launch the promo in.
      */
     void launchSyncOrSigninPromo(Context context);
-
-    /**
-     * @return Whether the primary account is signed in.
-     */
-    boolean isSignedIn();
-
-    /**
-     * @return The email associated with the currently signed in account.
-     */
-    @Nullable
-    String getAccountEmail();
 }
