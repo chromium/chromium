@@ -28,7 +28,7 @@ const char kIsAuthErrorKey[] = "is_auth_error";
 const char kUserNameKey[] = "user_name";
 }  // namespace
 
-BrowserStateInfoCache::BrowserStateInfoCache(PrefService* prefs)
+ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
     : prefs_(prefs) {
   // Populate the cache
   for (const auto pair : prefs_->GetDict(prefs::kBrowserStateInfoCache)) {
@@ -37,11 +37,11 @@ BrowserStateInfoCache::BrowserStateInfoCache(PrefService* prefs)
   base::ranges::sort(sorted_keys_);
 }
 
-BrowserStateInfoCache::~BrowserStateInfoCache() = default;
+ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
 
-void BrowserStateInfoCache::AddBrowserState(std::string_view name,
-                                            std::string_view gaia_id,
-                                            std::string_view user_name) {
+void ProfileAttributesStorageIOS::AddBrowserState(std::string_view name,
+                                                  std::string_view gaia_id,
+                                                  std::string_view user_name) {
   CHECK_EQ(GetIndexOfBrowserStateWithName(name), std::string::npos);
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
   base::Value::Dict& cache = update.Get();
@@ -64,7 +64,7 @@ void BrowserStateInfoCache::AddBrowserState(std::string_view name,
                       std::string(name));
 }
 
-void BrowserStateInfoCache::RemoveBrowserState(std::string_view name) {
+void ProfileAttributesStorageIOS::RemoveBrowserState(std::string_view name) {
   CHECK_NE(GetIndexOfBrowserStateWithName(name), std::string::npos);
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
   base::Value::Dict& cache = update.Get();
@@ -84,11 +84,11 @@ void BrowserStateInfoCache::RemoveBrowserState(std::string_view name) {
   sorted_keys_.erase(base::ranges::find(sorted_keys_, name));
 }
 
-size_t BrowserStateInfoCache::GetNumberOfBrowserStates() const {
+size_t ProfileAttributesStorageIOS::GetNumberOfBrowserStates() const {
   return sorted_keys_.size();
 }
 
-size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithName(
+size_t ProfileAttributesStorageIOS::GetIndexOfBrowserStateWithName(
     std::string_view name) const {
   auto iterator = base::ranges::lower_bound(sorted_keys_, name);
   if (iterator == sorted_keys_.end() || *iterator != name) {
@@ -97,26 +97,27 @@ size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithName(
   return std::distance(sorted_keys_.begin(), iterator);
 }
 
-const std::string& BrowserStateInfoCache::GetNameOfBrowserStateAtIndex(
+const std::string& ProfileAttributesStorageIOS::GetNameOfBrowserStateAtIndex(
     size_t index) const {
   return sorted_keys_[index];
 }
 
-const std::string& BrowserStateInfoCache::GetGAIAIdOfBrowserStateAtIndex(
+const std::string& ProfileAttributesStorageIOS::GetGAIAIdOfBrowserStateAtIndex(
     size_t index) const {
   const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
   const std::string* gaia_id = value->FindString(kGAIAIdKey);
   return gaia_id ? *gaia_id : base::EmptyString();
 }
 
-const std::string& BrowserStateInfoCache::GetUserNameOfBrowserStateAtIndex(
+const std::string&
+ProfileAttributesStorageIOS::GetUserNameOfBrowserStateAtIndex(
     size_t index) const {
   const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
   const std::string* user_name = value->FindString(kUserNameKey);
   return user_name ? *user_name : base::EmptyString();
 }
 
-bool BrowserStateInfoCache::BrowserStateIsAuthenticatedAtIndex(
+bool ProfileAttributesStorageIOS::BrowserStateIsAuthenticatedAtIndex(
     size_t index) const {
   // The browser state is authenticated if the gaia_id of the info is not empty.
   // If it is empty, also check if the user name is not empty.  This latter
@@ -126,13 +127,14 @@ bool BrowserStateInfoCache::BrowserStateIsAuthenticatedAtIndex(
          !GetUserNameOfBrowserStateAtIndex(index).empty();
 }
 
-bool BrowserStateInfoCache::BrowserStateIsAuthErrorAtIndex(size_t index) const {
+bool ProfileAttributesStorageIOS::BrowserStateIsAuthErrorAtIndex(
+    size_t index) const {
   return GetInfoForBrowserStateAtIndex(index)
       ->FindBool(kIsAuthErrorKey)
       .value_or(false);
 }
 
-void BrowserStateInfoCache::SetAuthInfoOfBrowserStateAtIndex(
+void ProfileAttributesStorageIOS::SetAuthInfoOfBrowserStateAtIndex(
     size_t index,
     std::string_view gaia_id,
     std::string_view user_name) {
@@ -148,8 +150,9 @@ void BrowserStateInfoCache::SetAuthInfoOfBrowserStateAtIndex(
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
-void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
-                                                              bool value) {
+void ProfileAttributesStorageIOS::SetBrowserStateIsAuthErrorAtIndex(
+    size_t index,
+    bool value) {
   if (value == BrowserStateIsAuthErrorAtIndex(index)) {
     return;
   }
@@ -159,14 +162,14 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
-base::Time BrowserStateInfoCache::GetLastActiveTimeOfBrowserStateAtIndex(
+base::Time ProfileAttributesStorageIOS::GetLastActiveTimeOfBrowserStateAtIndex(
     size_t index) const {
   std::optional<base::Time> last_active_time = base::ValueToTime(
       GetInfoForBrowserStateAtIndex(index)->Find(kActiveTimeKey));
   return last_active_time.value_or(base::Time());
 }
 
-void BrowserStateInfoCache::SetLastActiveTimeOfBrowserStateAtIndex(
+void ProfileAttributesStorageIOS::SetLastActiveTimeOfBrowserStateAtIndex(
     size_t index,
     base::Time time) {
   base::Value::Dict info = GetInfoForBrowserStateAtIndex(index)->Clone();
@@ -174,7 +177,7 @@ void BrowserStateInfoCache::SetLastActiveTimeOfBrowserStateAtIndex(
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
-void BrowserStateInfoCache::SetBrowserStateForSceneID(
+void ProfileAttributesStorageIOS::SetBrowserStateForSceneID(
     std::string_view scene_id,
     std::string_view browser_state_name) {
   DCHECK(!browser_state_name.empty());
@@ -183,14 +186,14 @@ void BrowserStateInfoCache::SetBrowserStateForSceneID(
   cache.Set(scene_id, browser_state_name);
 }
 
-void BrowserStateInfoCache::ClearBrowserStateForSceneID(
+void ProfileAttributesStorageIOS::ClearBrowserStateForSceneID(
     std::string_view scene_id) {
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateForScene);
   base::Value::Dict& cache = update.Get();
   cache.Remove(scene_id);
 }
 
-const std::string& BrowserStateInfoCache::GetBrowserStateNameForSceneID(
+const std::string& ProfileAttributesStorageIOS::GetBrowserStateNameForSceneID(
     std::string_view scene_id) {
   const std::string* browser_state_name =
       prefs_->GetDict(prefs::kBrowserStateForScene).FindString(scene_id);
@@ -198,21 +201,21 @@ const std::string& BrowserStateInfoCache::GetBrowserStateNameForSceneID(
 }
 
 // static
-void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
+void ProfileAttributesStorageIOS::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kBrowserStateInfoCache);
   registry->RegisterIntegerPref(prefs::kBrowserStatesNumCreated, 0);
   registry->RegisterListPref(prefs::kBrowserStatesLastActive);
   registry->RegisterDictionaryPref(prefs::kBrowserStateForScene);
 }
 
-const base::Value::Dict* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
-    size_t index) const {
+const base::Value::Dict*
+ProfileAttributesStorageIOS::GetInfoForBrowserStateAtIndex(size_t index) const {
   DCHECK_LT(index, GetNumberOfBrowserStates());
   return prefs_->GetDict(prefs::kBrowserStateInfoCache)
       .FindDict(sorted_keys_[index]);
 }
 
-void BrowserStateInfoCache::SetInfoForBrowserStateAtIndex(
+void ProfileAttributesStorageIOS::SetInfoForBrowserStateAtIndex(
     size_t index,
     base::Value::Dict info) {
   ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);

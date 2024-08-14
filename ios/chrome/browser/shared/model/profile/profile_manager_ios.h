@@ -11,9 +11,13 @@
 
 #include "base/functional/callback.h"
 
-class BrowserStateInfoCache;
 class ChromeBrowserState;
 class ProfileManagerObserverIOS;
+
+// TODO(crbug.com/359492423): Remove this forward declaration and typedef when
+// no usage of BrowserStateInfoCache remains.
+class ProfileAttributesStorageIOS;
+using BrowserStateInfoCache = ProfileAttributesStorageIOS;
 
 // TODO(crbug.com/358356195): Remove this forward declaration and typedef when
 // no usage of ChromeBrowserStateManager remains.

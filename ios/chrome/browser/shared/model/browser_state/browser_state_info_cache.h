@@ -19,16 +19,25 @@
 class PrefRegistrySimple;
 class PrefService;
 
+// TODO(crbug.com/359492423): Remove this forward declaration and typedef when
+// no usage of BrowserStateInfoCache remains.
+class ProfileAttributesStorageIOS;
+using BrowserStateInfoCache = ProfileAttributesStorageIOS;
+
 // This class saves various information about browser states to local
 // preferences.
-class BrowserStateInfoCache {
+// TODO(crbug.com/359522668): Update the API of this class to refer to "Profile"
+// instead of "BrowserState".
+
+class ProfileAttributesStorageIOS {
  public:
-  explicit BrowserStateInfoCache(PrefService* prefs);
+  explicit ProfileAttributesStorageIOS(PrefService* prefs);
 
-  BrowserStateInfoCache(const BrowserStateInfoCache&) = delete;
-  BrowserStateInfoCache& operator=(const BrowserStateInfoCache&) = delete;
+  ProfileAttributesStorageIOS(const ProfileAttributesStorageIOS&) = delete;
+  ProfileAttributesStorageIOS& operator=(const ProfileAttributesStorageIOS&) =
+      delete;
 
-  ~BrowserStateInfoCache();
+  ~ProfileAttributesStorageIOS();
 
   void AddBrowserState(std::string_view name,
                        std::string_view gaia_id,
