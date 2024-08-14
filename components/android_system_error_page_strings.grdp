@@ -15,7 +15,4 @@
       <message name="IDS_ANDROID_ERROR_PAGE_SUPERVISED_USER_URL_BLOCKED_MESSAGE" desc="Message in error page to inform the user that the content is blocked">
         This content is blocked.
       </message>
-      <message name="IDS_ANDROID_ERROR_PAGE_SUPERVISED_USER_LEARN_MORE" desc="Clickable link in the error page to guide the user to learn why the content was blocked">
-        Learn more
-      </message>
 </grit-part>
