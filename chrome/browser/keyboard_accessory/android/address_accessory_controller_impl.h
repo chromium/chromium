@@ -26,7 +26,6 @@ class PlusAddressService;
 }  // namespace plus_addresses
 
 namespace autofill {
-class ContentAutofillClient;
 class PersonalDataManager;
 
 // Use either AddressAccessoryController::GetOrCreate or
@@ -122,7 +121,6 @@ class AddressAccessoryControllerImpl
   // The data manager used to retrieve the profiles.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
-  const raw_ptr<const ContentAutofillClient> autofill_client_;
   const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
 
   std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>

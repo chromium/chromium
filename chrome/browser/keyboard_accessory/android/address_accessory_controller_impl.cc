@@ -259,8 +259,6 @@ AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
           *web_contents),
       mf_controller_(std::move(mf_controller)),
       personal_data_manager_(nullptr),
-      autofill_client_(
-          autofill::ContentAutofillClient::FromWebContents(&GetWebContents())),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext())) {}
 
@@ -273,15 +271,22 @@ AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
           plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
     return commands;
   }
-  if (!autofill_client_ || !plus_address_service_) {
+  // Both `ContentAutofillClient and this controller are instances of the
+  // `WebContentsUserData`. There's no no well-defined destruction order between
+  // two different `WebContentsUserData` objects. That's why
+  // `ContentAutofillClient` cannot be stored in a `raw_ptr` member variable
+  // like `PlusAddressService`.
+  auto* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
+  if (!autofill_client || !plus_address_service_) {
     return commands;
   }
   // Offer plus address creation if it's supported for the current user session
   // and if the user doesn't have any plus addresses created for the current
   // domain.
   if (plus_address_service_->IsPlusAddressCreationEnabled(
-          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin(),
-          autofill_client_->IsOffTheRecord()) &&
+          autofill_client->GetLastCommittedPrimaryMainFrameOrigin(),
+          autofill_client->IsOffTheRecord()) &&
       plus_profiles_provider_ &&
       plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
     commands.emplace_back(FooterCommand(
@@ -293,7 +298,7 @@ AddressAccessoryControllerImpl::CreateManageAddressesFooter() const {
   // is supported for the last committed origin and the user has at least 1 plus
   // address.
   if (plus_address_service_->IsPlusAddressFillingEnabled(
-          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin()) &&
+          autofill_client->GetLastCommittedPrimaryMainFrameOrigin()) &&
       !plus_address_service_->GetPlusProfiles().empty()) {
     commands.emplace_back(
         FooterCommand(l10n_util::GetStringUTF16(
