@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
+#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "base/memory/raw_ptr.h"
 
@@ -31,6 +32,9 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void RequestBirchDataFetch() override;
 
  private:
+  // Whether we should handle post-login or in-session data.
+  bool HasValidPostLoginData() const;
+
   // Called during session restore. Sends a grouping request with session
   // restore data to the coral backend.
   void HandlePostLoginDataRequest();
@@ -43,6 +47,9 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void HandleClusterData();
 
   const raw_ptr<BirchModel> birch_model_;
+
+  // Stores last known active tab metadata.
+  std::vector<coral_util::TabData> active_tab_data_;
 };
 
 }  // namespace ash

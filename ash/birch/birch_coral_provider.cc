@@ -5,6 +5,7 @@
 #include "ash/birch/birch_coral_provider.h"
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
+#include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/shell.h"
 
 namespace ash {
@@ -33,14 +34,33 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
 void BirchCoralProvider::RequestBirchDataFetch() {
   // TODO(yulunwu) make appropriate data request, send data to backend.
+  if (HasValidPostLoginData()) {
+    HandlePostLoginDataRequest();
+  } else {
+    HandleInSessionDataRequest();
+  }
 }
 
-void HandlePostLoginDataRequest() {
+bool BirchCoralProvider::HasValidPostLoginData() const {
+  // TODO(sammiequon) add check for valid post login data.
+  return false;
+}
+
+void BirchCoralProvider::HandlePostLoginDataRequest() {
   // TODO(sammiequon) handle post-login use case.
 }
 
-void HandleInSessionDataRequest() {
-  // TODO(yulunwu, zxdan) handle in-session use case.
+void BirchCoralProvider::HandleInSessionDataRequest() {
+  // TODO(yulunwu, zxdan) add more tab metadata, app data,
+  // and handle in-session use cases.
+  std::vector<coral_util::TabData> active_tab_data;
+  for (const std::unique_ptr<TabClusterUIItem>& tab :
+       Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
+    active_tab_data.emplace_back(
+        coral_util::TabData{.tab_title = tab->current_info().title,
+                            .source = tab->current_info().source});
+  }
+  active_tab_data_ = std::move(active_tab_data);
 }
 
 void BirchCoralProvider::HandleClusterData() {

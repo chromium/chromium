@@ -20,7 +20,7 @@ struct ASH_PUBLIC_EXPORT AppData {
 // TODO(yulunwu) Look into additional metadata
 struct ASH_PUBLIC_EXPORT TabData {
   std::string tab_title;
-  GURL gurl;
+  std::string source;  // The url or source link of a tab.
 };
 
 class ASH_PUBLIC_EXPORT CoralRequest {
@@ -31,10 +31,10 @@ class ASH_PUBLIC_EXPORT CoralRequest {
     kMaxValue = kGrouping,
   };
 
-  CoralRequest() = default;
+  CoralRequest();
   CoralRequest(const CoralRequest&) = delete;
   CoralRequest& operator=(const CoralRequest&) = delete;
-  ~CoralRequest() = default;
+  ~CoralRequest();
 
  private:
   std::vector<AppData> app_data_;
