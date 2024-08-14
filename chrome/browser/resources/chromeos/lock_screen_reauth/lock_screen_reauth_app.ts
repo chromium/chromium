@@ -19,7 +19,7 @@ function initialize() {
   // in chrome://resources/ash/common/util.js. If this function is not exposed
   // via the global object, it would not be available to tests that inject
   // JavaScript directly into the renderer.
-  window.$ = $;
+  (window as any).$ = $;
 }
 
 initialize();

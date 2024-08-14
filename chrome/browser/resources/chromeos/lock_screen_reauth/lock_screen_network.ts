@@ -15,41 +15,40 @@ import './strings.m.js';
 
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfig, CrosNetworkConfigRemote, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'lock-screen-network-ui',
+class LockScreenNetworkUi extends PolymerElement {
+  static get is() {
+    return 'lock-screen-network-ui' as const;
+  }
 
-  /** @type {?CrosNetworkConfigRemote} */
-  networkConfig_: null,
+  private networkConfig: CrosNetworkConfigRemote =
+      CrosNetworkConfig.getRemote();
 
-  /** @override */
-  attached() {
-    this.networkConfig_ = CrosNetworkConfig.getRemote();
-
-    const select = this.$$('network-select');
-    select.customItems = [
+  override connectedCallback() {
+    super.connectedCallback();
+    const select = this.shadowRoot!.querySelector('network-select');
+    select!.customItems = [
       {
         customItemName: 'addWiFiListItemName',
         polymerIcon: 'cr:add',
         customData: 'WiFi',
       },
     ];
-  },
+  }
 
-  /** @override */
-  ready() {
+  override ready() {
+    super.ready();
     chrome.send('initialize');
-  },
+  }
 
   /**
    * Handles clicks on network items in the <network-select> element by
    * attempting a connection to the selected network or requesting a password
    * if the network requires a password.
-   * @param {!Event<!OncMojo.NetworkStateProperties>} event
-   * @private
    */
-  onNetworkItemSelected_(event) {
+  private onNetworkItemSelected(
+      event: CustomEvent<OncMojo.NetworkStateProperties>) {
     const networkState = event.detail;
 
     // If the network is already connected, show network details.
@@ -65,25 +64,22 @@ Polymer({
     }
 
     // Otherwise, connect.
-    this.networkConfig_.startConnect(networkState.guid).then(response => {
+    this.networkConfig.startConnect(networkState.guid).then(response => {
       if (response.result === StartConnectResult.kSuccess) {
         return;
       }
       chrome.send('showNetworkConfig', [networkState.guid]);
     });
-  },
+  }
 
-  /**
-   * @param {!Event<!{detail:{customData: string}}>} event
-   * @private
-   */
-  onCustomItemSelected_(event) {
+  private onCustomItemSelected(event: CustomEvent<{customData: string}>) {
     chrome.send('addNetwork', [event.detail.customData]);
-  },
+  }
 
-  /** @private */
-  onCloseTap_() {
+  private onCloseClick() {
     chrome.send('dialogClose');
-  },
+  }
 
-});
+}
+
+customElements.define(LockScreenNetworkUi.is, LockScreenNetworkUi);

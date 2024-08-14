@@ -156,7 +156,7 @@ constexpr char kClientCert2Name[] = "client_2";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame()";
 constexpr char kSigninWebviewOnLockScreen[] =
-    "$('main-element').getSigninFrame_()";
+    "$('main-element').getSigninFrame()";
 constexpr char kTestCookieHost[] = "host1.com";
 constexpr char kTestCookieName[] = "TestCookie";
 constexpr char kTestCookieValue[] = "present";

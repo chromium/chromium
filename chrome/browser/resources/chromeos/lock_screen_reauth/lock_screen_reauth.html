@@ -255,7 +255,7 @@
     transform: rotate(180deg);
   }
 </style>
-<div class="content-wrapper" hidden="[[!isVerifyUser_]]" role="dialog"
+<div class="content-wrapper" hidden="[[!isVerifyUser]]" role="dialog"
     aria-modal="true" id="verifyAccountScreen"
     aria-label="$i18n{loginWelcomeMessage}">
   <div class="main-container">
@@ -276,17 +276,17 @@
   </div>
   <div class="flex layout horizontal button-container">
     <cr-button id="cancelButtonVerifyScreen" class="cancel-button"
-        on-click="onCloseTap_">
+        on-click="onCloseClick">
       $i18n{lockScreenCancelButton}
     </cr-button>
     <cr-button id="nextButtonVerifyScreen" class="action-button"
-        on-click="onVerify_">
+        on-click="onVerify">
       $i18n{lockScreenVerifyButton}
     </cr-button>
   </div>
 </div>
 
-<div class="content-wrapper" hidden="[[!isErrorDisplayed_]]" role="dialog"
+<div class="content-wrapper" hidden="[[!isErrorDisplayed]]" role="dialog"
     aria-modal="true" id="errorScreen"
     aria-label="$i18n{loginWelcomeMessageWithError}">
   <div class="main-container">
@@ -307,33 +307,33 @@
   </div>
   <div class="flex layout horizontal button-container">
     <cr-button id="cancelButtonErrorScreen" class="cancel-button"
-        on-click="onCloseTap_">
+        on-click="onCloseClick">
       $i18n{lockScreenCancelButton}
     </cr-button>
-    <cr-button id="nextButton" class="action-button" on-click="onVerify_">
+    <cr-button id="nextButton" class="action-button" on-click="onVerify">
       $i18n{lockScreenVerifyAgainButton}
     </cr-button>
   </div>
 </div>
 
-<div id="body" hidden="[[!isSigninFrameDisplayed_]]">
+<div id="body" hidden="[[!isSigninFrameDisplayed]]">
   <div id="samlContainer">
     <div id="policyCertIndicator"
-        hidden="[[!policyProvidedTrustedAnchorsUsed_()]]">
+        hidden="[[!policyProvidedTrustedAnchorsUsed()]]">
       <cr-tooltip-icon id="policyCertIcon" icon-class="cr:domain"
           tooltip-text="[[i18nDynamic(locale,
-              'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
+              'policyProvidedCaCertsTooltipMessage', authDomain)]]"
           icon-aria-label="[[i18nDynamic(locale,
-              'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
+              'policyProvidedCaCertsTooltipMessage', authDomain)]]"
           tooltip-position="bottom">
       </cr-tooltip-icon>
     </div>
-    <div id="samlHeader" saml-notice-message$="[[isSaml_]]">
-      <span id="samlNoticeMessage" hidden="[[!isSaml_]]">
-        [[i18n('samlNotice', authDomain_)]]
+    <div id="samlHeader" saml-notice-message$="[[isSaml]]">
+      <span id="samlNoticeMessage" hidden="[[!isSaml]]">
+        [[i18n('samlNotice', authDomain)]]
       </span>
       <cr-icon-button id="saml-close-button" iron-icon="cr:close"
-          on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
+          on-click="onCloseClick" aria-label="$i18n{lockScreenCloseButton}">
       </cr-icon-button>
     </div>
   </div>
@@ -344,54 +344,54 @@
     <div>[[i18nDynamic(locale, 'samlChangeProviderMessage')]]</div>
     <oobe-text-button id="change-account"
         text-key="samlChangeProviderButton"
-        on-click="onChangeSigninProviderClicked_">
+        on-click="onChangeSigninProviderClicked">
     </oobe-text-button>
   </div>
   <div id="buttons-container" class="flex layout horizontal button-container"
-      hidden="[[isSaml_]]">
+      hidden="[[isSaml]]">
     <div class="action-buttons">
       <gaia-action-buttons id="gaia-buttons"
-          authenticator="[[authenticator_]]"
+          authenticator="[[authenticator]]"
           rounded-button="True"
-          on-set-focus-to-webview="setFocusToWebview_">
+          on-set-focus-to-webview="setFocusToWebview">
       </gaia-action-buttons>
     </div>
   </div>
 </div>
 
 <div id="samlConfirmPasswordScreen" class="content-wrapper"
-    hidden="[[!isConfirmPassword_]]">
+    hidden="[[!isConfirmPassword]]">
   <div class="main-container">
     <div class="header">
       <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
       <div class="title">
-        [[email_]]
+        [[email]]
       </div>
-      <div class="subtitle" hidden="[[isManualInput_]]">
+      <div class="subtitle" hidden="[[isManualInput]]">
         $i18n{confirmPasswordSubtitle}
       </div>
-      <div class="subtitle" hidden="[[!isManualInput_]]">
+      <div class="subtitle" hidden="[[!isManualInput]]">
         $i18n{manualPasswordSubtitle}
       </div>
     </div>
     <div class="input-container">
       <cr-input type="password" id="passwordInput" required
-          placeholder="[[passwordPlaceholder_(locale, isManualInput_)]]"
-          error-message="[[passwordErrorText_(locale, isManualInput_)]]">
+          placeholder="[[passwordPlaceholder(locale, isManualInput)]]"
+          error-message="[[passwordErrorText(locale, isManualInput)]]">
       </cr-input>
       <cr-input type="password" id="confirmPasswordInput" required
           placeholder="$i18n{confirmPasswordLabel}"
           error-message="$i18n{manualPasswordMismatch}"
-          hidden="[[!isManualInput_]]">
+          hidden="[[!isManualInput]]">
       </cr-input>
     </div>
   </div>
   <div class="flex layout horizontal button-container">
-    <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+    <cr-button id="cancelButton" class="cancel-button" on-click="onCloseClick">
       $i18n{lockScreenCancelButton}
     </cr-button>
     <cr-button id="nextButtonSamlConfirmPassword" class="action-button"
-        on-click="onConfirm_">
+        on-click="onConfirm">
       $i18n{lockScreenNextButton}
       <iron-icon id="arrowForward" icon="oobe-20:button-arrow-forward">
       </iron-icon>
@@ -399,7 +399,7 @@
   </div>
 </div>
 
-<div class="content-wrapper" hidden="[[!isPasswordChanged_]]">
+<div class="content-wrapper" hidden="[[!isPasswordChanged]]">
   <div class="main-container">
     <div class="header">
       <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
@@ -417,10 +417,10 @@
     </div>
   </div>
   <div class="flex layout horizontal button-container">
-    <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+    <cr-button id="cancelButton" class="cancel-button" on-click="onCloseClick">
       $i18n{lockScreenCancelButton}
     </cr-button>
-    <cr-button id="nextButton" class="action-button" on-click="onNext_">
+    <cr-button id="nextButton" class="action-button" on-click="onNext">
       $i18n{lockScreenNextButton}
       <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
     </cr-button>
