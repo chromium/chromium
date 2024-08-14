@@ -58,6 +58,14 @@ bool GraphOperations::VisitFrameTreePostOrder(const PageNode* page,
 }
 
 // static
+bool GraphOperations::VisitPageAndEmbedsPreOrder(const PageNode* page,
+                                                 PageNodeVisitor visitor) {
+  return GraphImplOperations::VisitPageAndEmbedsPreOrder(
+      PageNodeImpl::FromNode(page),
+      [&visitor](PageNodeImpl* page_impl) { return visitor(page_impl); });
+}
+
+// static
 bool GraphOperations::HasFrame(const PageNode* page, const FrameNode* frame) {
   return GraphImplOperations::HasFrame(PageNodeImpl::FromNode(page),
                                        FrameNodeImpl::FromNode(frame));

@@ -26,6 +26,7 @@ class GraphOperationsTest : public GraphTestHarness {
     process2_ = CreateNode<ProcessNodeImpl>();
     page1_ = CreateNode<PageNodeImpl>();
     page2_ = CreateNode<PageNodeImpl>();
+    page3_ = CreateNode<PageNodeImpl>();
     mainframe1_ = CreateFrameNodeAutoId(process1_.get(), page1_.get(), nullptr);
     mainframe2_ = CreateFrameNodeAutoId(process2_.get(), page2_.get(), nullptr);
     childframe1a_ =
@@ -36,12 +37,15 @@ class GraphOperationsTest : public GraphTestHarness {
         CreateFrameNodeAutoId(process1_.get(), page2_.get(), mainframe2_.get());
     childframe2b_ =
         CreateFrameNodeAutoId(process1_.get(), page2_.get(), mainframe2_.get());
+    page3_->SetEmbedderFrameNodeAndEmbeddingType(
+        mainframe1_.get(), PageNode::EmbeddingType::kGuestView);
   }
 
   TestNodeWrapper<ProcessNodeImpl> process1_;
   TestNodeWrapper<ProcessNodeImpl> process2_;
   TestNodeWrapper<PageNodeImpl> page1_;
   TestNodeWrapper<PageNodeImpl> page2_;
+  TestNodeWrapper<PageNodeImpl> page3_;  // A guest of `page1_`.
 
   // Root nodes. |mainframeX_| is in |processX_|.
   TestNodeWrapper<FrameNodeImpl> mainframe1_;
@@ -142,6 +146,27 @@ TEST_F(GraphOperationsTest, VisitFrameTree) {
         return false;
       }));
   EXPECT_EQ(1u, visited.size());
+}
+
+TEST_F(GraphOperationsTest, VisitPageEmbeds) {
+  // Pages are visited embedder-to-embedded.
+  std::vector<const PageNode*> visited;
+  ASSERT_TRUE(GraphOperations::VisitPageAndEmbedsPreOrder(
+      page1_.get(), [&visited](const PageNode* page_node) {
+        visited.push_back(page_node);
+        return true;
+      }));
+  EXPECT_THAT(visited, testing::ElementsAre(ToPublic(page1_.get()),
+                                            ToPublic(page3_.get())));
+
+  // Stop after the first item.
+  visited.clear();
+  ASSERT_FALSE(GraphOperations::VisitPageAndEmbedsPreOrder(
+      page1_.get(), [&visited](const PageNode* page_node) {
+        visited.push_back(page_node);
+        return false;
+      }));
+  EXPECT_THAT(visited, testing::ElementsAre(ToPublic(page1_.get())));
 }
 
 TEST_F(GraphOperationsTest, HasFrame) {

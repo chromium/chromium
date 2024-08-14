@@ -167,6 +167,31 @@ bool GraphImplOperations::VisitFrameTreePostOrder(
 }
 
 // static
+bool GraphImplOperations::VisitPageAndEmbedsPreOrder(
+    PageNodeImpl* page,
+    PageNodeImplVisitor visitor) {
+  if (!visitor(page)) {
+    return false;
+  }
+
+  for (FrameNodeImpl* main_frame_node : page->main_frame_nodes()) {
+    if (!VisitFrameAndChildrenPreOrder(
+            main_frame_node, [&visitor](FrameNodeImpl* frame_node) {
+              const FrameNode* const node = frame_node;
+              for (const auto* page_node : node->GetEmbeddedPageNodes()) {
+                if (!visitor(PageNodeImpl::FromNode(page_node))) {
+                  return false;
+                }
+              }
+              return true;
+            })) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// static
 bool GraphImplOperations::HasFrame(const PageNodeImpl* page,
                                    FrameNodeImpl* frame) {
   bool has_frame = false;
