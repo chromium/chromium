@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Test emoji variation selectors support for system fallback fonts</title>
+<style>
+  @font-face {
+    font-family: "MonoEmojiFont";
+    src: url(../../third_party/NotoEmoji/NotoEmoji-Regular.subset.ttf);
+  }
+
+  @font-face {
+    font-family: "ColorEmojiFont";
+    src: url(../../third_party/NotoColorEmoji/NotoColorEmoji.ttf);
+  }
+
+  div {
+    font-size: 30px;
+  }
+
+  .color {
+    font-family: "ColorEmojiFont";
+  }
+
+  .mono {
+    font-family: "MonoEmojiFont";
+  }
+</style>
+
+<!-- &#x2603; is text default emoji; &#x2614; is emoji default emoji. -->
+<p>Test passes if the following emojis are rendered in monochromatic (text) style</p>
+<div>&#x2603;</div>
+<div class="color">&#x2603;&#xfe0e;</div>
+<div class="color">&#x2614;&#xfe0e;</div>
+
+<p>Test passes if the following emojis are rendered in color (emoji) style</p>
+<div>&#x2614;</div>
+<div class="mono">&#x2603;&#xfe0f;</div>
+<div class="mono">&#x2614;&#xfe0f;</div>

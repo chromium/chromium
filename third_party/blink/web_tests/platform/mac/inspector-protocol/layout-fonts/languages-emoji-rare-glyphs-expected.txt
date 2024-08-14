@@ -29,7 +29,7 @@
 
 ☔︎♐︎☺☺︎☃☃︎☯︎☯™™︎00︎
 #text_emoji:
-"Apple Color Emoji" : 17,
+"Apple Symbols" : 17,
 "Times" : 2
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
