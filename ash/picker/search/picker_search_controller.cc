@@ -122,8 +122,26 @@ PickerSearchController::PickerSearchController(PickerClient* client,
 PickerSearchController::~PickerSearchController() = default;
 
 void PickerSearchController::LoadEmojiLanguagesFromPrefs() {
-  emoji_search_.LoadEmojiLanguages(
-      GetLanguageCodesFromPrefs(client_->GetPrefs()));
+  PrefService* prefs = client_->GetPrefs();
+  pref_change_registrar_.Reset();
+  if (prefs == nullptr) {
+    return;
+  }
+  emoji_search_.LoadEmojiLanguages(GetLanguageCodesFromPrefs(prefs));
+
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(
+      prefs::kLanguagePreloadEngines,
+      base::BindRepeating(&PickerSearchController::LoadEmojiLanguages,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          pref_change_registrar_.prefs()));
+}
+
+void PickerSearchController::LoadEmojiLanguages(PrefService* prefs) {
+  if (prefs == nullptr) {
+    return;
+  }
+  emoji_search_.LoadEmojiLanguages(GetLanguageCodesFromPrefs(prefs));
 }
 
 void PickerSearchController::StartSearch(

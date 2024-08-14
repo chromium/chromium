@@ -1088,5 +1088,89 @@ TEST_F(PickerSearchControllerTest,
                                     base::Unretained(&results_callback)));
 }
 
+TEST_F(PickerSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate(
+      {{FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+            R"([{"emoji":[{"base":{"string":"😀en","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D","smile"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+                     R"([])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                     R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"←","name":"leftwards arrow"}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_JA,
+                     R"([{"group":"Arrows","emoji":[{"base":
+            {"string":"←","name":"leftwards arrow","keywords":["矢印"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                     R"-([{"group":"Classic","emoji":[
+              {"base":{"string":":-)","name":"smiley face "}}]}])-"},
+        FakeResource{
+            IDR_EMOJI_PICKER_JA_START,
+            R"([{"emoji":[{"base":{"string":"😀jp","name":"grinning face",
+            "keywords":["笑顔","smile"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_JA_REMAINING, R"([])"}}});
+  prefs_service().registry()->RegisterStringPref(
+      prefs::kLanguageCurrentInputMethod,
+      "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
+  prefs_service().registry()->RegisterStringPref(
+      prefs::kLanguagePreloadEngines,
+      "_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng");
+  prefs_service().registry()->RegisterDictionaryPref(
+      prefs::kEmojiPickerPreferences, base::Value::Dict());
+
+  PickerSearchController controller(&client(),
+                                    /*burn_in_period=*/base::Milliseconds(100));
+
+  // First search, only English results
+  controller.LoadEmojiLanguagesFromPrefs();
+  MockEmojiSearchResultsCallback results_callback;
+  EXPECT_CALL(
+      results_callback,
+      Call(ElementsAre(
+          // Only English Results
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+      .Times(1);
+  controller.StartEmojiSearch(
+      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                                    base::Unretained(&results_callback)));
+
+  // Second search after adding a Japanese IME should include Japanese results
+  prefs_service().SetUserPref(
+      prefs::kLanguagePreloadEngines,
+      base::Value("_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng,"
+                  "_comp_ime_jkghodnilhceideoidjikpgommlajknknacl_mozc_jp,"));
+  MockEmojiSearchResultsCallback results_callback_jp;
+  EXPECT_CALL(
+      results_callback_jp,
+      Call(ElementsAre(
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀en")))),
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u"😀jp")))),
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::EmojiData>(Field(
+                  "text", &PickerSearchResult::EmojiData::text, Eq(u":-)")))))))
+      .Times(1);
+  controller.StartEmojiSearch(
+      u"smile", base::BindRepeating(&MockEmojiSearchResultsCallback::Call,
+                                    base::Unretained(&results_callback_jp)));
+}
+
 }  // namespace
 }  // namespace ash
