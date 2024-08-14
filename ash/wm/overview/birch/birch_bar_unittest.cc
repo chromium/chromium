@@ -603,6 +603,34 @@ TEST_F(BirchBarTest, KeyboardTraversal) {
   EXPECT_TRUE(birch_chips[1]->HasFocus());
 }
 
+// Test that there is no crash when SetIconImage was called after shutting down
+// the chips.
+TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
+  EnterOverview();
+  const auto& chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(1u, chips.size());
+
+  BirchChipButton* chip = views::AsViewClass<BirchChipButton>(chips[0].get());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a set icon callback to simulate the case of setting icon after
+  // shutting down the chip.
+  auto set_icon = base::BindOnce(&BirchChipButton::SetIconImage,
+                                 chip->weak_factory_.GetWeakPtr(),
+                                 ui::ImageModel(), SecondaryIconType::kNoIcon);
+
+  ExitOverview();
+
+  // The chip is shut down.
+  EXPECT_FALSE(!!chip->GetItem());
+
+  // Trigger setting icon.
+  std::move(set_icon).Run();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BirchBarMenuTest:
 // The test class of birch bar context menu.

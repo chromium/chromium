@@ -5,8 +5,10 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 
+#include "ash/ash_export.h"
 #include "ash/birch/birch_item.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -25,8 +27,8 @@ class PillButton;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
 // an optional call to action.
-class BirchChipButton : public BirchChipButtonBase,
-                        public ui::SimpleMenuModel::Delegate {
+class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
+                                   public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(BirchChipButton, BirchChipButtonBase)
 
  public:
@@ -47,6 +49,7 @@ class BirchChipButton : public BirchChipButtonBase,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   class ChipMenuController;
 
   void SetAddon(std::unique_ptr<views::View> addon_view);

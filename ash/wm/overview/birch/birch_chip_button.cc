@@ -238,6 +238,10 @@ BirchItem* BirchChipButton::GetItem() {
 
 void BirchChipButton::Shutdown() {
   item_ = nullptr;
+
+  // Invalidate all weakptrs to avoid previously triggered callbacks from using
+  // `item_`.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void BirchChipButton::StylizeIconForItemType(
