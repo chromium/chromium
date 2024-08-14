@@ -7373,6 +7373,10 @@ New install
         desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis and GIFs, including symbols and emoticons.">
         Emojis, GIFs, and more
       </message>
+      <message name="IDS_PICKER_EMOJIS_CATEGORY_LABEL"
+        desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis, including symbols and emoticons.">
+        Emojis and more
+      </message>
       <message name="IDS_PICKER_LINKS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recent browsing history. Browsing history refers to recent websites that the user has visited.">
         Browsing history

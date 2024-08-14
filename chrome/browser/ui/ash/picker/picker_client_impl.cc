@@ -274,6 +274,7 @@ void PickerClientImpl::StartCrosSearch(
     case ash::PickerCategory::kEditorWrite:
     case ash::PickerCategory::kEditorRewrite:
     case ash::PickerCategory::kEmojisGifs:
+    case ash::PickerCategory::kEmojis:
     case ash::PickerCategory::kClipboard:
     case ash::PickerCategory::kDatesTimes:
     case ash::PickerCategory::kUnitsMaths:
@@ -521,6 +522,7 @@ PickerClientImpl::CreateSearchProviderForCategory(
     case ash::PickerCategory::kEditorWrite:
     case ash::PickerCategory::kEditorRewrite:
     case ash::PickerCategory::kEmojisGifs:
+    case ash::PickerCategory::kEmojis:
     case ash::PickerCategory::kClipboard:
     case ash::PickerCategory::kDatesTimes:
     case ash::PickerCategory::kUnitsMaths:

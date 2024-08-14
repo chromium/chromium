@@ -244,6 +244,7 @@ std::u16string GetNoResultsFoundDescription(PickerCategory category) {
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
     case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
   }
 }
@@ -292,7 +293,9 @@ PickerView::PickerView(PickerViewDelegate* delegate,
 
   AddMainContainerView(layout_type);
   if (base::Contains(delegate_->GetAvailableCategories(),
-                     PickerCategory::kEmojisGifs)) {
+                     PickerCategory::kEmojisGifs) ||
+      base::Contains(delegate_->GetAvailableCategories(),
+                     PickerCategory::kEmojis)) {
     AddEmojiBarView();
   }
 
@@ -684,7 +687,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   session_metrics.SetSelectedCategory(category);
   selected_category_ = category;
 
-  if (category == PickerCategory::kEmojisGifs) {
+  if (category == PickerCategory::kEmojisGifs ||
+      category == PickerCategory::kEmojis) {
     if (auto* widget = GetWidget()) {
       // TODO(b/316936394): Correctly handle opening of emoji picker. Probably
       // best to wait for the IME on focus event, or save some coordinates and

@@ -21,6 +21,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
     case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       return kPickerEmojiIcon;
     case PickerCategory::kLinks:
       return kPickerBrowsingHistoryIcon;

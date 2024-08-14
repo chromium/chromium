@@ -94,7 +94,8 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       }
       categories.push_back(PickerCategory::kLinks);
       if (text_input_type_ != ui::TextInputType::TEXT_INPUT_TYPE_URL) {
-        categories.push_back(PickerCategory::kEmojisGifs);
+        categories.push_back(is_gifs_enabled_ ? PickerCategory::kEmojisGifs
+                                              : PickerCategory::kEmojis);
       }
       categories.insert(categories.end(), {
                                               PickerCategory::kClipboard,

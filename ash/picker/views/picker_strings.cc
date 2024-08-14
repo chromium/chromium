@@ -39,6 +39,8 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
     case PickerCategory::kEmojisGifs:
       return l10n_util::GetStringUTF16(IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL);
+    case PickerCategory::kEmojis:
+      return l10n_util::GetStringUTF16(IDS_PICKER_EMOJIS_CATEGORY_LABEL);
     case PickerCategory::kClipboard:
       return l10n_util::GetStringUTF16(IDS_PICKER_CLIPBOARD_CATEGORY_LABEL);
     case PickerCategory::kDriveFiles:
@@ -76,6 +78,7 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
     case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
   }
 }

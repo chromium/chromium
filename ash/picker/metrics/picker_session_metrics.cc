@@ -112,6 +112,7 @@ cros_events::PickerAction ConvertToCrosEventAction(
     case PickerCategory::kLinks:
       return cros_events::PickerAction::OPEN_LINKS;
     case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       return cros_events::PickerAction::OPEN_EXPRESSIONS;
     case PickerCategory::kClipboard:
       return cros_events::PickerAction::OPEN_CLIPBOARD;

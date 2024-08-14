@@ -1207,6 +1207,12 @@ INSTANTIATE_TEST_SUITE_P(
             .has_selection_action = PickerActionType::kDo,
         },
         {
+            .result = PickerSearchResult::Category(PickerCategory::kEmojis),
+            .unfocused_action = PickerActionType::kDo,
+            .no_selection_action = PickerActionType::kDo,
+            .has_selection_action = PickerActionType::kDo,
+        },
+        {
             .result = PickerSearchResult::SearchRequest(u"", u"", {}),
             .unfocused_action = PickerActionType::kDo,
             .no_selection_action = PickerActionType::kDo,

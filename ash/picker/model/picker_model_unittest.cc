@@ -40,7 +40,7 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
   EXPECT_THAT(
       model.GetAvailableCategories(),
       ElementsAre(PickerCategory::kEditorWrite, PickerCategory::kLinks,
-                  PickerCategory::kEmojisGifs, PickerCategory::kClipboard,
+                  PickerCategory::kEmojis, PickerCategory::kClipboard,
                   PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
                   PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
@@ -87,12 +87,44 @@ TEST(PickerModel, AvailableCategoriesContainsEditorRewriteWhenEnabled) {
               Contains(PickerCategory::kEditorRewrite));
 }
 
+TEST(PickerModel, AvailableCategoriesContainsEmojisAndGifsWhenGifsEnabled) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
+                                        true);
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(/*prefs=*/&prefs, &client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Contains(PickerCategory::kEmojisGifs));
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Not(Contains(PickerCategory::kEmojis)));
+}
+
+TEST(PickerModel, AvailableCategoriesContainsOnlyEmojisWhenGifsDisables) {
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  prefs.registry()->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled,
+                                        false);
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(/*prefs=*/&prefs, &client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Contains(PickerCategory::kEmojis));
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Not(Contains(PickerCategory::kEmojisGifs)));
+}
+
 TEST(PickerModel, AvailableCategoriesDoesNotContainExpressionsForUrlFields) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_URL});
 
   PickerModel model(/*prefs=*/nullptr, &client, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled);
+  EXPECT_THAT(model.GetAvailableCategories(),
+              Not(Contains(PickerCategory::kEmojis)));
   EXPECT_THAT(model.GetAvailableCategories(),
               Not(Contains(PickerCategory::kEmojisGifs)));
 }

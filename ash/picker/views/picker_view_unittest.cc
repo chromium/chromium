@@ -156,6 +156,16 @@ class PickerViewTest : public AshTestBase {
   metrics::structured::TestStructuredMetricsRecorder metrics_recorder_;
 };
 
+// PickerViewTest parameterized by the Emoji Category.
+class PickerViewEmojiTest : public PickerViewTest,
+                            public testing::WithParamInterface<PickerCategory> {
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PickerViewEmojiTest,
+                         testing::ValuesIn({PickerCategory::kEmojisGifs,
+                                            PickerCategory::kEmojis}));
+
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
   using FakeSearchFunction =
@@ -304,9 +314,9 @@ PickerItemView* GetFirstCategoryItemView(PickerView* picker_view) {
       ->second->item_views_for_testing()[0];
 }
 
-TEST_F(PickerViewTest, SizeIsLessThanMaxWhenNoContentWithoutEmojiBar) {
+TEST_P(PickerViewEmojiTest, SizeIsLessThanMaxWhenNoContentWithoutEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -316,9 +326,9 @@ TEST_F(PickerViewTest, SizeIsLessThanMaxWhenNoContentWithoutEmojiBar) {
   EXPECT_LT(view->size().height(), 300);
 }
 
-TEST_F(PickerViewTest, SizeIsLessThanMaxWhenNoContentWithEmojiBar) {
+TEST_P(PickerViewEmojiTest, SizeIsLessThanMaxWhenNoContentWithEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -341,9 +351,9 @@ TEST_F(PickerViewTest, SizeIsMaxWhenLotsOfContentWithoutEmojiBar) {
   EXPECT_EQ(view->size(), gfx::Size(kPickerViewWidth, 300));
 }
 
-TEST_F(PickerViewTest, SizeIsMaxWhenLotsOfContentWithEmojiBar) {
+TEST_P(PickerViewEmojiTest, SizeIsMaxWhenLotsOfContentWithEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
       .zero_state_suggested_results =
           std::vector<PickerSearchResult>(10, PickerSearchResult::Text(u"abc")),
   });
@@ -692,10 +702,9 @@ TEST_F(PickerViewTest, SearchingWithCategoryKeepsShowingBackButton) {
                   .GetVisible());
 }
 
-TEST_F(PickerViewTest, SelectingCategoryHidesEmojiBar) {
+TEST_P(PickerViewEmojiTest, SelectingCategoryHidesEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks,
-                               PickerCategory::kEmojisGifs},
+      .available_categories = {PickerCategory::kLinks, GetParam()},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -709,10 +718,9 @@ TEST_F(PickerViewTest, SelectingCategoryHidesEmojiBar) {
   EXPECT_FALSE(picker_view->emoji_bar_view_for_testing()->GetVisible());
 }
 
-TEST_F(PickerViewTest, ReturningToZeroStateFromCategoryPageShowsEmojiBar) {
+TEST_P(PickerViewEmojiTest, ReturningToZeroStateFromCategoryPageShowsEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks,
-                               PickerCategory::kEmojisGifs},
+      .available_categories = {PickerCategory::kLinks, GetParam()},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -1297,10 +1305,10 @@ TEST_F(PickerViewTest, NoMainResultsAndNoEmojisIsAnnounced) {
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kLiveRegionChanged), 1);
 }
 
-TEST_F(PickerViewTest, NoMainResultsAndSomeEmojisIsAnnounced) {
+TEST_P(PickerViewEmojiTest, NoMainResultsAndSomeEmojisIsAnnounced) {
   base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
       .search_function = base::BindLambdaForTesting(
           [&](std::u16string_view query,
               FakePickerViewDelegate::SearchResultsCallback callback) {
@@ -1624,9 +1632,9 @@ TEST_F(PickerViewTest, StopsSearchWhenCategorySelectedInSearchResults) {
   EXPECT_TRUE(stop_search_future.Wait());
 }
 
-TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
+TEST_P(PickerViewEmojiTest, SearchingShowsExpressionResultsInEmojiBar) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
       .emoji_results = {PickerSearchResult::Emoji(u"😊"),
                         PickerSearchResult::Symbol(u"♬")},
   });
@@ -1643,9 +1651,9 @@ TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
                           Truly(&views::IsViewClass<PickerSymbolItemView>)));
 }
 
-TEST_F(PickerViewTest, InitiallyShowsSuggestedEmojis) {
+TEST_P(PickerViewEmojiTest, InitiallyShowsSuggestedEmojis) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
       .suggested_emojis = {"😊", "👍"},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
@@ -1938,9 +1946,9 @@ TEST_F(PickerViewTest, MainContentAboveSearchFieldNearBottomOfScreen) {
             view->search_field_view_for_testing().GetBoundsInScreen().y());
 }
 
-TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnExpressions) {
+TEST_P(PickerViewEmojiTest, ShowsEmojiPickerWhenClickingOnExpressions) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kEmojisGifs},
+      .available_categories = {GetParam()},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -2604,10 +2612,9 @@ TEST_F(PickerViewTest, KeyNavigationToSeeMoreResults) {
                   .GetVisible());
 }
 
-TEST_F(PickerViewTest,
+TEST_P(PickerViewEmojiTest,
        ClickingMoreEmojisButtonOpensEmojiPickerWithQuerySearch) {
-  FakePickerViewDelegate delegate(
-      {.available_categories = {PickerCategory::kEmojisGifs}});
+  FakePickerViewDelegate delegate({.available_categories = {GetParam()}});
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);

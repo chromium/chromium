@@ -61,6 +61,7 @@ constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kEditorRewrite,
     PickerCategory::kLinks,
     PickerCategory::kEmojisGifs,
+    PickerCategory::kEmojis,
     PickerCategory::kClipboard,
     PickerCategory::kDriveFiles,
     PickerCategory::kLocalFiles,

@@ -93,6 +93,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
       client_->GetSuggestedLinkResults(std::move(callback));
       return;
     case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
       client_->GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
