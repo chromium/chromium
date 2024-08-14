@@ -21,9 +21,8 @@ import common
 
 
 def main_run(args):
-  errors_file = tempfile.NamedTemporaryFile()
-  errors_filename = errors_file.name
-  errors_file.close()
+  errors_file, errors_filename = tempfile.mkstemp()
+  os.close(errors_file)
 
   command_line = [
       sys.executable,

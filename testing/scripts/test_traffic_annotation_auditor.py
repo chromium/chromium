@@ -70,9 +70,11 @@ def get_current_platform_from_gn_args(build_path):
 
 
 def main_run(args):
-  annotations_file = tempfile.NamedTemporaryFile()
-  annotations_filename = annotations_file.name
-  annotations_file.close()
+  annotations_file, annotations_filename = tempfile.mkstemp()
+  os.close(annotations_file)
+
+  errors_file, errors_filename = tempfile.mkstemp()
+  os.close(errors_file)
 
   build_path = os.path.join(args.paths['checkout'], 'out', args.build_config_fs)
   command_line = [
@@ -83,6 +85,8 @@ def main_run(args):
       build_path,
       '--annotations-file',
       annotations_filename,
+      '--errors-file',
+      errors_filename,
   ]
   rc = common.run_command(command_line)
 
@@ -111,16 +115,22 @@ def main_run(args):
       ]
       rc = common.run_command(command_line)
       cleanup_file(config_filename)
+
+      failures = ['Please refer to stdout for errors.'] if rc else []
+      common.record_local_script_results('test_traffic_annotation_auditor',
+                                         args.output, failures, True)
     else:
       print('Test failed without updating the annotations sheet.')
+      failures = []
+      with open(errors_filename, encoding='utf-8') as f:
+        failures = json.load(f) or ['Please refer to stdout for errors.']
+      common.record_local_script_results('test_traffic_annotation_auditor',
+                                         args.output, failures, True)
   except (ValueError, OSError) as e:
     print('Error updating the annotations sheet', e)
     traceback.print_exc()
   finally:
     cleanup_file(annotations_filename)
-    failures = ['Please refer to stdout for errors.'] if rc else []
-    common.record_local_script_results('test_traffic_annotation_auditor',
-                                       args.output, failures, True)
 
   return rc
 
