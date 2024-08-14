@@ -32,6 +32,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -129,6 +130,7 @@ void CreateAndMarshalProcessLauncher(
 // without a timeout.
 Microsoft::WRL::ComPtr<IUnknown> CreateProcessLauncher() {
   constexpr int kDefaultTimeoutIncrementSeconds = 15;
+  constexpr base::TimeDelta kMaxTimeAfterSystemStartup = base::Seconds(150);
 
   auto result = base::MakeRefCounted<CreateProcessLauncherResult>();
   if (base::ThreadPool::CreateCOMSTATaskRunner(
@@ -143,9 +145,14 @@ Microsoft::WRL::ComPtr<IUnknown> CreateProcessLauncher() {
             .GetIfInt()
             .value_or(kDefaultTimeoutIncrementSeconds));
     const base::ElapsedTimer timer;
+    const bool is_at_startup =
+        base::SysInfo::Uptime() <= kMaxTimeAfterSystemStartup;
     if (!result->completion_event.TimedWait(timeout)) {
       base::UmaHistogramMediumTimes(
-          "Startup.CreateProcessLauncher.TimedWaitFailed", timer.Elapsed());
+          is_at_startup
+              ? "Startup.CreateProcessLauncher2.TimedWaitFailedAtStartup"
+              : "Startup.CreateProcessLauncher2.TimedWaitFailed",
+          timer.Elapsed());
       creation_timeout.Set(base::Value(static_cast<int>(timeout.InSeconds()) +
                                        kDefaultTimeoutIncrementSeconds));
       TRACE_EVENT_INSTANT0(
@@ -159,7 +166,10 @@ Microsoft::WRL::ComPtr<IUnknown> CreateProcessLauncher() {
       return {};
     }
     base::UmaHistogramMediumTimes(
-        "Startup.CreateProcessLauncher.TimedWaitSucceeded", timer.Elapsed());
+        is_at_startup
+            ? "Startup.CreateProcessLauncher2.TimedWaitSucceededAtStartup"
+            : "Startup.CreateProcessLauncher2.TimedWaitSucceeded",
+        timer.Elapsed());
 
     Microsoft::WRL::ComPtr<IUnknown> unknown;
     const HRESULT hr =
