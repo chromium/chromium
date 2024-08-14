@@ -104,15 +104,6 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
   }
 }
 
-orca::mojom::TextQueryErrorPtr ConvertErrorResponse(manta::MantaStatus status) {
-  // In case the system locale mismatches the locale returned in the response,
-  // returns a generic error.
-
-  return orca::mojom::TextQueryError::New(
-      ConvertErrorCode(status.status_code),
-      /*message=*/GetSystemLocale() == status.locale ? status.message : "");
-}
-
 std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
     const std::string& request_id,
     base::Value::Dict& response) {
@@ -199,7 +190,8 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
               return;
             }
 
-            auto error_response = ConvertErrorResponse(status);
+            auto error_response = orca::mojom::TextQueryError::New(
+                ConvertErrorCode(status.status_code), status.message);
             orca::mojom::TextQueryErrorCode error_code = error_response->code;
             std::move(process_callback)
                 .Run(orca::mojom::TextQueryResponse::NewError(
