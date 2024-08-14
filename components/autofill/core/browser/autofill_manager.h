@@ -71,6 +71,15 @@ class AutofillManager
   // - if the request in AutofillCrowdsourcingManager was not successful (i.e.
   //   no 2XX response code or a null response body).
   //
+  // When observing an AutofillManager, make sure to remove the observation
+  // before the AutofillManager is destroyed. Pending destruction is signaled
+  // by a call to `OnAutofillManagerStateChanged` with current `LifecycleState`
+  // `kPendingDeletion`.
+  // If you want to observe all AutofillManagers of a `WebContents`, consider
+  // using `autofill::ScopedAutofillManagersObservation`, which abstracts away
+  // all the boilerplate for adding and removing observers of AutofillManagers
+  // of a `WebContents`.
+  //
   // TODO(crbug.com/40280003): Consider moving events that are specific to BAM
   // to a new BAM::Observer class.
   class Observer : public base::CheckedObserver {
