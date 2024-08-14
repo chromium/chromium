@@ -1,30 +1,44 @@
 <!DOCTYPE html>
+<title>text-box parses valid values according to its grammar</title>
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#propdef-text-box">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
 
 <script>
-// `normal | <text-box-trim> || <text-box-edge>`
+// initial values
 test_valid_value('text-box', 'normal');
+test_valid_value('text-box', 'none', 'normal');
+test_valid_value('text-box', 'auto', 'normal');
+test_valid_value('text-box', 'none auto', 'normal');
+test_valid_value('text-box', 'auto none', 'normal');
 
 // `<text-box-trim>`: `none | trim-start | trim-end | trim-both`
-test_valid_value('text-box', 'none', 'normal');
 test_valid_value('text-box', 'trim-start');
 test_valid_value('text-box', 'trim-end');
 test_valid_value('text-box', 'trim-both');
 
-// `<text-box-edge>`: `auto | <text-edge>`
-test_valid_value('text-box', 'none auto', 'normal');
-test_valid_value('text-box', 'trim-start auto', 'trim-start');
-test_valid_value('text-box', 'trim-both auto', 'trim-both');
-
 // `<text-edge>`
 test_valid_value('text-box', 'text');
+test_valid_value('text-box', 'cap');
+test_valid_value('text-box', 'ideographic');
 test_valid_value('text-box', 'cap alphabetic');
+test_valid_value('text-box', 'text alphabetic');
+
+// Mix initial and non-initial values
+test_valid_value('text-box', 'trim-start auto', 'trim-start');
+test_valid_value('text-box', 'auto trim-both', 'trim-both');
+test_valid_value('text-box', 'none text', 'none text');
+test_valid_value('text-box', 'text text none', 'none text');
+test_valid_value('text-box', 'none cap', 'none cap');
+test_valid_value('text-box', 'cap ideographic none', 'none cap ideographic');
+test_valid_value('text-box', 'ideographic none', 'none ideographic');
 
 // Both `<text-box-trim>` and `<text-box-edge>`
 test_valid_value('text-box', 'trim-both text', 'text');
 test_valid_value('text-box', 'trim-start text');
-test_valid_value('text-box', 'trim-start cap alphabetic');
+test_valid_value('text-box', 'text text trim-both', 'text');
+test_valid_value('text-box', 'text text trim-end', 'trim-end');
+test_valid_value('text-box', 'cap alphabetic trim-start', 'trim-start cap alphabetic');
+test_valid_value('text-box', 'trim-both cap alphabetic', 'cap alphabetic');
 </script>

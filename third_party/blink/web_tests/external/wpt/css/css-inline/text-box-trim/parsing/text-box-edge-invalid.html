@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<title>Tests parsing of the text-box-edge property</title>
-<link rel="author" title="Google LLC" href="https://www.google.com/">
+<title>text-box-edge rejects invalid values</title>
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#text-edges">
-<meta name="assert" content="text-box-edge supports the full grammar leading | [ text | cap | ex | ideographic | ideographic-ink ] [ text | alphabetic | ideographic | ideographic-ink ]">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/parsing-testcommon.js"></script>
 
 <script>
 // invalid keyword
+
+test_invalid_value('text-box-edge', 'none');
+test_invalid_value('text-box-edge', 'normal');
 test_invalid_value('text-box-edge', 'leading');
 test_invalid_value('text-box-edge', 'auto leading');
 test_invalid_value('text-box-edge', 'leading auto');
+test_invalid_value('text-box-edge', 'normal text');
+test_invalid_value('text-box-edge', 'text none');
 
 // invalid grammar
 test_invalid_value('text-box-edge', 'alphabetic');

@@ -240844,7 +240844,7 @@
        ]
       ],
       "contain-direct.tentative.html": [
-       "f4b5cf659cdb0021cb2c3c037093653130495e1b",
+       "8cc856883df16410730d40da72d3ef4cc35562be",
        [
         null,
         [
@@ -240873,7 +240873,7 @@
        ]
       ],
       "contain-nested.tentative.html": [
-       "34d100800b0b576326a7fa4ab12bcfc56047072b",
+       "643aad7b6db97b890ecd7fcb9e650915426d3520",
        [
         null,
         [
@@ -240902,7 +240902,7 @@
        ]
       ],
       "contain-on-self.tentative.html": [
-       "bc5e5b49f27d946c8c0817138f0521687e568984",
+       "f8662850bb94b64e27448b9e1187f7c4a5e788d6",
        [
         null,
         [
@@ -240931,7 +240931,7 @@
        ]
       ],
       "nearest-direct.tentative.html": [
-       "bc49ef8d2647ca0e6646d88e2ed517dfca2d5583",
+       "a42e5a847c053b2b248208df64be87512b24716e",
        [
         null,
         [
@@ -240960,7 +240960,7 @@
        ]
       ],
       "nearest-ignores-nearest-name.tentative.html": [
-       "0afa170eaec84a2ebd18ce1625889ff138c215b6",
+       "ddae634f87a0ace4216ea66cbb72bc7734df3e10",
        [
         null,
         [
@@ -240989,7 +240989,7 @@
        ]
       ],
       "nearest-nested.tentative.html": [
-       "1c4f153427d5cf67995ef4f3fd1fabd91e283662",
+       "9ec3e8f95ffe3194e85cdbe455ee3b3a3d723211",
        [
         null,
         [
@@ -241076,7 +241076,7 @@
        ]
       ],
       "nested-group-in-pseudo-basic.tentative.html": [
-       "2cacf7a759c6a8d23fce677c8aeab37ab8261133",
+       "77241d06b73217a9a99f46aa9838f3ebb7507732",
        [
         null,
         [
@@ -331585,6 +331585,24 @@
        "e9a2fc218b369825c991e3109986481a922e671f",
        []
       ],
+      "parsing": {
+       "inheritance-expected.txt": [
+        "f7295d55adeb126358ab1817e1571374e091abaf",
+        []
+       ],
+       "text-box-edge-valid-expected.txt": [
+        "73799c5277dabf20d1cd0c8e7fb3256b445bf48a",
+        []
+       ],
+       "text-box-invalid-expected.txt": [
+        "2edaa3323cfbda1891e1588fad0c41ac0e366071",
+        []
+       ],
+       "text-box-valid-expected.txt": [
+        "a78d896addb264e5548f102649fdef4a487e5ccb",
+        []
+       ]
+      },
       "resources": {
        "README.md": [
         "e00b13c17dcab532a2075b87a97a3573d4d9c55e",
@@ -350545,7 +350563,7 @@
       ],
       "resources": {
        "compute-common.css": [
-        "762300d04fab146403f438fc6fdd3ad72351d9f8",
+        "20337ccce5f3387e7e70e6fb219544369b74aa06",
         []
        ],
        "compute-test.js": [
@@ -407933,7 +407951,7 @@
       []
      ],
      "utils_validation.js": [
-      "da5786ca86bb52adb2c3d82c20c935de4d4a32b8",
+      "07d5d6b995c92379b386087f26c9726c0312989a",
       []
      ]
     }
@@ -466463,70 +466481,70 @@
      "text-box-trim": {
       "parsing": {
        "inheritance.html": [
-        "02425be6e657d162f4de0dfa374ed096927b9066",
+        "a2a474278aede2204ea9e08cb106c98ab912fe46",
         [
          null,
          {}
         ]
        ],
        "text-box-computed.html": [
-        "f1d013f50f38fd2686d7b925c237a3b58f26d03a",
+        "07c074fc0cf2dda3155e8474f32f248131d60f2d",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-computed.html": [
-        "6904e3731aaf7b998c01115ed0fd9acd37cf1b0e",
+        "c69378ac0ffdf877134e63d70360ee638140270f",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-invalid.html": [
-        "8799c6f4e64d399205169ebbdc7b673002366433",
+        "8defe907da82b95616531fb76328816c5b380d97",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-valid.html": [
-        "2c7edca182d3a9cb9471778c0de6327b96c26c29",
+        "b85750767d4a6adc66971d483ac0914e13ecc34f",
         [
          null,
          {}
         ]
        ],
        "text-box-invalid.html": [
-        "0d34e15889afdb19c074c1869f16561cef5b7c72",
+        "efc0fc28f21213ef6c702c0f605b43d1dd591f82",
         [
          null,
          {}
         ]
        ],
        "text-box-shorthand.html": [
-        "2c886072a32adb68b7e7022e8a3c9bff08b6982c",
+        "46c05163c3b131feff6a2a76368a9955f08c62c5",
         [
          null,
          {}
         ]
        ],
        "text-box-trim-computed.html": [
-        "a8a612a5b32eccb885ccbd7f7e71894db3c78936",
+        "dbc30fede26003ffe25665b7885ebff07712371e",
         [
          null,
          {}
         ]
        ],
        "text-box-trim-valid.html": [
-        "14e03c1e02492055a1f2bdca7397cee12c93ce4e",
+        "0f93b3f36de8d97cad897309c470717dba189d9f",
         [
          null,
          {}
         ]
        ],
        "text-box-valid.html": [
-        "5863c56f54aa3bb0ed460c33d452fdb3d31e31b1",
+        "5ac9ee81da5039c18bbfe6670eaf5043805f084f",
         [
          null,
          {}
@@ -483769,7 +483787,7 @@
        ]
       ],
       "calc-size-parsing.html": [
-       "0cc34923dd3df9ba534a2e121c44da5bb8629c28",
+       "e8b3b87ab3856a2ee8369dff0305ec6db0f52226",
        [
         null,
         {}
@@ -698306,6 +698324,444 @@
        }
       ]
      ],
+     "lstm.https.any.js": [
+      "8b6cf73715c5247bbdec8f215682244af438174d",
+      [
+       "webnn/conformance_tests/lstm.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstm operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "lstm_cell.https.any.js": [
+      "9bc71a6224c937a04e2944f787ee9b2f17c4e02d",
+      [
+       "webnn/conformance_tests/lstm_cell.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstmCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm_cell.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstmCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm_cell.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstmCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm_cell.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstmCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm_cell.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstmCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/lstm_cell.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API lstmCell operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "matmul.https.any.js": [
       "58410a6046327f9f7741f57b5a6f82ed3be43d87",
       [
@@ -706909,7 +707365,7 @@
     ],
     "validation_tests": {
      "argMinMax.https.any.js": [
-      "5d6806e5f4c41479a12ddb2b563e1220af684216",
+      "d72dc559f3d580b7b740c2b02869bdaf0374bebb",
       [
        "webnn/validation_tests/argMinMax.https.any.html",
        {
@@ -706950,7 +707406,7 @@
       ]
      ],
      "batchNormalization.https.any.js": [
-      "2fec37dcbf513cbf2e018b8a68eee0432b6761be",
+      "0c7a31f5cb54ed2b59d241892a4447485bef1631",
       [
        "webnn/validation_tests/batchNormalization.https.any.html",
        {
@@ -707073,7 +707529,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "5a347bd230eeaf2649fe26a14e366edd82942e48",
+      "31c2b33d17aa9318eea330cfaec1fea097934d0f",
       [
        "webnn/validation_tests/clamp.https.any.html",
        {
@@ -707155,7 +707611,7 @@
       ]
      ],
      "concat.https.any.js": [
-      "6fe22c02bcdcda15267ea52bb89ba9ccaad22425",
+      "3cd99a2c5986223bc29373e9d8c878ed2e8a24e6",
       [
        "webnn/validation_tests/concat.https.any.html",
        {
@@ -707278,7 +707734,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "cf8ed9a0d8f75139c94fae923786541c03114ac9",
+      "069e41d485b91d977c3226b5d2a87b752a62b938",
       [
        "webnn/validation_tests/conv2d.https.any.html",
        {
@@ -707319,7 +707775,7 @@
       ]
      ],
      "convTranspose2d.https.any.js": [
-      "6028d51c6c8d2e185237260d00fb9eda2e3c3abd",
+      "0207fa953e1aac4d93874d8f810fe6b18633fbe5",
       [
        "webnn/validation_tests/convTranspose2d.https.any.html",
        {
@@ -707444,7 +707900,7 @@
       ]
      ],
      "elementwise-binary.https.any.js": [
-      "369191dd7fd8e690e2b7fc727c0bc347eb5e3754",
+      "b4aea8e21baa7998e6d9f3aa50f96dbee41942d0",
       [
        "webnn/validation_tests/elementwise-binary.https.any.html",
        {
@@ -707485,7 +707941,7 @@
       ]
      ],
      "elementwise-logical.https.any.js": [
-      "e5e5b5a5a81299c4d1faaeb95d383364437464e6",
+      "bbf9e2d6179648eb38107e10f4ec4f86c6b00d83",
       [
        "webnn/validation_tests/elementwise-logical.https.any.html",
        {
@@ -707526,7 +707982,7 @@
       ]
      ],
      "elementwise-unary.https.any.js": [
-      "9380c766960bb75904821422e09623b474d5c194",
+      "1ac89b3c837625598469f1cb74e92b2f20cd22f0",
       [
        "webnn/validation_tests/elementwise-unary.https.any.html",
        {
@@ -707567,7 +708023,7 @@
       ]
      ],
      "elu.https.any.js": [
-      "a84848c2c39b6ef7e6beb8435a96d7109f9c0b84",
+      "6f3757f1a7b08edf5b17e30ceb7833cd1e91f3ed",
       [
        "webnn/validation_tests/elu.https.any.html",
        {
@@ -707608,7 +708064,7 @@
       ]
      ],
      "expand.https.any.js": [
-      "b333b573ba14ba3fa071bdc34a67cb5c9781c4f0",
+      "8b697d2928f0b1916f505f44e59cfef781b9cab2",
       [
        "webnn/validation_tests/expand.https.any.html",
        {
@@ -707649,7 +708105,7 @@
       ]
      ],
      "gather.https.any.js": [
-      "74db3f15d0c4b031989fdc2bafc47f3f8ebf5b4f",
+      "a8ebe404a51d96d4d0b4c85de4a5e67fada4e96c",
       [
        "webnn/validation_tests/gather.https.any.html",
        {
@@ -707690,7 +708146,7 @@
       ]
      ],
      "gelu.https.any.js": [
-      "498dc509cee8f05dea94cedbf2f7634e936c27c2",
+      "dbc7ea5acf4b20df622a723beb114c8c3250feb3",
       [
        "webnn/validation_tests/gelu.https.any.html",
        {
@@ -707731,7 +708187,7 @@
       ]
      ],
      "gemm.https.any.js": [
-      "117fd541a34f93fb8b844f2ce42d2078a00769cc",
+      "31c13d0876014ee93151ba5dfe0765baf10558aa",
       [
        "webnn/validation_tests/gemm.https.any.html",
        {
@@ -707772,7 +708228,7 @@
       ]
      ],
      "gru.https.any.js": [
-      "ac69fcf83024c930c23cede97201491f786cd597",
+      "daa3d9b053834169b1f544a5eba46300d98fd1d3",
       [
        "webnn/validation_tests/gru.https.any.html",
        {
@@ -707813,7 +708269,7 @@
       ]
      ],
      "gruCell.https.any.js": [
-      "98ba3eec62c43c3b5a9687d19b96602715472ee0",
+      "e9383e2c64fd941fe0051a76e7af43b7b5923f9c",
       [
        "webnn/validation_tests/gruCell.https.any.html",
        {
@@ -707895,7 +708351,7 @@
       ]
      ],
      "hardSwish.https.any.js": [
-      "7bdf6eb1db341c95098af4660e43e28629fb2b8c",
+      "63ffcc84fa26747e5e746cb97b5086d12cfcccf7",
       [
        "webnn/validation_tests/hardSwish.https.any.html",
        {
@@ -707977,7 +708433,7 @@
       ]
      ],
      "instanceNormalization.https.any.js": [
-      "78094dd8816e424b0561abdccadfecffb1360477",
+      "8fa2968c66e8c1f3da83022afdff3ab684330f7c",
       [
        "webnn/validation_tests/instanceNormalization.https.any.html",
        {
@@ -708018,7 +708474,7 @@
       ]
      ],
      "layerNormalization.https.any.js": [
-      "3b3636ba11d8601bcbd9f499823c7b2c11c6d85a",
+      "c0ab8e350b5ea357b86d33c83d210f7ff1bd7bec",
       [
        "webnn/validation_tests/layerNormalization.https.any.html",
        {
@@ -708141,7 +708597,7 @@
       ]
      ],
      "lstm.https.any.js": [
-      "00f6b129dfa99827605a048d1cff84c52efd0d34",
+      "a31d9b22d57a19f64d1b69cc326326cbee428f2d",
       [
        "webnn/validation_tests/lstm.https.any.html",
        {
@@ -708182,7 +708638,7 @@
       ]
      ],
      "lstmCell.https.any.js": [
-      "28a9cb8dd3f7f1b8f57cfba35b900feb5b760a76",
+      "eef491d4aa6c72d04774c1769eeb9ef0ae5f3893",
       [
        "webnn/validation_tests/lstmCell.https.any.html",
        {
@@ -708223,7 +708679,7 @@
       ]
      ],
      "matmul.https.any.js": [
-      "c298c87388b954c599cfba6b4d7a29db801c513d",
+      "371470f772b7cd5b222f7e0c18edb848c0211154",
       [
        "webnn/validation_tests/matmul.https.any.html",
        {
@@ -708264,7 +708720,7 @@
       ]
      ],
      "pad.https.any.js": [
-      "4971706e49db954e4ea07cc98ad3982a3865a5aa",
+      "dc06caea3cd74e5a134fbc77a03fb741e7be8014",
       [
        "webnn/validation_tests/pad.https.any.html",
        {
@@ -708364,7 +708820,7 @@
       ]
      ],
      "pooling.https.any.js": [
-      "aca73de9488a61f6948fe7e427edef7c7ccb0088",
+      "d1afa9abf6b9a152113741eaa757645622164473",
       [
        "webnn/validation_tests/pooling.https.any.html",
        {
@@ -708405,7 +708861,7 @@
       ]
      ],
      "prelu.https.any.js": [
-      "a07413007354f8715c28c9a798e583efc2f4acb0",
+      "c0c2fab2ed36aed75eb7ac98d15a583fd2c348ec",
       [
        "webnn/validation_tests/prelu.https.any.html",
        {
@@ -708446,7 +708902,7 @@
       ]
      ],
      "reduction.https.any.js": [
-      "0ffc9c309fd0721b67db0a2ea14a91bcb5f66c03",
+      "cc24e50582cc83c85a11a4818dac8b39c637e3a4",
       [
        "webnn/validation_tests/reduction.https.any.html",
        {
@@ -708487,7 +708943,7 @@
       ]
      ],
      "relu.https.any.js": [
-      "caebba9b316a20be4036c1536b8daba032ae65cf",
+      "f8acda78200bdcd44f075e4b8a9f103d515e6eb5",
       [
        "webnn/validation_tests/relu.https.any.html",
        {
@@ -708528,7 +708984,7 @@
       ]
      ],
      "resample2d.https.any.js": [
-      "9558e2bf5a9efba1b88805dc8f305adbbd6b6c4c",
+      "6e2c5872311985a1fc340083f7b5a65b59c17ea1",
       [
        "webnn/validation_tests/resample2d.https.any.html",
        {
@@ -708569,7 +709025,7 @@
       ]
      ],
      "reshape.https.any.js": [
-      "57a5dde2c9112b1bd3d297f415618a1b5b5a4373",
+      "b1e2f5caa1025616109247d7ac37e60c77810e9d",
       [
        "webnn/validation_tests/reshape.https.any.html",
        {
@@ -708610,7 +709066,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "e76403eca3e154718a065a57c419537867efe645",
+      "62e698f3826acdcfdeaace910c67eeaa424967f7",
       [
        "webnn/validation_tests/sigmoid.https.any.html",
        {
@@ -708651,7 +709107,7 @@
       ]
      ],
      "slice.https.any.js": [
-      "3eb308ad2b80611f021b28e0a043ac99e35e0ce8",
+      "c53eb3407f3ca4cf03fed91667139a89ee32bd3c",
       [
        "webnn/validation_tests/slice.https.any.html",
        {
@@ -708692,7 +709148,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "94695e69c6cc5dae85125bc71f597e321ce11858",
+      "cec24e6f6ffdaa6f9ce92f5bc59e7c65d9a68eaa",
       [
        "webnn/validation_tests/softmax.https.any.html",
        {
@@ -708733,7 +709189,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "2196c895f3980ad57e58054ab68f0aa793b17833",
+      "ec1ec058d44d88b1e079cb840f4c61cfef349911",
       [
        "webnn/validation_tests/softplus.https.any.html",
        {
@@ -708774,7 +709230,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "81b4b4fbe75b4a11c9d2b9fa112add96453bbe2c",
+      "2ff36ff4092114fc38d5edec6dff31debd1a6cee",
       [
        "webnn/validation_tests/softsign.https.any.html",
        {
@@ -708815,7 +709271,7 @@
       ]
      ],
      "split.https.any.js": [
-      "9946df34ed8c8545c3e93bf12e28886056dea7ac",
+      "ef3ac5437de8949e60d493afdd5575f4feeac6b4",
       [
        "webnn/validation_tests/split.https.any.html",
        {
@@ -708856,7 +709312,7 @@
       ]
      ],
      "tanh.https.any.js": [
-      "deb9f3614eb97faed2a5f86782207839a874822b",
+      "2d0832efe11a250b34565efd8afdc5f342a12669",
       [
        "webnn/validation_tests/tanh.https.any.html",
        {
@@ -708897,7 +709353,7 @@
       ]
      ],
      "transpose.https.any.js": [
-      "be9c9bd8a6379baacdf2e7cc96b0d6891579cfd4",
+      "0d3c71e278c3503b58b3c234b2f77cee548b13b3",
       [
        "webnn/validation_tests/transpose.https.any.html",
        {
@@ -708938,7 +709394,7 @@
       ]
      ],
      "triangular.https.any.js": [
-      "b6e2802b7c5bbc8fe05b368ae7facd02479c7a73",
+      "0b5194d5afa9586a350658fe58a008905f44e185",
       [
        "webnn/validation_tests/triangular.https.any.html",
        {
@@ -708979,7 +709435,7 @@
       ]
      ],
      "where.https.any.js": [
-      "f509971f69a3fbe5d1bf4c05594253098fb8e7db",
+      "6b60e5f97ce146a9b471a574c85fa139162f4be1",
       [
        "webnn/validation_tests/where.https.any.html",
        {

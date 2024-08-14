@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<title>text-box rejects invalid values</title>
 <link rel="help" href="https://drafts.csswg.org/css-inline-3/#propdef-text-box">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -7,8 +8,19 @@
 <script>
 // invalid keyword
 test_invalid_value('text-box', 'em');
+test_invalid_value('text-box', 'leading');
+test_invalid_value('text-box', 'trim-both leading');
+
+// invalid grammars
+text_invalid_value('text-box', 'normal normal');
+test_invalid_value('text-box', 'normal none');
+text_invalid_value('text-box', 'auto normal');
 test_invalid_value('text-box', 'normal text');
 test_invalid_value('text-box', 'text normal');
-test_invalid_value('text-box', 'auto leading');
-test_invalid_value('text-box', 'leading auto');
+text_invalid_value('text-box', 'alphabetic text');
+text_invalid_value('text-box', 'alphabetic cap');
+text_invalid_value('text-box', 'cap none alphabetic');
+text_invalid_value('text-box', 'cap trim-both alphabetic');
+text_invalid_value('text-box', 'text none text');
+text_invalid_value('text-box', 'text trim-both text');
 </script>
