@@ -156,8 +156,18 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
     model->AddSubMenuWithStringId(IDC_ZOOM_MENU, IDS_ZOOM_MENU,
                                   zoom_menu_contents_.get());
   }
-  if ((browser()->is_type_app() || browser()->is_type_app_popup()) &&
-      chrome::CanOpenTaskManager()) {
+
+  bool should_show_task_manager =
+      (browser()->is_type_app() || browser()->is_type_app_popup()) &&
+      chrome::CanOpenTaskManager();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Hide TaskManager option for the app if it is locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  if (browser()->IsLockedForOnTask()) {
+    should_show_task_manager = false;
+  }
+#endif
+  if (should_show_task_manager) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
   }
