@@ -51,8 +51,6 @@ namespace {
 const char kDismissedTabsPrefName[] =
     "NewTabPage.MostRelevantTabResumption.DismissedTabs";
 
-constexpr int kOneMinuteInSeconds = 60;
-
 std::u16string FormatRelativeTime(const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
   base::Time now = base::Time::Now();
@@ -76,12 +74,11 @@ history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab,
   tab_mojom->title = *dictionary.FindString("title");
   tab_mojom->decorator = history::mojom::Decorator(0);
 
-  // TODO(crbug.com/349542284): Rely uniquely on `last_active` time as the
-  // `last_visited` time once the aforementioned issue is resolved.
-  auto last_visited = std::max(last_active, tab.visit.last_modified);
+  auto last_visited =
+      last_active.is_null() ? tab.visit.last_modified : last_active;
   base::TimeDelta relative_time = base::Time::Now() - last_visited;
   tab_mojom->relative_time = relative_time;
-  if (relative_time.InSeconds() < kOneMinuteInSeconds) {
+  if (relative_time < base::Minutes(1)) {
     tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
         IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
   } else {
@@ -109,7 +106,7 @@ history::mojom::TabPtr HistoryEntryVisitToMojom(
   base::TimeDelta relative_time =
       base::Time::Now() - visit.url_row.last_visit();
   tab_mojom->relative_time = relative_time;
-  if (relative_time.InSeconds() < kOneMinuteInSeconds) {
+  if (relative_time < base::Minutes(1)) {
     tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
         IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
   } else {
