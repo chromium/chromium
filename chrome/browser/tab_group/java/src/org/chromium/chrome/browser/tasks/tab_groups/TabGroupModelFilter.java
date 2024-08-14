@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -1046,7 +1047,14 @@ public class TabGroupModelFilter extends TabModelFilter {
 
             if (rootId == lastRootId) {
                 // The tab is part of previous tab's group it should get the tab group ID from it.
-                assert lastTabGroupId != null;
+                assert lastTabGroupId != null
+                        : String.format(
+                                Locale.getDefault(),
+                                "Expected tab group id for matching root id=%d, tab index=%d, tab"
+                                        + " count=%d",
+                                rootId,
+                                i,
+                                model.getCount());
                 tabGroupId = lastTabGroupId;
                 tab.setTabGroupId(tabGroupId);
             } else if (tabGroupId == null && group.size() > 1) {
