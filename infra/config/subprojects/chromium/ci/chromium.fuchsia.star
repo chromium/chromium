@@ -228,6 +228,9 @@ ci.builder(
                     ),
                 ),
             ],
+            "chrome_wpt_tests": targets.remove(
+                reason = "Wptrunner does not work on Fuchsia",
+            ),
         },
     ),
     free_space = free_space.high,
@@ -310,6 +313,9 @@ ci.builder(
                     ),
                 ),
             ],
+            "chrome_wpt_tests": targets.remove(
+                reason = "Wptrunner does not work on Fuchsia",
+            ),
             "content_browsertests": [
                 # Temporarily only run this on CI due to resource requirements.
                 # TODO(crbug.com/40872145): Remove this once resources are available.

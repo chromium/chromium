@@ -528,6 +528,9 @@ targets.tests.isolated_script_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    args = [
+        "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter",
+    ],
 )
 
 targets.tests.isolated_script_test(

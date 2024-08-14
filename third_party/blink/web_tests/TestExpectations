@@ -7649,20 +7649,6 @@ crbug.com/40501131 external/wpt/css/css-writing-modes/wm-propagation-body-054.ht
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Timeout ]
 crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
 
-# secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented.
-# TODO(crbug.com/336866579): Remove suppressions once migrated to `chrome_wpt_tests`.
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure ]
-crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure ]
-crbug.com/336866579 external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure ]
-crbug.com/336866579 external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure ]
-
 # disable-css-line-clamp
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-001.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-004.html [ Failure ]
@@ -7965,6 +7951,18 @@ crbug.com/358343067 [ Linux ] external/wpt/html/semantics/embedded-content/media
 
 # Gardener 2024-08-09
 crbug.com/358463699 [ Linux ] http/tests/devtools/elements/styles-2/get-set-stylesheet-text.js [ Failure Pass ]
+
+# TODO(crbug.com/359319433) Those tests are flaky on Mac
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-cannot-bypass-spc.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-in-iframe.sub.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-invalid-icon.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-optout.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-rejected.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/authentication-requires-user-activation.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
+crbug.com/359319433 [ Mac ] external/wpt/secure-payment-confirmation/enrollment.https.html [ Failure Pass Skip ]
 
 # Gardener 2024-08-11
 crbug.com/358504673 [ Win ] http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Failure ]

@@ -1017,7 +1017,6 @@ external/wpt/scroll-animations/css/progress-based-animation-timeline.html
 external/wpt/scroll-animations/scroll-timelines/setting-playback-rate.html
 external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html
 external/wpt/secure-contexts/shared-worker-insecure-first.https.html
-external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html
 external/wpt/selection/addRange-40.html
 external/wpt/selection/anonymous/details-ancestor.html
 external/wpt/selection/bidi/modify.tentative.html
