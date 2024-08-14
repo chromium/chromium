@@ -1231,12 +1231,7 @@ DownloadToolbarButtonView* ToolbarView::GetDownloadButton() {
 }
 
 std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(
-    const ui::DropTargetEvent& event,
-    bool allow_replacement) {
-  if (!allow_replacement) {
-    return std::nullopt;
-  }
-
+    const ui::DropTargetEvent& event) {
   return BrowserRootView::DropIndex{
       .index = browser_->tab_strip_model()->active_index(),
       .relative_to_index =

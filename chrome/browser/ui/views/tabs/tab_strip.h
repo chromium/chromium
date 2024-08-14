@@ -329,8 +329,7 @@ class TabStrip : public views::View,
   // TODO(https://crbug.com/40828528): Use the standard views::View drag and
   // drop methods instead.
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
-      const ui::DropTargetEvent& event,
-      bool allow_replacement) override;
+      const ui::DropTargetEvent& event) override;
   BrowserRootView::DropTarget* GetDropTarget(
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
