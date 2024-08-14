@@ -210,7 +210,7 @@ BASE_FEATURE(kProductSpecifications,
 // ProductComparisonSpecifics.
 BASE_FEATURE(kProductSpecificationsSyncTitle,
              "ProductSpecificationsSyncTitle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for unsupported fields becoming supported in the event of a
 // browser upgrade.
