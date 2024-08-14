@@ -579,4 +579,10 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+#pragma mark - PageInfoHistoryConsumer
+
+- (void)setLastVisitedTimestamp:(base::Time)lastVisited {
+  // TODO(crbug.com/358032417): Present the Last Visited Row on Page Info.
+}
+
 @end

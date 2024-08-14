@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_consumer.h"
+#import "ios/chrome/browser/ui/page_info/page_info_history_consumer.h"
 #import "ios/chrome/browser/ui/page_info/page_info_presentation_commands.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 
@@ -20,6 +21,7 @@
 // View Controller for displaying the page info.
 @interface PageInfoViewController
     : ChromeTableViewController <PageInfoAboutThisSiteConsumer,
+                                 PageInfoHistoryConsumer,
                                  PermissionsConsumer,
                                  UIAdaptivePresentationControllerDelegate>
 
