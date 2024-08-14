@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <string>
 #include <utility>
@@ -15,10 +16,13 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -394,12 +398,14 @@ CrosUsbDeviceInfo::CrosUsbDeviceInfo(
     std::optional<guest_os::GuestId> shared_guest_id,
     uint16_t vendor_id,
     uint16_t product_id,
+    std::string serial_number,
     bool prompt_before_sharing)
     : guid(guid),
       label(label),
       shared_guest_id(shared_guest_id),
       vendor_id(vendor_id),
       product_id(product_id),
+      serial_number(serial_number),
       prompt_before_sharing(prompt_before_sharing) {}
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(const CrosUsbDeviceInfo&) = default;
 CrosUsbDeviceInfo::~CrosUsbDeviceInfo() = default;
@@ -486,9 +492,13 @@ std::vector<CrosUsbDeviceInfo> CrosUsbDetector::GetShareableDevices() const {
   std::vector<CrosUsbDeviceInfo> result;
   for (const auto& it : usb_devices_) {
     const UsbDevice& device = it.second;
+    std::string serial_number =
+        device.info->serial_number.has_value()
+            ? base::UTF16ToASCII(device.info->serial_number.value()).c_str()
+            : "";
     result.emplace_back(
         device.info->guid, device.label, device.shared_guest_id,
-        device.info->vendor_id, device.info->product_id,
+        device.info->vendor_id, device.info->product_id, serial_number,
         /*prompt_before_sharing=*/
         device.shared_guest_id.has_value() || !device.mount_points.empty());
   }
@@ -637,6 +647,15 @@ void CrosUsbDetector::OnMountEvent(
   }
 }
 
+std::string UsbDeviceIdentifier(device::mojom::UsbDeviceInfoPtr& device_info) {
+  std::string serial_number =
+      device_info->serial_number.has_value()
+          ? base::UTF16ToASCII(device_info->serial_number.value()).c_str()
+          : "";
+  return base::StringPrintf("%d:%d:%s", device_info->vendor_id,
+                            device_info->product_id, serial_number.c_str());
+}
+
 void CrosUsbDetector::OnDeviceChecked(
     device::mojom::UsbDeviceInfoPtr device_info,
     bool hide_notification,
@@ -667,6 +686,15 @@ void CrosUsbDetector::OnDeviceChecked(
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
 
+  // If device exists in persistent passthrough dict, skip notifications and
+  // connect it to the appropriate guest.
+  PrefService* prefs = profile()->GetPrefs();
+  const base::Value::Dict& persistent_passthrough_devices =
+      prefs->GetDict(guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
+
+  const std::string* device = persistent_passthrough_devices.FindString(
+      UsbDeviceIdentifier(device_info));
+
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
 
@@ -676,6 +704,16 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
+
+  if (device) {
+    const std::string& device_ref = CHECK_DEREF(device);
+    std::optional<guest_os::GuestId> guest_id =
+        guest_os::Deserialize(device_ref);
+    if (guest_id.has_value()) {
+      AttachUsbDeviceToGuest(guest_id.value(), guid, base::DoNothing());
+      return;
+    }
+  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {
@@ -1012,12 +1050,12 @@ void CrosUsbDetector::DoVmAttach(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
                      weak_ptr_factory_.GetWeakPtr(), guest_id,
-                     device_info->guid, std::move(callback)));
+                     std::move(device_info), std::move(callback)));
 }
 
 void CrosUsbDetector::OnUsbDeviceAttachFinished(
     const guest_os::GuestId& guest_id,
-    const std::string& guid,
+    device::mojom::UsbDeviceInfoPtr device_info,
     base::OnceCallback<void(bool success)> callback,
     std::optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
   bool success = true;
@@ -1030,10 +1068,10 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
   }
 
   if (success) {
-    auto it = usb_devices_.find(guid);
+    auto it = usb_devices_.find(device_info->guid);
     if (it == usb_devices_.end()) {
       LOG(WARNING) << "Dbus response indicates successful attach but device "
-                   << "info was missing for " << guid;
+                   << "info was missing for " << device_info->guid;
       success = false;
     } else {
       it->second.shared_guest_id = guest_id;
@@ -1041,9 +1079,27 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
     }
   }
 
+  PrefService* prefs = profile()->GetPrefs();
+  if (success &&
+      prefs->GetBoolean(
+          guest_os::prefs::kGuestOsUSBPersistentPassthroughEnabled)) {
+    ScopedDictPrefUpdate update(
+        prefs, guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
+    base::Value::Dict& devices = update.Get();
+    std::string device_identifier = UsbDeviceIdentifier(device_info);
+    // there are 3 possible scenarios here:
+    // 1 - device was not in list. in this case we definitely want to add it.
+    // 2 - device was in list for a different guest. in this case we want to
+    //     override the previous state.
+    // 3 - device was in list, with the current guest. we already have to
+    //     serialize the guest_id to check, so not much more different in
+    //     comparing vs writing the same thing back again.
+    devices.Set(device_identifier, guest_id.Serialize());
+  }
+
   if (success && !guest_id.container_name.empty()) {
-    AttachUsbDeviceToContainer(guest_id, response->guest_port(), guid,
-                               std::move(callback));
+    AttachUsbDeviceToContainer(guest_id, response->guest_port(),
+                               device_info->guid, std::move(callback));
   } else {
     SignalUsbDeviceObservers();
     std::move(callback).Run(success);

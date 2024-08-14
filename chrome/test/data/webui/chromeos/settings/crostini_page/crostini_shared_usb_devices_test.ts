@@ -7,7 +7,7 @@ import 'chrome://os-settings/lazy_load.js';
 import {ContainerInfo, CrostiniBrowserProxyImpl, CrostiniSharedUsbDevicesElement, GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
 import {CrToggleElement, Router, routes, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotDeepEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -18,6 +18,8 @@ import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
 interface PrefParams {
   usbNotificationEnabled?: boolean;
+  usbPermissivePassthroughEnabled?: boolean;
+  usbPermissivePassthroughDevices?: Object;
 }
 
 suite('<settings-crostini-shared-usb-devices>', () => {
@@ -50,6 +52,22 @@ suite('<settings-crostini-shared-usb-devices>', () => {
     await flushTasks();
   }
 
+  function setGuestOsPrefs({
+    usbNotificationEnabled = false,
+    usbPermissivePassthroughEnabled = false,
+    usbPermissivePassthroughDevices = {},
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      guest_os: {
+        usb_notification_enabled: {value: usbNotificationEnabled},
+        usb_persistent_passthrough_enabled:
+            {value: usbPermissivePassthroughEnabled},
+        usb_persistent_passthrough_devices:
+            {value: usbPermissivePassthroughDevices},
+      },
+    };
+  }
+
   setup(() => {
     loadTimeData.overrideValues({
       isCrostiniAllowed: true,
@@ -71,15 +89,6 @@ suite('<settings-crostini-shared-usb-devices>', () => {
   suite('USB notification toggle', () => {
     const NOTIFICATION_ENABLED_PREF_PATH =
         'prefs.guest_os.usb_notification_enabled.value';
-
-    function setGuestOsPrefs({usbNotificationEnabled = false}: PrefParams = {}):
-        void {
-      subpage.prefs = {
-        guest_os: {
-          usb_notification_enabled: {value: usbNotificationEnabled},
-        },
-      };
-    }
 
     function getToggle(): SettingsToggleButtonElement|null {
       return subpage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -172,6 +181,166 @@ suite('<settings-crostini-shared-usb-devices>', () => {
     });
   });
 
+  suite('USB permissive passthrough toggle', () => {
+    const PERSISTENT_PASSTHROUGH_ENABLED_PREF_PATH =
+        'prefs.guest_os.usb_persistent_passthrough_enabled.value';
+    const PERSISTENT_PASSTHROUGH_DEVICES_PREF_PATH =
+        'prefs.guest_os.usb_persistent_passthrough_devices.value';
+
+    function getToggle(): SettingsToggleButtonElement|null {
+      return subpage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+          '#guestUsbPersistentPassthroughToggle');
+    }
+
+    function getDialog(): HTMLElement|null {
+      return subpage.shadowRoot!.querySelector(
+          '#guestShowUsbPersistentPassthroughDialog');
+    }
+
+    setup(async () => {
+      await initSubpage();
+    });
+
+    test('Toggle is visible', () => {
+      assertTrue(isVisible(getToggle()));
+    });
+
+    test('Toggle permissive passthrough and accept', async () => {
+      setGuestOsPrefs({
+        usbPermissivePassthroughEnabled: true,
+        usbPermissivePassthroughDevices: {'myCoolUsbDevice': 'myCoolGuestId'},
+      });
+
+      let toggle = getToggle();
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+      assertTrue(subpage.get(PERSISTENT_PASSTHROUGH_ENABLED_PREF_PATH));
+      assertNotDeepEquals(
+          {}, subpage.get(PERSISTENT_PASSTHROUGH_DEVICES_PREF_PATH));
+
+      let dialog = getDialog();
+      assertNull(dialog);
+
+      toggle.click();
+      await flushTasks();
+
+      dialog = getDialog();
+      assertTrue(!!dialog);
+      const dialogClosedPromise = eventToPromise('close', dialog);
+      const actionBtn =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.action-button');
+      assertTrue(!!actionBtn);
+      actionBtn.click();
+      await Promise.all([dialogClosedPromise, flushTasks()]);
+      assertNull(getDialog());
+      toggle = getToggle();
+      assertTrue(!!toggle);
+      assertFalse(toggle.checked);
+      assertFalse(subpage.get(PERSISTENT_PASSTHROUGH_ENABLED_PREF_PATH));
+      // Disabling persistent passthrough should also reset the devices list.
+      assertDeepEquals(
+          subpage.get(PERSISTENT_PASSTHROUGH_DEVICES_PREF_PATH), {});
+    });
+
+    test('Toggle permissive passthrough and cancel', async () => {
+      setGuestOsPrefs({
+        usbPermissivePassthroughEnabled: true,
+        usbPermissivePassthroughDevices: {'myCoolUsbDevice': 'myCoolGuestId'},
+      });
+
+      let toggle = getToggle();
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+      assertTrue(subpage.get(PERSISTENT_PASSTHROUGH_ENABLED_PREF_PATH));
+      assertNotDeepEquals(
+          {}, subpage.get(PERSISTENT_PASSTHROUGH_DEVICES_PREF_PATH));
+
+      let dialog = getDialog();
+      assertNull(dialog);
+
+      toggle.click();
+      await flushTasks();
+
+      dialog = getDialog();
+      assertTrue(!!dialog);
+      const dialogClosedPromise = eventToPromise('close', dialog);
+      const cancelBtn =
+          dialog.shadowRoot!.querySelector<HTMLButtonElement>('.cancel-button');
+      assertTrue(!!cancelBtn);
+      cancelBtn.click();
+      await Promise.all([dialogClosedPromise, flushTasks()]);
+      assertNull(getDialog());
+      toggle = getToggle();
+      assertTrue(!!toggle);
+      assertTrue(toggle.checked);
+      assertTrue(subpage.get(PERSISTENT_PASSTHROUGH_ENABLED_PREF_PATH));
+      assertDeepEquals(
+          {myCoolUsbDevice: 'myCoolGuestId'},
+          subpage.get(PERSISTENT_PASSTHROUGH_DEVICES_PREF_PATH));
+    });
+
+    test('kGuestShowUsbNotification setting is deep-linkable', async () => {
+      const setting = settingMojom.Setting.kGuestUsbPersistentPassthrough;
+      const params = new URLSearchParams();
+      params.append('settingId', setting.toString());
+      Router.getInstance().navigateTo(
+          routes.CROSTINI_SHARED_USB_DEVICES, params);
+
+      const deepLinkElement = subpage.shadowRoot!.querySelector<HTMLElement>(
+          '#guestUsbPersistentPassthroughToggle');
+      assertTrue(!!deepLinkElement);
+
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, subpage.shadowRoot!.activeElement,
+          `Element should be focused for settingId='${setting}'.`);
+    });
+
+    test(
+        'Dialog text is correct when enabling persistent passthrough',
+        async () => {
+          setGuestOsPrefs({usbPermissivePassthroughEnabled: false});
+          const toggle = getToggle();
+          assertTrue(!!toggle);
+          assertFalse(toggle.checked);
+
+          toggle.click();
+          await flushTasks();
+
+          const dialog = getDialog();
+          assertTrue(!!dialog);
+          const dialogText =
+              dialog.querySelector<HTMLElement>('[slot="body"]')!.innerText;
+
+          assertEquals(
+              subpage.i18n(
+                  'guestOsSharedUsbPersistentPassthroughDialogTitleEnable'),
+              dialogText);
+        });
+
+    test(
+        'Dialog text is correct when disabling persistent passthrough',
+        async () => {
+          setGuestOsPrefs({usbPermissivePassthroughEnabled: true});
+          const toggle = getToggle();
+          assertTrue(!!toggle);
+          assertTrue(toggle.checked);
+
+          toggle.click();
+          await flushTasks();
+
+          const dialog = getDialog();
+          assertTrue(!!dialog);
+          const dialogText =
+              dialog.querySelector<HTMLElement>('[slot="body"]')!.innerText;
+
+          assertEquals(
+              subpage.i18n(
+                  'guestOsSharedUsbPersistentPassthroughDialogTitleDisable'),
+              dialogText);
+        });
+  });
+
   // Functionality is already tested in OSSettingsGuestOsSharedUsbDevicesTest,
   // so just check that we correctly set up the page for our 'termina' VM.
   suite('Subpage shared Usb devices', () => {
@@ -190,6 +359,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           vendorId: '0000',
           productId: '0000',
           promptBeforeSharing: false,
+          serialNumber: '',
         },
         {
           guid: '0002',
@@ -201,6 +371,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           vendorId: '0000',
           productId: '0000',
           promptBeforeSharing: false,
+          serialNumber: '',
         },
       ];
 
@@ -235,6 +406,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           vendorId: '0000',
           productId: '0000',
           promptBeforeSharing: false,
+          serialNumber: '',
         },
         {
           guid: '0002',
@@ -246,6 +418,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           vendorId: '0000',
           productId: '0000',
           promptBeforeSharing: true,
+          serialNumber: '',
         },
         {
           guid: '0003',
@@ -257,6 +430,7 @@ suite('<settings-crostini-shared-usb-devices>', () => {
           vendorId: '0000',
           productId: '0000',
           promptBeforeSharing: true,
+          serialNumber: '',
         },
       ];
 

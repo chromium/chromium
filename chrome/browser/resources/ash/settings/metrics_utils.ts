@@ -43,6 +43,11 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  'guest_os.usb_persistent_passthrough_enabled': {
+    setting: Setting.kGuestUsbPersistentPassthrough,
+    type: PrefType.BOOLEAN,
+  },
+
   // Date and time settings
   'settings.clock.use_24hour_clock': {
     setting: Setting.k24HourClock,

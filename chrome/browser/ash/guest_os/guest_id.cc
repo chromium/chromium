@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
+#include <algorithm>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"
@@ -93,6 +97,32 @@ std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id) {
                  << container_id.container_name << "\")";
 }
 
+std::string GuestId::Serialize() const {
+  return std::format("{}:{}:{}", VmType_Name(this->vm_type), this->vm_name,
+                     this->container_name);
+}
+
+std::optional<GuestId> Deserialize(std::string_view guest_id_string) {
+  std::vector<std::string> string_tokens = base::SplitString(
+      guest_id_string, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  if (string_tokens.size() != 3) {
+    return {};
+  }
+
+  if (std::any_of(string_tokens.begin(), string_tokens.end(),
+                  [](std::string v) { return v.empty(); })) {
+    return {};
+  }
+
+  VmType vm_type;
+  if (!VmType_Parse(string_tokens[0], &vm_type)) {
+    return {};
+  }
+
+  return GuestId(vm_type, string_tokens[1], string_tokens[2]);
+}
+
 bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
   const std::string* vm_name = dict.GetDict().FindString(prefs::kVmNameKey);
   const std::string* container_name =
@@ -140,8 +170,9 @@ void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
   auto it = base::ranges::find_if(update_list, [&](const auto& dict) {
     return MatchContainerDict(dict, container_id);
   });
-  if (it != update_list.end())
+  if (it != update_list.end()) {
     update_list.erase(it);
+  }
 }
 
 void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
@@ -149,8 +180,9 @@ void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
   ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
   base::Value::List& update_list = updater.Get();
   auto it = base::ranges::find(update_list, vm_type, &VmTypeFromPref);
-  if (it != update_list.end())
+  if (it != update_list.end()) {
     update_list.erase(it);
+  }
 }
 
 const base::Value* GetContainerPrefValue(Profile* profile,
@@ -159,8 +191,9 @@ const base::Value* GetContainerPrefValue(Profile* profile,
   const base::Value::List& containers =
       profile->GetPrefs()->GetList(prefs::kGuestOsContainers);
   for (const auto& dict : containers) {
-    if (MatchContainerDict(dict, container_id))
+    if (MatchContainerDict(dict, container_id)) {
       return dict.GetDict().Find(key);
+    }
   }
   return nullptr;
 }

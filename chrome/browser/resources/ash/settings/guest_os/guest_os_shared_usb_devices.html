@@ -18,6 +18,14 @@
     on-settings-boolean-control-change="onGuestUsbNotificationChange_"
     deep-link-focus-id$="[[Setting.kGuestUsbNotification]]">
 </settings-toggle-button>
+<settings-toggle-button
+    id="guestUsbPersistentPassthroughToggle"
+    pref="{{prefs.guest_os.usb_persistent_passthrough_enabled}}"
+    no-set-pref
+    label="$i18n{guestOsSharedUsbPersistentPassthroughLabel}"
+    on-settings-boolean-control-change="onGuestUsbPersistentPassthroughChange_"
+    deep-link-focus-id$="[[Setting.kGuestUsbPersistentPassthrough]]">
+</settings-toggle-button>
 <div class="settings-box first">
   <div class="settings-box-text">
     [[getDescriptionText_()]]
@@ -132,6 +140,16 @@
       on-close="onGuestUsbNotificationDialogClose_">
     <div slot="body">
       [[getNotificationDialogText_()]]
+    </div>
+  </settings-guest-os-confirmation-dialog>
+</template>
+<template is="dom-if" if="[[showGuestUsbPersistentPassthroughDialog_]]" restamp>
+  <settings-guest-os-confirmation-dialog
+      id="guestShowUsbPersistentPassthroughDialog"
+      accept-button-text="$i18n{guestOsSharedUsbDevicesNotificationDialogAccept}"
+      on-close="onGuestUsbPersistentPassthroughDialogClose_">
+    <div slot="body">
+      [[getGuestUsbPersistentPassthroughDialogText_()]]
     </div>
   </settings-guest-os-confirmation-dialog>
 </template>

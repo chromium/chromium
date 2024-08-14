@@ -23,6 +23,7 @@ export interface GuestOsSharedUsbDevice {
   guestId?: GuestId|null;
   vendorId: string;
   productId: string;
+  serialNumber: string;
   promptBeforeSharing: boolean;
 }
 

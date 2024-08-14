@@ -53,6 +53,10 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         type: Boolean,
         value: false,
       },
+      showGuestUsbPersistentPassthroughDialog_: {
+        type: Boolean,
+        value: false,
+      },
       /**
        * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
        */
@@ -123,6 +127,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kGuestUsbNotification,
+          Setting.kGuestUsbPersistentPassthrough,
         ]),
       },
     };
@@ -137,6 +142,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
   private sharedUsbDevices_: SharedUsbDevice[];
   private showAddUsbDialog_: boolean;
   private showGuestUsbNotificationDialog_: boolean;
+  private showGuestUsbPersistentPassthroughDialog_: boolean;
 
   constructor() {
     super();
@@ -198,6 +204,18 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
       this.reassignDevice_ = device;
       return;
     }
+
+    const persistentPassthroughEnabled =
+        this.get('prefs.guest_os.usb_persistent_passthrough_enabled.value');
+    if (!target.checked && persistentPassthroughEnabled) {
+      const deviceIdentifier = `${parseInt(device.vendorId, 16)}:${
+          parseInt(device.productId)}:${device.serialNumber}`;
+      // Return value of deletion is agnostic to presence of key existence, so
+      // nothing to return/check here.
+      this.deletePrefDictEntry(
+          'guest_os.usb_persistent_passthrough_devices', deviceIdentifier);
+    }
+
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.defaultGuestId.container_name, device.guid,
         target.checked);
@@ -280,6 +298,41 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     }
 
     this.showGuestUsbNotificationDialog_ = false;
+  }
+
+  private getGuestUsbPersistentPassthroughToggle_():
+      SettingsToggleButtonElement {
+    return castExists(
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#guestUsbPersistentPassthroughToggle'));
+  }
+
+  private getGuestUsbPersistentPassthroughDialogText_(): string {
+    const toggle = this.getGuestUsbPersistentPassthroughToggle_();
+    // `checked` state here is the *new* desired state
+    return toggle.checked ?
+        this.i18n('guestOsSharedUsbPersistentPassthroughDialogTitleEnable') :
+        this.i18n('guestOsSharedUsbPersistentPassthroughDialogTitleDisable');
+  }
+
+  private onGuestUsbPersistentPassthroughChange_(): void {
+    this.showGuestUsbPersistentPassthroughDialog_ = true;
+  }
+
+  private onGuestUsbPersistentPassthroughDialogClose_(e: CustomEvent): void {
+    const toggle = this.getGuestUsbPersistentPassthroughToggle_();
+    if (e.detail.accepted) {
+      toggle.sendPrefChange();
+      if (!toggle.checked) {
+        // Persistent passthrough has been turned off, reset list of devices.
+        this.setPrefValue('guest_os.usb_persistent_passthrough_devices', {});
+      }
+    } else {
+      toggle.resetToPrefValue();
+    }
+
+
+    this.showGuestUsbPersistentPassthroughDialog_ = false;
   }
 }
 
