@@ -267,6 +267,9 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 TEST_F(IOSChromePaymentsAutofillClientTest,
        ConfirmationViewNotShownForCardNotUploaded_Metrics) {
   base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
 
   payments_client()->CreditCardUploadCompleted(
       /*card_saved=*/false, /*on_confirmation_closed_callback=*/std::nullopt);
@@ -281,6 +284,9 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 TEST_F(IOSChromePaymentsAutofillClientTest,
        ConfirmationViewNotShownForCardUploaded_Metrics) {
   base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
 
   payments_client()->CreditCardUploadCompleted(
       /*card_saved=*/true, /*on_confirmation_closed_callback=*/std::nullopt);

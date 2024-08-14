@@ -169,6 +169,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
 // Tests that calling saveCardWithCardholderName:expirationMonth:expirationYear:
 // calls UpdateAndAccept().
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, MainAction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   NSString* cardholderName = @"name";
   NSString* month = @"3";
   NSString* year = @"23";
@@ -213,6 +216,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, OnInfoBarDismissed) {
 // enabled.
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadingViewNotShown_Metrics) {
   base::HistogramTester histogramTester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   NSString* cardholderName = @"name";
   NSString* month = @"3";
   NSString* year = @"23";
