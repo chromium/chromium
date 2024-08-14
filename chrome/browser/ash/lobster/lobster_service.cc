@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_service.h"
 
-#include <string_view>
+#include <string>
 
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
@@ -14,7 +14,8 @@
 LobsterService::LobsterService(
     std::unique_ptr<manta::SnapperProvider> snapper_provider)
     : image_provider_(std::move(snapper_provider)),
-      image_fetcher_(image_provider_.get(), &candidate_id_generator_) {}
+      image_fetcher_(image_provider_.get(), &candidate_id_generator_),
+      resizer_(&image_fetcher_) {}
 
 LobsterService::~LobsterService() = default;
 
@@ -31,9 +32,14 @@ LobsterSystemStateProvider* LobsterService::system_state_provider() {
 }
 
 void LobsterService::RequestCandidates(
-    std::string_view query,
+    const std::string& query,
     int num_candidates,
     ash::RequestCandidatesCallback callback) {
-  image_fetcher_.RequestPreviewCandidates(query, num_candidates,
-                                          std::move(callback));
+  image_fetcher_.RequestCandidates(query, num_candidates, std::move(callback));
+}
+
+void LobsterService::InflateCandidate(uint32_t seed,
+                                      const std::string& query,
+                                      ash::InflateCandidateCallback callback) {
+  resizer_.InflateImage(seed, query, std::move(callback));
 }

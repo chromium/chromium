@@ -6,7 +6,7 @@
 #define ASH_LOBSTER_LOBSTER_SESSION_IMPL_H_
 
 #include <memory>
-#include <string_view>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/lobster/lobster_candidate_store.h"
@@ -27,7 +27,7 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
 
   // LobsterSession overrides
   void DownloadCandidate(int candidate_id, StatusCallback callback) override;
-  void RequestCandidates(std::string_view query,
+  void RequestCandidates(const std::string& query,
                          int num_candidates,
                          RequestCandidatesCallback) override;
 

@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SERVICE_H_
 
-#include <string_view>
+#include <string>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/lobster/image_fetcher.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
+#include "chrome/browser/ash/lobster/lobster_candidate_resizer.h"
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -30,9 +31,13 @@ class LobsterService : public KeyedService {
   ash::LobsterSession* active_session();
   LobsterSystemStateProvider* system_state_provider();
 
-  void RequestCandidates(std::string_view query,
+  void RequestCandidates(const std::string& query,
                          int num_candidates,
                          ash::RequestCandidatesCallback);
+
+  void InflateCandidate(uint32_t seed,
+                        const std::string& query,
+                        ash::InflateCandidateCallback);
 
  private:
   // Not owned by this class
@@ -43,6 +48,7 @@ class LobsterService : public KeyedService {
   std::unique_ptr<manta::SnapperProvider> image_provider_;
 
   ImageFetcher image_fetcher_;
+  LobsterCandidateResizer resizer_;
 
   LobsterSystemStateProvider system_state_provider_;
 };

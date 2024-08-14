@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/lobster/lobster_client_impl.h"
 
-#include <string_view>
+#include <string>
 
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
@@ -25,8 +25,15 @@ ash::LobsterSystemState LobsterClientImpl::GetSystemState() {
 }
 
 void LobsterClientImpl::RequestCandidates(
-    std::string_view query,
+    const std::string& query,
     int num_candidates,
     ash::RequestCandidatesCallback callback) {
   service_->RequestCandidates(query, num_candidates, std::move(callback));
+}
+
+void LobsterClientImpl::InflateCandidate(
+    uint32_t seed,
+    const std::string& query,
+    ash::InflateCandidateCallback callback) {
+  service_->InflateCandidate(seed, query, std::move(callback));
 }

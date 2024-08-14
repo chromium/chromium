@@ -31,9 +31,15 @@ class MockLobsterClient : public LobsterClient {
   MOCK_METHOD(LobsterSystemState, GetSystemState, (), (override));
   MOCK_METHOD(void,
               RequestCandidates,
-              (std::string_view query,
+              (const std::string& query,
                int num_candidates,
                RequestCandidatesCallback),
+              (override));
+  MOCK_METHOD(void,
+              InflateCandidate,
+              (uint32_t seed,
+               const std::string& query,
+               InflateCandidateCallback),
               (override));
 };
 
@@ -44,6 +50,8 @@ class LobsterSessionImplTest : public testing::Test {
   LobsterSessionImplTest& operator=(const LobsterSessionImplTest&) = delete;
 
   ~LobsterSessionImplTest() override = default;
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -110,6 +118,96 @@ TEST_F(LobsterSessionImplTest, RequestCandidatesWithEmptyResults) {
                             future.GetCallback());
 
   EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateBeforeAnyRequest) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+
+  ON_CALL(*lobster_client, InflateCandidate(1, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::move(done_callback)
+            .Run(std::make_optional<LobsterImageCandidate>(1, "a1b2c3", 30,
+                                                           "a nice raspberry"));
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client));
+
+  base::test::TestFuture<bool> future;
+  session.DownloadCandidate(/*id=*/1, future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(LobsterSessionImplTest,
+       CanNotDownloadACandidateIfNotAvailableInPastRequest) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+
+  ON_CALL(*lobster_client,
+          RequestCandidates("a nice strawberry", 2, testing::_))
+      .WillByDefault([](std::string_view query, int num_candidates,
+                        RequestCandidatesCallback done_callback) {
+        std::vector<LobsterImageCandidate> image_candidates = {
+            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/20,
+                                  /*query=*/"a nice strawberry"),
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
+                                  /*seed=*/21,
+                                  /*query=*/"a nice strawberry")};
+        std::move(done_callback).Run(std::move(image_candidates));
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client));
+  session.RequestCandidates(
+      "a nice strawberry", 2,
+      base::BindOnce([](const std::vector<LobsterImageCandidate>&) {}));
+  RunUntilIdle();
+
+  base::test::TestFuture<bool> future;
+
+  session.DownloadCandidate(/*id=*/3, future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfIdAvailableInPastRequest) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+
+  ON_CALL(*lobster_client,
+          RequestCandidates("a nice strawberry", 2, testing::_))
+      .WillByDefault([](std::string_view query, int num_candidates,
+                        RequestCandidatesCallback done_callback) {
+        std::vector<LobsterImageCandidate> image_candidates = {
+            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/20,
+                                  /*query=*/"a nice strawberry"),
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
+                                  /*seed=*/21,
+                                  /*query=*/"a nice strawberry")};
+
+        std::move(done_callback).Run(std::move(image_candidates));
+      });
+
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::move(done_callback)
+            .Run(std::make_optional<LobsterImageCandidate>(1, "a1b2c3", 30,
+                                                           "a nice raspberry"));
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client));
+  session.RequestCandidates(
+      "a nice strawberry", 2,
+      base::BindOnce([](const std::vector<LobsterImageCandidate>&) {}));
+  RunUntilIdle();
+
+  base::test::TestFuture<bool> future;
+
+  session.DownloadCandidate(/*id=*/1, future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
 }
 
 }  // namespace

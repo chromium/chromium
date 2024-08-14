@@ -4,14 +4,13 @@
 
 #include "chrome/browser/ash/lobster/image_fetcher.h"
 
-#include <string_view>
+#include <string>
 
 #include "base/barrier_callback.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -23,11 +22,36 @@
 namespace {
 
 constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
+constexpr gfx::Size kFullImageSize = gfx::Size(1024, 1024);
+
+manta::proto::Request CreateMantaRequest(std::string_view query,
+                                         std::optional<uint32_t> seed,
+                                         const gfx::Size& image_size,
+                                         int num_outputs) {
+  manta::proto::Request request;
+  manta::proto::RequestConfig& request_config =
+      *request.mutable_request_config();
+  manta::proto::ImageDimensions& image_dimensions =
+      *request_config.mutable_image_dimensions();
+  manta::proto::InputData& input_data = *request.add_input_data();
+
+  request_config.set_num_outputs(num_outputs);
+  request.set_feature_name(manta::proto::FeatureName::CHROMEOS_LOBSTER);
+  image_dimensions.set_width(image_size.width());
+  image_dimensions.set_height(image_size.height());
+  input_data.set_text(query.data(), query.size());
+
+  if (seed.has_value()) {
+    request_config.set_generation_seed(seed.value());
+  }
+
+  return request;
+}
 
 std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
     uint32_t id,
     uint32_t seed,
-    std::string_view query,
+    const std::string& query,
     const SkBitmap& decoded_bitmap) {
   base::AssertLongCPUWorkAllowed();
   std::vector<unsigned char> data;
@@ -45,7 +69,7 @@ std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
 void EncodeBitmap(
     uint32_t id,
     uint32_t seed,
-    std::string_view query,
+    const std::string& query,
     base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
         callback,
     const SkBitmap& decoded_bitmap) {
@@ -64,7 +88,7 @@ void SanitizePreviewJpgBytes(
     const manta::proto::OutputData& output_data,
     data_decoder::DataDecoder* data_decoder,
     uint32_t id,
-    std::string_view query,
+    const std::string& query,
     base::OnceCallback<void(std::optional<ash::LobsterImageCandidate>)>
         callback) {
   data_decoder::DecodeImage(
@@ -83,9 +107,29 @@ ImageFetcher::ImageFetcher(manta::SnapperProvider* provider,
 
 ImageFetcher::~ImageFetcher() = default;
 
-void ImageFetcher::RequestPreviewCandidates(
-    std::string_view query,
-    int num_candidates,
+void ImageFetcher::RequestCandidates(const std::string& query,
+                                     int num_candidates,
+                                     ash::RequestCandidatesCallback callback) {
+  if (provider_ == nullptr) {
+    LOG(ERROR) << "Provider is not available";
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto request = CreateMantaRequest(/*query=*/query, /*seed=*/std::nullopt,
+                                    /*image_size=*/kPreviewImageSize,
+                                    /*num_outputs=*/num_candidates);
+  // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
+  // launch.
+  provider_->Call(request, MISSING_TRAFFIC_ANNOTATION,
+                  base::BindOnce(&ImageFetcher::OnCandidatesRequested,
+                                 weak_ptr_factory_.GetWeakPtr(), query,
+                                 std::move(callback)));
+}
+
+void ImageFetcher::RequestFullSizeCandidate(
+    const std::string& query,
+    uint32_t seed,
     ash::RequestCandidatesCallback callback) {
   if (provider_ == nullptr) {
     LOG(ERROR) << "Provider is not available";
@@ -93,18 +137,9 @@ void ImageFetcher::RequestPreviewCandidates(
     return;
   }
 
-  manta::proto::Request request;
-  manta::proto::RequestConfig& request_config =
-      *request.mutable_request_config();
-  manta::proto::ImageDimensions& image_dimensions =
-      *request_config.mutable_image_dimensions();
-
-  manta::proto::InputData& input_data = *request.add_input_data();
-  request_config.set_num_outputs(num_candidates);
-  request.set_feature_name(manta::proto::FeatureName::CHROMEOS_LOBSTER);
-  image_dimensions.set_width(kPreviewImageSize.width());
-  image_dimensions.set_height(kPreviewImageSize.height());
-  input_data.set_text(query.data(), query.size());
+  auto request =
+      CreateMantaRequest(/*query=*/query, /*seed=*/seed,
+                         /*image_size=*/kFullImageSize, /*num_outputs=*/1);
 
   // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
@@ -115,7 +150,7 @@ void ImageFetcher::RequestPreviewCandidates(
 }
 
 void ImageFetcher::OnCandidatesRequested(
-    std::string_view query,
+    const std::string& query,
     ash::RequestCandidatesCallback callback,
     std::unique_ptr<manta::proto::Response> response,
     manta::MantaStatus status) {

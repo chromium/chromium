@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_IMAGE_FETCHER_H_
 #define CHROME_BROWSER_ASH_LOBSTER_IMAGE_FETCHER_H_
 
-#include <string_view>
+#include <optional>
+#include <string>
 
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace manta {
 
@@ -29,13 +31,17 @@ class ImageFetcher {
                         LobsterCandidateIdGenerator* id_generator);
   ~ImageFetcher();
 
-  void RequestPreviewCandidates(std::string_view query,
-                                int num_candidates,
+  void RequestCandidates(const std::string& query,
+                         int num_candidates,
+                         ash::RequestCandidatesCallback);
+
+  void RequestFullSizeCandidate(const std::string& query,
+                                uint32_t seed,
                                 ash::RequestCandidatesCallback);
 
  private:
-  void OnCandidatesRequested(std::string_view query,
-                             ash::RequestCandidatesCallback callback,
+  void OnCandidatesRequested(const std::string& query,
+                             ash::RequestCandidatesCallback,
                              std::unique_ptr<manta::proto::Response> response,
                              manta::MantaStatus status);
 
@@ -46,6 +52,7 @@ class ImageFetcher {
 
   // Not owned by this class
   raw_ptr<manta::SnapperProvider> provider_;
+
   raw_ptr<LobsterCandidateIdGenerator> id_generator_;
 
   base::WeakPtrFactory<ImageFetcher> weak_ptr_factory_{this};

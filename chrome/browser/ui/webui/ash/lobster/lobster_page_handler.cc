@@ -20,7 +20,7 @@ void LobsterPageHandler::DownloadCandidate(int candidate_id,
   session_->DownloadCandidate(candidate_id, std::move(callback));
 }
 
-void LobsterPageHandler::RequestCandidates(std::string_view query,
+void LobsterPageHandler::RequestCandidates(const std::string& query,
                                            int num_candidates,
                                            RequestCandidatesCallback callback) {
   session_->RequestCandidates(query, num_candidates, std::move(callback));

@@ -12,6 +12,8 @@ static_library("lobster") {
     "image_fetcher.h",
     "lobster_candidate_id_generator.cc",
     "lobster_candidate_id_generator.h",
+    "lobster_candidate_resizer.cc",
+    "lobster_candidate_resizer.h",
     "lobster_client_factory_impl.cc",
     "lobster_client_factory_impl.h",
     "lobster_client_impl.cc",
@@ -41,15 +43,41 @@ static_library("lobster") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "lobster_test_utils.cc",
+    "lobster_test_utils.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp:cpp",
+    "//base",
+    "//base/test:test_support",
+    "//components/manta",
+    "//components/manta/proto",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "image_fetcher_unittest.cc" ]
+  sources = [
+    "image_fetcher_unittest.cc",
+    "lobster_candidate_resizer_unittest.cc",
+  ]
 
   deps = [
     ":lobster",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/lobster:test_support",
     "//chrome/browser/ash/lobster/mock:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",

@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_LOBSTER_LOBSTER_SESSION_H_
 #define ASH_PUBLIC_CPP_LOBSTER_LOBSTER_SESSION_H_
 
-#include <string_view>
+#include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
@@ -22,7 +22,7 @@ class ASH_PUBLIC_EXPORT LobsterSession {
 
   virtual void DownloadCandidate(int candidate_id, StatusCallback) = 0;
 
-  virtual void RequestCandidates(std::string_view query,
+  virtual void RequestCandidates(const std::string& query,
                                  int num_candidates,
                                  RequestCandidatesCallback) = 0;
 };
