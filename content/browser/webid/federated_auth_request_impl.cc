@@ -2676,33 +2676,6 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
               (accounts_dialog_display_time_ -
                ready_to_display_accounts_dialog_time_));
 
-      if (IsFedCmMetricsEndpointEnabled()) {
-        for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
-          const GURL& metrics_endpoint = metrics_endpoint_kv.second;
-          if (!metrics_endpoint.is_valid()) {
-            continue;
-          }
-
-          if (metrics_endpoint_kv.first == idp_config_url) {
-            network_manager_->SendSuccessfulTokenRequestMetrics(
-                metrics_endpoint,
-                ready_to_display_accounts_dialog_time_ - start_time_,
-                select_account_time_ - accounts_dialog_display_time_,
-                id_assertion_response_time_ - select_account_time_,
-                id_assertion_response_time_ - start_time_ -
-                    (accounts_dialog_display_time_ -
-                     ready_to_display_accounts_dialog_time_));
-          } else {
-            // Send kUserFailure so that IDP cannot tell difference between user
-            // selecting a different IDP and user dismissing dialog without
-            // selecting any IDP.
-            network_manager_->SendFailedTokenRequestMetrics(
-                metrics_endpoint, IdpNetworkRequestManager::
-                                      MetricsEndpointErrorCode::kUserFailure);
-          }
-        }
-      }
-
       CompleteRequest(FederatedAuthRequestResult::kSuccess,
                       TokenStatus::kSuccessUsingTokenInHttpResponse,
                       /*token_error=*/std::nullopt, idp_config_url,
@@ -2759,8 +2732,12 @@ void FederatedAuthRequestImpl::CompleteRequest(
         selected_idp_config_url, rp_mode_);
   }
 
-  if (!errors_logged_to_console_ &&
-      result != FederatedAuthRequestResult::kSuccess) {
+  if (result == FederatedAuthRequestResult::kSuccess) {
+    DCHECK(selected_idp_config_url);
+    if (IsFedCmMetricsEndpointEnabled()) {
+      SendSuccessfulTokenRequestMetrics(*selected_idp_config_url);
+    }
+  } else if (!errors_logged_to_console_) {
     errors_logged_to_console_ = true;
 
     AddDevToolsIssue(result);
@@ -2817,6 +2794,36 @@ void FederatedAuthRequestImpl::SendFailedTokenRequestMetrics(
   network_manager_->SendFailedTokenRequestMetrics(
       metrics_endpoint,
       FederatedAuthRequestResultToMetricsEndpointErrorCode(result));
+}
+
+void FederatedAuthRequestImpl::SendSuccessfulTokenRequestMetrics(
+    const GURL& idp_config_url) {
+  DCHECK(IsFedCmMetricsEndpointEnabled());
+
+  for (const auto& metrics_endpoint_kv : metrics_endpoints_) {
+    const GURL& metrics_endpoint = metrics_endpoint_kv.second;
+    if (!metrics_endpoint.is_valid()) {
+      continue;
+    }
+
+    if (metrics_endpoint_kv.first == idp_config_url) {
+      network_manager_->SendSuccessfulTokenRequestMetrics(
+          metrics_endpoint,
+          ready_to_display_accounts_dialog_time_ - start_time_,
+          select_account_time_ - accounts_dialog_display_time_,
+          id_assertion_response_time_ - select_account_time_,
+          id_assertion_response_time_ - start_time_ -
+              (accounts_dialog_display_time_ -
+               ready_to_display_accounts_dialog_time_));
+    } else {
+      // Send kUserFailure so that IDP cannot tell difference between user
+      // selecting a different IDP and user dismissing dialog without
+      // selecting any IDP.
+      network_manager_->SendFailedTokenRequestMetrics(
+          metrics_endpoint,
+          IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure);
+    }
+  }
 }
 
 void FederatedAuthRequestImpl::CleanUp() {
