@@ -1407,6 +1407,11 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_CREATED)
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_JOB_DESTROYED)
 
 // Marks the start/end of a HttpStreamPool::Job.
+// For the BEGIN event, the event parameters are:
+//   {
+//     "stream_attempt_delay": <The stream attempt delay in milliseconds>,
+//     "source_dependency": <The source identifier of the parent group>
+//   }
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
 
 // Emitted when an HttpStreamPool::Job started a StreamAttempt.
@@ -1414,6 +1419,13 @@ EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::Job received completion from a StreamAttempt.
 EVENT_TYPE(HTTP_STREAM_POOL_JOB_ATTEMPT_END)
+
+// Emitted when the stream attempt delay has passed on an HttpStreamPool::Job.
+// The event parameter is:
+//   {
+//     "stream_attempt_delay": <The stream attempt delay in milliseconds>
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_STREAM_ATTEMPT_DELAY_PASSED)
 
 // ------------------------------------------------------------------------
 // HttpNetworkTransaction

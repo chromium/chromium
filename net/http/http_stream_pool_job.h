@@ -150,6 +150,7 @@ class HttpStreamPool::Job
   enum class CanAttemptResult {
     kAttempt,
     kNoPendingRequest,
+    kBlockedStreamAttempt,
     kThrottledForSpdy,
     kReachedGroupLimit,
     kReachedPoolLimit,
@@ -224,6 +225,10 @@ class HttpStreamPool::Job
   // on-going requests after service endpoint results has changed. May notify
   // requests of stream ready.
   bool CanUseExistingSessionAfterEndpointChanges();
+
+  // Runs the stream attempt delay timer if stream attempts are blocked and the
+  // timer is not running.
+  void MaybeRunStreamAttemptDelayTimer();
 
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
@@ -310,6 +315,16 @@ class HttpStreamPool::Job
                             int rv);
 
   void OnSpdyThrottleDelayPassed();
+
+  // Returns the delay for TCP-based stream attempts in favor of QUIC.
+  base::TimeDelta GetStreamAttemptDelay();
+
+  // Updates whether stream attempts should be blocked or not. May cancel
+  // `stream_attempt_delay_timer_`.
+  void UpdateStreamAttemptState();
+
+  // Called when `stream_attempt_delay_timer_` is fired.
+  void OnStreamAttemptDelayPassed();
 
   bool CanUseQuic();
 
@@ -405,6 +420,12 @@ class HttpStreamPool::Job
   std::unique_ptr<QuicTask> quic_task_;
   // Set when `quic_task_` is completed.
   std::optional<int> quic_task_result_;
+
+  // The delay for TCP-based stream attempts in favor of QUIC.
+  base::TimeDelta stream_attempt_delay_;
+  // Set to true when stream attempts should be blocked.
+  bool should_block_stream_attempt_ = false;
+  base::OneShotTimer stream_attempt_delay_timer_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };

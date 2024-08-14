@@ -124,13 +124,20 @@ HttpStreamPool::Job::Job(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(net_log,
                                       NetLogSourceType::HTTP_STREAM_POOL_JOB)),
-      requests_(NUM_PRIORITIES) {
-  net_log_.BeginEventReferencingSource(
-      NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, group_->net_log().source());
+      requests_(NUM_PRIORITIES),
+      stream_attempt_delay_(GetStreamAttemptDelay()),
+      should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
+  CHECK(group_);
+  net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
+    base::Value::Dict dict;
+    dict.Set("stream_attempt_delay",
+             static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+    group_->net_log().source().AddToEventParameters(dict);
+    return dict;
+  });
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_CREATED, net_log_.source());
   proxy_info_.UseDirect();
-  CHECK(group_);
 }
 
 HttpStreamPool::Job::~Job() {
@@ -393,6 +400,7 @@ bool HttpStreamPool::Job::IsStalledByPoolLimit() {
     case CanAttemptResult::kReachedPoolLimit:
       return true;
     case CanAttemptResult::kNoPendingRequest:
+    case CanAttemptResult::kBlockedStreamAttempt:
     case CanAttemptResult::kThrottledForSpdy:
     case CanAttemptResult::kReachedGroupLimit:
       return false;
@@ -414,10 +422,19 @@ void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
       return;
     }
   }
-  MaybeComplete();
+
+  if (should_block_stream_attempt_) {
+    should_block_stream_attempt_ = false;
+    stream_attempt_delay_timer_.Stop();
+    MaybeAttemptConnection();
+  } else {
+    MaybeComplete();
+  }
 }
 
 void HttpStreamPool::Job::StartInternal(RequestPriority priority) {
+  UpdateStreamAttemptState();
+
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
     MaybeAttemptQuic();
     MaybeAttemptConnection();
@@ -455,6 +472,7 @@ void HttpStreamPool::Job::ProcessServiceEndpointChanges() {
   if (CanUseExistingSessionAfterEndpointChanges()) {
     return;
   }
+  MaybeRunStreamAttemptDelayTimer();
   MaybeCalculateSSLConfig();
   MaybeAttemptQuic();
   MaybeAttemptConnection();
@@ -510,6 +528,18 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
   }
 
   return false;
+}
+
+void HttpStreamPool::Job::MaybeRunStreamAttemptDelayTimer() {
+  if (!should_block_stream_attempt_ ||
+      stream_attempt_delay_timer_.IsRunning()) {
+    return;
+  }
+  CHECK(!stream_attempt_delay_.is_zero());
+  stream_attempt_delay_timer_.Start(
+      FROM_HERE, stream_attempt_delay_,
+      base::BindOnce(&Job::OnStreamAttemptDelayPassed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
@@ -677,6 +707,8 @@ bool HttpStreamPool::Job::IsConnectionAttemptReady() {
       return true;
     case CanAttemptResult::kNoPendingRequest:
       return false;
+    case CanAttemptResult::kBlockedStreamAttempt:
+      return false;
     case CanAttemptResult::kThrottledForSpdy:
       // TODO(crbug.com/346835898): Consider throttling less aggressively (e.g.
       // allow TCP handshake but throttle TLS handshake) so that endpoints we've
@@ -716,6 +748,10 @@ HttpStreamPool::Job::CanAttemptConnection() {
 
   if (ShouldThrottleAttemptForSpdy()) {
     return CanAttemptResult::kThrottledForSpdy;
+  }
+
+  if (should_block_stream_attempt_) {
+    return CanAttemptResult::kBlockedStreamAttempt;
   }
 
   if (group_->ReachedMaxStreamLimit()) {
@@ -1179,6 +1215,39 @@ void HttpStreamPool::Job::HandleAttemptFailure(
 void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
   CHECK(!spdy_throttle_delay_passed_);
   spdy_throttle_delay_passed_ = true;
+  MaybeAttemptConnection();
+}
+
+base::TimeDelta HttpStreamPool::Job::GetStreamAttemptDelay() {
+  if (!CanUseQuic()) {
+    return base::TimeDelta();
+  }
+
+  return quic_session_pool()->GetTimeDelayForWaitingJob(quic_session_key());
+}
+
+void HttpStreamPool::Job::UpdateStreamAttemptState() {
+  if (!should_block_stream_attempt_) {
+    return;
+  }
+
+  if (!CanUseQuic()) {
+    should_block_stream_attempt_ = false;
+    stream_attempt_delay_timer_.Stop();
+    return;
+  }
+}
+
+void HttpStreamPool::Job::OnStreamAttemptDelayPassed() {
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_STREAM_ATTEMPT_DELAY_PASSED, [&] {
+        base::Value::Dict dict;
+        dict.Set("stream_attempt_delay",
+                 static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+        return dict;
+      });
+  CHECK(should_block_stream_attempt_);
+  should_block_stream_attempt_ = false;
   MaybeAttemptConnection();
 }
 

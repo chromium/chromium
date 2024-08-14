@@ -514,6 +514,9 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   void DeactivateSessionForTesting(QuicChromiumClientSession* session);
 
+  // Set a time delay for waiting job for testing.
+  void SetTimeDelayForWaitingJobForTesting(base::TimeDelta delay);
+
   // Returns the QUIC version that would be used with an endpoint associated
   // with `metadata`, or `quic::ParsedQuicVersion::Unsupported()` if the
   // endpoint cannot be used with QUIC.
@@ -847,6 +850,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   quic::DeterministicConnectionIdGenerator connection_id_generator_{
       quic::kQuicDefaultConnectionIdLength};
+
+  std::optional<base::TimeDelta> time_delay_for_waiting_job_for_testing_;
 
   base::WeakPtrFactory<QuicSessionPool> weak_factory_{this};
 };

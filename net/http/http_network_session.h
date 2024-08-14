@@ -337,9 +337,15 @@ class NET_EXPORT HttpNetworkSession {
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
   std::unique_ptr<ClientSocketPoolManager> normal_socket_pool_manager_;
   std::unique_ptr<ClientSocketPoolManager> websocket_socket_pool_manager_;
-  // `http_stream_pool_` needs to outlive `spdy_session_pool_`.
-  std::unique_ptr<HttpStreamPool> http_stream_pool_;
   QuicSessionPool quic_session_pool_;
+  // `http_stream_pool_` needs to outlive `spdy_session_pool_` because it owns
+  // SpdySessions, which own HttpStreamHandle and handles are owned by
+  // `http_stream_pool_`.
+  // `http_stream_pool_` needs to be destroyed before `quic_session_pool_`
+  // because an HttpStreamPool::QuicTask, which is owned by `http_stream_pool_`,
+  // may have a QuicSessionAttempt that must be destroyed before
+  // `quic_session_pool_`.
+  std::unique_ptr<HttpStreamPool> http_stream_pool_;
   SpdySessionPool spdy_session_pool_;
   std::unique_ptr<HttpStreamFactory> http_stream_factory_;
   std::set<std::unique_ptr<HttpResponseBodyDrainer>, base::UniquePtrComparator>

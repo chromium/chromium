@@ -1194,6 +1194,10 @@ void QuicSessionPool::set_is_quic_known_to_work_on_current_network(
 
 base::TimeDelta QuicSessionPool::GetTimeDelayForWaitingJob(
     const QuicSessionKey& session_key) {
+  if (time_delay_for_waiting_job_for_testing_.has_value()) {
+    return *time_delay_for_waiting_job_for_testing_;
+  }
+
   // If |is_quic_known_to_work_on_current_network_| is false, then one of the
   // following is true:
   // 1) This is startup and QuicSessionPool::CreateSession() and
@@ -1253,6 +1257,11 @@ void QuicSessionPool::DeactivateSessionForTesting(
     QuicChromiumClientSession* session) {
   OnSessionGoingAway(session);
   all_sessions_.erase(session);
+}
+
+void QuicSessionPool::SetTimeDelayForWaitingJobForTesting(
+    base::TimeDelta delay) {
+  time_delay_for_waiting_job_for_testing_ = delay;
 }
 
 quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
