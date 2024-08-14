@@ -595,7 +595,7 @@ std::vector<PickerSearchResult> PickerController::GetSuggestedEmoji() {
 
 bool PickerController::IsGifsEnabled() {
   CHECK(model_);
-  return model_->IsGifsEnabled(GetPrefs());
+  return model_->IsGifsEnabled();
 }
 
 PrefService* PickerController::GetPrefs() {
@@ -629,7 +629,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   show_editor_callback_ = client_->CacheEditorContext();
 
   model_ = std::make_unique<PickerModel>(
-      GetFocusedTextInputClient(), &GetImeKeyboard(),
+      GetPrefs(), GetFocusedTextInputClient(), &GetImeKeyboard(),
       show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
                                       : PickerModel::EditorStatus::kEnabled);
 

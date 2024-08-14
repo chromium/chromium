@@ -33,7 +33,8 @@ class ASH_EXPORT PickerModel {
   // `focused_client` is the input field that was focused when Picker is opened.
   // It can be null. `ime_keyboard` is used to monitor caps lock state. This
   // cannot be null.
-  explicit PickerModel(ui::TextInputClient* focused_client,
+  explicit PickerModel(PrefService* prefs,
+                       ui::TextInputClient* focused_client,
                        input_method::ImeKeyboard* ime_keyboard,
                        EditorStatus editor_status);
 
@@ -48,7 +49,7 @@ class ASH_EXPORT PickerModel {
 
   PickerModeType GetMode() const;
 
-  bool IsGifsEnabled(PrefService* prefs) const;
+  bool IsGifsEnabled() const;
 
  private:
   bool has_focus_;
@@ -58,6 +59,7 @@ class ASH_EXPORT PickerModel {
   bool is_caps_lock_enabled_;
   EditorStatus editor_status_;
   ui::TextInputType text_input_type_;
+  bool is_gifs_enabled_;
 };
 
 }  // namespace ash

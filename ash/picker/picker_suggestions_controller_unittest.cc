@@ -35,7 +35,7 @@ TEST_F(PickerSuggestionsControllerTest,
   NiceMock<MockPickerClient> client;
   PickerSuggestionsController controller(&client);
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*focused_client=*/nullptr, &keyboard,
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
                     PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
@@ -65,8 +65,8 @@ TEST_F(PickerSuggestionsControllerTest,
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*focused_client=*/&input_field, &keyboard,
-                    PickerModel::EditorStatus::kEnabled);
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
+                    &keyboard, PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
@@ -89,8 +89,8 @@ TEST_F(PickerSuggestionsControllerTest,
   PickerSuggestionsController controller(&client);
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(/*focused_client=*/&input_field, &keyboard,
-                    PickerModel::EditorStatus::kEnabled);
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
+                    &keyboard, PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
   EXPECT_CALL(callback,
@@ -109,7 +109,7 @@ TEST_F(PickerSuggestionsControllerTest,
   PickerSuggestionsController controller(&client);
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(false);
-  PickerModel model(/*focused_client=*/nullptr, &keyboard,
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
                     PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
@@ -129,7 +129,7 @@ TEST_F(PickerSuggestionsControllerTest,
   PickerSuggestionsController controller(&client);
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(true);
-  PickerModel model(/*focused_client=*/nullptr, &keyboard,
+  PickerModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr, &keyboard,
                     PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
@@ -150,7 +150,7 @@ TEST_F(PickerSuggestionsControllerTest,
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(&input_field, &keyboard,
+  PickerModel model(/*prefs=*/nullptr, &input_field, &keyboard,
                     PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
@@ -176,7 +176,7 @@ TEST_F(PickerSuggestionsControllerTest,
   PickerSuggestionsController controller(&client);
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
-  PickerModel model(&input_field, &keyboard,
+  PickerModel model(/*prefs=*/nullptr, &input_field, &keyboard,
                     PickerModel::EditorStatus::kEnabled);
 
   base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
