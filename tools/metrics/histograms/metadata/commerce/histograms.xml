@@ -512,11 +512,11 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     enum="PriceInsightsPriceBucket" expires_after="2025-02-06">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
+  <owner>qib@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the current price bucket of the product when the user clicks
-    &quot;Buying Options&quot; in the price insights side panel. This histogram
-    was expired from 2024-01-03 to 2024-02-06.
+    &quot;Buying Options&quot; in the price insights UI.
   </summary>
 </histogram>
 
@@ -541,6 +541,22 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     Records the initial label of the price insights omnibox icon when it is
     shown to the user.
   </summary>
+</histogram>
+
+<histogram name="Commerce.PriceInsights.PriceTracking.{Action}"
+    enum="PriceInsightsPriceBucket" expires_after="2025-02-06">
+  <owner>mdjones@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>qib@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records when user clicks the price tracking button to {Action} price for a
+    product in the price insights bottom sheet. Implemented for Android.
+  </summary>
+  <token key="Action">
+    <variant name="Track"/>
+    <variant name="Untrack"/>
+  </token>
 </histogram>
 
 <histogram name="Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs"

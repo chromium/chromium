@@ -9,16 +9,18 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import android.content.Context;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.StringRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.commerce.core.PriceBucket;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
@@ -35,6 +37,8 @@ public class PriceInsightsBottomSheetMediator {
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
     private final ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+
+    private @PriceBucket int mPriceBucket;
 
     public PriceInsightsBottomSheetMediator(
             @NonNull Context context,
@@ -155,6 +159,11 @@ public class PriceInsightsBottomSheetMediator {
 
     private OnClickListener createPriceTrackingButtonListener(boolean shouldBeTracked) {
         return view -> {
+            String histogramActionName = shouldBeTracked ? "Track" : "Untrack";
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Commerce.PriceInsights.PriceTracking." + histogramActionName,
+                    mPriceBucket,
+                    PriceBucket.MAX_VALUE + 1);
             Callback<Boolean> callback =
                     (success) -> {
                         updatePriceTrackingButtonModel(mPriceTrackingStateSupplier.get());
@@ -174,6 +183,7 @@ public class PriceInsightsBottomSheetMediator {
                 || info.catalogHistoryPrices.isEmpty()) {
             return;
         }
+        mPriceBucket = info.priceBucket;
         @StringRes int priceHistoryTitleResId = R.string.price_history_title;
         if (info.hasMultipleCatalogs
                 && info.catalogAttributes != null
@@ -203,6 +213,10 @@ public class PriceInsightsBottomSheetMediator {
     }
 
     private void openJackpotUrl(GURL url) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Commerce.PriceInsights.BuyingOptionsClicked",
+                mPriceBucket,
+                PriceBucket.MAX_VALUE + 1);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);
         mTabModelSelector.openNewTab(
                 loadUrlParams, TabLaunchType.FROM_LINK, mTab, /* incognito= */ false);

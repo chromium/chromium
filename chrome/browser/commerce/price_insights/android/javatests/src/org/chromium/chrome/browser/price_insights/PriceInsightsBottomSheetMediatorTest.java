@@ -40,6 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -205,6 +206,10 @@ public class PriceInsightsBottomSheetMediatorTest {
                 PRICE_TRACKING_DESCRIPTION,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_DESCRIPTION));
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.PriceTracking.Track")
+                        .build();
 
         // Test click price tracking button and set from state disabled to enabled success.
         setResultForPriceTrackingUpdate(/* success= */ true);
@@ -214,6 +219,7 @@ public class PriceInsightsBottomSheetMediatorTest {
         assertNotNull(priceTrackingButtonListener);
         priceTrackingButtonListener.onClick(null);
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ true);
+        watcher.assertExpected();
     }
 
     @Test
@@ -229,6 +235,10 @@ public class PriceInsightsBottomSheetMediatorTest {
                 PRICE_TRACKING_DESCRIPTION,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_DESCRIPTION));
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.PriceTracking.Untrack")
+                        .build();
 
         // Test click price tracking button and set from state enabled to disabled success.
         setResultForPriceTrackingUpdate(/* success= */ true);
@@ -238,6 +248,7 @@ public class PriceInsightsBottomSheetMediatorTest {
         assertNotNull(priceTrackingButtonListener);
         priceTrackingButtonListener.onClick(null);
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        watcher.assertExpected();
     }
 
     @Test
@@ -247,6 +258,10 @@ public class PriceInsightsBottomSheetMediatorTest {
         mPriceInsightsMediator.requestShowContent();
 
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.PriceTracking.Track")
+                        .build();
 
         // Test click price tracking button and set from state disabled to enabled failed.
         setResultForPriceTrackingUpdate(/* success= */ false);
@@ -255,6 +270,7 @@ public class PriceInsightsBottomSheetMediatorTest {
                         PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER);
         priceTrackingButtonListener.onClick(null);
         assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        watcher.assertExpected();
     }
 
     @Test
@@ -298,6 +314,10 @@ public class PriceInsightsBottomSheetMediatorTest {
         assertEquals(
                 R.drawable.ic_open_in_new_24dp,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.BuyingOptionsClicked")
+                        .build();
 
         OnClickListener openUrlListener =
                 mPropertyModel.get(
@@ -310,6 +330,7 @@ public class PriceInsightsBottomSheetMediatorTest {
                         eq(TabLaunchType.FROM_LINK),
                         eq(mMockTab),
                         eq(false));
+        watcher.assertExpected();
     }
 
     @Test
