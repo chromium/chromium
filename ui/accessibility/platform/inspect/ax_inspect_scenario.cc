@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -77,24 +78,26 @@ AXInspectScenario AXInspectScenario::From(
     // Implicit directive case: use the most recent directive.
     if (!base::StartsWith(line, "@")) {
       if (directive != kNone) {
-        std::string value(base::TrimWhitespaceASCII(line, base::TRIM_ALL));
-        if (!value.empty())
-          scenario.ProcessDirective(directive, value);
+        std::string_view trimmed_value =
+            base::TrimWhitespaceASCII(line, base::TRIM_ALL);
+        if (!trimmed_value.empty()) {
+          scenario.ProcessDirective(directive, trimmed_value);
+        }
       }
       continue;
     }
 
     // Parse directive.
-    auto directive_end_pos = line.find_first_of(':');
-    if (directive_end_pos == std::string::npos)
+    auto parts = base::SplitStringOnce(line, ':');
+    if (!parts) {
       continue;
+    }
+    auto [name, value] = *parts;
 
-    directive =
-        ParseDirective(directive_prefix, line.substr(0, directive_end_pos));
+    directive = ParseDirective(directive_prefix, name);
     if (directive == kNone)
       continue;
 
-    std::string value = line.substr(directive_end_pos + 1);
     if (!value.empty())
       scenario.ProcessDirective(directive, value);
   }
@@ -104,65 +107,71 @@ AXInspectScenario AXInspectScenario::From(
 // static
 AXInspectScenario::Directive AXInspectScenario::ParseDirective(
     const std::string& directive_prefix,
-    const std::string& directive) {
-  if (directive == "@NO-LOAD-EXPECTED")
-    return kNoLoadExpected;
-  if (directive == "@WAIT-FOR" || directive == directive_prefix + "WAIT-FOR")
-    return kWaitFor;
-  if (directive == "@EXECUTE-AND-WAIT-FOR")
-    return kExecuteAndWaitFor;
-  if (directive == "@DEFAULT-ACTION-ON")
-    return kDefaultActionOn;
-  if (directive == directive_prefix + "ALLOW" || directive == "@ALLOW")
-    return kPropertyFilterAllow;
-  if (directive == directive_prefix + "ALLOW-EMPTY" ||
-      directive == "@ALLOW-EMPTY") {
-    return kPropertyFilterAllowEmpty;
-  }
-  if (directive == directive_prefix + "DENY" || directive == "@DENY")
-    return kPropertyFilterDeny;
-  if (directive == directive_prefix + "SCRIPT" || directive == "@SCRIPT")
-    return kScript;
-  if (directive == directive_prefix + "DENY-NODE" || directive == "@DENY-NODE")
-    return kNodeFilter;
+    std::string_view directive) {
+  static constexpr auto kMapping =
+      base::MakeFixedFlatMap<std::string_view, Directive>(
+          {{"NO-LOAD-EXPECTED", kNoLoadExpected},
+           {"WAIT-FOR", kWaitFor},
+           {"EXECUTE-AND-WAIT-FOR", kExecuteAndWaitFor},
+           {"DEFAULT-ACTION-ON", kDefaultActionOn},
+           {"ALLOW", kPropertyFilterAllow},
+           {"ALLOW-EMPTY", kPropertyFilterAllowEmpty},
+           {"DENY", kPropertyFilterDeny},
+           {"SCRIPT", kScript},
+           {"DENY-NODE", kNodeFilter}});
 
-  return kNone;
+  if (!directive.starts_with('@')) {
+    return kNone;
+  }
+
+  auto trimmed_directive = directive.starts_with(directive_prefix)
+                               ? directive.substr(directive_prefix.size())
+                               : directive.substr(1);
+
+  auto it = kMapping.find(trimmed_directive);
+
+  return it != kMapping.end() ? it->second : kNone;
 }
 
 void AXInspectScenario::ProcessDirective(Directive directive,
-                                         const std::string& value) {
+                                         std::string_view value) {
   switch (directive) {
     case kNoLoadExpected:
-      no_load_expected.push_back(value);
+      no_load_expected.push_back(std::string(value));
       break;
     case kWaitFor:
-      wait_for.push_back(value);
+      wait_for.push_back(std::string(value));
       break;
     case kExecuteAndWaitFor:
-      execute.push_back(value);
+      execute.push_back(std::string(value));
       break;
     case kDefaultActionOn:
-      default_action_on.push_back(value);
+      default_action_on.push_back(std::string(value));
       break;
     case kPropertyFilterAllow:
-      property_filters.emplace_back(value, AXPropertyFilter::ALLOW);
+      property_filters.emplace_back(std::string(value),
+                                    AXPropertyFilter::ALLOW);
       break;
     case kPropertyFilterAllowEmpty:
-      property_filters.emplace_back(value, AXPropertyFilter::ALLOW_EMPTY);
+      property_filters.emplace_back(std::string(value),
+                                    AXPropertyFilter::ALLOW_EMPTY);
       break;
     case kPropertyFilterDeny:
-      property_filters.emplace_back(value, AXPropertyFilter::DENY);
+      property_filters.emplace_back(std::string(value), AXPropertyFilter::DENY);
       break;
     case kScript:
-      script_instructions.emplace_back(value);
+      script_instructions.emplace_back(std::string(value));
       break;
     case kNodeFilter: {
-      const auto& parts = base::SplitString(value, "=", base::TRIM_WHITESPACE,
-                                            base::SPLIT_WANT_NONEMPTY);
-      if (parts.size() == 2)
-        node_filters.emplace_back(parts[0], parts[1]);
-      else
+      auto parts = base::SplitStringOnce(value, '=');
+      if (parts) {
+        node_filters.emplace_back(std::string(base::TrimWhitespaceASCII(
+                                      parts->first, base::TRIM_ALL)),
+                                  std::string(base::TrimWhitespaceASCII(
+                                      parts->second, base::TRIM_ALL)));
+      } else {
         LOG(WARNING) << "Failed to parse node filter " << value;
+      }
       break;
     }
     default:
