@@ -101,4 +101,8 @@ interface XRInternalsSessionListener {
     // Begin listening for incoming frames for diagnostics calculation.
     // This method does not send historical data.
     LogFrameData(device.mojom.XrFrameStatistics xrframe_statistics);
+
+    // Begin listening for incoming console messages for diagnostics.
+    // This method does not send historical data.
+    LogConsoleMessages(device.mojom.XrLogMessage xrlogging_statistics);
 };

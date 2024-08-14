@@ -5,10 +5,10 @@
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './session_statistics_table.html.js';
-import type {XrFrameStatistics} from './xr_session.mojom-webui.js';
+import type {XrFrameStatistics, XrLogMessage} from './xr_session.mojom-webui.js';
 
 
-const COLUMN_NAMES = ['Total Duration (ms)', 'Frame Rate', 'Dropped Frames'];
+const COLUMN_NAMES = ['Logs'];
 
 export class SessionStatisticsTable extends CustomElement {
   textLines: string[];
@@ -22,7 +22,6 @@ export class SessionStatisticsTable extends CustomElement {
 
     this.totalDuration = 0n;
     this.textLines = [COLUMN_NAMES.join(', ')];
-
     const table =
         this.getRequiredElement<HTMLTableElement>('#session-statistics-table');
 
@@ -52,7 +51,10 @@ export class SessionStatisticsTable extends CustomElement {
     const cellValues = [`${this.totalDuration}`, `${fps}`, `${droppedFrames}`];
 
     this.textLines.push(cellValues.join(', '));
-    this.addRow(cellValues);
+
+    const cellValuesString = `Duration:${this.totalDuration}ms, Frame Rate:${
+        fps}, Dropped Frames:${droppedFrames}`;
+    this.addRow([cellValuesString]);
   }
 
   addRow(cellValues: string[]) {
@@ -70,6 +72,11 @@ export class SessionStatisticsTable extends CustomElement {
   async copyToClipboard(): Promise<void> {
     const textToCopy = this.textLines.join('\n');
     await navigator.clipboard.writeText(textToCopy);
+  }
+
+  addConsoleMessageRow(xrLogMessage: XrLogMessage) {
+    const message = xrLogMessage.message;
+    this.addRow([message]);
   }
 }
 

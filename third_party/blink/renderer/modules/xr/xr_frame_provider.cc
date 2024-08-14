@@ -58,8 +58,7 @@ XRFrameProvider::XRFrameProvider(XRSystem* xr)
               TaskType::kMiscPlatformAPI))),
       immersive_data_provider_(xr->GetExecutionContext()),
       immersive_presentation_provider_(xr->GetExecutionContext()),
-      last_has_focus_(xr->IsFrameFocused()),
-      frame_data_logger_(xr->GetExecutionContext()) {}
+      last_has_focus_(xr->IsFrameFocused()) {}
 
 void XRFrameProvider::AddImmersiveSessionObserver(
     ImmersiveSessionObserver* observer) {
@@ -68,10 +67,7 @@ void XRFrameProvider::AddImmersiveSessionObserver(
 
 void XRFrameProvider::OnSessionStarted(
     XRSession* session,
-    device::mojom::blink::XRSessionPtr session_ptr,
-    uint64_t trace_id,
-    mojo::PendingRemote<device::mojom::blink::WebXrInternalsRendererListener>
-        frame_data_logger) {
+    device::mojom::blink::XRSessionPtr session_ptr) {
   DCHECK(session);
 
   if (session->immersive()) {
@@ -106,11 +102,7 @@ void XRFrameProvider::OnSessionStarted(
     frame_transport_->PresentChange();
 
     last_frame_statistics_sent_time_ = base::TimeTicks::Now();
-    trace_id_ = trace_id;
 
-    frame_data_logger_.Bind(
-        std::move(frame_data_logger),
-        xr_->GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault));
 
     repeating_timer_.Start(FROM_HERE, base::Seconds(1),
                            WTF::BindRepeating(&XRFrameProvider::SendFrameData,
@@ -169,7 +161,6 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     frame_id_ = -1;
     immersive_presentation_provider_.reset();
     immersive_data_provider_.reset();
-    frame_data_logger_.reset();
 
     first_immersive_frame_time_ = std::nullopt;
     first_immersive_frame_time_delta_ = std::nullopt;
@@ -753,10 +744,14 @@ void XRFrameProvider::Dispose() {
 }
 
 void XRFrameProvider::SendFrameData() {
+  if (!immersive_session_) {
+    return;
+  }
+
   device::mojom::blink::XrFrameStatisticsPtr xr_frame_stat =
       device::mojom::blink::XrFrameStatistics::New();
 
-  xr_frame_stat->trace_id = trace_id_;
+  xr_frame_stat->trace_id = immersive_session_->GetTraceId();
 
   base::TimeTicks now = base::TimeTicks::Now();
   xr_frame_stat->duration = now - last_frame_statistics_sent_time_;
@@ -768,8 +763,9 @@ void XRFrameProvider::SendFrameData() {
   num_frames_ = 0;
   dropped_frames_ = 0;
 
-  if (frame_data_logger_) {
-    frame_data_logger_->OnFrameData(std::move(xr_frame_stat));
+  if (xr_->GetWebXrInternalsRendererListener()) {
+    xr_->GetWebXrInternalsRendererListener()->OnFrameData(
+        std::move(xr_frame_stat));
   }
 }
 
@@ -782,7 +778,6 @@ void XRFrameProvider::Trace(Visitor* visitor) const {
   visitor->Trace(non_immersive_data_providers_);
   visitor->Trace(requesting_sessions_);
   visitor->Trace(immersive_observers_);
-  visitor->Trace(frame_data_logger_);
 }
 
 }  // namespace blink

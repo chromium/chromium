@@ -148,3 +148,11 @@ struct XrFrameStatistics {
     // The number of frames that were dropped by the device.
     uint64 dropped_frames;
 };
+
+struct XrLogMessage {
+    // The trace_id is used to correlate the frame statistics with the
+    // session creation request. Check same trace_id in XRSessionOptions.
+    uint64 trace_id;
+    // The console message to be logged.
+    string message;
+};

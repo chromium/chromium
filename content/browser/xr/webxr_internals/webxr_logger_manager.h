@@ -51,6 +51,9 @@ class WebXrLoggerManager
   void OnFrameData(
       device::mojom::XrFrameStatisticsPtr xrframe_statistics) override;
 
+  void OnConsoleLog(
+      device::mojom::XrLogMessagePtr xr_logging_statistics) override;
+
  private:
   std::vector<webxr::mojom::SessionRequestedRecordPtr>
       session_requested_records_;

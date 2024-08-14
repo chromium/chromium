@@ -15,7 +15,7 @@ import type {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js
 import {BrowserProxy} from './browser_proxy.js';
 import type {RuntimeInfo, SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
 import type {XRDeviceId} from './xr_device.mojom-webui.js';
-import type {XrFrameStatistics} from './xr_session.mojom-webui.js';
+import type {XrFrameStatistics, XrLogMessage} from './xr_session.mojom-webui.js';
 
 let browserProxy: BrowserProxy;
 
@@ -149,6 +149,13 @@ async function renderSessionStatisticsContent() {
   assert(sessionStatisticsContent);
 
   const table = document.createElement('session-statistics-table');
+
+  browserProxy.getBrowserCallback().logConsoleMessages.addListener(
+      (xrLogMessage: XrLogMessage) => {
+        table.addConsoleMessageRow(xrLogMessage);
+      });
+
+  sessionStatisticsContent.appendChild(table);
 
   browserProxy.getBrowserCallback().logFrameData.addListener(
       (xrSessionStatistics: XrFrameStatistics) => {

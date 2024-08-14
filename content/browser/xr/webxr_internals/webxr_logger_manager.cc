@@ -107,4 +107,10 @@ void WebXrLoggerManager::OnFrameData(
   }
 }
 
+void WebXrLoggerManager::OnConsoleLog(
+    device::mojom::XrLogMessagePtr xr_logging_statistics) {
+  for (const auto& remote : remote_set_) {
+    remote->LogConsoleMessages(xr_logging_statistics->Clone());
+  }
+}
 }  // namespace content

@@ -1091,4 +1091,8 @@ interface XRSessionClient {
 interface WebXrInternalsRendererListener {
     // Called when the renderer has new frame data to send to the session.
     OnFrameData(device.mojom.XrFrameStatistics xrframe_statistics);
+
+    // Called when the renderer has new console log data to send to the
+    // session.
+    OnConsoleLog(device.mojom.XrLogMessage xrlogging_statistics);
 };
