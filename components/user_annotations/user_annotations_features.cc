@@ -30,4 +30,10 @@ bool ShouldAddFormSubmissionForURL(const GURL& url) {
   return base::Contains(allowed_hosts, url.host());
 }
 
+bool ShouldReplaceAnnotationsAfterEachSubmission() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kUserAnnotations, "should_replace_annotations_for_form_submissions",
+      false);
+}
+
 }  // namespace user_annotations

@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_types.h"
 
 namespace user_annotations {
@@ -18,6 +19,10 @@ UserAnnotationsService::~UserAnnotationsService() = default;
 void UserAnnotationsService::AddFormSubmission(
     const optimization_guide::proto::AXTreeUpdate& ax_tree_update,
     const autofill::FormData& form_data) {
+  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
+    entries_.clear();
+  }
+
   for (const auto& field : form_data.fields()) {
     optimization_guide::proto::UserAnnotationsEntry entry_proto;
     entry_proto.set_key(base::UTF16ToUTF8(

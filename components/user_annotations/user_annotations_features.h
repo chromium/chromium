@@ -19,6 +19,9 @@ bool IsUserAnnotationsEnabled();
 // Whether the form submission for `url` should be added to user annotations.
 bool ShouldAddFormSubmissionForURL(const GURL& url);
 
+// Whether the user annotations should be replaced after each form submission.
+bool ShouldReplaceAnnotationsAfterEachSubmission();
+
 }  // namespace user_annotations
 
 #endif  // COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_FEATURES_H_
