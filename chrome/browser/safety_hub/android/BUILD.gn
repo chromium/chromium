@@ -107,6 +107,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",
   ]
   deps = [
     ":java",
