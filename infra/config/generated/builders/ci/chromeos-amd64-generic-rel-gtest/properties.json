@@ -15,8 +15,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "shared_build_dir"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
