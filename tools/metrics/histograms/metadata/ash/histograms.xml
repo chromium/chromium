@@ -6421,6 +6421,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.DeskBarNumLayersMirrored" units="units"
+    expires_after="2025-02-13">
+  <owner>esum@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Records the number of ui/compositor layers that were mirrored when rendering
+    the desk bar as part of overview mode. More specifically, these are the
+    layers mirrored to create the &quot;mini views&quot; of each desk within the
+    desk bar. Recorded once per overview mode session in which the desk bar was
+    present; if the mirrored layers are rebuilt after the first rendering, this
+    is not counted. Not recorded for overview mode sessions without the desk
+    bar.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Overview.DeskBarVisibility" enum="DeskBarVisibility"
     expires_after="2025-02-08">
   <owner>esum@google.com</owner>
