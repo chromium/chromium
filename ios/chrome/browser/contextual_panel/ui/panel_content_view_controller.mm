@@ -25,11 +25,11 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-// Height of the top header.
-const CGFloat kHeaderHeight = 66;
+// Top margin between the header logo and the top of the panel.
+const CGFloat kLogoTopMargin = 24;
 
-// Top margin between the header and the top of the panel.
-const CGFloat kHeaderTopMargin = 24;
+// Bottom margin between the header logo and the top of the collection view
+const CGFloat kLogoBottomMargin = 18;
 
 // Size of the close button.
 const CGFloat kCloseButtonIconSize = 30;
@@ -140,7 +140,6 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [self.view.trailingAnchor
         constraintEqualToAnchor:_headerView.trailingAnchor],
     [self.view.topAnchor constraintEqualToAnchor:_headerView.topAnchor],
-    [_headerView.heightAnchor constraintEqualToConstant:kHeaderHeight],
   ]];
 
   [self createDragHandleView];
@@ -190,7 +189,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [logo.centerXAnchor
         constraintEqualToAnchor:_headerView.contentView.centerXAnchor],
     [logo.topAnchor constraintEqualToAnchor:_headerView.contentView.topAnchor
-                                   constant:kHeaderTopMargin],
+                                   constant:kLogoTopMargin],
+    [_headerView.bottomAnchor constraintEqualToAnchor:logo.bottomAnchor
+                                             constant:kLogoBottomMargin],
   ]];
 
   [self createCloseButton];
@@ -235,6 +236,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
       subview.backgroundColor = UIColor.clearColor;
     }
   }
+
+  [self setCollectionViewContentInset];
+  [self setCollectionViewScrollIndicatorInsets];
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -384,8 +388,14 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 - (void)setCollectionViewScrollIndicatorInsets {
   // The bottom inset should not include the safe area height.
   _collectionView.verticalScrollIndicatorInsets = UIEdgeInsetsMake(
-      kHeaderHeight, 0, _bottomToolbarHeight - self.view.safeAreaInsets.bottom,
-      0);
+      _headerView.bounds.size.height, 0,
+      _bottomToolbarHeight - self.view.safeAreaInsets.bottom, 0);
+}
+
+- (void)setCollectionViewContentInset {
+  _collectionView.contentInset =
+      UIEdgeInsetsMake(_headerView.bounds.size.height, 0,
+                       _bottomToolbarHeight + kContentBottomMargin, 0);
 }
 
 #pragma mark - View Initialization
@@ -421,8 +431,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
-  _collectionView.contentInset = UIEdgeInsetsMake(
-      kHeaderHeight, 0, _bottomToolbarHeight + kContentBottomMargin, 0);
+  [self setCollectionViewContentInset];
   [self setCollectionViewScrollIndicatorInsets];
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
