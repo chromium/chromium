@@ -3699,16 +3699,9 @@ ScriptPromise<IDLString> NavigatorAuction::createAuctionNonce(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeCreateAuctionNonceSynchronousResolution)) {
-    resolver->Resolve(CombineAuctionNonce(
-        GetSupplementable()->DomWindow()->document()->base_auction_nonce(),
-        auction_nonce_counter_++));
-  } else {
-    ad_auction_service_->CreateAuctionNonce(resolver->WrapCallbackInScriptScope(
-        WTF::BindOnce(&NavigatorAuction::CreateAuctionNonceComplete,
-                      WrapPersistent(this))));
-  }
+  resolver->Resolve(CombineAuctionNonce(
+      GetSupplementable()->DomWindow()->document()->base_auction_nonce(),
+      auction_nonce_counter_++));
   return promise;
 }
 
@@ -4181,12 +4174,6 @@ void NavigatorAuction::ClearComplete(
     return;
   }
   resolver->Resolve();
-}
-
-void NavigatorAuction::CreateAuctionNonceComplete(
-    ScriptPromiseResolver<IDLString>* resolver,
-    const base::Uuid& nonce) {
-  resolver->Resolve(String(nonce.AsLowercaseString()));
 }
 
 void NavigatorAuction::AuctionHandle::AuctionComplete(

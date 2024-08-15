@@ -1673,8 +1673,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    auction_nonce_manager_ =
-        std::make_unique<SynchronousAuctionNonceManager>(GetFrame());
+    auction_nonce_manager_ = std::make_unique<AuctionNonceManager>(GetFrame());
     ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
         web_contents()->GetPrimaryPage());
   }

@@ -1956,10 +1956,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "FledgeCreateAuctionNonceSynchronousResolution",
-      status: "stable",
-    },
-    {
       name: "FledgeCustomMaxAuctionAdComponents",
       status: "stable",
     },

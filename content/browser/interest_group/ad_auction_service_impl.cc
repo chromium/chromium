@@ -395,19 +395,6 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
           base::Unretained(render_frame_host().GetBrowserContext())));
 }
 
-void AdAuctionServiceImpl::CreateAuctionNonce(
-    CreateAuctionNonceCallback callback) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeCreateAuctionNonceSynchronousResolution)) {
-    ReportBadMessageAndDeleteThis(
-        "CreateAuctionNonce with FledgeCreateAuctionNonceSynchronousResolution "
-        "on");
-    return;
-  }
-  std::move(callback).Run(
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce()));
-}
-
 void AdAuctionServiceImpl::RunAdAuction(
     const blink::AuctionConfig& config,
     mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
@@ -492,7 +479,7 @@ void AdAuctionServiceImpl::RunAdAuction(
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       auction_metrics_recorder_manager_.CreateAuctionMetricsRecorder(),
-      &auction_worklet_manager_, auction_nonce_manager_.get(),
+      &auction_worklet_manager_, &auction_nonce_manager_,
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
       private_aggregation_manager_, std::move(ad_auction_page_data_callback),
       // Unlike other callbacks, this needs to be safe to call after destruction
@@ -785,7 +772,7 @@ AdAuctionServiceImpl::AdAuctionServiceImpl(
           GetTopWindowOrigin(),
           origin(),
           this),
-      auction_nonce_manager_(CreateAuctionNonceManager(GetFrame())),
+      auction_nonce_manager_(GetFrame()),
       private_aggregation_manager_(PrivateAggregationManager::GetManager(
           *render_frame_host.GetBrowserContext())) {
   // Construct `ref_counted_trusted_url_loader_factory_` here because

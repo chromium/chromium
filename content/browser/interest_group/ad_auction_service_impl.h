@@ -72,7 +72,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const std::vector<std::string>& interest_groups_to_keep,
       ClearOriginJoinedInterestGroupsCallback callback) override;
   void UpdateAdInterestGroups() override;
-  void CreateAuctionNonce(CreateAuctionNonceCallback callback) override;
   void RunAdAuction(
       const blink::AuctionConfig& config,
       mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
@@ -232,7 +231,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   // Manages auction nonces issued by prior calls to CreateAuctionNonce,
   // which are used by subsequent calls to RunAdAuction.
-  std::unique_ptr<AuctionNonceManager> auction_nonce_manager_;
+  AuctionNonceManager auction_nonce_manager_;
 
   // Use a map instead of a list so can remove entries without destroying them.
   // TODO(mmenke): Switch to std::set() and use extract() once that's allowed.

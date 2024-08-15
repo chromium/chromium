@@ -128,18 +128,6 @@ interface AdAuctionService {
   FinalizeAd(string ads_guid, AuctionAdConfig config)
      => (url.mojom.Url? ad_display_url);
 
-  // Creates an auction nonce, a one-time ID uniquely associated with a single
-  // call to RunAdAuction. This nonce will need to be passed back in via a
-  // subsequent call to RunAdAuction via the AuctionAdConfig. This is currently
-  // only needed for auctions that use additional bids, for which the auction
-  // nonce will be included in each additional bid as a way of ensuring that
-  // those bids are only used in the auctions for which they were intended.
-  // This is only called when
-  // blink::features::kFledgeCreateAuctionNonceSynchronousResolution is *not*
-  // enabled, since synchronous resolution enables the Renderer process to
-  // independently create new auction nonces.
-  CreateAuctionNonce() => (mojo_base.mojom.Uuid nonce);
-
   // Triggers the ad auction to run in a sandboxed JavaScript process. The
   // auction scripts run in this process come from the `bidding_logic_url`'s of
   // the interest groups owned by `interest_group_buyers` and the auction

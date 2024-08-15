@@ -1319,7 +1319,7 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupFrameNotHttps) {
   interest_group.owner = kHttpOriginA;
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kHttpOriginA, kInterestGroupName));
 }
@@ -1330,7 +1330,7 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupOwnerNotHttps) {
   interest_group.owner = url::Origin::Create(GURL("http://a.test/"));
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
 
@@ -1338,7 +1338,7 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupOwnerNotHttps) {
   interest_group.owner = url::Origin::Create(GURL("wss://a.test/"));
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(interest_group.owner, kInterestGroupName));
 }
@@ -1354,7 +1354,7 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupDisallowedUrls) {
   interest_group.bidding_url = kBadUrl;
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
@@ -1363,7 +1363,7 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupDisallowedUrls) {
   interest_group.update_url = kBadUrl;
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 
@@ -1372,7 +1372,7 @@ TEST_F(AdAuctionServiceImplTest, JoinInterestGroupDisallowedUrls) {
   interest_group.trusted_bidding_signals_url = kBadUrl;
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
 }
@@ -1442,7 +1442,7 @@ TEST_F(AdAuctionServiceImplTest, JoinMassiveInterestGroupFails) {
   interest_group.user_bidding_signals = std::string(1024 * 1024, '5');
   JoinInterestGroupAndExpectBadMessage(
       interest_group,
-      "Validation failed for blink.mojom.AdAuctionService.4  "
+      "Validation failed for blink.mojom.AdAuctionService.3  "
       "[VALIDATION_ERROR_DESERIALIZATION_FAILED]");
 
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6089,48 +6089,6 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   ASSERT_TRUE(b_group.ads.has_value());
   ASSERT_EQ(b_group.ads->size(), 1u);
   EXPECT_EQ(b_group.ads.value()[0].render_url(), "https://example.com/render3");
-}
-
-TEST_F(AdAuctionServiceImplTest, CreateAuctionNonce) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      blink::features::kFledgeCreateAuctionNonceSynchronousResolution);
-
-  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
-  AdAuctionServiceImpl::CreateMojoService(
-      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
-
-  base::RunLoop run_loop;
-  base::Uuid auction_nonce;
-  ad_auction_service->CreateAuctionNonce(base::BindLambdaForTesting(
-      [&run_loop, &auction_nonce](const base::Uuid& nonce) {
-        auction_nonce = nonce;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  EXPECT_NE(auction_nonce.AsLowercaseString(), "");
-}
-
-// CreateAuctionNonce() should not be called when the
-// `FledgeCreateAuctionNonceSynchronousResolution` feature is enabled.
-TEST_F(AdAuctionServiceImplTest,
-       CreateAuctionNonceDisabledBecauseOfSynchronousResolution) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kFledgeCreateAuctionNonceSynchronousResolution);
-
-  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
-  AdAuctionServiceImpl::CreateMojoService(
-      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
-
-  base::RunLoop run_loop;
-  ad_auction_service.set_disconnect_handler(run_loop.QuitClosure());
-  ad_auction_service->CreateAuctionNonce(
-      base::BindOnce([](const base::Uuid& nonce) {
-        ADD_FAILURE() << "Callback unexpectedly invoked.";
-      }));
-  run_loop.Run();
 }
 
 // Add an interest group, and run an ad auction.
