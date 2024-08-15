@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 // This class is a DesktopCapturer that fully delegates the picking of a source
@@ -16,7 +17,7 @@ class DelegatedSourceListCapturer
     : public webrtc::DesktopCapturer,
       public webrtc::DelegatedSourceListController {
  public:
-  DelegatedSourceListCapturer();
+  explicit DelegatedSourceListCapturer(content::DesktopMediaID::Type type);
   ~DelegatedSourceListCapturer() override;
 
   // DesktopCapturer
@@ -32,7 +33,13 @@ class DelegatedSourceListCapturer
   void EnsureHidden() override;
 
  private:
+  void OnSelected(Source source);
+  void OnCancelled();
+  void OnError();
+
   raw_ptr<Observer> delegated_source_list_observer_ = nullptr;
+  std::optional<Source> selected_source_;
+  content::DesktopMediaID::Type type_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DelegatedSourceListCapturer> weak_ptr_factory_{this};

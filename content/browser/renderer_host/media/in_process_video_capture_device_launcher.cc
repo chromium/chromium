@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/renderer_host/media/in_process_launched_video_capture_device.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/common/buildflags.h"
@@ -47,7 +48,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/media/capture/desktop_capture_device_mac.h"
-#include "content/browser/media/capture/screen_capture_kit_device_mac.h"
+#include "content/browser/media/capture/screen_capture_kit_device_utils_mac.h"
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -185,6 +186,7 @@ void ReportDesktopCaptureImplementationAndType(
 }
 
 DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
+    NativeScreenCapturePicker* picker,
     const DesktopMediaID& desktop_id,
     std::unique_ptr<media::VideoCaptureDevice>& device_out) {
   DCHECK_EQ(device_out.get(), nullptr);
@@ -196,8 +198,11 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
        base::FeatureList::IsEnabled(kScreenCaptureKitMacWindow)) ||
       (desktop_id.type == DesktopMediaID::TYPE_SCREEN &&
        base::FeatureList::IsEnabled(kScreenCaptureKitMacScreen))) {
-    if ((device_out = CreateScreenCaptureKitDeviceMac(desktop_id)))
+    device_out = picker ? picker->CreateDevice(desktop_id)
+                        : CreateScreenCaptureKitDeviceMac(desktop_id);
+    if (device_out) {
       return kScreenCaptureKitDeviceMac;
+    }
   }
   if ((device_out = CreateDesktopCaptureDeviceMac(desktop_id))) {
     return kDesktopCaptureDeviceMac;
@@ -214,9 +219,11 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
 }  // anonymous namespace
 
 InProcessVideoCaptureDeviceLauncher::InProcessVideoCaptureDeviceLauncher(
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
+    NativeScreenCapturePicker* picker)
     : device_task_runner_(std::move(device_task_runner)),
-      state_(State::READY_TO_LAUNCH) {}
+      state_(State::READY_TO_LAUNCH),
+      native_screen_capture_picker_(picker) {}
 
 InProcessVideoCaptureDeviceLauncher::~InProcessVideoCaptureDeviceLauncher() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -508,8 +515,8 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
 
   std::unique_ptr<media::VideoCaptureDevice> video_capture_device;
   DesktopCaptureImplementation implementation =
-      CreatePlatformDependentVideoCaptureDevice(desktop_id,
-                                                video_capture_device);
+      CreatePlatformDependentVideoCaptureDevice(
+          native_screen_capture_picker_, desktop_id, video_capture_device);
   DVLOG(1) << __func__ << " implementation " << implementation << " type "
            << desktop_id.type;
   ReportDesktopCaptureImplementationAndType(implementation, desktop_id.type);

@@ -417,6 +417,21 @@ void VideoCaptureManager::OnDeviceConnectionLost(
       media::VideoCaptureError::kVideoCaptureManagerDeviceConnectionLost);
 }
 
+void VideoCaptureManager::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  video_capture_provider_->OpenNativeScreenCapturePicker(
+      type, std::move(picker_callback), std::move(cancel_callback),
+      std::move(error_callback));
+}
+
+void VideoCaptureManager::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  video_capture_provider_->CloseNativeScreenCapturePicker(device_id);
+}
+
 void VideoCaptureManager::ConnectClient(
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
@@ -852,6 +867,11 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
                   << controller->stream_type()
                   << ", device_id = " << controller->device_id() << ")";
     EmitLogMessage(string_stream.str(), 1);
+
+    // Close the native OS picker as the associated VideoCaptureDevice is being
+    // closed.
+    CloseNativeScreenCapturePicker(
+        DesktopMediaID::Parse(controller->device_id()));
 
     // The VideoCaptureController is removed from |controllers_| immediately.
     // The controller is deleted immediately, and the device is freed

@@ -14,9 +14,17 @@ namespace content {
 
 InProcessVideoCaptureProvider::InProcessVideoCaptureProvider(
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner)
-    : device_task_runner_(std::move(device_task_runner)) {}
+    : native_screen_capture_picker_(MaybeCreateNativeScreenCapturePicker()),
+      device_task_runner_(std::move(device_task_runner)) {}
 
-InProcessVideoCaptureProvider::~InProcessVideoCaptureProvider() = default;
+InProcessVideoCaptureProvider::~InProcessVideoCaptureProvider() {
+  // Destruct the `native_screen_capture_picker_` on the `device_task_runner_`
+  // as all its functions are run on `device_task_runner_` as well.
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce([](std::unique_ptr<NativeScreenCapturePicker>) {},
+                     std::move(native_screen_capture_picker_)));
+}
 
 // static
 std::unique_ptr<VideoCaptureProvider>
@@ -35,7 +43,34 @@ void InProcessVideoCaptureProvider::GetDeviceInfosAsync(
 std::unique_ptr<VideoCaptureDeviceLauncher>
 InProcessVideoCaptureProvider::CreateDeviceLauncher() {
   return std::make_unique<InProcessVideoCaptureDeviceLauncher>(
-      device_task_runner_);
+      device_task_runner_, native_screen_capture_picker_.get());
+}
+
+void InProcessVideoCaptureProvider::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  CHECK(native_screen_capture_picker_);
+
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeScreenCapturePicker::Open,
+                     native_screen_capture_picker_->GetWeakPtr(), type,
+                     std::move(picker_callback), std::move(cancel_callback),
+                     std::move(error_callback)));
+}
+
+void InProcessVideoCaptureProvider::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  if (!native_screen_capture_picker_) {
+    return;
+  }
+
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeScreenCapturePicker::Close,
+                     native_screen_capture_picker_->GetWeakPtr(), device_id));
 }
 
 }  // namespace content

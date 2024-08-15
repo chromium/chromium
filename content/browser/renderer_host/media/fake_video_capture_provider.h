@@ -23,6 +23,12 @@ class FakeVideoCaptureProvider : public VideoCaptureProvider {
   // VideoCaptureProvider implementation.
   void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
+  void OpenNativeScreenCapturePicker(
+      DesktopMediaID::Type type,
+      base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+      base::OnceCallback<void()> cancel_callback,
+      base::OnceCallback<void()> error_callback) override;
+  void CloseNativeScreenCapturePicker(DesktopMediaID device_id) override;
 
  private:
   media::VideoCaptureSystemImpl system_;

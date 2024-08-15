@@ -210,6 +210,22 @@ CaptureMode GetCaptureModeFeatureParam() {
   return CaptureMode::kSCStream;
 }
 
+content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
+    DesktopMediaList::Type type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return content::DesktopMediaID::Type::TYPE_SCREEN;
+    case DesktopMediaList::Type::kWindow:
+      return content::DesktopMediaID::Type::TYPE_WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+      return content::DesktopMediaID::Type::TYPE_WEB_CONTENTS;
+    case DesktopMediaList::Type::kNone:
+      break;
+  }
+  NOTREACHED_NORETURN();
+}
+
 // The sort mode controls the order of the source list that is returned from
 // GetSourceList().
 enum class SortMode {
@@ -1021,13 +1037,15 @@ std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
   if (@available(macOS 15.0, *)) {
     if (base::FeatureList::IsEnabled(kUseSCContentSharingPicker)) {
       return std::make_unique<DesktopCapturerWrapper>(
-          std::make_unique<DelegatedSourceListCapturer>());
+          std::make_unique<DelegatedSourceListCapturer>(
+              ConvertToDesktopMediaIDType(type)));
     }
   }
   if (@available(macOS 14.0, *)) {
     if (base::FeatureList::IsEnabled(kUseSCContentSharingPickerSonoma)) {
       return std::make_unique<DesktopCapturerWrapper>(
-          std::make_unique<DelegatedSourceListCapturer>());
+          std::make_unique<DelegatedSourceListCapturer>(
+              ConvertToDesktopMediaIDType(type)));
     }
   }
   if (@available(macOS 13.2, *)) {

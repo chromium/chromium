@@ -256,6 +256,8 @@ void DesktopMediaListBase::OnDelegatedSourceListSelection() {
   DCHECK(IsSourceListDelegated());
   if (observer_)
     observer_->OnDelegatedSourceListSelection();
+
+  Refresh(false);
 }
 
 void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
@@ -263,4 +265,6 @@ void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
   DCHECK(IsSourceListDelegated());
   if (observer_)
     observer_->OnDelegatedSourceListDismissed();
+
+  Refresh(false);
 }

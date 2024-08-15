@@ -26,6 +26,7 @@ class FakeVideoCaptureDeviceFactory;
 namespace content {
 
 struct DesktopMediaID;
+class NativeScreenCapturePicker;
 
 // Implementation of BuildableVideoCaptureDevice that creates capture devices
 // in the same process as it is being operated on, which must be the Browser
@@ -33,8 +34,9 @@ struct DesktopMediaID;
 // Instances of this class must be operated from the Browser process IO thread.
 class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
  public:
-  explicit InProcessVideoCaptureDeviceLauncher(
-      scoped_refptr<base::SingleThreadTaskRunner> device_task_runner);
+  InProcessVideoCaptureDeviceLauncher(
+      scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
+      NativeScreenCapturePicker* picker);
   ~InProcessVideoCaptureDeviceLauncher() override;
 
   void LaunchDeviceAsync(
@@ -109,6 +111,7 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   State state_;
   std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
+  raw_ptr<NativeScreenCapturePicker> native_screen_capture_picker_;
 };
 
 }  // namespace content

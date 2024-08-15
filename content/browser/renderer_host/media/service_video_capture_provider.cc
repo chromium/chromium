@@ -184,6 +184,19 @@ ServiceVideoCaptureProvider::CreateDeviceLauncher() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ServiceVideoCaptureProvider::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  NOTREACHED();
+}
+
+void ServiceVideoCaptureProvider::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  NOTREACHED();
+}
+
 void ServiceVideoCaptureProvider::OnServiceStarted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Whenever the video capture service starts, we register a

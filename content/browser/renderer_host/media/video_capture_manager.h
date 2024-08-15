@@ -239,6 +239,14 @@ class CONTENT_EXPORT VideoCaptureManager
   void OnDeviceLaunchAborted() override;
   void OnDeviceConnectionLost(VideoCaptureController* controller) override;
 
+  void OpenNativeScreenCapturePicker(
+      DesktopMediaID::Type type,
+      base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+      base::OnceCallback<void()> cancel_callback,
+      base::OnceCallback<void()> error_callback);
+
+  void CloseNativeScreenCapturePicker(DesktopMediaID device_id);
+
   bool is_idle_close_timer_running_for_testing() const {
     return idle_close_timer_.IsRunning();
   }

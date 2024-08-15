@@ -4,7 +4,13 @@
 
 #include "chrome/browser/media/webrtc/delegated_source_list_capturer.h"
 
-DelegatedSourceListCapturer::DelegatedSourceListCapturer() {
+#include "base/task/bind_post_task.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_capture.h"
+
+DelegatedSourceListCapturer::DelegatedSourceListCapturer(
+    content::DesktopMediaID::Type type)
+    : type_(type) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -20,7 +26,10 @@ void DelegatedSourceListCapturer::CaptureFrame() {
 
 bool DelegatedSourceListCapturer::GetSourceList(SourceList* sources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40286360): Implement
+  sources->clear();
+  if (selected_source_) {
+    sources->push_back(*selected_source_);
+  }
   return true;
 }
 
@@ -39,10 +48,49 @@ void DelegatedSourceListCapturer::Observe(Observer* observer) {
 
 void DelegatedSourceListCapturer::EnsureVisible() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40286360): Implement
+  auto callback = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&DelegatedSourceListCapturer::OnSelected,
+                     weak_ptr_factory_.GetWeakPtr()));
+  auto cancel_callback = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&DelegatedSourceListCapturer::OnCancelled,
+                     weak_ptr_factory_.GetWeakPtr()));
+  auto error_callback =
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(&DelegatedSourceListCapturer::OnError,
+                                        weak_ptr_factory_.GetWeakPtr()));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&content::desktop_capture::OpenNativeScreenCapturePicker,
+                     type_, std::move(callback), std::move(cancel_callback),
+                     std::move(error_callback)));
 }
 
 void DelegatedSourceListCapturer::EnsureHidden() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/40286360): Implement or ensure this method is not called.
+}
+
+void DelegatedSourceListCapturer::OnSelected(Source source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  selected_source_ = source;
+  if (delegated_source_list_observer_) {
+    delegated_source_list_observer_->OnSelection();
+  }
+}
+
+void DelegatedSourceListCapturer::OnCancelled() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (delegated_source_list_observer_) {
+    delegated_source_list_observer_->OnCancelled();
+  }
+}
+
+void DelegatedSourceListCapturer::OnError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (delegated_source_list_observer_) {
+    delegated_source_list_observer_->OnError();
+  }
 }
