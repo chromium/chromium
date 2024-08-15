@@ -1273,6 +1273,10 @@ interface LocalMainFrame {
   // data is a Bloom filter describing which JavaScript functions on the page
   // should be eagerly parsed & compiled by the JS engine.
   SetV8CompileHints(mojo_base.mojom.ReadOnlySharedMemoryRegion data);
+
+  // Replaces the active document with an empty document to free resources,
+  // e.g. for supporting tab discard.
+  Discard();
 };
 
 // Implemented in Browser, this interface defines local-main-frame-specific

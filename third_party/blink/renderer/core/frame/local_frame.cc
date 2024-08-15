@@ -3083,6 +3083,10 @@ bool LocalFrame::SwapIn() {
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));
 }
 
+void LocalFrame::Discard() {
+  DomWindow()->GetScriptController().DiscardFrame();
+}
+
 void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   // Protect privileged pages against bookmarklets and other JavaScript
   // manipulations.

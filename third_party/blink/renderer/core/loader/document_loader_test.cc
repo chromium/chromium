@@ -920,6 +920,25 @@ TEST_P(DocumentLoaderTest, JavascriptURLKeepsStorageKeyNonce) {
             frame->DomWindow()->GetStorageKey().GetNonce());
 }
 
+// Tests that discarding the frame keeps the storage key's nonce of the previous
+// document, ensuring that
+// `DocumentLoader::CreateWebNavigationParamsToCloneDocument` works correctly
+// w.r.t. storage key.
+TEST_P(DocumentLoaderTest, DiscardingFrameKeepsStorageKeyNonce) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+
+  BlinkStorageKey storage_key = BlinkStorageKey::CreateWithNonce(
+      SecurityOrigin::CreateUniqueOpaque(), base::UnguessableToken::Create());
+
+  LocalFrame* frame = To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  frame->DomWindow()->SetStorageKey(storage_key);
+
+  frame->Discard();
+
+  EXPECT_EQ(storage_key.GetNonce(),
+            frame->DomWindow()->GetStorageKey().GetNonce());
+}
+
 TEST_P(DocumentLoaderTest, PublicSecureNotCounted) {
   // Checking to make sure secure pages served in the public address space
   // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace

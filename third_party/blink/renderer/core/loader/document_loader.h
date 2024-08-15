@@ -618,9 +618,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // exchanges for matching requests.
   void InitializePrefetchedSignedExchangeManager();
 
-  bool IsJavaScriptURLOrXSLTCommit() const {
+  bool IsJavaScriptURLOrXSLTCommitOrDiscard() const {
     return commit_reason_ == CommitReason::kJavascriptUrl ||
-           commit_reason_ == CommitReason::kXSLT;
+           commit_reason_ == CommitReason::kXSLT ||
+           commit_reason_ == CommitReason::kDiscard;
   }
 
   // Computes and creates CSP for this document.

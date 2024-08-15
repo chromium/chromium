@@ -2468,9 +2468,12 @@ WindowAgent* GetWindowAgentForOrigin(
 //
 // javascript: URLs use the calling page as their Url() value, so we need to
 // include them explicitly.
+//
+// Discarded pages retain their Url() value so must be included explicitly.
 bool ShouldInheritExplicitOriginKeying(const KURL& url, CommitReason reason) {
   return Document::ShouldInheritSecurityOriginFromOwner(url) ||
-         reason == CommitReason::kJavascriptUrl;
+         reason == CommitReason::kJavascriptUrl ||
+         reason == CommitReason::kDiscard;
 }
 
 bool DocumentLoader::IsSameOriginInitiator() const {
@@ -2484,11 +2487,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::InitializeWindow",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
-  // Javascript URLs and XSLT committed document must not pass a new
-  // policy_container_, since they must keep the previous document one.
-  DCHECK((commit_reason_ != CommitReason::kJavascriptUrl &&
-          commit_reason_ != CommitReason::kXSLT) ||
-         !policy_container_);
+  // Javascript URLs, XSLT committed document and discarded documents must not
+  // pass a new policy_container_, since they must keep the previous document
+  // one.
+  DCHECK((!IsJavaScriptURLOrXSLTCommitOrDiscard()) || !policy_container_);
 
   bool did_have_policy_container = (policy_container_ != nullptr);
 
@@ -2533,10 +2535,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // TODO(dcheng): Actually enforce strict sandbox flags for provisional
     // frame. For some reason, doing so breaks some random devtools tests.
     security_origin = SecurityOrigin::CreateUniqueOpaque();
-  } else if (commit_reason_ == CommitReason::kJavascriptUrl ||
-             commit_reason_ == CommitReason::kXSLT) {
-    // For javascript: URL and XSLT commits, which don't go through the browser
-    // process and reuses the same DocumentLoader, reuse the previous origin.
+  } else if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
+    // For javascript: URL, XSLT commits and discarded documents which don't go
+    // through the browser process and reuses the same DocumentLoader, reuse the
+    // previous origin.
     // TODO(dcheng): Is it a problem that the previous origin is copied with
     // isolated copy? This probably has observable side effects (e.g. executing
     // a javascript: URL in an about:blank frame that inherited an origin will
@@ -2765,11 +2767,10 @@ void DocumentLoader::CommitNavigation() {
 
   // The document constructed by XSLTProcessor and ScriptController should
   // inherit Permissions Policy and Document Policy from the previous Document.
-  // Note: In XSLT commit and JavaScript commit, |response_| no longer holds
-  // header fields. Going through regular initialization will cause empty policy
-  // even if there is header on xml document.
-  if (commit_reason_ == CommitReason::kXSLT ||
-      commit_reason_ == CommitReason::kJavascriptUrl) {
+  // Note: In XSLT commit, JavaScript commit and discard commit, |response_| no
+  // longer holds header fields. Going through regular initialization will cause
+  // empty policy even if there is header on xml document.
+  if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
     DCHECK(response_.HttpHeaderField(http_names::kFeaturePolicy).empty());
     DCHECK(response_.HttpHeaderField(http_names::kPermissionsPolicy).empty());
     DCHECK(response_.HttpHeaderField(http_names::kDocumentPolicy).empty());
@@ -2813,6 +2814,7 @@ void DocumentLoader::CommitNavigation() {
           .WithTypeFrom(MimeType())
           .WithSrcdocDocument(loading_srcdoc_)
           .WithJavascriptURL(commit_reason_ == CommitReason::kJavascriptUrl)
+          .ForDiscard(commit_reason_ == CommitReason::kDiscard)
           .WithFallbackBaseURL(fallback_base_url_)
           .WithUkmSourceId(ukm_source_id_)
           .WithBaseAuctionNonce(base_auction_nonce_));
@@ -3018,7 +3020,7 @@ void DocumentLoader::CommitNavigation() {
     FrameNavigationDisabler navigation_disabler(*frame_);
     if (commit_reason_ == CommitReason::kInitialization) {
       // There's no observers yet so nothing to notify.
-    } else if (IsJavaScriptURLOrXSLTCommit()) {
+    } else if (IsJavaScriptURLOrXSLTCommitOrDiscard()) {
       GetLocalFrameClient().DidCommitDocumentReplacementNavigation(this);
     } else {
       GetLocalFrameClient().DispatchDidCommitLoad(
@@ -3128,7 +3130,7 @@ void DocumentLoader::CreateParserPostCommit() {
   }
 
   ParserSynchronizationPolicy parsing_policy = kAllowDeferredParsing;
-  if (IsJavaScriptURLOrXSLTCommit() ||
+  if (IsJavaScriptURLOrXSLTCommitOrDiscard() ||
       Document::ForceSynchronousParsingForTesting()) {
     parsing_policy = kForceSynchronousParsing;
   }

@@ -807,6 +807,10 @@ class CORE_EXPORT LocalFrame final
   // `GetPage()->Frame()`). Must only be called on provisional frames.
   bool SwapIn();
 
+  // Replaces the active document with an empty document to free resources,
+  // e.g. for supporting tab discard.
+  void Discard();
+
   void LoadJavaScriptURL(const KURL& url);
   void RequestExecuteScript(int32_t world_id,
                             base::span<const WebScriptSource> sources,

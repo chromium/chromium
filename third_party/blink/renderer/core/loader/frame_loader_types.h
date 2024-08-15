@@ -74,6 +74,8 @@ enum class CommitReason {
   kJavascriptUrl,
   // Committing a replacement document from XSLT.
   kXSLT,
+  // Committing a replacement empty document as a result of a discard operation.
+  kDiscard,
   // All other navigations.
   kRegular
 };

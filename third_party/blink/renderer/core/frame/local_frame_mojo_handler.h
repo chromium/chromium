@@ -262,6 +262,7 @@ class LocalFrameMojoHandler
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info)
       override;
+  void Discard() final;
 
   void SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) override;
 

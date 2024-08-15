@@ -1094,11 +1094,12 @@ void FrameLoader::CommitNavigation(
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
   AssertCanNavigate(navigation_params.get(), frame_);
 
-  // If this is a javascript: URL or XSLT commit, we must copy the ExtraData
-  // from the previous DocumentLoader to ensure the new DocumentLoader behaves
-  // the same way as the previous one.
+  // If this is a javascript: URL, XSLT commit or discard we must copy the
+  // ExtraData from the previous DocumentLoader to ensure the new DocumentLoader
+  // behaves the same way as the previous one.
   if (commit_reason == CommitReason::kXSLT ||
-      commit_reason == CommitReason::kJavascriptUrl) {
+      commit_reason == CommitReason::kJavascriptUrl ||
+      commit_reason == CommitReason::kDiscard) {
     DCHECK(!extra_data);
     extra_data = document_loader_->TakeExtraData();
   }

@@ -97,7 +97,7 @@ bool DocumentInit::IsAboutBlankDocument() const {
 const KURL& DocumentInit::FallbackBaseURL() const {
   DCHECK(IsSrcdocDocument() || IsAboutBlankDocument() ||
          IsInitialEmptyDocument() || is_for_javascript_url_ ||
-         fallback_base_url_.IsEmpty())
+         is_for_discard_ || fallback_base_url_.IsEmpty())
       << " url = " << url_ << ", fallback_base_url = " << fallback_base_url_;
   return fallback_base_url_;
 }
@@ -283,6 +283,11 @@ DocumentInit& DocumentInit::WithFallbackBaseURL(const KURL& fallback_base_url) {
 
 DocumentInit& DocumentInit::WithJavascriptURL(bool is_for_javascript_url) {
   is_for_javascript_url_ = is_for_javascript_url;
+  return *this;
+}
+
+DocumentInit& DocumentInit::ForDiscard(bool is_for_discard) {
+  is_for_discard_ = is_for_discard;
   return *this;
 }
 

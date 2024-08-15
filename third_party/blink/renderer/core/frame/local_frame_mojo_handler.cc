@@ -1328,6 +1328,10 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
       constraints, current, animate, offset_tags_info);
 }
 
+void LocalFrameMojoHandler::Discard() {
+  frame_->Discard();
+}
+
 void LocalFrameMojoHandler::SetV8CompileHints(
     base::ReadOnlySharedMemoryRegion data) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kConsumeCompileHints));
