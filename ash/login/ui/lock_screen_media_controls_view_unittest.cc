@@ -855,13 +855,14 @@ TEST_F(LockScreenMediaControlsViewTest, ArtworkVisibility) {
   EXPECT_TRUE(artwork_view()->GetVisible());
 }
 
-TEST_F(LockScreenMediaControlsViewTest, AccessibleNodeData) {
+TEST_F(LockScreenMediaControlsViewTest, AccessibleProperties) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   ui::AXNodeData data;
-  media_controls_view_->GetAccessibleNodeData(&data);
+  media_controls_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
 
+  EXPECT_EQ(ax::mojom::Role::kListItem, data.role);
   // Verify that the accessible name is initially empty.
   EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
@@ -870,13 +871,24 @@ TEST_F(LockScreenMediaControlsViewTest, AccessibleNodeData) {
   metadata.title = u"title";
   metadata.artist = u"artist";
   media_controls_view_->MediaSessionMetadataChanged(metadata);
-  media_controls_view_->GetAccessibleNodeData(&data);
+  media_controls_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
 
   // Verify that the accessible name updates with the metadata.
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
   EXPECT_EQ(u"title - artist",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(LockScreenMediaControlsViewTest,
+       MediaControlsHeaderViewAccessibleProperties) {
+  SimulateMediaSessionChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+  MediaControlsHeaderView* header_view = header_row();
+  ui::AXNodeData data;
+
+  header_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kPane, data.role);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, DismissControlsVelocity) {

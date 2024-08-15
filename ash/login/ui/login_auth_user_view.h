@@ -221,6 +221,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
+  friend class LoginAuthUserViewTestBase;
+
   struct UiState;
   class ChallengeResponseView;
 

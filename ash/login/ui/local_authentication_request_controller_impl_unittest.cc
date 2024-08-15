@@ -31,6 +31,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -267,6 +268,17 @@ TEST_F(LocalAuthenticationRequestControllerImplTest,
   EXPECT_EQ(1, close_action_);
 
   EXPECT_FALSE(LocalAuthenticationRequestWidget::Get());
+}
+
+TEST_F(LocalAuthenticationRequestControllerImplTest,
+       LocalAuthenticationRequestViewAccessibleProperties) {
+  StartLocalAuthenticationRequest();
+  LocalAuthenticationRequestView* view =
+      LocalAuthenticationRequestWidget::GetViewForTesting();
+  ui::AXNodeData data;
+
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
 }
 
 }  // namespace

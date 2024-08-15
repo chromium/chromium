@@ -393,6 +393,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());
 
   SetPreferredSize(GetPinRequestViewSize());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 PinRequestView::~PinRequestView() = default;
@@ -528,7 +530,6 @@ void PinRequestView::OnInputChange(bool last_field_active, bool complete) {
 
 void PinRequestView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(default_accessible_title_);
 }
 

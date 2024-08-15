@@ -526,6 +526,14 @@ TEST_F(PinRequestViewTest, BackwardTabKeyTraversal) {
   EXPECT_TRUE(HasFocusInAnyChildView(test_api.access_code_view()));
 }
 
+TEST_F(PinRequestViewTest, AccessibleProperties) {
+  StartView();
+  ui::AXNodeData data;
+
+  view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+}
+
 class PinRequestWidgetTest : public PinRequestViewTest {
  public:
   PinRequestWidgetTest() { set_start_session(true); }

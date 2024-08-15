@@ -262,4 +262,22 @@ TEST_F(LoginRemoveAccountDialogTest, ResetStateHidesConfirmData) {
   EXPECT_TRUE(test_api.remove_user_confirm_data()->GetVisible());
 }
 
+TEST_F(LoginRemoveAccountDialogTest, AccessibleRole) {
+  auto* container = new views::View;
+  container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  SetWidget(CreateWidgetWithContent(container));
+
+  LoginUserInfo login_user_info;
+  login_user_info.can_remove = true;
+  auto* dialog = new LoginRemoveAccountDialog(
+      login_user_info, nullptr /*anchor*/, nullptr /*bubble_opener*/,
+      base::DoNothing(), base::DoNothing());
+  container->AddChildView(dialog);
+  ui::AXNodeData data;
+
+  dialog->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+}
+
 }  // namespace ash
