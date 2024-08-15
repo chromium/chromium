@@ -31,7 +31,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "mojo/core/configuration.h"
-#include "mojo/core/core.h"
 #include "mojo/core/embedder/features.h"
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)

@@ -3,13 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//mojo/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 static_library("test_support") {
   testonly = true
   sources = [
-    "mock_node_channel_delegate.cc",
-    "mock_node_channel_delegate.h",
     "mojo_test_base.cc",
     "mojo_test_base.h",
     "mojo_test_suite_base.cc",
@@ -20,6 +19,13 @@ static_library("test_support") {
     "test_switches.h",
     "test_utils.h",
   ]
+
+  if (mojo_support_legacy_core) {
+    sources += [
+      "mock_node_channel_delegate.cc",
+      "mock_node_channel_delegate.h",
+    ]
+  }
 
   if (use_blink) {
     sources += [
