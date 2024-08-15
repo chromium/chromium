@@ -550,7 +550,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   base::Value::Dict& GetTestCaseDataFromParam() {
     testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
     base::Value::Dict* result =
-        test_expectations_->GetDict().EnsureDict("tests")->EnsureDict(
+        test_expectations().EnsureDict("tests")->EnsureDict(
             LinkCaptureTestParamToString(param));
 
     // Temporarily check expectations for the test name before redirect mode was
@@ -560,21 +560,15 @@ class WebAppLinkCapturingParameterizedBrowserTest
         GetRedirectType() == RedirectType::kNone) {
       std::string key = LinkCaptureTestParamToString(param);
       base::ReplaceFirstSubstringAfterOffset(&key, 0, "_Direct", "");
-      *result = test_expectations_->GetDict()
-                    .EnsureDict("tests")
-                    ->EnsureDict(key)
-                    ->Clone();
-      test_expectations_->GetDict().EnsureDict("tests")->Remove(key);
+      *result =
+          test_expectations().EnsureDict("tests")->EnsureDict(key)->Clone();
+      test_expectations().EnsureDict("tests")->Remove(key);
     }
     return *result;
   }
 
-  // This function is used during rebaselining to record (to a file) the results
-  // from an actual run of a single test case, used by developers to update the
-  // expectations. Constructs a json dictionary and saves it to the test results
-  // json file. Returns true if writing was successful.
-  void RecordActualResults() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedClosureRunner LockExpectationsFile() {
+    CHECK(ShouldRebaseline());
     // Lock the results file to support using `--test-launcher-jobs=X` when
     // doing a rebaseline.
     base::File exclusive_file = base::File(
@@ -591,9 +585,31 @@ class WebAppLinkCapturingParameterizedBrowserTest
       });
     }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
     // Re-read expectations to catch changes from other parallel runs of
     // rebaselining.
     InitializeTestExpectations();
+
+    return base::ScopedClosureRunner(base::BindOnce(
+        [](base::File lock_file) {
+#if !BUILDFLAG(IS_FUCHSIA)
+          EXPECT_EQ(lock_file.Unlock(), base::File::FILE_OK);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+          lock_file.Close();
+        },
+        std::move(exclusive_file)));
+  }
+
+  // This function is used during rebaselining to record (to a file) the results
+  // from an actual run of a single test case, used by developers to update the
+  // expectations. Constructs a json dictionary and saves it to the test results
+  // json file. Returns true if writing was successful.
+  void RecordActualResults() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Lock the results file to support using `--test-launcher-jobs=X` when
+    // doing a rebaseline.
+    base::ScopedClosureRunner lock = LockExpectationsFile();
+
     base::Value::Dict& test_case = GetTestCaseDataFromParam();
     // If this is a new test case, start it out as disabled until we've manually
     // verified the expectations are correct.
@@ -602,17 +618,16 @@ class WebAppLinkCapturingParameterizedBrowserTest
     }
     test_case.Set("expected_state", CaptureCurrentState());
 
+    SaveExpectations();
+  }
+
+  void SaveExpectations() {
+    CHECK(ShouldRebaseline());
     // Write formatted JSON back to disk.
-    {
-      std::optional<std::string> json_string = base::WriteJsonWithOptions(
-          *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
-      ASSERT_TRUE(json_string.has_value());
-      ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
-    }
-#if !BUILDFLAG(IS_FUCHSIA)
-    EXPECT_EQ(exclusive_file.Unlock(), base::File::FILE_OK);
-#endif  // !BUILDFLAG(IS_FUCHSIA)
-    exclusive_file.Close();
+    std::optional<std::string> json_string = base::WriteJsonWithOptions(
+        *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
+    ASSERT_TRUE(json_string.has_value());
+    ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
   }
 
   blink::mojom::ManifestLaunchHandler_ClientMode GetClientMode() const {
@@ -741,6 +756,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
         }));
   }
 
+  base::Value::Dict& test_expectations() {
+    CHECK(test_expectations_.has_value() && test_expectations_->is_dict());
+    return test_expectations_->GetDict();
+  }
+
  private:
   // Returns the path to the test expectation file (or an error).
   base::expected<base::FilePath, std::string> GetPathForLinkCaptureInputJson() {
@@ -780,9 +800,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
     NOTREACHED() << "Unknown browser type: " + type;
   }
 
-  // Parses the json test expectation file. Note that during rebaselining, a
-  // dummy json file is used, because the json test expectation file is still
-  // being constructed and likely contains invalid values.
+  // Parses the json test expectation file. Note that if the expectations file
+  // doesn't exist during rebaselining, a dummy json file is used.
   void InitializeTestExpectations() {
     std::string json_data;
     bool success = ReadFileToString(json_file_path_, &json_data);
@@ -811,6 +830,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   base::FilePath lock_file_path_ =
       base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
           .AppendASCII("link_capturing_rebaseline_lock_file.lock");
+
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
 };
@@ -973,3 +993,58 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OpenerMode::kNoOpener),
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
+
+// This test verifies that there are no left-over expectations for tests that
+// no longer exist in code but still exist in the expectations json file.
+// Additionally if this test is run with the --rebaseline-link-capturing-test
+// flag any left-over expectations will be cleaned up.
+using WebAppLinkCapturingParameterizedExpectationTest =
+    WebAppLinkCapturingParameterizedBrowserTest;
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedExpectationTest,
+                       CleanupExpectations) {
+  std::set<std::string> test_cases;
+  const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
+  for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
+    const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
+    // We only care about link capturing parameterized tests.
+    if (std::string_view(test_suite->name())
+            .find("WebAppLinkCapturingParameterizedBrowserTest") ==
+        std::string::npos) {
+      continue;
+    }
+    for (int j = 0; j < test_suite->total_test_count(); ++j) {
+      const char* name = test_suite->GetTestInfo(j)->name();
+      auto parts = base::SplitStringOnce(name, '/');
+      if (!parts.has_value()) {
+        // Not a parameterized test.
+        continue;
+      }
+      test_cases.insert(std::string(parts->second));
+    }
+  }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedClosureRunner lock;
+  if (ShouldRebaseline()) {
+    lock = LockExpectationsFile();
+  }
+
+  base::Value::Dict& expectations = *test_expectations().EnsureDict("tests");
+  std::vector<std::string> tests_to_remove;
+  for (const auto [name, value] : expectations) {
+    if (!test_cases.contains(name)) {
+      tests_to_remove.push_back(name);
+    }
+  }
+  if (ShouldRebaseline()) {
+    for (const auto& name : tests_to_remove) {
+      LOG(INFO) << "Removing " << name;
+      expectations.Remove(name);
+    }
+    SaveExpectations();
+  } else {
+    EXPECT_THAT(tests_to_remove, testing::ElementsAre())
+        << "Run this test with --rebaseline-link-capturing-test to clean this "
+           "up.";
+  }
+}
