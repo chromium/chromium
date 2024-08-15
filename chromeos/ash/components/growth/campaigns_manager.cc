@@ -23,8 +23,10 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace growth {
 
@@ -108,7 +110,12 @@ base::Time GetOobeTimestampBackground() {
     return file_info.creation_time;
   }
 
-  return base::Time::Min();
+  // If the Oobe complete file is not found and there's no owner, assume that
+  // the user campaigns is matching during Oobe flow and return the current time
+  // as a close indicator of register time.
+  const AccountId& owner_account_id =
+      user_manager::UserManager::Get()->GetOwnerAccountId();
+  return owner_account_id.is_valid() ? base::Time::Min() : base::Time::Now();
 }
 
 }  // namespace

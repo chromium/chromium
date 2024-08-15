@@ -25,8 +25,10 @@
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/components/growth/mock_campaigns_manager_client.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -263,11 +265,21 @@ class CampaignsManagerTest : public testing::Test {
     testing::Test::SetUp();
 
     InitializePrefService();
+    InitializeUserManager();
 
     campaigns_manager_ =
         std::make_unique<CampaignsManager>(&mock_client_, local_state_.get());
     campaigns_manager_->SetPrefs(pref_.get());
     campaigns_manager_->SetTrackerInitializedForTesting();
+  }
+
+  void TearDown() override {
+    // Clean up user manager.
+    fake_user_manager_->Shutdown();
+    fake_user_manager_->Destroy();
+    fake_user_manager_.reset();
+
+    testing::Test::TearDown();
   }
 
  protected:
@@ -379,6 +391,11 @@ class CampaignsManagerTest : public testing::Test {
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {campaigns_experiment_tag}, {});
+  }
+
+  void VerifyOwnerAccountValid(bool is_valid) {
+    const AccountId& owner_account_id = fake_user_manager_->GetOwnerAccountId();
+    ASSERT_EQ(is_valid, owner_account_id.is_valid());
   }
 
   void VerifyDemoModePayload(const Campaign* campaign) {
@@ -578,6 +595,7 @@ class CampaignsManagerTest : public testing::Test {
   std::unique_ptr<CampaignsManager> campaigns_manager_;
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<user_manager::FakeUserManager> fake_user_manager_;
 
  private:
   void InitializePrefService() {
@@ -594,6 +612,13 @@ class CampaignsManagerTest : public testing::Test {
         kTestPref1, base::Value::List().Append("v0").Append("v1"));
     pref_->registry()->RegisterStringPref(kTestPref2, "v2");
     pref_->registry()->RegisterStringPref(kTestPref3, "v3");
+  }
+
+  void InitializeUserManager() {
+    user_manager::UserManagerBase::RegisterPrefs(local_state_->registry());
+    fake_user_manager_ =
+        std::make_unique<user_manager::FakeUserManager>(local_state_.get());
+    fake_user_manager_->Initialize();
   }
 };
 
@@ -1867,6 +1892,17 @@ TEST_F(CampaignsManagerTest,
       base::StringPrintf(R"({"end": %f})", end.InSecondsFSinceUnixEpoch()));
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithRegisteredTimeNoOwner) {
+  const auto now = base::Time::Now();
+  auto start = now - base::Seconds(2);
+  VerifyOwnerAccountValid(false);
+
+  LoadComponentWithRegisteredTimeTargeting(
+      base::StringPrintf(R"({"start": %f})", start.InSecondsFSinceUnixEpoch()));
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignActiveUrl) {
