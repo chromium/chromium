@@ -646,7 +646,7 @@ public class StripLayoutHelperManagerTest {
         when(mStandardTabModel.getTabAt(selectedTabId)).thenReturn(mSelectedTab);
         when(mSelectedTab.getId()).thenReturn(selectedTabId);
 
-        when(mHoveredStripTab.getId()).thenReturn(hoveredTabId);
+        when(mHoveredStripTab.getTabId()).thenReturn(hoveredTabId);
         var activeLayoutHelper = mStripLayoutHelperManager.getActiveStripLayoutHelper();
         activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
 

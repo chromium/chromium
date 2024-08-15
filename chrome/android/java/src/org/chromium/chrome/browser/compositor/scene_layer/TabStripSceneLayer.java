@@ -220,8 +220,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         //  unused.
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];
-            boolean isSelected = st.getId() == selectedTabId;
-            boolean isHovered = st.getId() == hoveredTabId;
+            boolean isSelected = st.getTabId() == selectedTabId;
+            boolean isHovered = st.getTabId() == hoveredTabId;
             boolean shouldShowOutline = layoutHelper.shouldShowTabOutline(st);
 
             // TODO(b/326301060): Update tab outline placeholder color with color picker.
@@ -229,7 +229,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     .putStripTabLayer(
                             mNativePtr,
                             TabStripSceneLayer.this,
-                            st.getId(),
+                            st.getTabId(),
                             st.getCloseButton().getResourceId(),
                             st.getCloseButton().getBackgroundResourceId(),
                             st.getDividerResourceId(),
@@ -239,7 +239,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getCloseButton().getBackgroundTint(),
                             st.getDividerTint(),
                             st.getTint(isSelected, isHovered),
-                            layoutHelper.getSelectedOutlineGroupTint(st.getId(), shouldShowOutline),
+                            layoutHelper.getSelectedOutlineGroupTint(
+                                    st.getTabId(), shouldShowOutline),
                             isSelected,
                             shouldShowOutline,
                             st.getClosePressed(),

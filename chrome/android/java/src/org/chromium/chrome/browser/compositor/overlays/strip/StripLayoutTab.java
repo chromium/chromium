@@ -164,7 +164,8 @@ public class StripLayoutTab extends StripLayoutView {
     private static final float CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
     @VisibleForTesting static final float DIVIDER_FOLIO_LIGHT_OPACITY = 0.2f;
 
-    private int mId;
+    // Tab's ID this view refers to.
+    private int mTabId;
 
     private final Context mContext;
     private final StripLayoutTabDelegate mDelegate;
@@ -182,9 +183,6 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mEndDividerVisible;
     private float mBottomMargin;
     private float mContainerOpacity;
-    private float mLeftInset;
-    private float mRightInset;
-    private String mAccessibilityDescription = "";
 
     // For avoiding unnecessary accessibility description updates.
     private Optional<String> mCachedA11yDescriptionTitle = Optional.empty();
@@ -193,9 +191,6 @@ public class StripLayoutTab extends StripLayoutView {
     // Ideal intermediate parameters
     private float mTabOffsetY;
     private float mTrailingMargin;
-
-    // Actual draw parameters
-    private final RectF mTouchTarget = new RectF();
 
     // Startup parameters
     private boolean mIsPlaceholder;
@@ -231,7 +226,7 @@ public class StripLayoutTab extends StripLayoutView {
             LayoutUpdateHost updateHost,
             boolean incognito) {
         super(incognito);
-        mId = id;
+        mTabId = id;
         mContext = context;
         mDelegate = delegate;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
@@ -284,16 +279,11 @@ public class StripLayoutTab extends StripLayoutView {
         mCloseButton.setIncognito(incognito);
         mCloseButton.setBounds(getCloseRect());
         mCloseButton.setClickSlop(0.f);
-        if (LocalizationUtils.isLayoutRtl()) {
-            mLeftInset = getCloseButtonOffsetX();
-            mRightInset = FOLIO_FOOT_LENGTH_DP;
-        } else {
-            mLeftInset = FOLIO_FOOT_LENGTH_DP;
-            mRightInset = getCloseButtonOffsetX();
-        }
     }
 
-    /** @param observer The observer to add. */
+    /**
+     * @param observer The observer to add.
+     */
     @VisibleForTesting
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
@@ -321,7 +311,7 @@ public class StripLayoutTab extends StripLayoutView {
             String description,
             @Nullable String title,
             @StringRes int newA11yTabstripIdentifierResId) {
-        mAccessibilityDescription = description;
+        super.setAccessibilityDescription(description);
         String closeButtonDescription =
                 ContextUtils.getApplicationContext()
                         .getString(R.string.accessibility_tabstrip_btn_close_tab, title);
@@ -331,12 +321,6 @@ public class StripLayoutTab extends StripLayoutView {
         // updates.
         mCachedA11yDescriptionTitle = Optional.ofNullable(title);
         mCachedA11yTabstripIdentifierResId = newA11yTabstripIdentifierResId;
-    }
-
-    /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
-    @Override
-    public String getAccessibilityDescription() {
-        return mAccessibilityDescription;
     }
 
     /**
@@ -365,16 +349,11 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     @Override
-    public void getTouchTarget(RectF target) {
-        target.set(mTouchTarget);
-    }
-
-    @Override
     public boolean checkClickedOrHovered(float x, float y) {
         // Since both the close button as well as the tab inhabit the same coordinates, the tab
         // should not consider itself hit if the close button is also hit, since it is on top.
         if (checkCloseHitTest(x, y)) return false;
-        return mTouchTarget.contains(x, y);
+        return super.checkClickedOrHovered(x, y);
     }
 
     @Override
@@ -427,15 +406,15 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /** Sets the id of the {@link Tab} this {@link StripLayoutTab} represents. */
-    public void setId(int id) {
-        mId = id;
+    public void setTabId(int id) {
+        mTabId = id;
     }
 
     /**
      * @return The id of the {@link Tab} this {@link StripLayoutTab} represents.
      */
-    public int getId() {
-        return mId;
+    public int getTabId() {
+        return mTabId;
     }
 
     /**
@@ -531,7 +510,7 @@ public class StripLayoutTab extends StripLayoutView {
     public void onVisibilityChanged(boolean newVisibility) {
         if (!newVisibility) {
             // TODO(crbug.com/358205243): Re-build the bitmaps if the tab becomes visible here.
-            mUpdateHost.releaseResourcesForTab(mId);
+            mUpdateHost.releaseResourcesForTab(mTabId);
         }
 
         for (Observer observer : mObservers) {
@@ -678,30 +657,28 @@ public class StripLayoutTab extends StripLayoutView {
     public void setDrawX(float x) {
         mCloseButton.setDrawX(mCloseButton.getDrawX() + (x - getDrawX()));
         super.setDrawX(x);
-        mTouchTarget.left = x + mLeftInset;
-        mTouchTarget.right = x + getWidth() - mRightInset;
+        float[] insetsX = getTouchTargetInsetsX();
+        super.setTouchTargetInsets(insetsX[0], null, insetsX[1], null);
     }
 
     @Override
     public void setDrawY(float y) {
         mCloseButton.setDrawY(mCloseButton.getDrawY() + (y - getDrawY()));
         super.setDrawY(y);
-        mTouchTarget.top = y;
-        mTouchTarget.bottom = y + getHeight();
     }
 
     @Override
     public void setWidth(float width) {
         super.setWidth(width);
         resetCloseRect();
-        mTouchTarget.right = getDrawX() + width - mRightInset;
+        float[] insetsX = getTouchTargetInsetsX();
+        super.setTouchTargetInsets(null, null, insetsX[1], null);
     }
 
     @Override
     public void setHeight(float height) {
         super.setHeight(height);
         resetCloseRect();
-        mTouchTarget.bottom = getDrawY() + height;
     }
 
     /**
@@ -819,22 +796,19 @@ public class StripLayoutTab extends StripLayoutView {
      * @return The left-side of the tab's touch target.
      */
     public float getTouchTargetLeft() {
-        return mTouchTarget.left;
+        return getTouchTargetBounds().left;
     }
 
     /**
      * @return The right-side of the tab's touch target.
      */
     public float getTouchTargetRight() {
-        return mTouchTarget.right;
+        return getTouchTargetBounds().right;
     }
 
     private void resetCloseRect() {
         RectF closeRect = getCloseRect();
-        mCloseButton.setWidth(closeRect.width());
-        mCloseButton.setHeight(closeRect.height());
-        mCloseButton.setDrawX(closeRect.left);
-        mCloseButton.setDrawY(closeRect.top);
+        mCloseButton.setBounds(closeRect);
     }
 
     private RectF getCloseRect() {
@@ -893,5 +867,18 @@ public class StripLayoutTab extends StripLayoutView {
             mShowingCloseButton = shouldShow;
             if (!mShowingCloseButton) mCloseButton.setPressed(false);
         }
+    }
+
+    private float[] getTouchTargetInsetsX() {
+        float leftInset;
+        float rightInset;
+        if (LocalizationUtils.isLayoutRtl()) {
+            leftInset = getCloseButtonOffsetX();
+            rightInset = FOLIO_FOOT_LENGTH_DP;
+        } else {
+            leftInset = FOLIO_FOOT_LENGTH_DP;
+            rightInset = getCloseButtonOffsetX();
+        }
+        return new float[] {leftInset, rightInset};
     }
 }

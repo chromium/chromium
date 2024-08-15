@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
@@ -78,15 +77,11 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     // External influences.
     private final StripLayoutGroupTitleDelegate mDelegate;
 
-    // Position variables.
-    private final RectF mTouchTarget = new RectF();
-
     // Tab group variables.
+    // Tab group's root Id this view refers to.
     private int mRootId;
     private String mTitle;
     @ColorInt private int mColor;
-
-    private String mAccessibilityDescription = "";
 
     // Bottom indicator variables
     private float mBottomIndicatorWidth;
@@ -102,35 +97,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
             StripLayoutGroupTitleDelegate delegate, boolean incognito, int rootId) {
         super(incognito);
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
-
+        mRootId = rootId;
         mDelegate = delegate;
-        updateRootId(rootId);
-    }
-
-    @Override
-    public void setDrawX(float x) {
-        super.setDrawX(x);
-        mTouchTarget.left = x;
-        mTouchTarget.right = x + getWidth();
-    }
-
-    @Override
-    public void setDrawY(float y) {
-        super.setDrawY(y);
-        mTouchTarget.top = y;
-        mTouchTarget.bottom = y + getHeight();
-    }
-
-    @Override
-    public void setWidth(float width) {
-        super.setWidth(width);
-        mTouchTarget.right = getDrawX() + width;
-    }
-
-    @Override
-    public void setHeight(float height) {
-        super.setHeight(height);
-        mTouchTarget.bottom = getDrawY() + height;
     }
 
     @Override
@@ -145,25 +113,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @Override
     public void setIncognito(boolean incognito) {
         assert false : "Incognito state of a group title cannot change";
-    }
-
-    @Override
-    public String getAccessibilityDescription() {
-        return mAccessibilityDescription;
-    }
-
-    protected void setAccessibilityDescription(String accessibilityDescription) {
-        mAccessibilityDescription = accessibilityDescription;
-    }
-
-    @Override
-    public void getTouchTarget(RectF outTarget) {
-        outTarget.set(mTouchTarget);
-    }
-
-    @Override
-    public boolean checkClickedOrHovered(float x, float y) {
-        return mTouchTarget.contains(x, y);
     }
 
     @Override

@@ -1350,7 +1350,7 @@ public class TabStripTest {
 
         if (tabView == null || tab == null) return;
 
-        Assert.assertEquals("The IDs are not identical", tabView.getId(), tab.getId());
+        Assert.assertEquals("The IDs are not identical", tabView.getTabId(), tab.getId());
 
         int assumedTabViewIndex =
                 mapModelToViewIndex(model.getCount(), model.index(), model.indexOf(tab));

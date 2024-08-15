@@ -38,13 +38,11 @@ public class CompositorButton extends StripLayoutView {
     public interface CompositorOnClickHandler {
         /**
          * Handles the click action.
+         *
          * @param time The time of the click action.
          */
         void onClick(long time);
     }
-
-    // Pre-allocated to avoid in-frame allocations.
-    private final RectF mCacheBounds = new RectF();
 
     private final CompositorOnClickHandler mClickHandler;
 
@@ -56,11 +54,9 @@ public class CompositorButton extends StripLayoutView {
     private int mIncognitoPressedResource;
 
     private float mOpacity;
-    private float mClickSlop;
     private boolean mIsPressed;
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
-    private String mAccessibilityDescription = "";
     private String mAccessibilityDescriptionIncognito = "";
 
     /**
@@ -74,7 +70,7 @@ public class CompositorButton extends StripLayoutView {
     public CompositorButton(
             Context context, float width, float height, CompositorOnClickHandler clickHandler) {
         super(false);
-        mBounds.set(0, 0, width, height);
+        mDrawBounds.set(0, 0, width, height);
 
         mOpacity = 1.f;
         mIsPressed = false;
@@ -82,7 +78,8 @@ public class CompositorButton extends StripLayoutView {
 
         Resources res = context.getResources();
         float sPxToDp = 1.0f / res.getDisplayMetrics().density;
-        mClickSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
+        float clickSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
+        setTouchTargetInsets(-clickSlop, -clickSlop, -clickSlop, -clickSlop);
 
         mClickHandler = clickHandler;
     }
@@ -109,35 +106,22 @@ public class CompositorButton extends StripLayoutView {
      * @param description A string describing the resource.
      */
     public void setAccessibilityDescription(String description, String incognitoDescription) {
-        mAccessibilityDescription = description;
+        super.setAccessibilityDescription(description);
         mAccessibilityDescriptionIncognito = incognitoDescription;
     }
 
     /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
     @Override
     public String getAccessibilityDescription() {
-        return isIncognito() ? mAccessibilityDescriptionIncognito : mAccessibilityDescription;
+        return isIncognito()
+                ? mAccessibilityDescriptionIncognito
+                : super.getAccessibilityDescription();
     }
 
-    @Override
-    public void getTouchTarget(RectF outTarget) {
-        outTarget.set(mBounds);
-        // Get the whole touchable region.
-        outTarget.inset((int) -mClickSlop, (int) -mClickSlop);
-    }
-
-    /**
-     * @param x The x offset of the click.
-     * @param y The y offset of the click.
-     * @return Whether or not that click occurred inside of the button + slop area.
-     */
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
         if (mOpacity < 1.f || !isVisible()) return false;
-
-        mCacheBounds.set(mBounds);
-        mCacheBounds.inset(-mClickSlop, -mClickSlop);
-        return mCacheBounds.contains(x, y);
+        return super.checkClickedOrHovered(x, y);
     }
 
     @Override
@@ -149,7 +133,7 @@ public class CompositorButton extends StripLayoutView {
      * @param bounds A {@link RectF} representing the location of the button.
      */
     public void setBounds(RectF bounds) {
-        mBounds.set(bounds);
+        mDrawBounds.set(bounds);
     }
 
     /**
@@ -199,7 +183,7 @@ public class CompositorButton extends StripLayoutView {
      *     target bounds.
      */
     public void setClickSlop(float slop) {
-        mClickSlop = slop;
+        setTouchTargetInsets(-slop, -slop, -slop, -slop);
     }
 
     /**

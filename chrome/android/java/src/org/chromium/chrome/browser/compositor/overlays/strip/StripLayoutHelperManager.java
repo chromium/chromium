@@ -733,7 +733,7 @@ public class StripLayoutHelperManager
         int hoveredTabId =
                 getActiveStripLayoutHelper().getLastHoveredTab() == null
                         ? TabModel.INVALID_TAB_INDEX
-                        : getActiveStripLayoutHelper().getLastHoveredTab().getId();
+                        : getActiveStripLayoutHelper().getLastHoveredTab().getTabId();
 
         // When tab strip is hiding, animation will trigger the toolbar moving up and tab
         // strip fade-out in place. In this case the tab strip should not move at all.
