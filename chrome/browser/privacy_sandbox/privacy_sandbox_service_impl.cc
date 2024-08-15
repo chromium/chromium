@@ -665,11 +665,6 @@ void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram(
   base::UmaHistogramEnumeration("Settings.FirstPartySets.State", state);
 }
 
-void PrivacySandboxServiceImpl::RecordPrivacySandboxHistogram(
-    SettingsPrivacySandboxEnabled state) {
-  base::UmaHistogramEnumeration("Settings.PrivacySandbox.Enabled", state);
-}
-
 void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   // Record the status of the APIs.
   const bool topics_enabled =

@@ -386,18 +386,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.PrivacySandbox.Enabled"
-    enum="SettingsPrivacySandboxEnabled" expires_after="2024-05-19">
-  <owner>harrisonsean@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <owner>chrome-privacy-controls@google.com</owner>
-  <summary>
-    Whether or not privacy sandbox apis are enabled, including the current state
-    of cookie settings, and if it is disabled by policy. Recorded on profile
-    startup. Values 8, 9, and 10 were added with M92.
-  </summary>
-</histogram>
-
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
     expires_after="2025-01-26">
   <owner>boujane@google.com</owner>
