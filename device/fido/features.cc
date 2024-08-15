@@ -94,12 +94,6 @@ BASE_FEATURE(kWebAuthnPasskeysReset,
              "WebAuthnPasskeysReset",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
-// ChromeOS. Remove in or after M124.
-BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
-             "WebAuthenticationFilterGooglePasskeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Not yet enabled by default.
 BASE_FEATURE(kChromeOsPasskeys,

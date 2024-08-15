@@ -75,11 +75,6 @@ extern const base::FeatureParam<bool> kWebAuthnGpmPin;
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPasskeysReset);
 
-// Filter a priori discovered credentials on google.com to those that have a
-// user id that starts with "GOOGLE_ACCOUNT:".
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enable ChromeOS native passkey support.
 COMPONENT_EXPORT(DEVICE_FIDO)

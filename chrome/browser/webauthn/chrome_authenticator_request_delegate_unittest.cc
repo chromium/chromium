@@ -922,8 +922,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnFilterGooglePasskeys};
   auto HasCreds = device::FidoRequestHandlerBase::RecognizedCredential::
       kHasRecognizedCredential;
   auto NoCreds = device::FidoRequestHandlerBase::RecognizedCredential::
