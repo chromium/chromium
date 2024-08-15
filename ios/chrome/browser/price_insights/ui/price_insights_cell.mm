@@ -436,7 +436,7 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
     return;
   }
 
-  [self.mutator priceInsightsTrackItem:self.item];
+  [self.mutator tryPriceInsightsTrackItem:self.item];
 }
 
 - (void)handleBuyingOptionsTap:(UITapGestureRecognizer*)sender {

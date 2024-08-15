@@ -25,7 +25,8 @@ enum class PriceBucket;
   self.didNavigateToWebpage = YES;
 }
 
-- (void)presentPushNotificationPermissionAlert {
+- (void)presentPushNotificationPermissionAlertForItem:(PriceInsightsItem*)item {
+  self.didPresentPushNotificationPermissionAlertForItem = YES;
 }
 
 - (void)presentStartPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {

@@ -488,6 +488,18 @@
   <message name="IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS" desc="The title of the Price History section in the Shopping Insights side panel when we have variants.">
     Price History Across the Web for This Option
   </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE" desc="The title for the UIAlert that redirects the user to iOS' application settings for Chrome.">
+     Turn on price tracking notifications
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE" desc="The description that argues why push notification permission is necessary for price tracking.">
+    To get price drop alerts for products you track, turn on notifications in settings.
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CLOSE" desc="The label for the alert's close button.">
+    Close
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's button that redirects the user to Chrome's application settings in iOS.">
+    Settings
+  </message>
   <if expr="use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
       Price History Across the Web

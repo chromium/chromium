@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
@@ -181,45 +182,32 @@ using PriceNotificationItems =
 
 #pragma mark - PriceInsightsMutator
 
-- (void)priceInsightsTrackItem:(PriceInsightsItem*)item {
+- (void)tryPriceInsightsTrackItem:(PriceInsightsItem*)item {
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
 
-  [self presentNotificationPermission:^(BOOL granted, BOOL promptShown,
-                                        NSError* error) {
-    if (!error && !promptShown && !granted) {
-      // This callback can be executed on a background thread, make sure the UI
-      // is displayed on the main thread.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.priceInsightsConsumer presentPushNotificationPermissionAlert];
-      });
-    } else if (!error && promptShown && granted) {
-      // This callback can be executed on a background thread causing this
-      // function to fail. Thus, the invocation is scheduled to run on the main
-      // thread.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        weakSelf.pushNotificationService->SetPreference(
-            weakSelf.gaiaID, PushNotificationClientId::kCommerce, true);
-      });
-    }
+  auto callback = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(^(BOOL granted, BOOL promptShown, NSError* error) {
+        [weakSelf onNotificationPermissionRequestForItem:item
+                                       permissionGranted:granted
+                                             promptShown:promptShown
+                                                   error:error];
+      }));
 
-    [self trackForURL:item.productURL
-                    title:item.title
-        completionHandler:^(bool success) {
-          if (!success) {
-            [weakSelf.priceInsightsConsumer
-                presentStartPriceTrackingErrorAlertForItem:item];
-            return;
-          }
+  [self
+      presentNotificationPermission:base::CallbackToBlock(std::move(callback))];
+}
 
-          [weakSelf.priceInsightsConsumer
-              didStartPriceTrackingWithNotification:granted];
-
-          [self recordProductStatusFromSource:PriceNotificationTrackingSource::
-                                                  kPriceInsights
-                                       status:PriceNotificationProductStatus::
-                                                  kTrack];
-        }];
-  }];
+- (void)priceInsightsTrackItem:(PriceInsightsItem*)item
+          notificationsGranted:(BOOL)granted {
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  [self trackForURL:item.productURL
+                  title:item.title
+      completionHandler:^(bool success) {
+        [weakSelf onPriceInsightsTrackItem:item
+                                   success:success
+                         permissionGranted:granted];
+      }];
 }
 
 - (void)priceInsightsStopTrackingItem:(PriceInsightsItem*)item {
@@ -227,17 +215,7 @@ using PriceNotificationItems =
   [self stopTrackingForURL:item.productURL
                   clusterId:item.clusterId
       withCompletionHandler:^(bool success) {
-        if (!success) {
-          [weakSelf.priceInsightsConsumer
-              presentStopPriceTrackingErrorAlertForItem:item];
-          return;
-        }
-
-        [self recordProductStatusFromSource:PriceNotificationTrackingSource::
-                                                kPriceInsights
-                                     status:PriceNotificationProductStatus::
-                                                kUntrack];
-        [weakSelf.priceInsightsConsumer didStopPriceTracking];
+        [weakSelf onPriceInsightsStopTrackingItem:item success:success];
       }];
 }
 
@@ -635,6 +613,61 @@ using PriceNotificationItems =
   commerce::SetPriceTrackingStateForBookmark(
       self.shoppingService, self.bookmarkModel, bookmark, true,
       base::BindOnce(completionHandler), isNewBookmark);
+}
+
+// Callback invoked after requesting push notification permission.
+- (void)onNotificationPermissionRequestForItem:(PriceInsightsItem*)item
+                             permissionGranted:(BOOL)granted
+                                   promptShown:(BOOL)promptShown
+                                         error:(NSError*)error {
+  if (error) {
+    [self priceInsightsTrackItem:item notificationsGranted:false];
+    return;
+  }
+
+  if (!promptShown && !granted) {
+    [self.priceInsightsConsumer
+        presentPushNotificationPermissionAlertForItem:item];
+    return;
+  }
+
+  if (promptShown && granted) {
+    self.pushNotificationService->SetPreference(
+        self.gaiaID, PushNotificationClientId::kCommerce, true);
+  }
+
+  [self priceInsightsTrackItem:item notificationsGranted:granted];
+}
+
+// Callback invoked after requesting to track an item.
+- (void)onPriceInsightsTrackItem:(PriceInsightsItem*)item
+                         success:(BOOL)success
+               permissionGranted:(BOOL)granted {
+  if (!success) {
+    [self.priceInsightsConsumer
+        presentStartPriceTrackingErrorAlertForItem:item];
+    return;
+  }
+
+  [self.priceInsightsConsumer didStartPriceTrackingWithNotification:granted];
+
+  [self recordProductStatusFromSource:PriceNotificationTrackingSource::
+                                          kPriceInsights
+                               status:PriceNotificationProductStatus::kTrack];
+}
+
+// Callback invoked after requesting to stop tracking an item.
+- (void)onPriceInsightsStopTrackingItem:(PriceInsightsItem*)item
+                                success:(BOOL)success {
+  if (!success) {
+    [self.priceInsightsConsumer presentStopPriceTrackingErrorAlertForItem:item];
+    return;
+  }
+
+  [self recordProductStatusFromSource:PriceNotificationTrackingSource::
+                                          kPriceInsights
+                               status:PriceNotificationProductStatus::kUntrack];
+  [self.priceInsightsConsumer didStopPriceTracking];
 }
 
 @end

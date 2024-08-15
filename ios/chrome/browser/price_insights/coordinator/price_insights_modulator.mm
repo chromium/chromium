@@ -137,20 +137,15 @@ NSDate* getNSDateFromString(std::string date) {
   base::UmaHistogramEnumeration(kPriceInsightsBuyingOptionsClicked, bucket);
 }
 
-- (void)presentPushNotificationPermissionAlert {
-  NSString* settingURL = UIApplicationOpenSettingsURLString;
-  if (@available(iOS 15.4, *)) {
-    settingURL = UIApplicationOpenNotificationSettingsURLString;
-  }
-
+- (void)presentPushNotificationPermissionAlertForItem:(PriceInsightsItem*)item {
   NSString* alertTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE);
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE);
-  NSString* cancelTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CANCEL);
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE);
+  NSString* closeTitle = l10n_util::GetNSString(
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CLOSE);
   NSString* settingsTitle = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
+      IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT);
 
   __weak PriceInsightsModulator* weakSelf = self;
   [_alertCoordinator stop];
@@ -159,21 +154,16 @@ NSDate* getNSDateFromString(std::string date) {
                          browser:self.browser
                            title:alertTitle
                          message:alertMessage];
-  [_alertCoordinator addItemWithTitle:cancelTitle
+  [_alertCoordinator addItemWithTitle:closeTitle
                                action:^{
-                                 [weakSelf dismissAlertCoordinator];
+                                 [weakSelf onPushNotificationCancel:item];
                                }
                                 style:UIAlertActionStyleCancel];
-  [_alertCoordinator
-      addItemWithTitle:settingsTitle
-                action:^{
-                  [[UIApplication sharedApplication]
-                                openURL:[NSURL URLWithString:settingURL]
-                                options:{}
-                      completionHandler:nil];
-                  [weakSelf dismissAlertCoordinator];
-                }
-                 style:UIAlertActionStyleDefault];
+  [_alertCoordinator addItemWithTitle:settingsTitle
+                               action:^{
+                                 [weakSelf onPushNotificationSettings:item];
+                               }
+                                style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
 }
 
@@ -188,7 +178,6 @@ NSDate* getNSDateFromString(std::string date) {
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_REATTEMPT);
 
   __weak PriceInsightsModulator* weakSelf = self;
-  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
   [_alertCoordinator stop];
   _alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -202,15 +191,13 @@ NSDate* getNSDateFromString(std::string date) {
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator addItemWithTitle:tryAgainTitle
                                action:^{
-                                 [weakMediator priceInsightsTrackItem:item];
-                                 [weakSelf dismissAlertCoordinator];
+                                 [weakSelf onStartTrackingRetryForItem:item];
                                }
                                 style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
 }
 
 - (void)presentStopPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {
-  __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
   NSString* alertTitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
@@ -235,8 +222,7 @@ NSDate* getNSDateFromString(std::string date) {
   [_alertCoordinator
       addItemWithTitle:tryAgainTitle
                 action:^{
-                  [weakMediator priceInsightsStopTrackingItem:item];
-                  [weakSelf dismissAlertCoordinator];
+                  [weakSelf onStopPriceTrackingRetryForItem:item];
                 }
                  style:UIAlertActionStyleDefault];
   [_alertCoordinator start];
@@ -334,6 +320,41 @@ NSDate* getNSDateFromString(std::string date) {
                   [weakPriceNotificationsHandler showPriceNotifications];
                 }
              completionAction:nil];
+}
+
+// Callback invoked when the user chooses to retry stopping price tracking after
+// an initial error.
+- (void)onStopPriceTrackingRetryForItem:(PriceInsightsItem*)item {
+  [self.mediator priceInsightsStopTrackingItem:item];
+  [self dismissAlertCoordinator];
+}
+
+// Callback is invoked when the user chooses to retry starting price tracking
+// after an initial error.
+- (void)onStartTrackingRetryForItem:(PriceInsightsItem*)item {
+  [self.mediator tryPriceInsightsTrackItem:item];
+  [self dismissAlertCoordinator];
+}
+
+// Callback invoked when the user chooses to close push notifications prompt
+// during.
+- (void)onPushNotificationCancel:(PriceInsightsItem*)item {
+  [self.mediator priceInsightsTrackItem:item notificationsGranted:NO];
+  [self dismissAlertCoordinator];
+}
+
+// Callback invoked when the user chooses to open settings.
+- (void)onPushNotificationSettings:(PriceInsightsItem*)item {
+  NSString* settingURL = UIApplicationOpenSettingsURLString;
+  if (@available(iOS 15.4, *)) {
+    settingURL = UIApplicationOpenNotificationSettingsURLString;
+  }
+
+  [[UIApplication sharedApplication] openURL:[NSURL URLWithString:settingURL]
+                                     options:{}
+                           completionHandler:nil];
+  [self.mediator priceInsightsTrackItem:item notificationsGranted:NO];
+  [self dismissAlertCoordinator];
 }
 
 @end
