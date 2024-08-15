@@ -18,6 +18,10 @@ namespace extensions {
 // Scheme we serve extension content from.
 inline constexpr char kExtensionScheme[] = "chrome-extension";
 
+// URL used to indicate that an extension resource load request was invalid.
+inline constexpr char kExtensionInvalidRequestURL[] =
+    "chrome-extension://invalid/";
+
 // The name of the manifest inside an extension.
 inline constexpr base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");

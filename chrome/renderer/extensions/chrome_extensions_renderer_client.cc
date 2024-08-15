@@ -15,7 +15,6 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_metrics.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/extensions/resource_request_policy.h"
@@ -226,7 +225,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
       // recently uninstalled extension.  The tabs of such extensions are
       // automatically closed, but subframes and content scripts may stick
       // around. Fail such requests without killing the process.
-      *new_url = GURL(chrome::kExtensionInvalidRequestURL);
+      *new_url = GURL(extensions::kExtensionInvalidRequestURL);
     }
   }
 
@@ -238,7 +237,7 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   if (target_url.ProtocolIs(extensions::kExtensionScheme) &&
       !resource_request_policy_->CanRequestResource(
           upstream_url, target_url, frame, transition_type, initiator_origin)) {
-    *new_url = GURL(chrome::kExtensionInvalidRequestURL);
+    *new_url = GURL(extensions::kExtensionInvalidRequestURL);
   }
 
   // TODO(crbug.com/41240557): Remove metrics after bug is fixed.

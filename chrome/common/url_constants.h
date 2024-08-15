@@ -261,10 +261,6 @@ inline constexpr char kDownloadBlockedLearnMoreURL[] =
 inline constexpr char kExtensionControlledSettingLearnMoreURL[] =
     "https://support.google.com/chrome?p=ui_settings_api_extension";
 
-// URL used to indicate that an extension resource load request was invalid.
-inline constexpr char kExtensionInvalidRequestURL[] =
-    "chrome-extension://invalid/";
-
 // Link for creating family group with Google Families.
 inline constexpr char16_t kFamilyGroupCreateURL[] =
     u"https://myaccount.google.com/family/create?utm_source=cpwd";
