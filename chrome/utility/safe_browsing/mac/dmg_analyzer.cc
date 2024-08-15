@@ -197,7 +197,7 @@ bool DMGAnalyzer::ResumeExtraction() {
       } else {
         results()->archived_binary.RemoveLast();
       }
-    } else if (base::FeatureList::IsEnabled(kNestedArchives)) {
+    } else {
       DownloadFileType_InspectionType file_type =
           GetFileType(base::FilePath(path));
       if (file_type == DownloadFileType::ZIP ||

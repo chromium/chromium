@@ -104,22 +104,6 @@ std::string ShortOriginForReporting(const std::string& url) {
   return gurl.DeprecatedGetOriginAsURL().spec();
 }
 
-base::TimeDelta GetNavigationFootprintTTL() {
-  if (base::FeatureList::IsEnabled(kReferrerChainParameters)) {
-    return base::Seconds(kReferrerChainEventMaximumAgeSeconds.Get());
-  }
-
-  return kNavigationFootprintTTL;
-}
-
-int GetNavigationRecordMaxSize() {
-  if (base::FeatureList::IsEnabled(kReferrerChainParameters)) {
-    return kReferrerChainEventMaximumCount.Get();
-  }
-
-  return kNavigationRecordMaxSize;
-}
-
 }  // namespace
 
 // -------------------------ReferrerChainData-----------------------
@@ -337,11 +321,11 @@ void NavigationEventList::RemovePendingNavigationEvent(
 
 std::size_t NavigationEventList::CleanUpNavigationEvents() {
   // Remove any stale NavigationEnvent, if it is older than
-  // `GetNavigationFootprintTTL()`.
+  // `kNavigationFootprintTTL`.
   std::size_t removal_count = 0;
   while (!navigation_events_.empty() &&
          IsEventExpired(navigation_events_[0]->last_updated,
-                        GetNavigationFootprintTTL())) {
+                        kNavigationFootprintTTL)) {
     navigation_events_.pop_front();
     removal_count++;
   }
@@ -349,7 +333,7 @@ std::size_t NavigationEventList::CleanUpNavigationEvents() {
   // Clean up expired pending navigation events.
   auto it = pending_navigation_events_.begin();
   while (it != pending_navigation_events_.end()) {
-    if (IsEventExpired(it->second->last_updated, GetNavigationFootprintTTL())) {
+    if (IsEventExpired(it->second->last_updated, kNavigationFootprintTTL)) {
       it = pending_navigation_events_.erase(it);
     } else {
       ++it;
@@ -433,13 +417,13 @@ void SafeBrowsingNavigationObserverManager::SanitizeReferrerChain(
 SafeBrowsingNavigationObserverManager::SafeBrowsingNavigationObserverManager(
     PrefService* pref_service,
     content::ServiceWorkerContext* context)
-    : navigation_event_list_(GetNavigationRecordMaxSize()),
+    : navigation_event_list_(kNavigationRecordMaxSize),
       pref_service_(pref_service),
       notification_context_(context) {
   ui::Clipboard::GetForCurrentThread()->AddObserver(this);
   notification_context_->AddObserver(this);
   // Schedule clean up in 2 minutes.
-  ScheduleNextCleanUpAfterInterval(GetNavigationFootprintTTL());
+  ScheduleNextCleanUpAfterInterval(kNavigationFootprintTTL);
 }
 
 void SafeBrowsingNavigationObserverManager::RecordNavigationEvent(
@@ -530,7 +514,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpStaleNavigationFootprints() {
   CleanUpIpAddresses();
   CleanUpCopyData();
   CleanUpNotificationNavigationEvents();
-  ScheduleNextCleanUpAfterInterval(GetNavigationFootprintTTL());
+  ScheduleNextCleanUpAfterInterval(kNavigationFootprintTTL);
 }
 
 SafeBrowsingNavigationObserverManager::AttributionResult
@@ -818,7 +802,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpNavigationEvents() {
 
 void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {
   for (auto it = user_gesture_map_.begin(); it != user_gesture_map_.end();) {
-    if (IsEventExpired(it->second, GetNavigationFootprintTTL())) {
+    if (IsEventExpired(it->second, kNavigationFootprintTTL)) {
       it = user_gesture_map_.erase(it);
     } else {
       ++it;
@@ -829,7 +813,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {
 void SafeBrowsingNavigationObserverManager::CleanUpIpAddresses() {
   for (auto it = host_to_ip_map_.begin(); it != host_to_ip_map_.end();) {
     std::erase_if(it->second, [](const ResolvedIPAddress& resolved_ip) {
-      return IsEventExpired(resolved_ip.timestamp, GetNavigationFootprintTTL());
+      return IsEventExpired(resolved_ip.timestamp, kNavigationFootprintTTL);
     });
     if (it->second.empty())
       it = host_to_ip_map_.erase(it);
@@ -841,7 +825,7 @@ void SafeBrowsingNavigationObserverManager::CleanUpIpAddresses() {
 void SafeBrowsingNavigationObserverManager::CleanUpCopyData() {
   if (last_copy_paste_entry_.has_value()) {
     if (IsEventExpired(last_copy_paste_entry_.value().recorded_time_,
-                       GetNavigationFootprintTTL())) {
+                       kNavigationFootprintTTL)) {
       last_copy_paste_entry_ = std::nullopt;
     }
   }
@@ -851,7 +835,7 @@ void SafeBrowsingNavigationObserverManager::
     CleanUpNotificationNavigationEvents() {
   auto it = notification_navigation_events_.begin();
   while (it != notification_navigation_events_.end()) {
-    if (IsEventExpired(it->second->last_updated, GetNavigationFootprintTTL())) {
+    if (IsEventExpired(it->second->last_updated, kNavigationFootprintTTL)) {
       it = notification_navigation_events_.erase(it);
     } else {
       ++it;

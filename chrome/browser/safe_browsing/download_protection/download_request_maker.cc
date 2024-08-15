@@ -204,10 +204,6 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
 
   *request_->mutable_population() =
       GetUserPopulationForProfileWithCookieTheftExperiments(profile);
-  if (base::FeatureList::IsEnabled(kNestedArchives)) {
-    request_->mutable_population()->add_finch_active_groups(
-        "SafeBrowsingArchiveImprovements.Enabled");
-  }
   if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
       base::FeatureList::IsEnabled(kDeepScanningCriteria)) {
     request_->mutable_population()->add_finch_active_groups(

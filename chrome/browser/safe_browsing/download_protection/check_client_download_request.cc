@@ -462,7 +462,7 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     return false;
   }
 
-  return base::FeatureList::IsEnabled(kEncryptedArchivesMetadata);
+  return true;
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {

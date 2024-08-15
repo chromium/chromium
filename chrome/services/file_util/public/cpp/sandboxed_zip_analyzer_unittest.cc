@@ -320,7 +320,6 @@ TEST_F(SandboxedZipAnalyzerTest, TwoBinariesOneSigned) {
 
 TEST_F(SandboxedZipAnalyzerTest, ZippedArchiveNoBinaries) {
   safe_browsing::ArchiveAnalyzerResults results;
-  scoped_feature_list.InitAndEnableFeature(safe_browsing::kNestedArchives);
   RunAnalyzer(dir_test_data_.AppendASCII(
                   "download_protection/zipfile_archive_no_binaries.zip"),
               &results);
@@ -334,7 +333,6 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedArchiveNoBinaries) {
 }
 
 TEST_F(SandboxedZipAnalyzerTest, ZippedNestedArchive) {
-  scoped_feature_list.InitAndEnableFeature(safe_browsing::kNestedArchives);
   safe_browsing::ArchiveAnalyzerResults results;
   RunAnalyzer(dir_test_data_.AppendASCII(
                   "download_protection/zipfile_nested_archives.zip"),
@@ -348,7 +346,6 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedNestedArchive) {
 }
 
 TEST_F(SandboxedZipAnalyzerTest, ZippedTooManyNestedArchive) {
-  scoped_feature_list.InitAndEnableFeature(safe_browsing::kNestedArchives);
   safe_browsing::ArchiveAnalyzerResults results;
   RunAnalyzer(dir_test_data_.AppendASCII(
                   "download_protection/zipfile_too_many_nested_archives.zip"),

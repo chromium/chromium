@@ -105,10 +105,6 @@ const base::FeatureParam<int> kDownloadWarningSurveyType{
 const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
     &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
 
-BASE_FEATURE(kEncryptedArchivesMetadata,
-             "SafeBrowsingEncryptedArchivesMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
              "ExtendedReportingRemovePrefDependency",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -219,10 +215,6 @@ constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
     /*default_value=*/true
 };
 
-BASE_FEATURE(kNestedArchives,
-             "SafeBrowsingArchiveImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
              "RealTimeUrlFilteringCustomMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -240,17 +232,6 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter{
 constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
-
-BASE_FEATURE(kReferrerChainParameters,
-             "SafeBrowsingReferrerChainParameters",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds{
-    &kReferrerChainParameters, "MaximumEventAgeSeconds", /*default_value=*/120};
-
-constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
-    &kReferrerChainParameters, "MaximumEventCount",
-    /*default_value=*/100};
 
 BASE_FEATURE(kRippleForEnhancedProtection,
              "RippleForEnhancedProtection",
@@ -293,21 +274,9 @@ BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSevenZipEvaluationEnabled,
-             "SafeBrowsingSevenZipEvaluationEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStrictDownloadTimeout,
-             "SafeBrowsingStrictDownloadtimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
-    &kStrictDownloadTimeout, "TimeoutMilliseconds",
-    /*default_value=*/7000};
 
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
@@ -388,14 +357,11 @@ base::Value::List GetFeatureStatusList() {
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
       &kMmapSafeBrowsingDatabase,
-      &kNestedArchives,
       &kRealTimeUrlFilteringCustomMessage,
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,
-      &kSevenZipEvaluationEnabled,
       &kSimplifiedUrlDisplay,
-      &kStrictDownloadTimeout,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,
       &kVisualFeaturesSizes,
