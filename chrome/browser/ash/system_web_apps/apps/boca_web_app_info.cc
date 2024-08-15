@@ -19,7 +19,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
   GURL start_url = GURL(ash::kChromeBocaAppUntrustedIndexURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(ash::kChromeBocaAppUntrustedIndexURL);
+  info->scope = GURL(ash::kChromeBocaAppUntrustedURL);
   // TODO(aprilzhou): Convert the title to a localized string
   info->title = u"BOCA";
   web_app::CreateIconInfoForSystemWebApp(
