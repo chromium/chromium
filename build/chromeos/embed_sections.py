@@ -31,6 +31,8 @@ TARGET_SECTIONS = {
     },
 }
 
+UINT64_SIZE = 8
+
 
 def parse_endianess(objdump_result):
   for line in objdump_result.splitlines():
@@ -43,13 +45,15 @@ def parse_endianess(objdump_result):
   raise ValueError('No endian found')
 
 
-def assert_64bit(objdump_result):
+def parse_ptr_size(objdump_result):
   for line in objdump_result.splitlines():
     line = line.strip()
     if line.startswith('Class:'):
       if 'ELF64' in line:
-        return
-      raise ValueError('Class is not ELF64: ' + line)
+        return 8
+      if 'ELF32' in line:
+        return 4
+      raise ValueError('Class is not ELF64 nor ELF32: ' + line)
   raise ValueError('No class found')
 
 
@@ -94,12 +98,13 @@ def create_symbol_offset_map(binary_input, objdump_result):
   return result
 
 
-def overwrite_variable(file, symbol_offset_map, endianess, section_name,
+def overwrite_variable(file, symbol_offset_map, endianess, length, section_name,
                        var_type, value):
   var_offset = symbol_offset_map[TARGET_SECTIONS[section_name][var_type]]
   file.seek(var_offset)
-  if file.write(value.to_bytes(length=8, byteorder=endianess,
-                               signed=False)) != 8:
+  if file.write(
+      value.to_bytes(length=length, byteorder=endianess,
+                     signed=False)) != length:
     raise ValueError('failed to write value to file')
 
 
@@ -116,9 +121,7 @@ def main():
                                   check=True,
                                   text=True).stdout
 
-  # Only support 64bit architectures for now to ensure that kRodataAddr and
-  # kTextHotAddr are 64 bit addresses.
-  assert_64bit(objdump_result)
+  ptr_size = parse_ptr_size(objdump_result)
 
   symbol_offset_map = create_symbol_offset_map(args.binary_input,
                                                objdump_result)
@@ -132,10 +135,10 @@ def main():
   with open(args.binary_output, 'r+b') as file:
     for section_name in TARGET_SECTIONS:
       (addr, _, size) = parse_section_info(objdump_result, section_name)
-      overwrite_variable(file, symbol_offset_map, endianess, section_name,
-                         'addr', addr)
-      overwrite_variable(file, symbol_offset_map, endianess, section_name,
-                         'size', size)
+      overwrite_variable(file, symbol_offset_map, endianess, ptr_size,
+                         section_name, 'addr', addr)
+      overwrite_variable(file, symbol_offset_map, endianess, UINT64_SIZE,
+                         section_name, 'size', size)
 
   objdump_result_after = subprocess.run(
       [llvm_readelf, '-e', args.binary_output],
