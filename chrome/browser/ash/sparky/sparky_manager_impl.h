@@ -82,6 +82,13 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
                                   manta::MantaStatus status,
                                   manta::DialogTurn* latest_turn);
 
+  // There is a maximum limit of consecutive calls which can be made from the
+  // client with no additional request from the user. If the response from the
+  // server is trying to exceed this limit, there is a manual override and the
+  // last action for the latest turn will be set to done, so that no additional
+  // calls to the server are made.
+  void CheckTurnLimit();
+
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
 

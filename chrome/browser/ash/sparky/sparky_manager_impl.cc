@@ -34,6 +34,7 @@
 #include "components/manta/manta_service.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_context.h"
+#include "components/manta/sparky/sparky_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -43,6 +44,7 @@ namespace {
 
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
+constexpr int kMaxConsecutiveTurns = 20;
 
 ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
   auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
@@ -232,6 +234,7 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
     sparky_context->files = sparky_provider_->GetFilesSummary();
+    CheckTurnLimit();
 
     // If the latest action is not the final action from the server, then an
     // additional request is made to the server.
@@ -247,6 +250,31 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
     latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
     std::move(callback).Run(std::nullopt, latest_response_status_);
   }
+}
+
+void SparkyManagerImpl::CheckTurnLimit() {
+  // If the size of the dialog does not exceed the turn limit then return.
+  if (dialog_turns_.size() < kMaxConsecutiveTurns) {
+    return;
+  }
+  // If the last action is already set to not made an additional server call
+  // then return.
+  if (dialog_turns_.back().actions.empty() ||
+      dialog_turns_.back().actions.back().type != manta::ActionType::kAllDone ||
+      dialog_turns_.back().actions.back().all_done == true) {
+    return;
+  }
+  // Iterate through the last n turns if any of them are from the user then
+  // return as the turn limit has not yet been reached.
+  for (int position = 1; position < kMaxConsecutiveTurns; ++position) {
+    auto turn = dialog_turns_.at(dialog_turns_.size() - kMaxConsecutiveTurns);
+    if (turn.role == manta::Role::kUser) {
+      return;
+    }
+  }
+  // Assign the last action as all done to prevent any additional calls to the
+  // server.
+  dialog_turns_.back().actions.back().all_done = true;
 }
 
 void SparkyManagerImpl::OnGetPageContentForQA(
