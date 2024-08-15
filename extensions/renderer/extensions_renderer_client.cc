@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "extensions/renderer/dispatcher.h"
 
 namespace extensions {
 
@@ -34,6 +35,16 @@ void ExtensionsRendererClient::AddAPIProvider(
   CHECK(!GetDispatcher())
       << "API providers must be added before the Dispatcher is instantiated.";
   api_providers_.push_back(std::move(api_provider));
+}
+
+void ExtensionsRendererClient::SetDispatcherForTesting(
+    std::unique_ptr<Dispatcher> dispatcher) {
+  dispatcher_ = std::move(dispatcher);
+}
+
+void ExtensionsRendererClient::CreateDispatcher() {
+  CHECK(!dispatcher_);
+  dispatcher_ = std::make_unique<Dispatcher>(std::move(api_providers_));
 }
 
 }  // namespace extensions

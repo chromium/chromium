@@ -17,9 +17,8 @@ ShellExtensionsRendererClient::ShellExtensionsRendererClient() = default;
 ShellExtensionsRendererClient::~ShellExtensionsRendererClient() = default;
 
 void ShellExtensionsRendererClient::RenderThreadStarted() {
-  dispatcher_ = std::make_unique<Dispatcher>(std::move(api_providers_));
-
-  dispatcher_->OnRenderThreadStarted(content::RenderThread::Get());
+  CreateDispatcher();
+  dispatcher()->OnRenderThreadStarted(content::RenderThread::Get());
 }
 
 bool ShellExtensionsRendererClient::IsIncognitoProcess() const {
@@ -35,7 +34,7 @@ int ShellExtensionsRendererClient::GetLowestIsolatedWorldId() const {
 }
 
 Dispatcher* ShellExtensionsRendererClient::GetDispatcher() {
-  return dispatcher_.get();
+  return dispatcher();
 }
 
 }  // namespace extensions

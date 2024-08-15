@@ -93,7 +93,7 @@ int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {
 }
 
 extensions::Dispatcher* ChromeExtensionsRendererClient::GetDispatcher() {
-  return extension_dispatcher_.get();
+  return dispatcher();
 }
 
 void ChromeExtensionsRendererClient::OnExtensionLoaded(
@@ -110,20 +110,18 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
   content::RenderThread* thread = content::RenderThread::Get();
   // ChromeRenderViewTest::SetUp() creates its own ExtensionDispatcher and
   // injects it using SetExtensionDispatcher(). Don't overwrite it.
-  if (!extension_dispatcher_) {
-    extension_dispatcher_ = std::make_unique<extensions::Dispatcher>(
-        std::move(api_providers_));
+  if (!dispatcher()) {
+    CreateDispatcher();
   }
-  extension_dispatcher_->OnRenderThreadStarted(thread);
+  dispatcher()->OnRenderThreadStarted(thread);
   permissions_policy_delegate_ =
       std::make_unique<extensions::RendererPermissionsPolicyDelegate>(
 
-          extension_dispatcher_.get());
+          dispatcher());
   resource_request_policy_ =
-      std::make_unique<extensions::ResourceRequestPolicy>(
-          extension_dispatcher_.get());
+      std::make_unique<extensions::ResourceRequestPolicy>(dispatcher());
 
-  thread->AddObserver(extension_dispatcher_.get());
+  thread->AddObserver(dispatcher());
 }
 
 void ChromeExtensionsRendererClient::WebViewCreated(
@@ -136,9 +134,8 @@ void ChromeExtensionsRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame,
     service_manager::BinderRegistry* registry) {
   new extensions::ExtensionsRenderFrameObserver(render_frame, registry);
-  new extensions::ExtensionFrameHelper(render_frame,
-                                       extension_dispatcher_.get());
-  extension_dispatcher_->OnRenderFrameCreated(render_frame);
+  new extensions::ExtensionFrameHelper(render_frame, dispatcher());
+  dispatcher()->OnRenderFrameCreated(render_frame);
 }
 
 bool ChromeExtensionsRendererClient::OverrideCreatePlugin(
@@ -148,7 +145,7 @@ bool ChromeExtensionsRendererClient::OverrideCreatePlugin(
     return true;
 
   bool guest_view_api_available = false;
-  extension_dispatcher_->script_context_set_iterator()->ForEach(
+  dispatcher()->script_context_set_iterator()->ForEach(
       render_frame, base::BindRepeating(&IsGuestViewApiAvailableToScriptContext,
                                         &guest_view_api_available));
   return !guest_view_api_available;
@@ -156,7 +153,7 @@ bool ChromeExtensionsRendererClient::OverrideCreatePlugin(
 
 bool ChromeExtensionsRendererClient::AllowPopup() {
   extensions::ScriptContext* current_context =
-      extension_dispatcher_->script_context_set().GetCurrent();
+      dispatcher()->script_context_set().GetCurrent();
   if (!current_context || !current_context->extension())
     return false;
 
@@ -185,7 +182,7 @@ ChromeExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
   // WARNING: This must match the logic of
   // Browser::GetProtocolHandlerSecurityLevel().
   extensions::ScriptContext* current_context =
-      extension_dispatcher_->script_context_set().GetCurrent();
+      dispatcher()->script_context_set().GetCurrent();
   if (!current_context || !current_context->extension())
     return blink::ProtocolHandlerSecurityLevel::kStrict;
 
@@ -282,15 +279,6 @@ void ChromeExtensionsRendererClient::WillSendRequest(
   }
 }
 
-void ChromeExtensionsRendererClient::SetExtensionDispatcherForTest(
-    std::unique_ptr<extensions::Dispatcher> extension_dispatcher) {
-  extension_dispatcher_ = std::move(extension_dispatcher);
-  permissions_policy_delegate_ =
-      std::make_unique<extensions::RendererPermissionsPolicyDelegate>(
-
-          extension_dispatcher_.get());
-}
-
 extensions::Dispatcher*
 ChromeExtensionsRendererClient::GetExtensionDispatcherForTest() {
   return extension_dispatcher();
@@ -346,15 +334,15 @@ blink::WebFrame* ChromeExtensionsRendererClient::FindFrame(
 
 void ChromeExtensionsRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
-  extension_dispatcher_->RunScriptsAtDocumentStart(render_frame);
+  dispatcher()->RunScriptsAtDocumentStart(render_frame);
 }
 
 void ChromeExtensionsRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
-  extension_dispatcher_->RunScriptsAtDocumentEnd(render_frame);
+  dispatcher()->RunScriptsAtDocumentEnd(render_frame);
 }
 
 void ChromeExtensionsRendererClient::RunScriptsAtDocumentIdle(
     content::RenderFrame* render_frame) {
-  extension_dispatcher_->RunScriptsAtDocumentIdle(render_frame);
+  dispatcher()->RunScriptsAtDocumentIdle(render_frame);
 }

@@ -96,8 +96,8 @@ class ChromeExtensionsRendererClient
   v8::Local<v8::Object> GetScriptableObject(
       const blink::WebElement& plugin_element,
       v8::Isolate* isolate);
-  void SetExtensionDispatcherForTest(
-      std::unique_ptr<extensions::Dispatcher> extension_dispatcher);
+
+  // TODO(https://crbug.com/359904696): Remove this.
   extensions::Dispatcher* GetExtensionDispatcherForTest();
 
   static void DidBlockMimeHandlerViewForDisallowedPlugin(
@@ -114,13 +114,11 @@ class ChromeExtensionsRendererClient
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
-  extensions::Dispatcher* extension_dispatcher() {
-    return extension_dispatcher_.get();
-  }
+  // TODO(https://crbug.com/359904696): Remove this.
+  extensions::Dispatcher* extension_dispatcher() { return dispatcher(); }
 
  private:
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
-  std::unique_ptr<extensions::Dispatcher> extension_dispatcher_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;
   std::unique_ptr<extensions::ResourceRequestPolicy> resource_request_policy_;

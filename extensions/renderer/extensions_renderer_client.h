@@ -39,6 +39,7 @@ class ExtensionsRendererClient {
   virtual int GetLowestIsolatedWorldId() const = 0;
 
   // Returns the associated Dispatcher.
+  // TODO(https://crbug.com/359904696): Remove this.
   virtual Dispatcher* GetDispatcher() = 0;
 
   // Notifies the client when an extension is added or removed.
@@ -57,9 +58,18 @@ class ExtensionsRendererClient {
   // Initialize the single instance.
   static void Set(ExtensionsRendererClient* client);
 
+  Dispatcher* dispatcher() { return dispatcher_.get(); }
+
+  void SetDispatcherForTesting(std::unique_ptr<Dispatcher> dispatcher);
+
  protected:
+  void CreateDispatcher();
+
+ private:
   std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
       api_providers_;
+
+  std::unique_ptr<Dispatcher> dispatcher_;
 };
 
 }  // namespace extensions

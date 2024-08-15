@@ -125,10 +125,9 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient* ext_client =
       ChromeExtensionsRendererClient::GetInstance();
-  ext_client->SetExtensionDispatcherForTest(
-      std::make_unique<extensions::Dispatcher>(
-          std::vector<std::unique_ptr<
-              const extensions::ExtensionsRendererAPIProvider>>()));
+  ext_client->SetDispatcherForTesting(std::make_unique<extensions::Dispatcher>(
+      std::vector<
+          std::unique_ptr<const extensions::ExtensionsRendererAPIProvider>>()));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

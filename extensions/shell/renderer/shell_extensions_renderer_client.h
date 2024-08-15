@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_SHELL_RENDERER_SHELL_EXTENSIONS_RENDERER_CLIENT_H_
 #define EXTENSIONS_SHELL_RENDERER_SHELL_EXTENSIONS_RENDERER_CLIENT_H_
 
-#include <memory>
-
 #include "extensions/renderer/extensions_renderer_client.h"
 
 namespace extensions {
@@ -25,9 +23,6 @@ class ShellExtensionsRendererClient : public ExtensionsRendererClient {
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
   Dispatcher* GetDispatcher() override;
-
- private:
-  std::unique_ptr<Dispatcher> dispatcher_;
 };
 
 }  // namespace extensions
