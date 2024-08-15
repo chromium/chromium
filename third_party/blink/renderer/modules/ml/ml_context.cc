@@ -397,6 +397,21 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.gelu_input));
   op_support_limits->setGelu(gelu);
 
+  MLSingleInputSupportLimits* hard_sigmoid =
+      MLSingleInputSupportLimits::Create();
+  hard_sigmoid->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_sigmoid_input));
+  hard_sigmoid->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_sigmoid_input));
+  op_support_limits->setHardSigmoid(hard_sigmoid);
+
+  MLSingleInputSupportLimits* hard_swish = MLSingleInputSupportLimits::Create();
+  hard_swish->setInput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_swish_input));
+  hard_swish->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.data_type_limits.hard_swish_input));
+  op_support_limits->setHardSwish(hard_swish);
+
   MLSingleInputSupportLimits* leaky_relu = MLSingleInputSupportLimits::Create();
   leaky_relu->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.leaky_relu_input));

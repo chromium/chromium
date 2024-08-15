@@ -680,6 +680,8 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*gather_indices=*/
        kGatherIndicesSupportedDataTypes,
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
+       /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
+       /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
        /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
@@ -2001,7 +2003,8 @@ GraphBuilderCoreml::AddOperationForHardSigmoid(
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
-  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+  CHECK(context_properties_.data_type_limits.hard_sigmoid_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpHardSigmoidTypeName);
@@ -2043,6 +2046,8 @@ GraphBuilderCoreml::AddOperationForHardSwish(
   // emulated by: mul(x, hardsigmoid(x, alpha=1.0/6, beta=0.5))
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
+  CHECK(context_properties_.data_type_limits.hard_swish_input.Has(
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)));
   ASSIGN_OR_RETURN(uint64_t hardsigmoid_output,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
                                                input_operand_info.dimensions));
