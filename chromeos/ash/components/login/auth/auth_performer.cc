@@ -353,6 +353,7 @@ void AuthPerformer::HashPasswordAndAuthenticate(
   password_key.SetLabel(key_label);
   password_key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
   context->SetKey(password_key);
+  context->SetIsUsingPin(false);
   AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
 }
 

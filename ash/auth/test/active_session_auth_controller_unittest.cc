@@ -347,8 +347,8 @@ TEST_F(ActiveSessionAuthControllerTest, SubmitPin) {
 }
 
 // Tests that the AuthenticateAuthFactor call to cryptohome includes the
-// correct account id and password, and that the `OnAuthComplete` callback
-// is not called with wrong credentials.
+// account id and pin, and that the `OnAuthComplete` callback
+// is not called with a wrong credentials error reply.
 TEST_F(ActiveSessionAuthControllerTest, WrongPin) {
   AddGaiaPassword(account_id_, kExpectedPassword);
   AddCryptohomePin(account_id_, kExpectedPin);
@@ -386,6 +386,60 @@ TEST_F(ActiveSessionAuthControllerTest, WrongPin) {
   EXPECT_EQ(authenticate_auth_factor_request.auth_input().pin_input().secret(),
             HashPin(kExpectedPin));
   EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that the AuthenticateAuthFactor calls to cryptohome are
+// correctly formed when pin and password authentication are both
+// tried.
+TEST_F(ActiveSessionAuthControllerTest, BadPinThenGoodPassword) {
+  AddGaiaPassword(account_id_, kExpectedPassword);
+  AddCryptohomePin(account_id_, kExpectedPin);
+  const std::string bad_pin = "bad_pin";
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+                           kExpectedSalt);
+
+  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
+      Shell::Get()->active_session_auth_controller());
+
+  OnAuthComplete future;
+
+  Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+      ActiveSessionAuthController::Reason::kSettings, future.GetCallback());
+
+  // Await show.
+  base::RunLoop().RunUntilIdle();
+
+  // Await authentication with pin.
+  FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
+  ActiveSessionAuthControllerImpl::TestApi(controller).SubmitPin(bad_pin);
+  base::RunLoop().RunUntilIdle();
+
+  auto authenticate_auth_factor_request =
+      FakeUserDataAuthClient::Get()
+          ->GetLastRequest<
+              FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor>();
+
+  EXPECT_EQ(authenticate_auth_factor_request.auth_input().pin_input().secret(),
+            HashPin(bad_pin));
+  EXPECT_FALSE(future.IsReady());
+
+  // Await authentication with password.
+  ActiveSessionAuthControllerImpl::TestApi(controller)
+      .SubmitPassword(kExpectedPassword);
+  base::RunLoop().RunUntilIdle();
+
+  authenticate_auth_factor_request =
+      FakeUserDataAuthClient::Get()
+          ->GetLastRequest<
+              FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor>();
+
+  EXPECT_EQ(
+      authenticate_auth_factor_request.auth_input().password_input().secret(),
+      HashPassword(kExpectedPassword));
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<bool>(), true);
 }
 
 // Tests that the OnAuthCancel callback is called with the correct
