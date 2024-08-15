@@ -571,19 +571,27 @@ chromium-metrics-reviews@google.com.
       label="Opened automatically / Notifying the user that their passkey was
              saved"/>
   <int value="22"
-      label="Opened automatically / Notifying the user that their invalid
-             passkey has been deleted and that they need to log in to create
-             a new one"/>
+      label="Opened automatically / Notifying the user that their passkey was
+             deleted because it was not present on an unknown credential
+             report and that they need to log in to create a new passkey"/>
   <int value="23"
-      label="Opened manually / Notifying the user that their invalid passkey
-             has been deleted and that they need to log in to create a new
-             one"/>
+      label="Opened manually / Notifying the user that their passkey was
+             deleted because it was not present on an unknown credential
+             report and that they need to log in to create a new passkey"/>
   <int value="24"
       label="Opened automatically / Notifying the user that their passkey
              details have been updated."/>
   <int value="25"
       label="Opened manually / Notifying the user that their passkey details
              have been updated."/>
+  <int value="26"
+      label="Opened automatically / Notifying the user that their passkey was
+             deleted because it was not present on an all accepted
+             credentials report"/>
+  <int value="27"
+      label="Opened manually / Notifying the user that their passkey was
+             deleted because it was not present on an all accepted
+             credentials report"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">
