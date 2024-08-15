@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] clamp float32 0D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
 [FAIL] clamp float32 1D constant tensor default options
   assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
 [FAIL] clamp float32 1D tensor default options

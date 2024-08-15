@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] linear float32 1D constant tensor default options
   assert_true: assert_array_approx_equals_ulp: test linear float32 actual -1.1220703125 should be close enough to expected -1.12251615524292 by the acceptable 2 ULP distance, but they have 3740 ULP distance expected true got false
+[FAIL] linear float32 0D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test linear float32 actual -1.1220703125 should be close enough to expected -1.12251615524292 by the acceptable 2 ULP distance, but they have 3740 ULP distance expected true got false
 [FAIL] linear float32 1D tensor default options
   assert_true: assert_array_approx_equals_ulp: test linear float32 actual -1.1220703125 should be close enough to expected -1.12251615524292 by the acceptable 2 ULP distance, but they have 3740 ULP distance expected true got false
 [FAIL] linear float32 2D tensor default options

@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] hardSigmoid float32 positive 0D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test hardSigmoid float32 actual 0.51171875 should be close enough to expected 0.5118141174316406 by the acceptable 2 ULP distance, but they have 1600 ULP distance expected true got false
 [FAIL] hardSigmoid float32 positive 1D constant tensor default options
   assert_true: assert_array_approx_equals_ulp: test hardSigmoid float32 actual 0.51171875 should be close enough to expected 0.5118141174316406 by the acceptable 2 ULP distance, but they have 1600 ULP distance expected true got false
 [FAIL] hardSigmoid float32 positive 1D tensor default options
