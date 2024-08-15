@@ -37,6 +37,7 @@ static_library("boca_ui") {
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
     "//components/app_constants",
     "//components/app_restore",
     "//components/signin/public/identity_manager",

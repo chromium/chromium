@@ -15,6 +15,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/audio:unit_tests",
     "//chromeos/ash/components/boca/babelorca:unit_tests",
     "//chromeos/ash/components/boca/on_task:unit_tests",
+    "//chromeos/ash/components/boca/session_api:unit_tests",
     "//chromeos/ash/components/browser_context_helper:unit_tests",
     "//chromeos/ash/components/carrier_lock:unit_tests",
     "//chromeos/ash/components/channel:unit_tests",
