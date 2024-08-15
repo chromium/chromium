@@ -160,7 +160,8 @@ TEST_F(SodaInstallerImplTest, UninstallLanguagePacks) {
 
 TEST_F(SodaInstallerImplTest, AvailableLanguagesTest) {
   auto actual_available_langs = soda_installer_impl_->GetAvailableLanguages();
-  auto expected_available_langs = speech::GetLiveCaptionEnabledLanguages();
+  auto expected_available_langs =
+      soda_installer_impl_->GetLiveCaptionEnabledLanguages();
   EXPECT_THAT(actual_available_langs,
               ::testing::UnorderedElementsAreArray(expected_available_langs));
 }

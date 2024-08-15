@@ -281,8 +281,6 @@ const std::string GetInstallationResultMetricForLanguagePack(
 const std::string GetInstallationResultMetricForLanguage(
     const std::string& language);
 
-// Gets a list of locales enabled by the Finch flag.
-std::vector<std::string> GetLiveCaptionEnabledLanguages();
 }  // namespace speech
 
 #endif  // COMPONENTS_SODA_CONSTANTS_H_

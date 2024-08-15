@@ -48,7 +48,10 @@ source_set("lib") {
       "cros_speech_recognition_recognizer_impl.cc",
       "cros_speech_recognition_recognizer_impl.h",
     ]
-    deps += [ "//chromeos/services/machine_learning/public/mojom" ]
+    deps += [
+      "//chromeos/services/machine_learning/public/mojom",
+      "//components/soda:soda",
+    ]
   }
 }
 

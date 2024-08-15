@@ -85,8 +85,9 @@ bool IsLanguageInstallable(const std::string& language_code) {
     }
   }
 
-  return base::Contains(speech::GetLiveCaptionEnabledLanguages(),
-                        language_code);
+  return base::Contains(
+      speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
+      language_code);
 }
 
 }  // namespace

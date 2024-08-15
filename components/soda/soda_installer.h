@@ -137,6 +137,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   bool IsAnyLanguagePackInstalledForTesting() const;
 
   const std::set<LanguageCode> InstalledLanguages() const;
+  // Gets a list of locales enabled by the Finch flag.
+  virtual std::vector<std::string> GetLiveCaptionEnabledLanguages() const;
 
  protected:
   // Initializes language and installs the per-language components.

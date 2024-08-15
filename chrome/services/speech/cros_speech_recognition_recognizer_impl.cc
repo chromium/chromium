@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "chrome/services/speech/soda/cros_soda_client.h"
 #include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_sample_types.h"
@@ -133,7 +134,8 @@ void CrosSpeechRecognitionRecognizerImpl::
         base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
       config->multi_lang_config = AddLiveCaptionLanguagesToConfig(
           primary_language_name(), config_paths(),
-          speech::GetLiveCaptionEnabledLanguages());
+          speech::SodaInstaller::GetInstance()
+              ->GetLiveCaptionEnabledLanguages());
     }
 
     config->enable_formatting =
