@@ -197,6 +197,9 @@ extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining for how long a dismissed tab should be discarded
+// from the module's displayed visit resumption suggestions.
+extern const char kNtpTabResumptionModuleDismissalDurationParam[];
 // Parameter determining what types result types to request when fetching URL
 // visit aggregate data.
 extern const char kNtpTabResumptionModuleResultTypesParam[];

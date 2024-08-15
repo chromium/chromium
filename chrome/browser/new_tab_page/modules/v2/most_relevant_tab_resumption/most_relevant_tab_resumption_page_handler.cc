@@ -183,13 +183,18 @@ MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       result_url_types_(GetFetchResultURLTypes()),
+      dismissal_duration_days_(base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kNtpMostRelevantTabResumptionModule,
+          ntp_features::kNtpTabResumptionModuleDismissalDurationParam,
+          90)),
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
   DCHECK(web_contents_);
 }
 
-MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() =
-    default;
+MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() {
+  RemoveOldDismissedTabs();
+}
 
 void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   const std::string data_type_param = base::GetFieldTrialParamValueByFeature(
@@ -402,7 +407,8 @@ void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
                           &timestamp_microseconds);
       base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(timestamp_microseconds));
-      if (base::Time::Now() - timestamp > base::Days(90)) {
+      if (base::Time::Now() - timestamp >
+          base::Days(dismissal_duration_days_)) {
         tab_list->EraseValue(entry);
       }
     }
