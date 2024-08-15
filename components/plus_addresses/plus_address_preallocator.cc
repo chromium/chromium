@@ -12,21 +12,35 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
+#include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "net/base/backoff_entry.h"
+#include "net/http/http_status_code.h"
 
 namespace plus_addresses {
 
 namespace {
+
+// The policy that governs retries in case of timeout errors.
+constexpr auto kPreallocateBackoffPolicy =
+    net::BackoffEntry::Policy{.num_errors_to_ignore = 1,
+                              .initial_delay_ms = 1000,
+                              .multiply_factor = 2,
+                              .jitter_factor = 0.3,
+                              .maximum_backoff_ms = -1,
+                              .entry_lifetime_ms = -1,
+                              .always_use_initial_delay = false};
 
 // Returns whether the end of life of the `preallocated_addresses` has been
 // reached or the serialized entry does not have valid format.
@@ -59,6 +73,23 @@ const std::string& GetPlusAddress(const base::Value& preallocated_address) {
       PlusAddressPreallocator::kPlusAddressKey);
 }
 
+// Returns whether we should retry the network request after receiving `error`.
+bool ShouldRetryOnError(const PlusAddressRequestError& error) {
+  switch (error.type()) {
+    case PlusAddressRequestErrorType::kNetworkError:
+      // For now, only retry on timeout.
+      return error.http_response_code() == net::HTTP_REQUEST_TIMEOUT;
+    case PlusAddressRequestErrorType::kParsingError:
+    case PlusAddressRequestErrorType::kOAuthError:
+    case PlusAddressRequestErrorType::kRequestNotSupportedError:
+    case PlusAddressRequestErrorType::kMaxRefreshesReached:
+    case PlusAddressRequestErrorType::kUserSignedOut:
+    case PlusAddressRequestErrorType::kInvalidOrigin:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 PlusAddressPreallocator::PlusAddressPreallocator(
@@ -69,7 +100,8 @@ PlusAddressPreallocator::PlusAddressPreallocator(
     : pref_service_(CHECK_DEREF(pref_service)),
       settings_(CHECK_DEREF(setting_service)),
       http_client_(CHECK_DEREF(http_client)),
-      is_enabled_check_(std::move(is_enabled_check)) {
+      is_enabled_check_(std::move(is_enabled_check)),
+      backoff_entry_(&kPreallocateBackoffPolicy) {
   PrunePreallocatedPlusAddresses();
 
   // If the notice has not been accepted, we do not preemptively pre-allocate.
@@ -80,7 +112,7 @@ PlusAddressPreallocator::PlusAddressPreallocator(
         FROM_HERE,
         base::BindOnce(
             &PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses,
-            weak_ptr_factory_.GetWeakPtr()),
+            weak_ptr_factory_.GetWeakPtr(), /*is_user_triggered=*/false),
         kDelayUntilServerRequestAfterStartup);
   }
 }
@@ -99,7 +131,7 @@ void PlusAddressPreallocator::AllocatePlusAddress(
     return;
   }
   requests_.emplace(std::move(callback), std::move(facet));
-  ProcessAllocationRequests();
+  ProcessAllocationRequests(/*is_user_triggered=*/true);
 }
 
 bool PlusAddressPreallocator::IsRefreshingSupported(
@@ -142,8 +174,13 @@ void PlusAddressPreallocator::PrunePreallocatedPlusAddresses() {
   FixIndexOfNextPreallocatedAddress();
 }
 
-void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses() {
+void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses(
+    bool is_user_triggered) {
   if (is_server_request_ongoing_) {
+    return;
+  }
+
+  if (server_request_timer_.IsRunning() && !is_user_triggered) {
     return;
   }
 
@@ -161,6 +198,20 @@ void PlusAddressPreallocator::MaybeRequestNewPreallocatedPlusAddresses() {
     return;
   }
 
+  SendRequestWithDelay(is_user_triggered
+                           ? base::TimeDelta()
+                           : backoff_entry_.GetTimeUntilRelease());
+}
+
+void PlusAddressPreallocator::SendRequestWithDelay(base::TimeDelta delay) {
+  server_request_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&PlusAddressPreallocator::SendRequest,
+                     // Safe because the timer is owned by `this`.
+                     base::Unretained(this)));
+}
+
+void PlusAddressPreallocator::SendRequest() {
   is_server_request_ongoing_ = true;
   http_client_->PreallocatePlusAddresses(base::BindOnce(
       &PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses,
@@ -171,20 +222,26 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
     PlusAddressHttpClient::PreallocatePlusAddressesResult result) {
   is_server_request_ongoing_ = false;
   if (!result.has_value()) {
-    // TODO: crbug.com/324559503 - Add error handling.
+    if (ShouldRetryOnError(result.error())) {
+      backoff_entry_.InformOfRequest(/*succeeded=*/false);
+      SendRequestWithDelay(backoff_entry_.GetTimeUntilRelease());
+    }
+    // TODO: crbug.com/324559503 - Inform the existing requests about the error.
     return;
   }
 
+  backoff_entry_.InformOfRequest(/*succeeded=*/true);
   ScopedListPrefUpdate update(&pref_service_.get(),
                               prefs::kPreallocatedAddresses);
   for (PreallocatedPlusAddress& address : result.value()) {
     update->Append(SeralizeAndSetEndOfLife(std::move(address)));
   }
 
-  ProcessAllocationRequests();
+  ProcessAllocationRequests(/*is_user_triggered=*/false);
 }
 
-void PlusAddressPreallocator::ProcessAllocationRequests() {
+void PlusAddressPreallocator::ProcessAllocationRequests(
+    bool is_user_triggered) {
   while (!requests_.empty()) {
     std::optional<PlusAddress> next_address = GetNextPreallocatedPlusAddress();
     if (!next_address) {
@@ -200,7 +257,9 @@ void PlusAddressPreallocator::ProcessAllocationRequests() {
   }
   // We may have dipped below the minimum size of the pre-allocated plus address
   // pool that we want to keep around. If so, request new ones.
-  MaybeRequestNewPreallocatedPlusAddresses();
+  MaybeRequestNewPreallocatedPlusAddresses(is_user_triggered);
+  // TODO: crbug.com/324559503 - Send errors to existing requests if no
+  // additional pre-allocation call was made.
 }
 
 std::optional<PlusAddress>

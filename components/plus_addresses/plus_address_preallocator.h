@@ -13,11 +13,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_allocator.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "net/base/backoff_entry.h"
 #include "url/origin.h"
 
 class PrefService;
@@ -74,8 +76,18 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   // Requests new pre-allocated plus addresses if
   // - the global feature toggle for plus addresses is on, and
   // - there are less than `kPlusAddressPreallocationMinimumSize` pre-allocated
-  //   addresses left.
-  void MaybeRequestNewPreallocatedPlusAddresses();
+  //   addresses left,
+  // - there is no ongoing pre-allocation request,
+  // - we are not in a cool-off period due to repeated, timed-out requests. If
+  //   `is_user_triggered` is `true`, the cool-off period is ignored.
+  void MaybeRequestNewPreallocatedPlusAddresses(bool is_user_triggered);
+
+  // Schedules a server request to pre-allocate more addresses in `time_delta`.
+  // Overrides any previously scheduled requests.
+  void SendRequestWithDelay(base::TimeDelta delay);
+
+  // Sends a request to pre-allocate addresses.
+  void SendRequest();
 
   // Adds the preallocated plus addresses in `result` to the local store.
   void OnReceivePreallocatedPlusAddresses(
@@ -84,7 +96,7 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
   // Attempts to process the pending `requests_`. If there are not enough
   // pre-allocated addresses, it will request more and resume processing once
   // the request for more pre-allocated addresses has finished.
-  void ProcessAllocationRequests();
+  void ProcessAllocationRequests(bool is_user_triggered);
 
   // Returns the next available pre-allocated plus address or `std::nullopt` if
   // there is none. It does not attempt to pre-allocate more.
@@ -111,6 +123,13 @@ class PlusAddressPreallocator : public PlusAddressAllocator {
 
   // Whether a request for more pre-allocated plus addresses is ongoing.
   bool is_server_request_ongoing_ = false;
+
+  // A helper for dealing with retries if a server request failed due to a
+  // timeout.
+  net::BackoffEntry backoff_entry_;
+
+  // A timer that governs when the next request will be made.
+  base::OneShotTimer server_request_timer_;
 
   // A helper class to keep track of the arguments that were passed when
   // requesting a plus address allocation.

@@ -345,6 +345,107 @@ TEST_F(PlusAddressPreallocatorTest, HandleNetworkError) {
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(1));
 }
 
+// Tests that encountering timeout errors leads to retries at appropriate
+// intervals.
+TEST_F(PlusAddressPreallocatorTest, RetryOnTimeout) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kPlusAddressPreallocation,
+      {{features::kPlusAddressPreallocationMinimumSize.name, "1"}});
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    const PlusAddressHttpClient::PreallocatePlusAddressesResult not_found =
+        base::unexpected(
+            PlusAddressRequestError::AsNetworkError(net::HTTP_REQUEST_TIMEOUT));
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(not_found));
+    // The first retry is immediate.
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(not_found));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(not_found));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(
+            PlusAddressHttpClient::PreallocatePlusAddressesResult(
+                {PreallocatedPlusAddress(PlusAddress("plus@plus.com"),
+                                         base::Days(1))})));
+  }
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  task_environment().FastForwardBy(
+      PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
+  check.Call();
+
+  // The next retry happens 700 - 1300 milliseconds later
+  task_environment().FastForwardBy(base::Milliseconds(1300));
+  check.Call();
+
+  // And the one after that 1400 - 2600 milliseconds later.
+  task_environment().FastForwardBy(base::Milliseconds(2600));
+}
+
+// Tests that the back-off time for failed retries is ignored if there is an
+// explicit allocation call. This makes sure that if Chrome is started when
+// offline, the client cannot end up in a situation where no additional
+// pre-allocate calls are made even if the user is actively trying to create a
+// plus address.
+TEST_F(PlusAddressPreallocatorTest, NoBackoffPeriodForUserTriggeredRequests) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      features::kPlusAddressPreallocation,
+      {{features::kPlusAddressPreallocationMinimumSize.name, "1"}});
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    const PlusAddressHttpClient::PreallocatePlusAddressesResult not_found =
+        base::unexpected(
+            PlusAddressRequestError::AsNetworkError(net::HTTP_REQUEST_TIMEOUT));
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(not_found));
+    // The first retry is immediate.
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(not_found));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(not_found));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(http_client(), PreallocatePlusAddresses)
+        .WillOnce(RunOnceCallback<0>(
+            PlusAddressHttpClient::PreallocatePlusAddressesResult(
+                {PreallocatedPlusAddress(PlusAddress("plus@plus.com"),
+                                         base::Days(1))})));
+    EXPECT_CALL(check, Call);
+  }
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  task_environment().FastForwardBy(
+      PlusAddressPreallocator::kDelayUntilServerRequestAfterStartup);
+  check.Call();
+
+  // The next retry happens 700 - 1300 milliseconds later
+  task_environment().FastForwardBy(base::Milliseconds(1300));
+  check.Call();
+
+  // A call to allocate ignores back off times.
+  allocator.AllocatePlusAddress(url::Origin::Create(GURL("https://foo.com")),
+                                PlusAddressAllocator::AllocationMode::kAny,
+                                base::DoNothing());
+  // Test artifact - needed to trigger processing of pending tasks.
+  task_environment().FastForwardBy(base::Milliseconds(1));
+  check.Call();
+}
+
 // Tests that trying to allocate a plus address for an opaque origin results in
 // an error.
 TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddressForOpaqueOrigin) {
@@ -465,8 +566,9 @@ TEST_F(PlusAddressPreallocatorTest,
   // The allocation prunes the cache and requests more pre-allocated addresses.
   allocator.AllocatePlusAddress(kValidOrigin, kMode, callback1.Get());
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(2));
+  task_environment().RunUntilIdle();
   check.Call("Allocation requested.");
-  EXPECT_TRUE(preallocate_callback);
+  ASSERT_TRUE(preallocate_callback);
 
   allocator.AllocatePlusAddress(kValidOrigin, kMode, callback2.Get());
   std::move(preallocate_callback)
@@ -528,7 +630,8 @@ TEST_F(PlusAddressPreallocatorTest,
   }
 
   allocator.AllocatePlusAddress(kValidOrigin, kMode, callback1.Get());
-  EXPECT_TRUE(preallocate_callback);
+  task_environment().RunUntilIdle();
+  ASSERT_TRUE(preallocate_callback);
   allocator.AllocatePlusAddress(kValidOrigin, kMode, callback2.Get());
 
   check.Call("About to send server response.");
