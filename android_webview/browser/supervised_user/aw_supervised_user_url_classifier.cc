@@ -19,18 +19,22 @@ using base::android::AttachCurrentThread;
 namespace android_webview {
 
 AwSupervisedUserUrlClassifier::AwSupervisedUserUrlClassifier() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
-  shouldCreateThrottle_ =
+  platform_supports_url_checks_ =
       Java_AwSupervisedUserUrlClassifier_shouldCreateThrottle(env);
 }
 
 AwSupervisedUserUrlClassifier* AwSupervisedUserUrlClassifier::GetInstance() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static base::NoDestructor<AwSupervisedUserUrlClassifier> instance;
   return instance.get();
 }
 
 bool AwSupervisedUserUrlClassifier::ShouldCreateThrottle() {
-  return shouldCreateThrottle_;
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(https://crbug.com/355528479): read this from prefs
+  return platform_supports_url_checks_ && user_requires_url_checks_;
 }
 
 void AwSupervisedUserUrlClassifier::ShouldBlockUrl(
@@ -45,6 +49,13 @@ void AwSupervisedUserUrlClassifier::ShouldBlockUrl(
       env, request_url_java, callback_id);
 }
 
+void AwSupervisedUserUrlClassifier::SetUserRequiresUrlChecks(
+    bool user_requires_url_checks) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(https://crbug.com/355528479): persist this to prefs
+  user_requires_url_checks_ = user_requires_url_checks;
+}
+
 static void JNI_AwSupervisedUserUrlClassifier_OnShouldBlockUrlResult(
     JNIEnv* env,
     jlong callback_id,
@@ -52,6 +63,14 @@ static void JNI_AwSupervisedUserUrlClassifier_OnShouldBlockUrlResult(
   std::unique_ptr<UrlClassifierCallback> cb(
       reinterpret_cast<UrlClassifierCallback*>(callback_id));
   std::move(*cb).Run(shouldBlockUrl);
+}
+
+static void JNI_AwSupervisedUserUrlClassifier_SetUserRequiresUrlChecks(
+    JNIEnv* env,
+    jboolean user_requires_url_checks) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  AwSupervisedUserUrlClassifier::GetInstance()->SetUserRequiresUrlChecks(
+      user_requires_url_checks);
 }
 
 }  // namespace android_webview

@@ -9,13 +9,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "base/sequence_checker.h"
 #include "url/gurl.h"
 
 namespace android_webview {
 using UrlClassifierCallback = base::OnceCallback<void(bool /*shouldBlock*/)>;
 
-// Native side of java-class of same name.
+// Native side of java-class of same name. Must only be used on the UI thread.
 //
 // Lifetime: Singleton
 class AwSupervisedUserUrlClassifier {
@@ -30,11 +29,14 @@ class AwSupervisedUserUrlClassifier {
 
   void ShouldBlockUrl(const GURL& request_url, UrlClassifierCallback callback);
 
+  void SetUserRequiresUrlChecks(bool user_requires_url_checks);
+
  private:
   AwSupervisedUserUrlClassifier();
   ~AwSupervisedUserUrlClassifier() = default;
 
-  bool shouldCreateThrottle_ = false;
+  bool platform_supports_url_checks_ = false;
+  bool user_requires_url_checks_ = false;
   friend class base::NoDestructor<AwSupervisedUserUrlClassifier>;
 };
 }  // namespace android_webview

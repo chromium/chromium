@@ -65,6 +65,24 @@ public class AwSupervisedUserUrlClassifier {
         }
     }
 
+    public static void resetInstanceForTesting() {
+        synchronized (sInstanceLock) {
+            sInstance = null;
+            sInitialized = false;
+        }
+    }
+
+    public void checkIfNeedRestrictedContentBlocking() {
+        mDelegate.needsRestrictedContentBlocking(
+                result -> {
+                    ThreadUtils.postOnUiThread(
+                            () -> {
+                                AwSupervisedUserUrlClassifierJni.get()
+                                        .setUserRequiresUrlChecks(result);
+                            });
+                });
+    }
+
     @CalledByNative
     public static boolean shouldCreateThrottle() {
         return (getInstance() != null);
@@ -89,5 +107,7 @@ public class AwSupervisedUserUrlClassifier {
     @NativeMethods
     interface Natives {
         void onShouldBlockUrlResult(long callbackPtr, boolean shouldBlock);
+
+        void setUserRequiresUrlChecks(boolean userRequiresUrlChecks);
     }
 }

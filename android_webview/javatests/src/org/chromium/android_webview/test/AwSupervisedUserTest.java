@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,17 +21,21 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.BackgroundThreadExecutor;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -84,6 +89,8 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
+    private TestAwSupervisedUserUrlClassifierDelegate mDelegate =
+            new TestAwSupervisedUserUrlClassifierDelegate();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
     private IFrameLoadedListener mIFrameLoadedListener = new IFrameLoadedListener();
@@ -95,7 +102,12 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         mWebServer = TestWebServer.start();
-        PlatformServiceBridge.injectInstance(new TestPlatformServiceBridge());
+
+        // The Classifier is initially set in AwBrowserProcess#start(). We need to reset this so
+        // that we get a fresh Classifier that uses our TestAwSupervisedUserUrlClassifierDelegate.
+        AwSupervisedUserUrlClassifier.resetInstanceForTesting();
+
+        PlatformServiceBridge.injectInstance(new TestPlatformServiceBridge(mDelegate));
         AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
@@ -105,6 +117,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                     mAwContents.addWebMessageListener(
                             "myObject", new String[] {"*"}, mIFrameLoadedListener);
                 });
+        resetNeedsRestriction(true);
     }
 
     @After
@@ -195,6 +208,38 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         assertIframeTitle(MATURE_SITE_IFRAME_TITLE);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
+    public void testBlocksContentOnlyIfRestrctionRequired() throws Throwable {
+        String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
+        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
+
+        // If the user does not require content restriction, then the pages should load fully.
+        resetNeedsRestriction(false);
+        loadUrl(requestUrl);
+        assertPageTitle(MATURE_SITE_TITLE);
+        assertIframeTitle(MATURE_SITE_IFRAME_TITLE);
+
+        // If the user requires content restriction, then the pages should be blocked.
+        resetNeedsRestriction(true);
+        loadUrl(requestUrl);
+        // The page title updates after waitForFullLoad, so we don't have a guarantee yet that the
+        // page title has updated. WebView doesn't have callbacks for page title change, so polling
+        // is the best option.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                mActivityTestRule.getTitleOnUiThread(mAwContents),
+                                Matchers.is(BLOCKED_SITE_TITLE));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
     private String setUpWebPage(String path, String title, @Nullable String iFrameUrl) {
         return mWebServer.setResponse(path, makeTestPage(title, iFrameUrl), null);
     }
@@ -253,36 +298,69 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
     }
 
+    private static class TestAwSupervisedUserUrlClassifierDelegate
+            implements AwSupervisedUserUrlClassifierDelegate {
+        // Post callback responses to a background thread to emulate how the production code
+        // works.
+        private final Executor mExecutor = new BackgroundThreadExecutor("TEST_BACKGROUND_THREAD");
+        private final CallbackHelper mNeedsRestrictionHelper = new CallbackHelper();
+        private boolean mNeedsRestrictionResponse;
+        private static final Set RESTRICTED_CONTENT_BLOCKLIST =
+                Set.of(MATURE_SITE_PATH, MATURE_SITE_IFRAME_PATH);
+
+        @Override
+        public void shouldBlockUrl(GURL requestUrl, @NonNull final Callback<Boolean> callback) {
+            String path = requestUrl.getPath();
+            boolean isRestrictedContent = RESTRICTED_CONTENT_BLOCKLIST.contains(path);
+            mExecutor.execute(
+                    () -> {
+                        callback.onResult(isRestrictedContent);
+                    });
+        }
+
+        @Override
+        public void needsRestrictedContentBlocking(@NonNull final Callback<Boolean> callback) {
+            mExecutor.execute(
+                    () -> {
+                        callback.onResult(mNeedsRestrictionResponse);
+                        mNeedsRestrictionHelper.notifyCalled();
+                    });
+        }
+
+        public void setNeedsRestrictedContentBlockingResponse(boolean value) {
+            mNeedsRestrictionResponse = value;
+        }
+
+        public CallbackHelper getNeedsRestrictionHelper() {
+            return mNeedsRestrictionHelper;
+        }
+    }
+
     private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        private class TestAwSupervisedUserUrlClassifierDelegate
-                implements AwSupervisedUserUrlClassifierDelegate {
-            // Post callback responses to a background thread to emulate how the production code
-            // works.
-            private final Executor mExecutor =
-                    new BackgroundThreadExecutor("TEST_BACKGROUND_THREAD");
-            private static final Set RESTRICTED_CONTENT_BLOCKLIST =
-                    Set.of(MATURE_SITE_PATH, MATURE_SITE_IFRAME_PATH);
+        AwSupervisedUserUrlClassifierDelegate mDelegate;
 
-            @Override
-            public void shouldBlockUrl(GURL requestUrl, @NonNull final Callback<Boolean> callback) {
-                String path = requestUrl.getPath();
-                boolean isRestrictedContent = RESTRICTED_CONTENT_BLOCKLIST.contains(path);
-                mExecutor.execute(
-                        () -> {
-                            callback.onResult(isRestrictedContent);
-                        });
-            }
-
-            @Override
-            public void needsRestrictedContentBlocking(@NonNull final Callback<Boolean> callback) {
-                // TODO(https://crbug.com/355528479): invoke the callback once the business logic is
-                // updated to use the callback response value.
-            }
+        public TestPlatformServiceBridge(AwSupervisedUserUrlClassifierDelegate delegate) {
+            mDelegate = delegate;
         }
 
         @Override
         public AwSupervisedUserUrlClassifierDelegate getUrlClassifierDelegate() {
-            return new TestAwSupervisedUserUrlClassifierDelegate();
+            return mDelegate;
         }
+    }
+
+    private void resetNeedsRestriction(boolean value) throws Exception {
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
+                && !AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
+            // Nothing we need to do if the feature is disabled.
+            return;
+        }
+        mDelegate.setNeedsRestrictedContentBlockingResponse(value);
+        int count = mDelegate.getNeedsRestrictionHelper().getCallCount();
+        AwSupervisedUserUrlClassifier classifier = AwSupervisedUserUrlClassifier.getInstance();
+        Assert.assertNotNull("Must set a classifier for this test class to run.", classifier);
+
+        classifier.checkIfNeedRestrictedContentBlocking();
+        mDelegate.getNeedsRestrictionHelper().waitForCallback(count);
     }
 }
