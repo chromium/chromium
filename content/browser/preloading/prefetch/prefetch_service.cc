@@ -1697,7 +1697,7 @@ void PrefetchService::OnMaybeDeterminedHead(
       break;
   }
 
-  if (nav_url == prefetch_container.GetURL()) {
+  if (prefetch_container.IsExactMatch(nav_url)) {
     HandlePrefetchContainerToServe(key, prefetch_container,
                                    *prefetch_match_resolver);
     return;
@@ -1705,10 +1705,7 @@ void PrefetchService::OnMaybeDeterminedHead(
 
   // No-Vary-Search response header is already populated by
   // `PrefetchContainer::OnDeterminedHead()`.
-  auto no_vary_search_data = prefetch_container.GetNoVarySearchData();
-  if (!no_vary_search_data.has_value() ||
-      !no_vary_search_data.value().AreEquivalent(nav_url,
-                                                 prefetch_container.GetURL())) {
+  if (!prefetch_container.IsNoVarySearchHeaderMatch(nav_url)) {
     prefetch_container.OnReturnPrefetchToServe(/*served=*/false, nav_url);
     prefetch_container.UpdateServingPageMetrics();
     ReturnPrefetchToServe(key, prefetch_url, {}, *prefetch_match_resolver);

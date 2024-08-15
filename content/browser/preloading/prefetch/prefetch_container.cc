@@ -1682,4 +1682,15 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
   }
 }
 
+bool PrefetchContainer::IsExactMatch(const GURL& url) const {
+  return url == GetURL();
+}
+
+bool PrefetchContainer::IsNoVarySearchHeaderMatch(const GURL& url) const {
+  const std::optional<net::HttpNoVarySearchData>& no_vary_search_data =
+      GetNoVarySearchData();
+  return no_vary_search_data &&
+         no_vary_search_data->AreEquivalent(url, GetURL());
+}
+
 }  // namespace content

@@ -578,6 +578,9 @@ class CONTENT_EXPORT PrefetchContainer {
 
   Reader CreateReader();
 
+  bool IsExactMatch(const GURL& url) const;
+  bool IsNoVarySearchHeaderMatch(const GURL& url) const;
+
   bool is_in_dtor() const { return is_in_dtor_; }
 
  protected:
