@@ -654,6 +654,34 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_Floss) {
   histogram_tester().ExpectTotalCount(kCreateBondTime, 1);
 }
 
+TEST_F(FastPairPairerImplTest, PairByBLEDeviceSuccess_Initial) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kFastPairKeyboards, floss::features::kFlossEnabled},
+      /*disabled_features=*/{});
+
+  Login(user_manager::UserType::kRegular);
+
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  // Mock the BLE device having an invalid classic address
+  device_->set_classic_address("00:00:00:00:00:00");
+  // Pairing flags to indicate the provider prefers LE bonding
+  device_->set_key_based_pairing_flags(0x40);
+
+  AddConnectedHandshake();
+  CreatePairer();
+  fake_bluetooth_device_ptr_->TriggerPairCallback();
+  EXPECT_EQ(GetPairFailure(), std::nullopt);
+  ExpectStepMetrics<FastPairProtocolPairingSteps>(
+      kProtocolPairingStepInitial,
+      {FastPairProtocolPairingSteps::kPairingStarted,
+       FastPairProtocolPairingSteps::kPairingComplete,
+       FastPairProtocolPairingSteps::kDeviceConnected});
+  histogram_tester().ExpectTotalCount(kCreateBondTime, 1);
+}
+
 TEST_F(FastPairPairerImplTest,
        PairByDeviceSuccess_Initial_AlreadyClassicPaired) {
   Login(user_manager::UserType::kRegular);

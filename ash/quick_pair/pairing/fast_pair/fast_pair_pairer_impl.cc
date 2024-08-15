@@ -40,6 +40,9 @@ namespace {
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
 // Advertisement flag indicating BR/EDR support
 constexpr uint8_t kBrEdrNotSupportedFlag = 0x04;
+// Key-based Pairing Extended Response Flag indicating if the Provider prefers
+// LE bonding
+constexpr uint8_t kPrefersLEBonding = 0x40;
 
 std::string MessageTypeToString(
     ash::quick_pair::FastPairMessageType message_type) {
@@ -165,6 +168,11 @@ void FastPairPairerImpl::StartPairing() {
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingStarted,
                             *device_);
   std::string device_address = device_->classic_address().value();
+  uint8_t pairing_flags = device_->key_based_pairing_flags().value_or(0);
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      floss::features::IsFlossEnabled() && pairing_flags & kPrefersLEBonding) {
+    device_address = device_->ble_address();
+  }
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
   switch (device_->protocol()) {
     case Protocol::kFastPairInitial:
@@ -852,6 +860,11 @@ void FastPairPairerImpl::OnPairConnected(
   }
 
   std::string device_address = device_->classic_address().value();
+  uint8_t pairing_flags = device_->key_based_pairing_flags().value_or(0);
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      floss::features::IsFlossEnabled() && pairing_flags & kPrefersLEBonding) {
+    device_address = device_->ble_address();
+  }
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
   if (!bt_device) {
     CD_LOG(WARNING, Feature::FP)

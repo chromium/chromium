@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_impl_new.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -14,6 +15,7 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace ash::quick_pair {
@@ -21,6 +23,7 @@ namespace ash::quick_pair {
 constexpr uint8_t kKeyBasedPairingType = 0x00;
 constexpr uint8_t kInitialOrSubsequentFlags = 0x00;
 constexpr uint8_t kRetroactiveFlags = 0x10;
+constexpr uint8_t kSupportBleSpecFlags = 0x08;
 
 FastPairHandshakeImplNew::FastPairHandshakeImplNew(
     scoped_refptr<device::BluetoothAdapter> adapter,
@@ -142,9 +145,16 @@ void FastPairHandshakeImplNew::OnDataEncryptorCreateAsync(
       FastPairGattServiceClientLookup::GetInstance()->Get(device);
   CHECK(fast_pair_gatt_service_client);
 
+  uint8_t flags =
+      is_retroactive ? kRetroactiveFlags : kInitialOrSubsequentFlags;
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      floss::features::IsFlossEnabled()) {
+    flags |= kSupportBleSpecFlags;
+  }
+
   fast_pair_gatt_service_client->WriteRequestAsync(
       /*message_type=*/kKeyBasedPairingType,
-      /*flags=*/is_retroactive ? kRetroactiveFlags : kInitialOrSubsequentFlags,
+      /*flags=*/flags,
       /*provider_address=*/device_->ble_address(),
       /*seekers_address=*/is_retroactive ? adapter_->GetAddress() : "",
       fast_pair_data_encryptor_.get(),
@@ -195,7 +205,12 @@ void FastPairHandshakeImplNew::OnParseKeybasedPairingDecryptedResponse(
     return;
   }
 
-  if (response->message_type != FastPairMessageType::kKeyBasedPairingResponse) {
+  bool is_ext_resp = ash::features::IsFastPairKeyboardsEnabled() &&
+                     floss::features::IsFlossEnabled() &&
+                     response->message_type ==
+                         FastPairMessageType::kKeyBasedPairingExtendedResponse;
+  if (response->message_type != FastPairMessageType::kKeyBasedPairingResponse &&
+      !is_ext_resp) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Incorrect message type from decrypted response.";
     std::move(on_failure_callback_)
@@ -213,6 +228,10 @@ void FastPairHandshakeImplNew::OnParseKeybasedPairingDecryptedResponse(
   std::string device_address =
       device::CanonicalizeBluetoothAddress(response->address_bytes);
   device_->set_classic_address(device_address);
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      floss::features::IsFlossEnabled() && response->flags.has_value()) {
+    device_->set_key_based_pairing_flags(response->flags.value());
+  }
 
   completed_successfully_ = true;
   RecordHandshakeResult(/*success=*/true);
