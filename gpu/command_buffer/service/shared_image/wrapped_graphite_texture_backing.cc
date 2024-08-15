@@ -72,7 +72,9 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
       auto surface = SkSurfaces::WrapBackendTexture(
           context_state_->gpu_main_graphite_recorder(),
           graphite_textures[plane], backing_impl()->GetSkColorType(plane),
-          color_space().ToSkColorSpace(), &surface_props);
+          color_space().ToSkColorSpace(), &surface_props,
+          /*textureReleaseProc=*/nullptr, /*releaseContext=*/nullptr,
+          WrappedTextureDebugLabel(plane));
       if (!surface) {
         LOG(ERROR) << "MakeGraphiteFromBackendTexture() failed.";
         write_surfaces_.clear();

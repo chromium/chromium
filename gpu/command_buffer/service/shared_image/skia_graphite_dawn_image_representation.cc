@@ -159,7 +159,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     auto surface = SkSurfaces::WrapBackendTexture(
         recorder_, backend_textures[plane], sk_color_type,
         backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
-        &surface_props);
+        &surface_props, /*textureReleaseProc=*/nullptr,
+        /*releaseContext=*/nullptr, WrappedTextureDebugLabel(plane));
     if (!surface) {
       DLOG(ERROR) << "Could not create SkSurface";
       dawn_scoped_access_.reset();

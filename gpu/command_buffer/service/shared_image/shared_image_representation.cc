@@ -726,6 +726,19 @@ SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
       graphite_textures);
 }
 
+std::string SkiaGraphiteImageRepresentation::WrappedTextureDebugLabel(
+    int plane) const {
+  std::string debug_label;
+  if (format().is_single_plane()) {
+    debug_label = base::StringPrintf("%s_%s", backing()->GetName(),
+                                     backing()->debug_label().c_str());
+  } else {
+    debug_label = base::StringPrintf("%s_%s_Plane%d", backing()->GetName(),
+                                     backing()->debug_label().c_str(), plane);
+  }
+  return debug_label;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation
 

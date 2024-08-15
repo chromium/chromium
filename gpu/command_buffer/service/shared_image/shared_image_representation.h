@@ -731,6 +731,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
  protected:
   friend class WrappedSkiaGraphiteCompoundImageRepresentation;
 
+  std::string WrappedTextureDebugLabel(int plane) const;
+
   // Begin the write access. Returns an empty vector on failure.
   //
   // update_rect is a hint to the backend about the portion of the image that
