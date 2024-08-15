@@ -21,8 +21,9 @@ class InkBrushFamily {
 
   virtual ~InkBrushFamily() = default;
 
-  // Note that this method does not necessarily correspond 1:1 to method in the
+  // Note that these methods do not necessarily correspond 1:1 to method in the
   // Ink library. This is provided for convenience when testing.
+  virtual float GetCornerRoundingForTesting() const = 0;
   virtual float GetOpacityForTesting() const = 0;
 };
 

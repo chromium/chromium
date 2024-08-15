@@ -223,6 +223,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(10, 255, 50), ink_brush.GetColor());
   EXPECT_EQ(8.0f, ink_brush.GetSize());
+  EXPECT_EQ(1.0f, ink_brush.GetCornerRoundingForTesting());
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 
@@ -245,6 +246,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(240, 133, 0), ink_brush.GetColor());
   EXPECT_EQ(4.5f, ink_brush.GetSize());
+  EXPECT_EQ(0.0f, ink_brush.GetCornerRoundingForTesting());
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
@@ -266,6 +268,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   const InkBrush& ink_brush = brush->GetInkBrush();
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), ink_brush.GetColor());
   EXPECT_EQ(4.5f, ink_brush.GetSize());
+  EXPECT_EQ(1.0f, ink_brush.GetCornerRoundingForTesting());
   EXPECT_EQ(1.0f, ink_brush.GetOpacityForTesting());
 }
 

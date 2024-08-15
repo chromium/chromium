@@ -18,9 +18,11 @@ class InkBrushFamilyStub : public InkBrushFamily {
   ~InkBrushFamilyStub() override;
 
   // InkBrushFamily:
+  float GetCornerRoundingForTesting() const override;
   float GetOpacityForTesting() const override;
 
  private:
+  const float corner_rounding_;
   const float opacity_;
 };
 
