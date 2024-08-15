@@ -106,7 +106,6 @@ void RTCRtpScriptTransform::CreateUnderlyingSourceAndSetAudioTransformer(
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock locker(transformer_lock_);
   CreateUnderlyingSource(std::move(disconnect_callback_source), "audio");
   if (transformer_) {
     PostCrossThreadTask(
@@ -127,7 +126,6 @@ void RTCRtpScriptTransform::CreateUnderlyingSourceAndSetVideoTransformer(
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock locker(transformer_lock_);
   CreateUnderlyingSource(std::move(disconnect_callback_source), "video");
   if (transformer_) {
     PostCrossThreadTask(
@@ -169,7 +167,6 @@ void RTCRtpScriptTransform::SetTransformer(
     CrossThreadWeakHandle<RTCRtpScriptTransformer> transformer,
     scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AutoLock locker(transformer_lock_);
   transformer_.emplace(std::move(transformer));
   transformer_task_runner_ = transformer_task_runner;
   if (disconnect_callback_source_) {

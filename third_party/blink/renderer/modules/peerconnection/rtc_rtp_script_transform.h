@@ -61,38 +61,44 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
           encoded_video_transformer);
 
-  void Attach() { is_attached_ = true; }
-  bool IsAttached() { return is_attached_; }
+  void Attach() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    is_attached_ = true;
+  }
+  bool IsAttached() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_attached_;
+  }
 
  private:
   void CreateUnderlyingSource(
       WTF::CrossThreadOnceClosure disconnect_callback_source,
-      String kind) EXCLUSIVE_LOCKS_REQUIRED(transformer_lock_);
+      String kind);
 
   void CreateUnderlyingSourceInternal(
       const String& kind,
-      WTF::CrossThreadOnceClosure disconnect_callback_source)
-      EXCLUSIVE_LOCKS_REQUIRED(transformer_lock_);
+      WTF::CrossThreadOnceClosure disconnect_callback_source);
 
-  base::Lock transformer_lock_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
   std::optional<CrossThreadWeakHandle<RTCRtpScriptTransformer>> transformer_
-      GUARDED_BY(transformer_lock_);
-
-  scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner_;
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // These fields are used to store the callbacks only if the transformer has
   // not been created/set yet. The callbacks will be invoked once the
   // transformer becomes available.
-  WTF::CrossThreadOnceClosure disconnect_callback_source_;
+  WTF::CrossThreadOnceClosure disconnect_callback_source_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
-      encoded_audio_transformer_;
+      encoded_audio_transformer_ GUARDED_BY_CONTEXT(sequence_checker_);
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
-      encoded_video_transformer_;
+      encoded_video_transformer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  String kind_;
-  bool is_attached_ = false;
-  SEQUENCE_CHECKER(sequence_checker_);
+  String kind_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_attached_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 }  // namespace blink
 
