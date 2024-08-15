@@ -1310,8 +1310,10 @@ void OverviewSession::OnDisplayAdded(const display::Display& display) {
 void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
   // End the current drag if the display changes.
-  if (window_drag_controller_ && window_drag_controller_->item())
+  if (window_drag_controller_ && window_drag_controller_->item()) {
     ResetDraggedWindowGesture();
+  }
+
   auto* overview_grid =
       GetGridWithRootWindow(Shell::GetRootWindowForDisplayId(display.id()));
   overview_grid->OnDisplayMetricsChanged(metrics);
@@ -1610,6 +1612,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
 }
 
 void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (window_drag_controller_ && window_drag_controller_->item()) {
+    // End the current drag on tablet state changes.
+    ResetDraggedWindowGesture();
+  }
+
   if (display::IsTabletStateChanging(state)) {
     // Do nothing if the tablet state is still in the process of transition.
     return;
