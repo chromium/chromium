@@ -79,6 +79,7 @@ optimization_guide::proto::FormData ToFormDataProto(
       select_option_proto->set_value(base::UTF16ToUTF8(option.value));
       select_option_proto->set_text(base::UTF16ToUTF8(option.text));
     }
+    field_proto->set_form_control_ax_node_id(field.form_control_ax_id());
   }
   return form_data_proto;
 }
