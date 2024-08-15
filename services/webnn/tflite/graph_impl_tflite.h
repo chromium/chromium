@@ -38,13 +38,11 @@ class GraphImplTflite final : public WebNNGraphImpl {
   ~GraphImplTflite() override;
 
  private:
-  class GraphResources;
   class ComputeResources;
 
   using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
 
   GraphImplTflite(ComputeResourceInfo compute_resource_info,
-                  scoped_refptr<GraphResources> graph_resources,
                   scoped_refptr<QueueableResourceState<ComputeResources>>
                       compute_resources_state,
                   ContextImplTflite* context);
@@ -60,7 +58,6 @@ class GraphImplTflite final : public WebNNGraphImpl {
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
       override;
 
-  scoped_refptr<GraphResources> graph_resources_;
   scoped_refptr<QueueableResourceState<ComputeResources>>
       compute_resources_state_;
   base::WeakPtrFactory<GraphImplTflite> weak_factory_{this};

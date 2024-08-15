@@ -71,21 +71,17 @@ base::span<uint8_t> SpanFromTensor(TfLiteTensor* tensor) {
 
 }  // namespace
 
-// Represents the thread-safe collection of graph resources which are shared
-// among all interpreters. Since this class is reference counted it MUST be
-// safe to destroy on any thread.
-class GraphImplTflite::GraphResources
-    : public base::RefCountedThreadSafe<GraphResources> {
+// Represents the non-thread-safe collection of resources associated with a
+// particular graph and compute context (i.e. a TFLite interpreter).
+class GraphImplTflite::ComputeResources {
  public:
-  static base::expected<scoped_refptr<GraphResources>, mojom::ErrorPtr> Create(
-      ContextProperties context_properties,
-      const mojom::GraphInfo& graph_info) {
-    auto self = base::MakeRefCounted<GraphResources>();
+  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+  Create(WebNNContextImpl* context, const mojom::GraphInfo& graph_info) {
+    auto self = std::make_unique<ComputeResources>();
 
     ASSIGN_OR_RETURN(
         self->model_content_,
-        GraphBuilderTflite::CreateAndBuild(std::move(context_properties),
-                                           graph_info),
+        GraphBuilderTflite::CreateAndBuild(context->properties(), graph_info),
         [](std::string error) {
           return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                                    std::move(error));
@@ -100,39 +96,13 @@ class GraphImplTflite::GraphResources
                             "Unable to build flatbuffer model"));
     }
 
-    return self;
-  }
-
-  GraphResources() = default;
-
-  const ::tflite::FlatBufferModel& model() { return *model_; }
-
- private:
-  friend class base::RefCountedThreadSafe<GraphResources>;
-
-  ~GraphResources() = default;
-
-  // `model_` depends on `model_content_` outliving it.
-  flatbuffers::DetachedBuffer model_content_;
-  std::unique_ptr<::tflite::FlatBufferModel> model_;
-};
-
-// Represents the non-thread-safe collection of graph resources associated with
-// a particular compute context (i.e. a TFLite interpreter).
-class GraphImplTflite::ComputeResources {
- public:
-  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
-  Create(scoped_refptr<GraphResources> graph_resources,
-         WebNNContextImpl* context) {
-    auto self = std::make_unique<ComputeResources>();
-
     int num_threads =
         context->options().thread_count_hint != 0
             ? static_cast<int>(context->options().thread_count_hint)
             : -1;  // Let the TFLite runtime decide.
 
     OpResolver op_resolver(context->options());
-    ::tflite::InterpreterBuilder builder(graph_resources->model(), op_resolver);
+    ::tflite::InterpreterBuilder builder(*self->model_, op_resolver);
     builder.SetNumThreads(num_threads);
     TfLiteStatus status = builder(&self->interpreter_);
     if (status != kTfLiteOk) {
@@ -341,9 +311,12 @@ class GraphImplTflite::ComputeResources {
         base::flat_map<int, std::unique_ptr<BufferContent>>(std::move(buffers));
   }
 
-  // `interpreter_` depends on the `FlatBufferModel` owned by `graph_resources_`
-  // outliving it.
-  scoped_refptr<GraphResources> graph_resources_;
+  flatbuffers::DetachedBuffer model_content_;
+
+  // `model_` depends on `model_content_` outliving it.
+  std::unique_ptr<::tflite::FlatBufferModel> model_;
+
+  // `interpreter_` depends on `model_` outliving it.
   std::unique_ptr<::tflite::Interpreter> interpreter_;
 
   // Input and output buffers used for compute().
@@ -359,30 +332,25 @@ base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
 GraphImplTflite::CreateAndBuild(mojom::GraphInfoPtr graph_info,
                                 ComputeResourceInfo compute_resource_info,
                                 ContextImplTflite* context) {
-  ASSIGN_OR_RETURN(scoped_refptr<GraphResources> graph_resources,
-                   GraphResources::Create(context->properties(), *graph_info));
-
   ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
-                   ComputeResources::Create(graph_resources, context));
+                   ComputeResources::Create(context, *graph_info));
 
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));
-  return base::WrapUnique(new GraphImplTflite(
-      std::move(compute_resource_info), std::move(graph_resources),
-      std::move(compute_resources_state), context));
+  return base::WrapUnique(
+      new GraphImplTflite(std::move(compute_resource_info),
+                          std::move(compute_resources_state), context));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;
 
 GraphImplTflite::GraphImplTflite(
     ComputeResourceInfo compute_resource_info,
-    scoped_refptr<GraphResources> graph_resources,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
     ContextImplTflite* context)
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
-      graph_resources_(std::move(graph_resources)),
       compute_resources_state_(std::move(compute_resources_state)) {}
 
 void GraphImplTflite::ComputeImpl(NamedBuffers named_inputs,
