@@ -36,9 +36,6 @@ import android.widget.TextView;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /** Contains utility methods for interacting with WebAPKs. */
 public class WebApkUtils {
@@ -101,25 +98,6 @@ public class WebApkUtils {
         Uri.Builder returnUrlBuilder = Uri.parse(startUrl).buildUpon();
         returnUrlBuilder.appendQueryParameter(loggedIntentUrlParam, intentStartUrl);
         return returnUrlBuilder.toString();
-    }
-
-    /** Returns a browser-package-name->ResolveInfo mapping for all of the installed browsers. */
-    public static Map<String, ResolveInfo> getInstalledBrowserResolveInfos(
-            PackageManager packageManager) {
-        Intent browserIntent = getQueryInstalledBrowsersIntent();
-        // Note: {@link PackageManager#queryIntentActivities()} does not return ResolveInfos for
-        // disabled browsers.
-        List<ResolveInfo> resolveInfos =
-                packageManager.queryIntentActivities(browserIntent, PackageManager.MATCH_ALL);
-        resolveInfos.addAll(
-                packageManager.queryIntentActivities(
-                        browserIntent, PackageManager.MATCH_DEFAULT_ONLY));
-
-        Map<String, ResolveInfo> result = new HashMap<>();
-        for (ResolveInfo resolveInfo : resolveInfos) {
-            result.put(getPackageNameFromResolveInfo(resolveInfo), resolveInfo);
-        }
-        return result;
     }
 
     /** Returns the package name for the passed-in ResolveInfo. */
