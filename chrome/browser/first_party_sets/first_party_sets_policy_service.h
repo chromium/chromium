@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -167,7 +167,7 @@ class FirstPartySetsPolicyService
 
   content::BrowserContext* browser_context() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return browser_context_;
+    return &*browser_context_;
   }
 
   base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> GetWeakPtr() {
@@ -206,9 +206,8 @@ class FirstPartySetsPolicyService
   mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
       access_delegates_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The BrowserContext with which this service is associated. Set to nullptr in
-  // `Shutdown()`.
-  raw_ptr<content::BrowserContext> browser_context_
+  // The BrowserContext with which this service is associated.
+  const raw_ref<content::BrowserContext> browser_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Whether FPS is enabled in this context. Note that this may be true even if
@@ -242,8 +241,8 @@ class FirstPartySetsPolicyService
   // not be reset in `ResetForTesting`.
   bool first_initialization_complete_for_testing_ = false;
 
-  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<privacy_sandbox::PrivacySandboxSettings>
+      privacy_sandbox_settings_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
                           privacy_sandbox::PrivacySandboxSettings::Observer>
       privacy_sandbox_settings_observer_{this};

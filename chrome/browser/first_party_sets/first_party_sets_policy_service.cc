@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -83,13 +84,14 @@ ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
 
 FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
+    : browser_context_(
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)),
+      privacy_sandbox_settings_(
+          raw_ref<privacy_sandbox::PrivacySandboxSettings>::from_ptr(
+              PrivacySandboxSettingsFactory::GetForProfile(
+                  Profile::FromBrowserContext(browser_context)))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(browser_context);
-  privacy_sandbox_settings_ = PrivacySandboxSettingsFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
-  CHECK(privacy_sandbox_settings_);
-  privacy_sandbox_settings_observer_.Observe(privacy_sandbox_settings_);
+  privacy_sandbox_settings_observer_.Observe(&*privacy_sandbox_settings_);
   Init();
 }
 
@@ -103,7 +105,7 @@ void FirstPartySetsPolicyService::InitForTesting() {
 void FirstPartySetsPolicyService::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   // profile is guaranteed to be non-null since we create this service with a
   // non-null `context`.
   CHECK(profile);
@@ -195,7 +197,7 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   }
   // TODO(crbug.com/1366846) Add metrics here to track whether the pref is ever
   // enabled before the config is ready to be to be sent to the delegates.
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
   service_state_ = GetServiceState(profile, enabled);
   for (auto& delegate : access_delegates_) {
@@ -240,8 +242,6 @@ void FirstPartySetsPolicyService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
   on_ready_callbacks_.clear();
-  browser_context_ = nullptr;
-  privacy_sandbox_settings_ = nullptr;
   privacy_sandbox_settings_observer_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
@@ -270,7 +270,7 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
     return;
   }
 
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
   if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
     // TODO(crbug.com/40233408): regular profiles and guest sessions
