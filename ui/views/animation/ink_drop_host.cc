@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -167,6 +168,13 @@ void InkDropHost::ToggleAttentionState(bool attention_on) {
 }
 
 SkColor InkDropHost::GetBaseColor() const {
+  // TODO(crbug.com/359904341): provide a fallback color provider for tests
+  // that don't care about colors.
+  if (!host_view_->GetWidget()) {
+    CHECK_IS_TEST();
+    return gfx::kPlaceholderColor;
+  }
+
   // Attention color takes precedence.
   if (in_attention_state_) {
     ui::ColorProvider* const color_provider = host_view_->GetColorProvider();

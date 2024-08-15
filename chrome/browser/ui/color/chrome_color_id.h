@@ -172,6 +172,8 @@
   /* Intent Picker colors. */ \
   E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
+  /* Hover Button colors */ \
+  E_CPONLY(kColorHoverButtonBackgroundHovered) \
   /* Lens overlay colors. */ \
   E_CPONLY(kColorLensOverlayToastBackground) \
   E_CPONLY(kColorLensOverlayToastButtonText) \

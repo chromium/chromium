@@ -270,6 +270,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorDialogBackground, ui::kColorDialogBackground,
       ui::kColorAccentWithGuaranteedContrastAtopPrimaryBackground, 1.2);
 
+  mixer[kColorHoverButtonBackgroundHovered] = {ui::kColorSysStateHoverOnSubtle};
+
   // By default, the Omnibox background color will be determined by the toolbar
   // color.
   mixer[kColorLocationBarBackground] = {kColorToolbarBackgroundSubtleEmphasis};

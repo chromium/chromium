@@ -108,7 +108,6 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
 }
 
@@ -136,8 +135,6 @@ bool AudioDeviceEntryView::GetHighlighted() const {
 
 void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                            SkColor background_color) {
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
-
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
                    subtitle(), &icon(), foreground_color, background_color);
 
@@ -167,7 +164,6 @@ CastDeviceEntryView::CastDeviceEntryView(
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
 }
 
@@ -175,7 +171,6 @@ CastDeviceEntryView::~CastDeviceEntryView() = default;
 
 void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                           SkColor background_color) {
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   ChangeCastEntryColor(foreground_color, background_color);
 }
 
@@ -215,7 +210,6 @@ CastDeviceEntryViewAsh::CastDeviceEntryViewAsh(
       device_(device->Clone()) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColorId(background_color_id);
   SetHasInkDropActionOnClick(true);
 }
 
