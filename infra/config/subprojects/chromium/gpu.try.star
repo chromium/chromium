@@ -420,6 +420,7 @@ gpu_mac_builder(
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
     pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
+    cpu = cpu.ARM64,
 )
 
 gpu_mac_builder(
