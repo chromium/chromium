@@ -207,8 +207,8 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
             //
             // TODO(crbug.com/40284755): The `unit` should hold a span instead
             // of a pointer.
-            UNSAFE_BUFFERS(base::span(unit.data.get(),
-                                      base::checked_cast<size_t>(unit.size))));
+            UNSAFE_TODO(base::span(unit.data.get(),
+                                   base::checked_cast<size_t>(unit.size))));
     if (!written_ok) {
       return MP4Status::Codes::kBufferTooSmall;
     }

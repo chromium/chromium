@@ -547,9 +547,9 @@ void InitWithRandom(const gfx::Size size,
                     size_t y_stride,
                     uint8_t* uv_plane,
                     size_t uv_stride) {
-  base::span<uint8_t> y_plane_span = UNSAFE_BUFFERS(base::span(
+  base::span<uint8_t> y_plane_span = UNSAFE_TODO(base::span(
       y_plane, y_stride * base::checked_cast<size_t>(size.height())));
-  base::span<uint8_t> uv_plane_span = UNSAFE_BUFFERS(base::span(
+  base::span<uint8_t> uv_plane_span = UNSAFE_TODO(base::span(
       uv_plane, uv_stride * base::checked_cast<size_t>(size.height()) / 2u));
   const auto width = base::checked_cast<size_t>(size.width());
 

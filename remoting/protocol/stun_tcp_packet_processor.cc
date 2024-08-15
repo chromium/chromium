@@ -27,7 +27,7 @@ int GetExpectedStunPacketSize(const uint8_t* data_ptr,
                               size_t* pad_bytes) {
   // TODO(crbug.com/40284755): GetExpectedStunPacketSize() should receive a
   // span.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, len));
+  auto data = UNSAFE_TODO(base::span(data_ptr, len));
   DCHECK_LE(kTurnChannelDataHeaderSize, data.size());
 
   // Get packet type (STUN or TURN).

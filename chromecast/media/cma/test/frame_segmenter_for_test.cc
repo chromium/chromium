@@ -92,7 +92,7 @@ AudioFrameHeader FindNextMp3Header(const uint8_t* data, size_t data_size) {
 
 BufferList Mp3SegmenterForTest(const uint8_t* data_ptr, size_t data_size) {
   // TODO(crbug.com/40284755): These functions should be based on span.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, data_size));
+  auto data = UNSAFE_TODO(base::span(data_ptr, data_size));
   BufferList audio_frames;
   base::TimeDelta timestamp;
 
@@ -135,7 +135,7 @@ H264AccessUnit::H264AccessUnit()
 
 BufferList H264SegmenterForTest(const uint8_t* data_ptr, size_t data_size) {
   // TODO(crbug.com/40284755): These functions should be based on span.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, data_size));
+  auto data = UNSAFE_TODO(base::span(data_ptr, data_size));
   BufferList video_frames;
   std::list<H264AccessUnit> access_unit_list;
   H264AccessUnit access_unit;

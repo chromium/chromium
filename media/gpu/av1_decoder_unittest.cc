@@ -255,7 +255,7 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadIVF(
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
     buffers.push_back(DecoderBuffer::CopyFrom(
         // TODO(crbug.com/40284755): `ParseNextFrame` should return a span.
-        UNSAFE_BUFFERS(base::span(data, ivf_frame_header.frame_size))));
+        UNSAFE_TODO(base::span(data, ivf_frame_header.frame_size))));
   }
   return buffers;
 }

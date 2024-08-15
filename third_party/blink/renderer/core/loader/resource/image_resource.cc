@@ -636,7 +636,7 @@ void ImageResource::MultipartDataReceived(const char* bytes, size_t size) {
       // SAFETY: The caller must ensure `bytes` points to `size` elements.
       // TODO(crbug.com/40284755): Make this method take a span to capture the
       // invariant.
-      UNSAFE_BUFFERS(base::span(bytes, size)));
+      UNSAFE_TODO(base::span(bytes, size)));
 }
 
 bool ImageResource::IsAccessAllowed(

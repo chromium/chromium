@@ -38,11 +38,10 @@ static bool ExtractRegionRulesData(const std::string& region,
   for (size_t i = 0; i < kAutofillAddressRewriterResourcesSize; ++i) {
     // TODO: crbug.com/347651465: GRIT should define std::arrays instead of
     // c-style arrays.
-    UNSAFE_BUFFERS(
-        if (kAutofillAddressRewriterResources[i].path == resource_key) {
-          resource_id = kAutofillAddressRewriterResources[i].id;
-          break;
-        })
+    UNSAFE_TODO(if (kAutofillAddressRewriterResources[i].path == resource_key) {
+      resource_id = kAutofillAddressRewriterResources[i].id;
+      break;
+    })
   }
 
   if (!resource_id) {

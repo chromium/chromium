@@ -178,7 +178,7 @@ char* PopulatePcmAudioHeader(char* data_ptr,
   auto data = base::as_writable_bytes(
       // TODO(crbug.com/328018028): PopulatePcmAudioHeader() should
       // get a span, not a pointer and length.
-      UNSAFE_BUFFERS(base::span(data_ptr, size)));
+      UNSAFE_TODO(base::span(data_ptr, size)));
   auto header_as_bytes =
       base::byte_span_from_ref(header).subspan(sizeof(header.size));
   auto after = FillBuffer(data, header_as_bytes);
@@ -201,7 +201,7 @@ void PopulateHandshakeMessage(char* data_ptr,
   auto data = base::as_writable_bytes(
       // TODO(crbug.com/328018028): PopulateHandshakeMessage() should
       // get a span, not a pointer and length.
-      UNSAFE_BUFFERS(base::span(data_ptr, size)));
+      UNSAFE_TODO(base::span(data_ptr, size)));
   auto packet_as_bytes =
       base::byte_span_from_ref(packet).subspan(sizeof(packet.size));
   FillBuffer(data, packet_as_bytes);

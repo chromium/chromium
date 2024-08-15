@@ -350,7 +350,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
   // incorrect for some callers. ReadSize() should receive a span instead of the
   // unbounded pointer `ptr`. We use up to bytes from the pointer below, so we
   // unsoundly claim that the span has 6 bytes here.
-  auto span = UNSAFE_BUFFERS(base::as_bytes(base::span(ptr, 6u)));
+  auto span = UNSAFE_TODO(base::as_bytes(base::span(ptr, 6u)));
 
   uint16_t first_size = base::numerics::U16FromBigEndian(span.first<2u>());
   span = span.subspan(sizeof(uint16_t));

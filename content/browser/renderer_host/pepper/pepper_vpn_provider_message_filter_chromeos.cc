@@ -183,7 +183,7 @@ int32_t PepperVpnProviderMessageFilter::OnSendPacket(
       // TODO(crbug.com/342213636): `VpnProviderSharedBuffer` needs to return a
       // span over its buffer for us to use the first `packet_size` bytes from
       // it safely.
-      UNSAFE_BUFFERS(base::span(packet_pointer, packet_size)));
+      UNSAFE_TODO(base::span(packet_pointer, packet_size)));
 
   return DoSendPacket(
       packet,

@@ -156,7 +156,7 @@ bool BitReaderCore::Refill(int min_nbits) {
       byte_stream_provider_->GetBytes(max_nbytes, &byte_stream_window_ptr));
   auto byte_stream_window =
       // TODO(crbug.com/40284755): GetBytes() should return a span.
-      UNSAFE_BUFFERS(base::span(byte_stream_window_ptr, window_size));
+      UNSAFE_TODO(base::span(byte_stream_window_ptr, window_size));
   if (byte_stream_window.empty()) {
     return false;
   }

@@ -649,8 +649,8 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
         //
         // TODO(crbug.com/40284755): SkBitmap should provide a span-based
         // API.
-        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
-                                  bitmap.computeByteSize()));
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
+                               bitmap.computeByteSize()));
     if (!ReadBytes(pixels)) {
       continue;
     }

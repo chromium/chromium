@@ -60,7 +60,7 @@ ACTION_P2(InvokeCallback, data, length) {
   size_t transferred_length = std::min(length, arg6->size());
   base::span(arg6->as_vector())
       .copy_prefix_from(
-          UNSAFE_BUFFERS(base::span(data, length)).first(transferred_length));
+          UNSAFE_TODO(base::span(data, length)).first(transferred_length));
   std::move(arg8).Run(UsbTransferStatus::COMPLETED, arg6, transferred_length);
 }
 

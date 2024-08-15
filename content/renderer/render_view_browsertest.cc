@@ -724,7 +724,7 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
     flat_data.subspan(segment_offset)
         .copy_prefix_from(
             // TODO(crbug.com/40284755): ForEachSegment should be given a span.
-            UNSAFE_BUFFERS(base::span(segment, segment_size)));
+            UNSAFE_TODO(base::span(segment, segment_size)));
     return true;
   });
   EXPECT_EQ(base::span_with_nul_from_cstring(raw_data), flat_data.as_span());

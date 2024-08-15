@@ -189,7 +189,7 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
 
   // TODO(lukasza): Take `span` instead of `buffer` + `buffer_size`.
   current_buffer_ =
-      UNSAFE_BUFFERS(base::span<const uint8_t>(buffer, size_t{buffer_size}));
+      UNSAFE_TODO(base::span<const uint8_t>(buffer, size_t{buffer_size}));
   done_cb_ = std::move(done_cb);
   // Try writing data immediately to reduce latency.
   TryWriteData(MOJO_RESULT_OK);

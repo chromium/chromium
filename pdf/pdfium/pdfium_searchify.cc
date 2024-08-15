@@ -240,7 +240,7 @@ int GetBlockForJpeg(void* param,
     return 0;
   }
   // TODO(tsepez): spanify arguments to remove the error.
-  base::span<uint8_t> UNSAFE_BUFFERS(buf_span(buf, size));
+  base::span<uint8_t> UNSAFE_TODO(buf_span(buf, size));
   buf_span.copy_from(data_vector.subspan(pos, size));
   return 1;
 }

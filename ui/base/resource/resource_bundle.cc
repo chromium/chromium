@@ -1270,7 +1270,7 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
   *fell_back_to_1x = PNGContainsFallbackMarker(
       // TODO(crbug.com/40284755): DecodePNG should be receiving a span. We
       // can't tell that the size is correct from here.
-      UNSAFE_BUFFERS(base::span(buf, size)));
+      UNSAFE_TODO(base::span(buf, size)));
   return gfx::PNGCodec::Decode(buf, size, bitmap);
 }
 

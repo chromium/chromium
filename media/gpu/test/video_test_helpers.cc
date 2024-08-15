@@ -516,8 +516,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperIVF::GetNextBuffer() {
   if (ivf_frames.size() == 1) {
     return DecoderBuffer::CopyFrom(
         // TODO(crbug.com/40284755): spanify `IvfFrame`.
-        UNSAFE_BUFFERS(base::span(ivf_frames[0].data.get(),
-                                  ivf_frames[0].header.frame_size)));
+        UNSAFE_TODO(base::span(ivf_frames[0].data.get(),
+                               ivf_frames[0].header.frame_size)));
   }
 
   if (ivf_frames.size() > 3) {

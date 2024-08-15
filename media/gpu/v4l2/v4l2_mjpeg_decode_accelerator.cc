@@ -1236,7 +1236,7 @@ bool V4L2MjpegDecodeAccelerator::EnqueueInputRecord() {
           //
           // TODO(crbug.com/40284755): JobRecord should give a span, rather than
           // a pointer.
-          UNSAFE_BUFFERS(
+          UNSAFE_TODO(
               base::span(static_cast<const uint8_t*>(job_record->memory()),
                          job_record->size())),
           // SAFETY: BufferRecord has an array of pointer + length pairs. The

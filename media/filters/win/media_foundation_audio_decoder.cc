@@ -562,8 +562,8 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
     auto channel_data = base::SpanWriter<uint8_t>(
         // TODO(crbug.com/40284755): channel_data() should be an array of spans,
         // not unbounded pointers. This span is constructed unsoundly.
-        UNSAFE_BUFFERS(base::span(audio_buffer->channel_data()[0u],
-                                  frames * channel_count_ * 4u)));
+        UNSAFE_TODO(base::span(audio_buffer->channel_data()[0u],
+                               frames * channel_count_ * 4u)));
     for (uint64_t i = 0; i < frames; i++) {
       for (uint64_t ch = 0; ch < channel_count_; ch++) {
         auto a = static_cast<int8_t>(destination[0u]);

@@ -566,7 +566,7 @@ ColorChooser::~ColorChooser() {
 }
 
 void ColorChooser::SetColor(SkColor color) {
-  UNSAFE_BUFFERS(SkColorToHSV(color, hsv_.data()));
+  UNSAFE_TODO(SkColorToHSV(color, hsv_.data()));
   listener_->OnColorChosen(GetColor());
 }
 
@@ -582,7 +582,7 @@ void ColorChooser::SetSaturationValue(SkScalar saturation, SkScalar value) {
 }
 
 SkColor ColorChooser::GetColor() const {
-  UNSAFE_BUFFERS(return SkHSVToColor(255, hsv_.data()));
+  UNSAFE_TODO(return SkHSVToColor(255, hsv_.data()));
 }
 
 void ColorChooser::OnViewClosing() {

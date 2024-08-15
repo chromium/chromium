@@ -112,10 +112,10 @@ TEST_F(PepperGamepadHostTest, WaitForReply) {
     // temporary first.
     // TODO(crbug.com/342213636): Rewrite to remove the need for UNSAFE_BUFFERS
     // annotation.
-    UNSAFE_BUFFERS(EXPECT_EQ(double{button_down_data.items[0].buttons[i].value},
-                             double{buffer->data.items[0].buttons[i].value});
-                   EXPECT_EQ(button_down_data.items[0].buttons[i].pressed,
-                             buffer->data.items[0].buttons[i].pressed););
+    UNSAFE_TODO(EXPECT_EQ(double{button_down_data.items[0].buttons[i].value},
+                          double{buffer->data.items[0].buttons[i].value});
+                EXPECT_EQ(button_down_data.items[0].buttons[i].pressed,
+                          buffer->data.items[0].buttons[i].pressed););
   }
 
   // Duplicate requests should be denied.

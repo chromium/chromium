@@ -132,7 +132,7 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
     // then add the rest to the queue.
     //
     // TODO(crbug.com/40284755): Use `base::span` in `Vp9Parser::FrameInfo`.
-    current_transcrypt_task_->buffer = DecoderBuffer::CopyFrom(UNSAFE_BUFFERS(
+    current_transcrypt_task_->buffer = DecoderBuffer::CopyFrom(UNSAFE_TODO(
         base::span(frames.front().ptr.get(),
                    base::checked_cast<size_t>(frames.front().size))));
     curr_buffer = current_transcrypt_task_->buffer.get();
@@ -161,10 +161,9 @@ void DecoderBufferTranscryptor::DecryptPendingBuffer() {
     while (!frames.empty()) {
       // The |frames| are in decode order, so we take from the back of |frames|
       // and append to the front of |transcrypt_task_queue_|.
-      scoped_refptr<DecoderBuffer> buffer =
-          DecoderBuffer::CopyFrom(UNSAFE_BUFFERS(
-              base::span(frames.back().ptr.get(),
-                         base::checked_cast<size_t>(frames.back().size))));
+      scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::CopyFrom(UNSAFE_TODO(
+          base::span(frames.back().ptr.get(),
+                     base::checked_cast<size_t>(frames.back().size))));
       buffer->set_timestamp(superframe->timestamp());
       buffer->set_duration(superframe->duration());
       buffer->set_is_key_frame(superframe->is_key_frame());

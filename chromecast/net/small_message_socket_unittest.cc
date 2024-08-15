@@ -100,7 +100,7 @@ class TestSocket : public SmallMessageSocket::Delegate {
     message_history_.push_back(size);
     CheckData(
         // TODO(crbug.com/40284755): OnMessage() should receive a span.
-        UNSAFE_BUFFERS(base::span(data, size)));
+        UNSAFE_TODO(base::span(data, size)));
     if (swap_pool_use_) {
       UseBufferPool();
     }
@@ -194,7 +194,7 @@ TEST_F(SmallMessageSocketTest, PrepareSendAndReceive) {
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize)));
   socket_2_->ReceiveMessages();
   socket_1_->Send();
   task_environment_.RunUntilIdle();
@@ -206,7 +206,7 @@ TEST_F(SmallMessageSocketTest, MultipleMessages) {
 
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kLargeMessageSize)));
+      UNSAFE_TODO(base::span(buffer, kLargeMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
@@ -214,14 +214,14 @@ TEST_F(SmallMessageSocketTest, MultipleMessages) {
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize * 2 + 1));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize * 2 + 1)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize * 2 + 1)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 5));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize - 5)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 5)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
@@ -251,7 +251,7 @@ TEST_F(SmallMessageSocketTest, SendLargerThanPoolBufferSize) {
   char* buffer = static_cast<char*>(socket_1_->PrepareSend(kLargeMessageSize));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kLargeMessageSize)));
+      UNSAFE_TODO(base::span(buffer, kLargeMessageSize)));
   socket_2_->ReceiveMessages();
   socket_1_->Send();
   task_environment_.RunUntilIdle();
@@ -265,28 +265,28 @@ TEST_F(SmallMessageSocketTest, BufferMultipleMessages) {
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 1));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize - 1)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 1)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kLargeMessageSize));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kLargeMessageSize)));
+      UNSAFE_TODO(base::span(buffer, kLargeMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 5));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize - 5)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 5)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
@@ -306,21 +306,21 @@ TEST_F(SmallMessageSocketTest, SwapPoolUse) {
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize * 2 + 1));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize * 2 + 1)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize * 2 + 1)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 5));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize - 5)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 5)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize));
   SetData(
       // TODO(crbug.com/40284755): PrepareSend() should return a span.
-      UNSAFE_BUFFERS(base::span(buffer, kDefaultMessageSize)));
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 

@@ -134,7 +134,7 @@ class WTF_EXPORT SegmentedBuffer {
     Append(
         // SAFETY: The caller must ensure `data` points to `size` elements.
         // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
+        UNSAFE_TODO(base::span(data, size)));
   }
   HAS_STRICTLY_TYPED_ARG
   void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
@@ -142,7 +142,7 @@ class WTF_EXPORT SegmentedBuffer {
     Append(
         // SAFETY: The caller must ensure `data` points to `size` elements.
         // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
+        UNSAFE_TODO(base::span(data, size)));
   }
 
   void Append(base::span<const char> data);
@@ -288,7 +288,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
     return Create(
         // SAFETY: The caller must ensure `data` points to `size` elements.
         // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
+        UNSAFE_TODO(base::span(data, size)));
   }
 
   HAS_STRICTLY_TYPED_ARG
@@ -298,7 +298,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
     return Create(
         // SAFETY: The caller must ensure `data` points to `size` elements.
         // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
+        UNSAFE_TODO(base::span(data, size)));
   }
 
   static scoped_refptr<SharedBuffer> Create(Vector<char>&&);

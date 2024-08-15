@@ -403,7 +403,7 @@ int SocketBIOAdapter::BIOWriteWrapper(BIO* bio, const char* in, int len) {
   return adapter->BIOWrite(base::as_bytes(
       // SAFETY: The caller must ensure `in` points to `len` bytes.
       // TODO(crbug.com/354307327): Spanify this method.
-      UNSAFE_BUFFERS(base::span(in, base::checked_cast<size_t>(len)))));
+      UNSAFE_TODO(base::span(in, base::checked_cast<size_t>(len)))));
 }
 
 int SocketBIOAdapter::BIOReadWrapper(BIO* bio, char* out, int len) {

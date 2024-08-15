@@ -186,7 +186,7 @@ class MEDIA_EXPORT DecoderBuffer
   base::span<uint8_t> writable_span() const {
     // TODO(crbug.com/40284755): `data_` should be converted to HeapArray, then
     // it can give out a span safely.
-    return UNSAFE_BUFFERS(base::span(writable_data(), size()));
+    return UNSAFE_TODO(base::span(writable_data(), size()));
   }
 
   inline bool empty() const { return size() == 0u; }

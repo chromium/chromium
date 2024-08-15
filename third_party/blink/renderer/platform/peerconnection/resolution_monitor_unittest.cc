@@ -121,7 +121,7 @@ std::vector<scoped_refptr<media::DecoderBuffer>> ReadIVF(const std::string& fnam
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
     buffers.push_back(media::DecoderBuffer::CopyFrom(
         // TODO(crbug.com/40284755): Spanify `ParseNextFrame`.
-        UNSAFE_BUFFERS(base::span(data, ivf_frame_header.frame_size))));
+        UNSAFE_TODO(base::span(data, ivf_frame_header.frame_size))));
   }
   return buffers;
 }
