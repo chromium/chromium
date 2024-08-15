@@ -4096,24 +4096,6 @@
             ]
         }
     ],
-    "ChromeHomeFrequency": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_4H",
-                    "params": {
-                        "start_surface_return_time_on_tablet_seconds": "14400"
-                    },
-                    "enable_features": [
-                        "StartSurfaceReturnTime"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeLabs": [
         {
             "platforms": [
