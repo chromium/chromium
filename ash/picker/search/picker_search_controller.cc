@@ -220,4 +220,8 @@ void PickerSearchController::StartEmojiSearch(
   std::move(callback).Run(std::move(emoji_results));
 }
 
+std::string PickerSearchController::GetEmojiName(std::string_view emoji) {
+  return emoji_search_.GetEmojiName(emoji, "en");
+}
+
 }  // namespace ash

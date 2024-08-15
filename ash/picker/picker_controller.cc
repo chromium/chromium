@@ -641,8 +641,17 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   }
 
   emoji_history_model_ = std::make_unique<PickerEmojiHistoryModel>(GetPrefs());
-  emoji_suggester_ =
-      std::make_unique<PickerEmojiSuggester>(emoji_history_model_.get());
+  emoji_suggester_ = std::make_unique<PickerEmojiSuggester>(
+      emoji_history_model_.get(),
+      base::BindRepeating(
+          [](base::WeakPtr<PickerController> weak_controller,
+             std::string_view emoji) -> std::string {
+            if (weak_controller == nullptr) {
+              return "";
+            }
+            return weak_controller->search_controller_->GetEmojiName(emoji);
+          },
+          weak_ptr_factory_.GetWeakPtr()));
   session_metrics_ = std::make_unique<PickerSessionMetrics>(GetPrefs());
 
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(

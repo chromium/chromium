@@ -4,9 +4,14 @@
 
 #include "ash/picker/model/picker_emoji_suggester.h"
 
+#include <string>
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/picker/model/picker_emoji_history_model.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -30,55 +35,64 @@ class PickerEmojiSuggesterTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
+PickerEmojiSuggester::GetNameCallback GetName() {
+  return base::BindRepeating([](std::string_view emoji) -> std::string {
+    return base::StrCat({emoji, " name"});
+  });
+}
+
 TEST_F(PickerEmojiSuggesterTest, ReturnsDefaultEmojis) {
   PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model);
+  PickerEmojiSuggester suggester(&model, GetName());
 
-  EXPECT_THAT(
-      suggester.GetSuggestedEmoji(),
-      ElementsAre(
-          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
-          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢"),
-          PickerSearchResult::Emoji(u"👏"), PickerSearchResult::Emoji(u"👍")));
+  EXPECT_THAT(suggester.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"🙂", u"🙂 name"),
+                          PickerSearchResult::Emoji(u"😂", u"😂 name"),
+                          PickerSearchResult::Emoji(u"🤔", u"🤔 name"),
+                          PickerSearchResult::Emoji(u"😢", u"😢 name"),
+                          PickerSearchResult::Emoji(u"👏", u"👏 name"),
+                          PickerSearchResult::Emoji(u"👍", u"👍 name")));
 }
 
 TEST_F(PickerEmojiSuggesterTest, ReturnsRecentEmojiFollowedByDefaultEmojis) {
   PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model);
+  PickerEmojiSuggester suggester(&model, GetName());
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
-  EXPECT_THAT(
-      suggester.GetSuggestedEmoji(),
-      ElementsAre(
-          PickerSearchResult::Emoji(u"abc"), PickerSearchResult::Emoji(u"xyz"),
-          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"😂"),
-          PickerSearchResult::Emoji(u"🤔"), PickerSearchResult::Emoji(u"😢")));
+  EXPECT_THAT(suggester.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"abc", u"abc name"),
+                          PickerSearchResult::Emoji(u"xyz", u"xyz name"),
+                          PickerSearchResult::Emoji(u"🙂", u"🙂 name"),
+                          PickerSearchResult::Emoji(u"😂", u"😂 name"),
+                          PickerSearchResult::Emoji(u"🤔", u"🤔 name"),
+                          PickerSearchResult::Emoji(u"😢", u"😢 name")));
 }
 
 TEST_F(PickerEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
   PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model);
+  PickerEmojiSuggester suggester(&model, GetName());
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "😂"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
   ScopedDictPrefUpdate update(pref_service(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
-  EXPECT_THAT(
-      suggester.GetSuggestedEmoji(),
-      ElementsAre(
-          PickerSearchResult::Emoji(u"😂"), PickerSearchResult::Emoji(u"xyz"),
-          PickerSearchResult::Emoji(u"🙂"), PickerSearchResult::Emoji(u"🤔"),
-          PickerSearchResult::Emoji(u"😢"), PickerSearchResult::Emoji(u"👏")));
+  EXPECT_THAT(suggester.GetSuggestedEmoji(),
+              ElementsAre(PickerSearchResult::Emoji(u"😂", u"😂 name"),
+                          PickerSearchResult::Emoji(u"xyz", u"xyz name"),
+                          PickerSearchResult::Emoji(u"🙂", u"🙂 name"),
+                          PickerSearchResult::Emoji(u"🤔", u"🤔 name"),
+                          PickerSearchResult::Emoji(u"😢", u"😢 name"),
+                          PickerSearchResult::Emoji(u"👏", u"👏 name")));
 }
 
 TEST_F(PickerEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
   PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model);
+  PickerEmojiSuggester suggester(&model, GetName());
   base::Value::List emoji_history_value;
   emoji_history_value.Append(
       base::Value::Dict().Set("text", "emoji1").Set("timestamp", "10"));
@@ -99,13 +113,15 @@ TEST_F(PickerEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
   update->Set("emoticon", std::move(emoticon_history_value));
   update->Set("symbol", std::move(symbol_history_value));
 
-  EXPECT_THAT(suggester.GetSuggestedEmoji(),
-              ElementsAre(PickerSearchResult::Symbol(u"symbol1"),
-                          PickerSearchResult::Emoticon(u"emoticon1"),
-                          PickerSearchResult::Emoji(u"emoji1"),
-                          PickerSearchResult::Symbol(u"symbol2"),
-                          PickerSearchResult::Emoji(u"emoji2"),
-                          PickerSearchResult::Emoticon(u"emoticon2")));
+  EXPECT_THAT(
+      suggester.GetSuggestedEmoji(),
+      ElementsAre(
+          PickerSearchResult::Symbol(u"symbol1", u"symbol1 name"),
+          PickerSearchResult::Emoticon(u"emoticon1", u"emoticon1 name"),
+          PickerSearchResult::Emoji(u"emoji1", u"emoji1 name"),
+          PickerSearchResult::Symbol(u"symbol2", u"symbol2 name"),
+          PickerSearchResult::Emoji(u"emoji2", u"emoji2 name"),
+          PickerSearchResult::Emoticon(u"emoticon2", u"emoticon2 name")));
 }
 
 }  // namespace

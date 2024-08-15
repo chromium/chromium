@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -46,6 +47,12 @@ class ASH_EXPORT PickerSearchController {
   void StartEmojiSearch(
       std::u16string_view query,
       PickerViewDelegate::EmojiSearchResultsCallback callback);
+
+  // Gets the emoji name for the given emoji / emoticon / symbol.
+  // Used for getting emoji tooltips for zero state emoji.
+  // TODO: b/358492493 - Refactor this out of `PickerSearchController`, as this
+  // is unrelated to search.
+  std::string GetEmojiName(std::string_view emoji);
 
  private:
   void LoadEmojiLanguages(PrefService* pref);
