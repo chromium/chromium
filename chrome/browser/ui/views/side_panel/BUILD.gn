@@ -151,6 +151,7 @@ source_set("side_panel") {
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/resources:component_extension_resources_grit",
     "//chrome/browser/search",
+    "//chrome/browser/search/background:background",
     "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_element_identifiers",

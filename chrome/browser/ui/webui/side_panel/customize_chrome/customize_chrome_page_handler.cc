@@ -58,6 +58,25 @@ void OpenWebPage(Profile* profile, const GURL& url) {
 
 }  // namespace
 
+// static
+bool CustomizeChromePageHandler::IsSupported(
+    NtpCustomBackgroundService* ntp_custom_background_service,
+    Profile* profile) {
+  if (!ntp_custom_background_service) {
+    return false;
+  }
+
+  if (!ThemeServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
+
+  if (!NtpBackgroundServiceFactory::GetForProfile(profile)) {
+    return false;
+  }
+
+  return true;
+}
+
 CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
         pending_page_handler,
@@ -79,9 +98,8 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       open_url_callback_(open_url_callback.has_value()
                              ? open_url_callback.value()
                              : base::BindRepeating(&OpenWebPage, profile_)) {
-  CHECK(ntp_custom_background_service_);
-  CHECK(theme_service_);
-  CHECK(ntp_background_service_);
+  CHECK(IsSupported(ntp_custom_background_service_, profile_));
+
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   theme_service_observation_.Observe(theme_service_);

@@ -63,6 +63,12 @@ class CustomizeChromePageHandler
       public TemplateURLServiceObserver,
       public ui::SelectFileDialog::Listener {
  public:
+  // Returns whether the page handler can be constructed. Used to decide whether
+  // the sidepanel should be allowed to show.
+  static bool IsSupported(
+      NtpCustomBackgroundService* ntp_custom_background_service,
+      Profile* profile);
+
   CustomizeChromePageHandler(
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
           pending_page_handler,
