@@ -164,20 +164,16 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
 
 std::optional<base::FilePath> FindOfflineDir(
     const base::FilePath& unpack_path) {
-  const base::FilePath base_offline_dir =
-      unpack_path.Append(L"bin").Append(L"Offline");
-  if (!base::PathExists(base_offline_dir)) {
-    return std::nullopt;
-  }
-  base::FileEnumerator file_enumerator(base_offline_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
+  base::FileEnumerator file_enumerator(
+      unpack_path.Append(L"bin").Append(L"Offline"), false,
+      base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
     if (IsGuid(path.BaseName().value())) {
       return path;
     }
   }
-  return std::nullopt;
+  return {};
 }
 
 // Finds and writes to disk resources of type 'B7' (7zip archive). Returns false
