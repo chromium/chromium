@@ -281,7 +281,7 @@ ChromeAutofillClient::GetAutofillPredictionImprovementsDelegate() {
           features::kAutofillPredictionImprovementsEnabled)) {
     return nullptr;
   }
-  if (tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(
+  if (tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
           web_contents()->GetOutermostWebContents())) {
     ChromeAutofillPredictionImprovementsClient* client =
         tab->GetTabFeatures()->chrome_autofill_prediction_improvements_client();
@@ -379,8 +379,9 @@ ChromeAutofillClient::GetSecurityLevelForUmaHistograms() {
   // If there is no helper, it means we are not in a "web" state (for example
   // the file picker on CrOS). Return SECURITY_LEVEL_COUNT which will not be
   // logged.
-  if (!helper)
+  if (!helper) {
     return security_state::SecurityLevel::SECURITY_LEVEL_COUNT;
+  }
 
   return helper->GetSecurityLevel();
 }
@@ -390,8 +391,9 @@ const translate::LanguageState* ChromeAutofillClient::GetLanguageState() {
   // the top level frame vs whatever frame directly holds the form.
   auto* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(web_contents());
-  if (translate_manager)
+  if (translate_manager) {
     return translate_manager->GetLanguageState();
+  }
   return nullptr;
 }
 
@@ -400,8 +402,9 @@ translate::TranslateDriver* ChromeAutofillClient::GetTranslateDriver() {
   // the top level frame vs whatever frame directly holds the form.
   auto* translate_client =
       ChromeTranslateClient::FromWebContents(web_contents());
-  if (translate_client)
+  if (translate_client) {
     return translate_client->translate_driver();
+  }
   return nullptr;
 }
 
@@ -690,8 +693,9 @@ void ChromeAutofillClient::DidFillOrPreviewForm(
 bool ChromeAutofillClient::IsContextSecure() const {
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents());
-  if (!helper)
+  if (!helper) {
     return false;
+  }
 
   const auto security_level = helper->GetSecurityLevel();
   content::NavigationEntry* entry =
@@ -793,8 +797,9 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
 }
 
 Profile* ChromeAutofillClient::GetProfile() const {
-  if (!web_contents())
+  if (!web_contents()) {
     return nullptr;
+  }
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
