@@ -4371,7 +4371,6 @@ String AXObject::SimplifyName(const String& str,
 
   String simplified = str.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 
-#if DCHECK_IS_ON()
   if (GetElement() && !simplified.empty() && IsNameProhibited()) {
     // Enforce that names cannot occur on prohibited roles in Web UI.
     static bool name_on_prohibited_role_error_shown;
@@ -4400,12 +4399,18 @@ String AXObject::SimplifyName(const String& str,
     if (RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
       // Prohibited names are repaired by moving them to the description field,
       // where they will not override the contents of the element for screen
-      // reader users.
+      // reader users. Exception: if it would be redundant with the inner
+      // contents, then the name is stripped out rather than repaired.
       name_from = ax::mojom::blink::NameFrom::kProhibited;
+      // If already redundant with inner text, do not repair to description
+      if (name_from == ax::mojom::blink::NameFrom::kContents ||
+          simplified ==
+              GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
+        name_from = ax::mojom::blink::NameFrom::kProhibitedAndRedundant;
+      }
       return "";
     }
   }
-#endif
 
   bool has_before_space = IsHTMLSpace<UChar>(str[0]);
   bool has_after_space = IsHTMLSpace<UChar>(str[str.length() - 1]);

@@ -590,6 +590,7 @@ std::string AXComputedNodeData::ComputeTextContentUTF8() const {
       // If kProhibited is set, that means we calculated a name in Blink and
       // are deliberately not exposing it.
       case ax::mojom::NameFrom::kProhibited:
+      case ax::mojom::NameFrom::kProhibitedAndRedundant:
       case ax::mojom::NameFrom::kRelatedElement:
       // The accessible name is not displayed directly inside the node but is
       // visible via e.g. a tooltip.
