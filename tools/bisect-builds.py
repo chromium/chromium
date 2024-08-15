@@ -43,8 +43,6 @@ DEVIL_PATH = os.path.abspath(os.path.join(CATAPULT_DIR, 'devil'))
 # The base URL for stored build archives.
 CHROMIUM_BASE_URL = ('http://commondatastorage.googleapis.com'
                      '/chromium-browser-snapshots')
-WEBKIT_BASE_URL = ('http://commondatastorage.googleapis.com'
-                   '/chromium-webkit-snapshots')
 ASAN_BASE_URL = ('http://commondatastorage.googleapis.com'
                  '/chromium-browser-asan')
 
@@ -80,46 +78,15 @@ DEPS_FILE_OLD = ('http://src.chromium.org/viewvc/chrome/trunk/src/'
                  'DEPS?revision=%d')
 DEPS_FILE_NEW = ('https://chromium.googlesource.com/chromium/src/+/%s/DEPS')
 
-# Blink changelogs URL.
-BLINK_CHANGELOG_URL = ('http://build.chromium.org'
-                      '/f/chromium/perf/dashboard/ui/changelog_blink.html'
-                      '?url=/trunk&range=%d%%3A%d')
 
 DONE_MESSAGE_GOOD_MIN = ('You are probably looking for a change made after %s ('
                          'known good), but no later than %s (first known bad).')
 DONE_MESSAGE_GOOD_MAX = ('You are probably looking for a change made after %s ('
                          'known bad), but no later than %s (first known good).')
 
-CHROMIUM_GITHASH_TO_SVN_URL = (
-    'https://chromium.googlesource.com/chromium/src/+/%s?format=json')
-
-BLINK_GITHASH_TO_SVN_URL = (
-    'https://chromium.googlesource.com/chromium/blink/+/%s?format=json')
-
-GITHASH_TO_SVN_URL = {
-    'chromium': CHROMIUM_GITHASH_TO_SVN_URL,
-    'blink': BLINK_GITHASH_TO_SVN_URL,
-}
-
 VERSION_INFO_URL = ('https://chromiumdash.appspot.com/fetch_version?version=%s')
 
 MILESTONES_URL = ('https://chromiumdash.appspot.com/fetch_milestones')
-
-# Search pattern to be matched in the JSON output from
-# CHROMIUM_GITHASH_TO_SVN_URL to get the chromium revision (svn revision).
-CHROMIUM_SEARCH_PATTERN_OLD = (
-    r'.*git-svn-id: svn://svn.chromium.org/chrome/trunk/src@(\d+) ')
-CHROMIUM_SEARCH_PATTERN = (r'Cr-Commit-Position: refs/heads/main@{#(\d+)}')
-
-# Search pattern to be matched in the json output from
-# BLINK_GITHASH_TO_SVN_URL to get the blink revision (svn revision).
-BLINK_SEARCH_PATTERN = (
-    r'.*git-svn-id: svn://svn.chromium.org/blink/trunk@(\d+) ')
-
-SEARCH_PATTERN = {
-    'chromium': CHROMIUM_SEARCH_PATTERN,
-    'blink': BLINK_SEARCH_PATTERN,
-}
 
 CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
                             'no configured credentials')
@@ -990,7 +957,7 @@ class AndroidBuildMixin:
     # The args could be set via self.run_revision
     self.flags = flag_changer.FlagChanger(
         self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
-    self.binary_name = GetAndroidApkFilename(self)
+    self.binary_name = GetAndroidApkFilename(self.device, self.apk)
 
   def _install_revision(self, download, tempdir):
     apk_path = super()._install_revision(download, tempdir)
@@ -1011,7 +978,7 @@ class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
     super().__init__(options)
     self.signed = options.signed
     # We could download the apk directly from build bucket
-    self.archive_name = GetAndroidApkFilename(self)
+    self.archive_name = GetAndroidApkFilename(self.device, self.apk)
 
   def _get_release_bucket(self):
     if self.signed:
@@ -1072,206 +1039,6 @@ def create_archive_build(options):
     return SnapshotBuild(options)
 
 
-class PathContext(object):
-  """A PathContext is used to carry the information used to construct URLs and
-  paths when dealing with the storage server and archives."""
-
-  def __init__(self, options, device=None):
-    super(PathContext, self).__init__()
-    # Store off the input parameters.
-    self.platform = options.archive
-    self.good_revision = options.good
-    self.bad_revision = options.bad
-    self.is_release = options.release_builds
-    self.is_official = options.official_builds
-    self.is_asan = options.asan
-    self.signed = options.signed
-    self.build_type = 'release'
-    # Whether to cache and use the list of known revisions in a local file to
-    # speed up the initialization of the script at the next run.
-    self.use_local_cache = options.use_local_cache
-    if options.asan:
-      self.base_url = ASAN_BASE_URL
-    elif options.blink:
-      self.base_url = WEBKIT_BASE_URL
-    else:
-      self.base_url = CHROMIUM_BASE_URL
-
-    self.apk = options.apk
-    self.device = device
-
-    # Dictionary which stores svn revision number as key and it's
-    # corresponding git hash as value. This data is populated in
-    # _FetchAndParse and used later in GetDownloadURL while downloading
-    # the build.
-    self.githash_svn_dict = {}
-    # The name of the ZIP file in a revision directory on the server.
-    self.archive_name = None
-
-
-    # Locate the local checkout to speed up the script by using locally stored
-    # metadata.
-    abs_file_path = os.path.abspath(os.path.realpath(__file__))
-    local_src_path = os.path.join(os.path.dirname(abs_file_path), '..')
-    if abs_file_path.endswith(os.path.join('tools', 'bisect-builds.py')) and\
-        os.path.exists(os.path.join(local_src_path, '.git')):
-      self.local_src_path = os.path.normpath(local_src_path)
-    else:
-      self.local_src_path = None
-
-    # Set some internal members:
-    #   _listing_platform_dir = Directory that holds revisions. Ends with a '/'.
-    #   _archive_extract_dir = Uncompressed directory in the archive_name file.
-    #   _binary_name = The name of the executable to run.
-    self.SetPathContextMembers(self.platform)
-
-  def SetPathContextMembers(self, platform):
-    if self.is_release:
-      test_type = 'release'
-      # Linux release archives changed their name during the M60 cycle, so older
-      # builds won't be found in the current path.
-      if platform == 'linux64':
-        # For releases, the revision # is actually a "1.2.3.4"-style version.
-        good_major = int(self.good_revision.split('.')[0])
-        bad_major = int(self.bad_revision.split('.')[0])
-        # The new path definitely doesn't exist before M57
-        if min(good_major, bad_major) < 58:
-          print('Linux release archives changed location during M58, '
-                'and older builds are currently not supported by the script. '
-                'If you really need to bisect pre-M58 builds, please contact '
-                'trooper for assistance, otherwise please re-run '
-                'with more recent revision values.')
-          sys.exit(1)
-        if min(good_major, bad_major) < 59:
-          print('-----------------------------------------------------------\n'
-                'WARNING: Linux release archives changed location during the '
-                'M58 cycle, so this bisect might be be missing some builds. '
-                'If you really need to bisect against all M58 builds, please '
-                'contact trooper for assistance.\n'
-                '-----------------------------------------------------------')
-    elif self.is_official:
-      test_type = 'official'
-    else:
-      test_type = 'snapshot'  # default test type
-    path_members = PATH_CONTEXT[test_type].get(platform)
-    if not path_members:
-      raise BisectException(
-          'Error: Bisecting on %s builds are only '
-          'supported on these platforms: [%s].' %
-          (test_type, '|'.join(PATH_CONTEXT[test_type].keys())))
-    self._binary_name = path_members['binary_name']
-    self._listing_platform_dir = path_members['listing_platform_dir']
-    if self.is_release and 'android' in self.platform:
-      self.archive_name = GetAndroidApkFilename(self)
-    else:
-      self.archive_name = path_members['archive_name']
-    self._archive_extract_dir = path_members['archive_extract_dir']
-
-  def GetASANPlatformDir(self):
-    """ASAN builds are in directories like "linux-release", or have filenames
-    like "asan-win32-release-277079.zip". This aligns to our platform names
-    except in the case of Windows where they use "win32" instead of "win"."""
-    if self.platform == 'win':
-      return 'win32'
-    else:
-      return self.platform
-
-  def GetLastChangeURL(self):
-    """Returns a URL to the LAST_CHANGE file."""
-    return self.base_url + '/' + self._listing_platform_dir + 'LAST_CHANGE'
-
-  def GetASANBaseName(self):
-    """Returns the base name of the ASAN zip file."""
-    if 'linux' in self.platform:
-      return 'asan-symbolized-%s-%s' % (self.GetASANPlatformDir(),
-                                        self.build_type)
-    else:
-      return 'asan-%s-%s' % (self.GetASANPlatformDir(), self.build_type)
-
-  def GetLaunchPath(self, revision):
-    """Returns a relative path (presumably from the archive extraction location)
-    that is used to run the executable."""
-    if self.is_asan:
-      extract_dir = '%s-%d' % (self.GetASANBaseName(), revision)
-    elif self.is_official:
-      extract_dir = '%s_%s' % (self._archive_extract_dir, revision)
-    else:
-      extract_dir = self._archive_extract_dir
-
-    return os.path.join(extract_dir, self._binary_name)
-
-  def _GetSVNRevisionFromGitHashWithoutGitCheckout(self, git_sha1, depot):
-    json_url = GITHASH_TO_SVN_URL[depot] % git_sha1
-    response = urllib.request.urlopen(json_url)
-    if response.getcode() == 200:
-      try:
-        data = json.loads(response.read()[4:])
-      except ValueError:
-        print('ValueError for JSON URL: %s' % json_url)
-        raise ValueError
-    else:
-      raise ValueError
-    if 'message' in data:
-      message = data['message'].split('\n')
-      message = [line for line in message if line.strip()]
-      search_pattern = re.compile(SEARCH_PATTERN[depot])
-      result = search_pattern.search(message[len(message)-1])
-      if result:
-        return result.group(1)
-      else:
-        if depot == 'chromium':
-          result = re.search(CHROMIUM_SEARCH_PATTERN_OLD,
-                             message[len(message)-1])
-          if result:
-            return result.group(1)
-    print('Failed to get svn revision number for %s' % git_sha1)
-    raise ValueError
-
-  def _GetSVNRevisionFromGitHashFromGitCheckout(self, git_sha1, depot):
-    def _RunGit(command, path):
-      command = ['git'] + command
-      shell = sys.platform.startswith('win')
-      proc = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, cwd=path)
-      (output, _) = proc.communicate()
-      return (output, proc.returncode)
-
-    path = self.local_src_path
-    if depot == 'blink':
-      path = os.path.join(self.local_src_path, 'third_party', 'WebKit')
-    revision = None
-    try:
-      command = ['svn', 'find-rev', git_sha1]
-      (git_output, return_code) = _RunGit(command, path)
-      if not return_code:
-        revision = git_output.strip('\n')
-    except ValueError:
-      pass
-    if not revision:
-      command = ['log', '-n1', '--format=%s', git_sha1]
-      (git_output, return_code) = _RunGit(command, path)
-      if not return_code:
-        revision = re.match('SVN changes up to revision ([0-9]+)', git_output)
-        revision = revision.group(1) if revision else None
-    if revision:
-      return revision
-    raise ValueError
-
-  def GetSVNRevisionFromGitHash(self, git_sha1, depot='chromium'):
-    if not self.local_src_path:
-      return self._GetSVNRevisionFromGitHashWithoutGitCheckout(git_sha1, depot)
-    else:
-      return self._GetSVNRevisionFromGitHashFromGitCheckout(git_sha1, depot)
-
-  def GetReleaseBucket(self):
-    if 'android' in self.platform:
-      if self.signed:
-        return ANDROID_RELEASE_BASE_URL_SIGNED
-      else:
-        return ANDROID_RELEASE_BASE_URL
-    return RELEASE_BASE_URL
-
-
 def IsMac():
   return sys.platform.startswith('darwin')
 
@@ -1320,8 +1087,8 @@ def gsutil_download(download_url, filename):
   RunGsutilCommand(command)
 
 
-def _GetMappingFromAndroidApk(context, apk):
-  sdk = context.device.build_version_sdk
+def _GetMappingFromAndroidApk(device, apk):
+  sdk = device.build_version_sdk
   if 'webview' in apk.lower():
     return WEBVIEW_APK_FILENAMES
   # Need these logic to bisect very old build. Release binaries are stored
@@ -1334,8 +1101,8 @@ def _GetMappingFromAndroidApk(context, apk):
   return MONOCHROME_APK_FILENAMES
 
 
-def GetAndroidApkFilename(context):
-  return _GetMappingFromAndroidApk(context, context.apk)[context.apk]
+def GetAndroidApkFilename(device, apk):
+  return _GetMappingFromAndroidApk(device, apk)[apk]
 
 
 def RunRevision(archive_build, revision, zip_file, args):
@@ -1676,80 +1443,6 @@ def Bisect(archive_build,
     rev = revlist[pivot]
 
   return (revlist[minrev], revlist[maxrev])
-
-
-def GetBlinkDEPSRevisionForChromiumRevision(self, rev):
-  """Returns the blink revision that was in REVISIONS file at
-  chromium revision |rev|."""
-
-  def _GetBlinkRev(url, blink_re):
-    m = blink_re.search(url.read())
-    url.close()
-    if m:
-      return m.group(1)
-
-  url = urllib.request.urlopen(DEPS_FILE_OLD % rev)
-  if url.getcode() == 200:
-    # . doesn't match newlines without re.DOTALL, so this is safe.
-    blink_re = re.compile(r'webkit_revision\D*(\d+)')
-    return int(_GetBlinkRev(url, blink_re))
-  else:
-    url = urllib.request.urlopen(DEPS_FILE_NEW % GetGitHashFromSVNRevision(rev))
-    if url.getcode() == 200:
-      blink_re = re.compile(r'webkit_revision\D*\d+;\D*\d+;(\w+)')
-      blink_git_sha = _GetBlinkRev(url, blink_re)
-      return self.GetSVNRevisionFromGitHash(blink_git_sha, 'blink')
-  raise Exception('Could not get Blink revision for Chromium rev %d' % rev)
-
-
-def GetBlinkRevisionForChromiumRevision(context, rev):
-  """Returns the blink revision that was in REVISIONS file at
-  chromium revision |rev|."""
-  def _IsRevisionNumber(revision):
-    if isinstance(revision, int):
-      return True
-    else:
-      return revision.isdigit()
-  if str(rev) in context.githash_svn_dict:
-    rev = context.githash_svn_dict[str(rev)]
-  file_url = '%s/%s%s/REVISIONS' % (context.base_url,
-                                    context._listing_platform_dir, rev)
-  url = urllib.request.urlopen(file_url)
-  if url.getcode() == 200:
-    try:
-      data = json.loads(url.read())
-    except ValueError:
-      print('ValueError for JSON URL: %s' % file_url)
-      raise ValueError
-  else:
-    raise ValueError
-  url.close()
-  if 'webkit_revision' in data:
-    blink_rev = data['webkit_revision']
-    if not _IsRevisionNumber(blink_rev):
-      blink_rev = int(context.GetSVNRevisionFromGitHash(blink_rev, 'blink'))
-    return blink_rev
-  else:
-    raise Exception('Could not get blink revision for cr rev %d' % rev)
-
-
-def FixChromiumRevForBlink(revisions_final, revisions, self, rev):
-  """Returns the chromium revision that has the correct blink revision
-  for blink bisect, DEPS and REVISIONS file might not match since
-  blink snapshots point to tip of tree blink.
-  Note: The revisions_final variable might get modified to include
-  additional revisions."""
-  blink_deps_rev = GetBlinkDEPSRevisionForChromiumRevision(self, rev)
-
-  while (GetBlinkRevisionForChromiumRevision(self, rev) > blink_deps_rev):
-    idx = revisions.index(rev)
-    if idx > 0:
-      rev = revisions[idx-1]
-      if rev not in revisions_final:
-        revisions_final.insert(0, rev)
-
-  revisions_final.sort()
-  return rev
 
 
 def GetChromiumRevision(url, default=999999999):
@@ -2194,23 +1887,18 @@ def main():
 
   # Create the AbstractBuild object.
   archive_build = create_archive_build(opts)
-  # Create the context. Initialize 0 for the revisions as they are set below.
-  context = PathContext(opts, getattr(archive_build, 'device', None))
 
-  if context.is_release:
+  if opts.release_builds:
     if opts.archive.startswith('android-'):
       # Channel builds have _ in their names, e.g. chrome_canary or chrome_beta.
       # Non-channel builds don't, e.g. chrome or chromium. Make this a warning
       # instead of an error since older archives might have non-channel builds.
-      if '_' not in context.apk:
+      if '_' not in opts.apk:
         print('WARNING: Android release typically only uploads channel builds, '
-              f'so you will often see "Found 0 builds" with --apk={context.apk}'
+              f'so you will often see "Found 0 builds" with --apk={opts.apk}'
               '. Switch to using --apk=chrome_stable or one of the other '
               'channels if you see `[Bisect Exception]: Could not found enough'
               'revisions for Android chrome release channel.\n')
-  # We might converted good and bad to commit position as int.
-  context.good_revision = archive_build.good_revision
-  context.bad_revision = archive_build.bad_revision
 
   if opts.times < 1:
     print(('Number of times to run (%d) must be greater than or equal to 1.' %
@@ -2227,52 +1915,28 @@ def main():
 
   # Save these revision numbers to compare when showing the changelog URL
   # after the bisect.
-  good_rev = context.good_revision
-  bad_rev = context.bad_revision
+  good_rev = archive_build.good_revision
+  bad_rev = archive_build.bad_revision
 
   min_chromium_rev, max_chromium_rev = Bisect(archive_build, args, evaluator,
                                               opts.verify_range)
 
-  # Get corresponding blink revisions.
-  try:
-    min_blink_rev = GetBlinkRevisionForChromiumRevision(context,
-                                                        min_chromium_rev)
-    max_blink_rev = GetBlinkRevisionForChromiumRevision(context,
-                                                        max_chromium_rev)
-  except Exception:
-    # Silently ignore the failure.
-    min_blink_rev, max_blink_rev = 0, 0
-
-  if opts.blink:
-    # We're done. Let the user know the results in an official manner.
-    if good_rev > bad_rev:
-      print(DONE_MESSAGE_GOOD_MAX % (str(min_blink_rev), str(max_blink_rev)))
-    else:
-      print(DONE_MESSAGE_GOOD_MIN % (str(min_blink_rev), str(max_blink_rev)))
-
-    print('BLINK CHANGELOG URL:')
-    print('  ' + BLINK_CHANGELOG_URL % (max_blink_rev, min_blink_rev))
-
+  # We're done. Let the user know the results in an official manner.
+  if good_rev > bad_rev:
+    print(DONE_MESSAGE_GOOD_MAX %
+          (str(min_chromium_rev), str(max_chromium_rev)))
   else:
-    # We're done. Let the user know the results in an official manner.
-    if good_rev > bad_rev:
-      print(DONE_MESSAGE_GOOD_MAX % (str(min_chromium_rev),
-                                     str(max_chromium_rev)))
-    else:
-      print(DONE_MESSAGE_GOOD_MIN % (str(min_chromium_rev),
-                                     str(max_chromium_rev)))
-    if min_blink_rev != max_blink_rev:
-      print ('NOTE: There is a Blink roll in the range, '
-             'you might also want to do a Blink bisect.')
+    print(DONE_MESSAGE_GOOD_MIN %
+          (str(min_chromium_rev), str(max_chromium_rev)))
 
-    print('CHANGELOG URL:')
-    if opts.release_builds:
-      print(RELEASE_CHANGELOG_URL % (min_chromium_rev, max_chromium_rev))
-    else:
-      if opts.official_builds:
-        print('The script might not always return single CL as suspect '
-              'as some perf builds might get missing due to failure.')
-      PrintChangeLog(min_chromium_rev, max_chromium_rev)
+  print('CHANGELOG URL:')
+  if opts.release_builds:
+    print(RELEASE_CHANGELOG_URL % (min_chromium_rev, max_chromium_rev))
+  else:
+    if opts.official_builds:
+      print('The script might not always return single CL as suspect '
+            'as some perf builds might get missing due to failure.')
+    PrintChangeLog(min_chromium_rev, max_chromium_rev)
 
 if __name__ == '__main__':
   sys.exit(main())
