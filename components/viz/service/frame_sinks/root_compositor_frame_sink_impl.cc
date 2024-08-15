@@ -866,10 +866,14 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   return synthetic_begin_frame_source_.get();
 }
 
-void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
-    std::optional<base::TimeDelta> max_vrr_interval) {
+void RootCompositorFrameSinkImpl::SetMaxVSyncAndVrr(
+    std::optional<base::TimeDelta> max_vsync_interval,
+    display::VariableRefreshRateState vrr_state) {
   if (synthetic_begin_frame_source_) {
-    synthetic_begin_frame_source_->SetMaxVrrInterval(max_vrr_interval);
+    synthetic_begin_frame_source_->SetMaxVrrInterval(
+        vrr_state == display::VariableRefreshRateState::kVrrEnabled
+            ? max_vsync_interval
+            : std::nullopt);
   }
 }
 

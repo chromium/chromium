@@ -83,8 +83,9 @@ class InProcessContextFactory : public ContextFactory {
   gfx::DisplayColorSpaces GetDisplayColorSpaces(Compositor* compositor) const;
   base::TimeTicks GetDisplayVSyncTimeBase(Compositor* compositor) const;
   base::TimeDelta GetDisplayVSyncTimeInterval(Compositor* compositor) const;
-  std::optional<base::TimeDelta> GetMaxVrrInterval(
+  std::optional<base::TimeDelta> GetMaxVSyncInterval(
       Compositor* compositor) const;
+  display::VariableRefreshRateState GetVrrState(Compositor* compositor) const;
   void ResetDisplayOutputParameters(Compositor* compositor);
 
  private:

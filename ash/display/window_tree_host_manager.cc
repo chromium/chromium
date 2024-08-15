@@ -127,14 +127,15 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
 
   const display::ManagedDisplayInfo& display_info =
       GetDisplayManager()->GetDisplayInfo(display.id());
-  std::optional<base::TimeDelta> max_vrr_interval = std::nullopt;
-  if (display_info.variable_refresh_rate_state() ==
-          display::VariableRefreshRateState::kVrrEnabled &&
+  std::optional<base::TimeDelta> max_vsync_interval = std::nullopt;
+  if (display_info.variable_refresh_rate_state() !=
+          display::VariableRefreshRateState::kVrrNotCapable &&
       display_info.vsync_rate_min().has_value() &&
       display_info.vsync_rate_min() > 0) {
-    max_vrr_interval = base::Hertz(display_info.vsync_rate_min().value());
+    max_vsync_interval = base::Hertz(display_info.vsync_rate_min().value());
   }
-  host->compositor()->SetMaxVrrInterval(max_vrr_interval);
+  host->compositor()->SetMaxVSyncAndVrr(
+      max_vsync_interval, display_info.variable_refresh_rate_state());
 
   // Just moving the display requires the full redraw.
   // chrome-os-partner:33558.

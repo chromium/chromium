@@ -283,6 +283,9 @@ class VIZ_COMMON_EXPORT SyntheticBeginFrameSource : public BeginFrameSource {
 
   virtual void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                        base::TimeDelta interval) = 0;
+  // Sets the maximum interval allowable for use with VRR (variable refresh
+  // rates). When set, this value should correspond to the maximum vsync
+  // interval supported by the display. Absent when VRR is not enabled.
   virtual void SetMaxVrrInterval(
       const std::optional<base::TimeDelta>& max_vrr_interval) = 0;
 };

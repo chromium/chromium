@@ -45,6 +45,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/direct_layer_tree_frame_sink.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -130,9 +131,10 @@ class InProcessContextFactory::PerCompositorData
   void SetDisplay(std::unique_ptr<viz::Display> display) {
     display_ = std::move(display);
   }
-  void SetMaxVrrInterval(
-      std::optional<base::TimeDelta> max_vrr_interval) override {
-    max_vrr_interval_ = max_vrr_interval;
+  void SetMaxVSyncAndVrr(std::optional<base::TimeDelta> max_vsync_interval,
+                         display::VariableRefreshRateState vrr_state) override {
+    max_vsync_interval_ = max_vsync_interval;
+    vrr_state_ = vrr_state;
   }
 
   void ResetDisplayOutputParameters() {
@@ -140,7 +142,8 @@ class InProcessContextFactory::PerCompositorData
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
-    max_vrr_interval_ = std::nullopt;
+    max_vsync_interval_ = std::nullopt;
+    vrr_state_ = display::VariableRefreshRateState::kVrrNotCapable;
   }
 
   void Bind(
@@ -161,9 +164,10 @@ class InProcessContextFactory::PerCompositorData
   }
   base::TimeTicks vsync_timebase() { return vsync_timebase_; }
   base::TimeDelta vsync_interval() { return vsync_interval_; }
-  std::optional<base::TimeDelta> max_vrr_interval() {
-    return max_vrr_interval_;
+  std::optional<base::TimeDelta> max_vsync_interval() const {
+    return max_vsync_interval_;
   }
+  display::VariableRefreshRateState vrr_state() const { return vrr_state_; }
 
  private:
   gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
@@ -174,7 +178,9 @@ class InProcessContextFactory::PerCompositorData
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
-  std::optional<base::TimeDelta> max_vrr_interval_;
+  std::optional<base::TimeDelta> max_vsync_interval_;
+  display::VariableRefreshRateState vrr_state_ =
+      display::VariableRefreshRateState::kVrrNotCapable;
 
   mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> receiver_{this};
 };
@@ -383,13 +389,22 @@ base::TimeDelta InProcessContextFactory::GetDisplayVSyncTimeInterval(
   return iter->second->vsync_interval();
 }
 
-std::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
+std::optional<base::TimeDelta> InProcessContextFactory::GetMaxVSyncInterval(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);
   if (iter == per_compositor_data_.end()) {
     return std::nullopt;
   }
-  return iter->second->max_vrr_interval();
+  return iter->second->max_vsync_interval();
+}
+
+display::VariableRefreshRateState InProcessContextFactory::GetVrrState(
+    Compositor* compositor) const {
+  auto iter = per_compositor_data_.find(compositor);
+  if (iter == per_compositor_data_.end()) {
+    return display::VariableRefreshRateState::kVrrNotCapable;
+  }
+  return iter->second->vrr_state();
 }
 
 void InProcessContextFactory::ResetDisplayOutputParameters(

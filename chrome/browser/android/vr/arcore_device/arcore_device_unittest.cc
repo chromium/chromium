@@ -31,6 +31,7 @@
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/types/display_constants.h"
 
 namespace device {
 
@@ -231,8 +232,9 @@ class StubCompositorFrameSink
   void SetSwapCompletionCallbackEnabled(bool enable) override {}
   void SetStandaloneBeginFrameObserver(
       mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
-  void SetMaxVrrInterval(
-      std::optional<base::TimeDelta> max_vrr_interval) override {}
+  void SetMaxVSyncAndVrr(std::optional<base::TimeDelta> max_vsync_interval,
+                         display::VariableRefreshRateState vrr_state) override {
+  }
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}
