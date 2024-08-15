@@ -42,6 +42,10 @@ BASE_FEATURE(kEnableContextMenuInLensSidePanel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlay, "LensOverlay", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayTranslateButton,
+             "LensOverlayTranslateButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -112,8 +116,6 @@ const base::FeatureParam<std::string> kResultsSearchLoadingDarkModeUrl{
     "b7b5c4f8c8891c881b7a20344f5298b0.svg"};
 const base::FeatureParam<bool> kLensOverlayUseShimmerCanvas{
     &kLensOverlay, "use-shimmer-canvas", true};
-const base::FeatureParam<bool> kLensOverlayEnableTranslateButton{
-    &kLensOverlay, "enable-overlay-translate-button", false};
 
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
@@ -561,8 +563,8 @@ int GetLensOverlayFindBarStringsVariant() {
   return kLensOverlayFindBarStringsVariant.Get();
 }
 
-bool GetLensOverlayEnableTranslateButton() {
-  return kLensOverlayEnableTranslateButton.Get();
+bool IsLensOverlayTranslateButtonEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayTranslateButton);
 }
 
 }  // namespace lens::features

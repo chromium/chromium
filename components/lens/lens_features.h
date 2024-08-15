@@ -51,6 +51,10 @@ BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlay);
 
+// Enables the Lens overlay translate button.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -481,7 +485,7 @@ extern int GetLensOverlayFindBarStringsVariant();
 // Whether to show the translate button in the Lens Overlay to allow translation
 // of the screenshot of the page.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensOverlayEnableTranslateButton();
+extern bool IsLensOverlayTranslateButtonEnabled();
 
 }  // namespace lens::features
 

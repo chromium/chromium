@@ -146,7 +146,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       lens::features::GetLensOverlaySegmentationMaskCornerRadius());
   html_source->AddBoolean(
       "enableOverlayTranslateButton",
-      lens::features::GetLensOverlayEnableTranslateButton());
+      lens::features::IsLensOverlayTranslateButtonEnabled());
 
   // Two instances of LensUntrustedUI are constructed: one for the main overlay
   // and one for the side panel. We cannot distinguish them at this time. As a
