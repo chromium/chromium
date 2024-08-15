@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
@@ -21,32 +22,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::An;
-
-class MockModelExecutor
-    : public optimization_guide::OptimizationGuideModelExecutor {
- public:
-  MOCK_METHOD(bool,
-              CanCreateOnDeviceSession,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                   debug_reason),
-              (override));
-
-  MOCK_METHOD(std::unique_ptr<Session>,
-              StartSession,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               const std::optional<optimization_guide::SessionConfigParams>&
-                   config_params),
-              (override));
-
-  MOCK_METHOD(void,
-              ExecuteModel,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               const google::protobuf::MessageLite& request_metadata,
-               optimization_guide::OptimizationGuideModelExecutionResultCallback
-                   callback),
-              (override));
-};
 
 class AutofillPredictionImprovementsFillingEngineImplTest
     : public testing::Test {
@@ -62,7 +37,9 @@ class AutofillPredictionImprovementsFillingEngineImplTest
     return engine_.get();
   }
 
-  MockModelExecutor* model_executor() { return &model_executor_; }
+  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
+    return &model_executor_;
+  }
 
   user_annotations::TestUserAnnotationsService* user_annotations_service() {
     return user_annotations_service_.get();
@@ -70,7 +47,8 @@ class AutofillPredictionImprovementsFillingEngineImplTest
 
  private:
   base::test::TaskEnvironment task_environment_;
-  testing::NiceMock<MockModelExecutor> model_executor_;
+  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+      model_executor_;
   std::unique_ptr<user_annotations::TestUserAnnotationsService>
       user_annotations_service_;
   std::unique_ptr<AutofillPredictionImprovementsFillingEngineImpl> engine_;

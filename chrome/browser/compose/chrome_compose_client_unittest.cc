@@ -50,6 +50,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
@@ -104,84 +105,6 @@ class MockInnerText : public InnerTextProvider {
               (content::RenderFrameHost & host,
                std::optional<int> node_id,
                content_extraction::InnerTextCallback callback));
-};
-
-class MockModelExecutor
-    : public optimization_guide::OptimizationGuideModelExecutor {
- public:
-  MOCK_METHOD(bool,
-              CanCreateOnDeviceSession,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                   debug_reason));
-  MOCK_METHOD(std::unique_ptr<Session>,
-              StartSession,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               const std::optional<optimization_guide::SessionConfigParams>&
-                   config_params));
-  MOCK_METHOD(void,
-              ExecuteModel,
-              (optimization_guide::ModelBasedCapabilityKey feature,
-               const google::protobuf::MessageLite& request_metadata,
-               optimization_guide::OptimizationGuideModelExecutionResultCallback
-                   callback));
-};
-
-class MockSession
-    : public optimization_guide::OptimizationGuideModelExecutor::Session {
- public:
-  MOCK_METHOD(void,
-              AddContext,
-              (const google::protobuf::MessageLite& request_metadata));
-  MOCK_METHOD(
-      void,
-      Score,
-      (const std::string& text,
-       optimization_guide::OptimizationGuideModelScoreCallback callback));
-  MOCK_METHOD(
-      void,
-      ExecuteModel,
-      (const google::protobuf::MessageLite& request_metadata,
-       optimization_guide::
-           OptimizationGuideModelExecutionResultStreamingCallback callback));
-  MOCK_METHOD(
-      void,
-      GetSizeInTokens,
-      (const std::string& text,
-       optimization_guide::OptimizationGuideModelSizeInTokenCallback callback));
-};
-
-// A wrapper that passes through calls to the underlying MockSession. Allows for
-// easily mocking calls with a single session object.
-class MockSessionWrapper
-    : public optimization_guide::OptimizationGuideModelExecutor::Session {
- public:
-  explicit MockSessionWrapper(MockSession& session) : session_(session) {}
-
-  void AddContext(
-      const google::protobuf::MessageLite& request_metadata) override {
-    session_->AddContext(request_metadata);
-  }
-  void Score(const std::string& text,
-             optimization_guide::OptimizationGuideModelScoreCallback callback)
-      override {
-    std::move(callback).Run(std::nullopt);
-  }
-  void ExecuteModel(
-      const google::protobuf::MessageLite& request_metadata,
-      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-          callback) override {
-    session_->ExecuteModel(request_metadata, std::move(callback));
-  }
-  void GetSizeInTokens(
-      const std::string& text,
-      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
-      override {
-    session_->GetSizeInTokens(text, std::move(callback));
-  }
-
- private:
-  raw_ref<MockSession> session_;
 };
 
 class MockComposeDialog : public compose::mojom::ComposeUntrustedDialog {
@@ -259,7 +182,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
               std::move(callback).Run(std::move(expected_inner_text));
             })));
     ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
-      return std::make_unique<MockSessionWrapper>(session());
+      return std::make_unique<optimization_guide::MockSessionWrapper>(
+          &session());
     });
     ON_CALL(session(), ExecuteModel(_, _))
         .WillByDefault(testing::WithArg<1>(testing::Invoke(
@@ -389,7 +313,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   ChromeComposeClient& client() { return *client_; }
-  MockSession& session() { return session_; }
+  optimization_guide::MockSession& session() { return session_; }
   MockInnerText& model_inner_text() { return model_inner_text_; }
 
   MockComposeDialog& compose_dialog() { return compose_dialog_; }
@@ -529,9 +453,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
  private:
   raw_ptr<ChromeComposeClient> client_;
-  testing::NiceMock<MockModelExecutor> model_executor_;
+  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+      model_executor_;
   testing::NiceMock<MockInnerText> model_inner_text_;
-  testing::NiceMock<MockSession> session_;
+  testing::NiceMock<optimization_guide::MockSession> session_;
   testing::NiceMock<MockComposeDialog> compose_dialog_;
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;

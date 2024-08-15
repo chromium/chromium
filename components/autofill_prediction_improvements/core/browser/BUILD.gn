@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/user_annotations:test_support",
     "//testing/gmock",

@@ -382,6 +382,8 @@ static_library("prediction") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_optimization_guide_model_executor.cc",
+    "mock_optimization_guide_model_executor.h",
     "mock_push_notification_manager.cc",
     "mock_push_notification_manager.h",
     "model_quality/test_model_quality_logs_uploader_service.cc",
