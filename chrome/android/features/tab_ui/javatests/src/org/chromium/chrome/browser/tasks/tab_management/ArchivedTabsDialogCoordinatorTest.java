@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -89,6 +90,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     private TabModel mRegularTabModel;
     private UserActionTester mUserActionTester;
     private TabArchiveSettings mTabArchiveSettings;
+    private int mTimesShown;
 
     @Before
     public void setUp() throws Exception {
@@ -114,7 +116,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         mArchivedTabModel = mArchivedTabModelOrchestrator.getTabModelSelector().getModel(false);
         mUserActionTester = new UserActionTester();
         mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
-        mTabArchiveSettings.setShouldShowDialogIph(false);
+        mTabArchiveSettings.setShouldShowDialogIphForTesting(false);
         waitForArchivedTabModelsToLoad(mArchivedTabModelOrchestrator);
     }
 
@@ -132,7 +134,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @MediumTest
     public void testOneInactiveTab() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(1);
+        enterTabSwitcherAndShowDialog(1);
         onView(withText("1 inactive tab")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(1);
 
@@ -148,7 +150,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testTwoInactiveTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
         // The dialog isn't scrollable, so the shadow should be hidden.
         onView(withId(R.id.close_all_tabs_button_container_shadow))
@@ -161,8 +163,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
 
-        mTabArchiveSettings.setShouldShowDialogIph(true);
-        showDialog(2);
+        mTabArchiveSettings.setShouldShowDialogIphForTesting(true);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyAdapterHasItemCount(3);
         assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogIphShown"));
@@ -174,8 +176,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
 
-        mTabArchiveSettings.setShouldShowDialogIph(true);
-        showDialog(2);
+        mTabArchiveSettings.setShouldShowDialogIphForTesting(true);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
         SettingsActivity activity =
@@ -199,15 +201,35 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
 
-        mTabArchiveSettings.setShouldShowDialogIph(true);
-        showDialog(2);
-        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
-        mRobot.resultRobot.verifyAdapterHasItemCount(3);
+        mTabArchiveSettings.setShouldShowDialogIphForTesting(true);
 
-        mRobot.actionRobot.clickViewIdAtAdapterPosition(0, R.id.close_button);
-        mRobot.resultRobot.verifyAdapterHasItemCount(2);
-        assertFalse(mTabArchiveSettings.shouldShowDialogIph());
+        enterTabSwitcherAndShowDialog(2);
+        dismissIphMessage(/* numOfArchivedTabs= */ 2);
+        assertTrue(mTabArchiveSettings.shouldShowDialogIph());
         assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogIphDismissed"));
+        mRobot.actionRobot.clickToolbarNavigationButton(
+                R.string.accessibility_archived_tabs_dialog_back_button);
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+
+        showDialog(2);
+        dismissIphMessage(/* numOfArchivedTabs= */ 2);
+        assertTrue(mTabArchiveSettings.shouldShowDialogIph());
+        assertEquals(2, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogIphDismissed"));
+        mRobot.actionRobot.clickToolbarNavigationButton(
+                R.string.accessibility_archived_tabs_dialog_back_button);
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+
+        showDialog(2);
+        dismissIphMessage(/* numOfArchivedTabs= */ 2);
+        assertFalse(mTabArchiveSettings.shouldShowDialogIph());
+        assertEquals(3, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogIphDismissed"));
+        mRobot.actionRobot.clickToolbarNavigationButton(
+                R.string.accessibility_archived_tabs_dialog_back_button);
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+
+        // After 3 dismisses, the iph message won't show again.
+        showDialog(2);
+        mRobot.resultRobot.verifyAdapterHasItemCount(2);
     }
 
     @Test
@@ -215,7 +237,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testRestoreAllInactiveTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
         HistogramWatcher histogramExpectation =
@@ -235,7 +257,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testRestoreArchivedTabsAndOpenLast() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Restore all");
@@ -277,7 +299,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testSettings() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         SettingsActivity activity =
                 ActivityTestUtils.waitForActivity(
@@ -301,7 +323,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testTurnOffArchiveThroughSettings() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         SettingsActivity activity =
                 ActivityTestUtils.waitForActivity(
@@ -329,7 +351,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testCloseAllArchivedTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher("Tabs.CloseAllArchivedTabs.TabCount", 2);
@@ -349,7 +371,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testCloseAllArchivedTabs_Cancel() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
         onView(withText("Close all inactive tabs")).perform(click());
@@ -364,7 +386,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testSelectTabs() {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
         assertEquals(1, mUserActionTester.getActionCount("Tabs.SelectArchivedTabsMenuItem"));
@@ -392,7 +414,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testSelectionModeMenuItems() {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
         mRobot.actionRobot.clickToolbarMenuButton();
@@ -425,7 +447,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
         addArchivedTab(new GURL("https://google.com"), "test 3");
-        showDialog(3);
+        enterTabSwitcherAndShowDialog(3);
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
@@ -453,7 +475,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
         addArchivedTab(new GURL("https://google.com"), "test 3");
-        showDialog(3);
+        enterTabSwitcherAndShowDialog(3);
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
@@ -483,7 +505,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
         addArchivedTab(new GURL("https://google.com"), "test 3");
-        showDialog(3);
+        enterTabSwitcherAndShowDialog(3);
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(3, mArchivedTabModel.getCount());
 
@@ -520,7 +542,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     @MediumTest
     public void testCloseDialogWithBackButton() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(1);
+        enterTabSwitcherAndShowDialog(1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -536,7 +558,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://test.com"), "test 2");
         assertEquals(1, mRegularTabModel.getCount());
         assertEquals(2, mArchivedTabModel.getCount());
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
         mRobot.resultRobot.verifyTabListEditorIsHidden();
@@ -555,7 +577,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testCloseArchivedTab() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
         mRobot.actionRobot.clickViewIdAtAdapterPosition(1, R.id.action_button);
@@ -569,7 +591,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     public void testCloseArchivedTab_SnackbarResetForTabSwitcher() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
-        showDialog(2);
+        enterTabSwitcherAndShowDialog(2);
         onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
 
         mRobot.actionRobot.clickViewIdAtAdapterPosition(1, R.id.action_button);
@@ -631,7 +653,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 9");
         addArchivedTab(new GURL("https://google.com"), "test 10");
         addArchivedTab(new GURL("https://google.com"), "test 11");
-        showDialog(11);
+        enterTabSwitcherAndShowDialog(11);
         onView(withText("11 inactive tabs")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(11);
 
@@ -655,7 +677,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         addArchivedTab(new GURL("https://google.com"), "test 9");
         addArchivedTab(new GURL("https://google.com"), "test 10");
         addArchivedTab(new GURL("https://google.com"), "test 11");
-        showDialog(11);
+        enterTabSwitcherAndShowDialog(11);
         onView(withText("11 inactive tabs")).check(matches(isDisplayed()));
         mRobot.resultRobot.verifyTabListEditorIsVisible().verifyAdapterHasItemCount(11);
 
@@ -672,9 +694,13 @@ public class ArchivedTabsDialogCoordinatorTest {
                 .check(matches(not(isDisplayed())));
     }
 
-    private void showDialog(int numTabs) {
+    private void enterTabSwitcherAndShowDialog(int numOfArchivedTabs) {
         // Enter the tab switcher and click the message.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+        showDialog(numOfArchivedTabs);
+    }
+
+    private void showDialog(int numOfArchivedTabs) {
         onViewWaiting(
                         withText(
                                 mActivityTestRule
@@ -682,11 +708,12 @@ public class ArchivedTabsDialogCoordinatorTest {
                                         .getResources()
                                         .getQuantityString(
                                                 R.plurals.archived_tab_card_title,
-                                                numTabs,
-                                                numTabs)))
+                                                numOfArchivedTabs,
+                                                numOfArchivedTabs)))
                 .perform(click());
         mRobot.resultRobot.verifyTabListEditorIsVisible();
-        assertEquals(1, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogShown"));
+        mTimesShown++;
+        assertEquals(mTimesShown, mUserActionTester.getActionCount("Tabs.ArchivedTabsDialogShown"));
     }
 
     private @TabListCoordinator.TabListMode int getMode() {
@@ -736,5 +763,11 @@ public class ArchivedTabsDialogCoordinatorTest {
 
                     return null;
                 });
+    }
+
+    private void dismissIphMessage(int numOfArchivedTabs) {
+        mRobot.resultRobot.verifyAdapterHasItemCount(3);
+        mRobot.actionRobot.clickViewIdAtAdapterPosition(0, R.id.close_button);
+        mRobot.resultRobot.verifyAdapterHasItemCount(2);
     }
 }

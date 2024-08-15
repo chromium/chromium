@@ -62,6 +62,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.SigninPromo.NTPImpressions",
                 "Chrome.StartSurface.IncognitoTabCount",
                 "Chrome.StartSurface.RegularTabCount",
+                "Chrome.Tab.ArchiveIphShowing",
+                "Chrome.Tab.ShowArchiveTabDialogIPH",
                 "Chrome.UMA.OnPreCreateCounter",
                 "Chrome.UMA.OnResumeCounter",
                 "Chrome.VideoTutorials.ShareUrls",

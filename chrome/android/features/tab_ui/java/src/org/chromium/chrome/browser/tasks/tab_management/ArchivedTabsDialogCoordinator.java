@@ -596,7 +596,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private void onIphDismissClicked(@MessageType int messageType) {
-        mTabArchiveSettings.setShouldShowDialogIph(false);
+        mTabArchiveSettings.markDialogIphDismissed();
         mTabListEditorCoordinator.removeSpecialListItem(
                 UiType.MESSAGE, MessageService.MessageType.ARCHIVED_TABS_IPH_MESSAGE);
         RecordUserAction.record("Tabs.ArchivedTabsDialogIphDismissed");
