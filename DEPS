@@ -1496,7 +1496,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_build_tools/bundletool': {
+  'src/third_party/android_build_tools/bundletool/cipd': {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/bundletool',

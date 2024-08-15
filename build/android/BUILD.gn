@@ -142,7 +142,7 @@ group("apk_installer_data") {
         "//tools/android/md5sum",
       ]
     }
-    data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
+    data = [ "//third_party/android_build_tools/bundletool/cipd/bundletool.jar" ]
   }
 }
 

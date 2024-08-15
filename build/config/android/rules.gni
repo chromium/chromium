@@ -117,7 +117,7 @@ if (!is_robolectric && enable_java_templates) {
   import("//build/toolchain/toolchain.gni")
 
   _BUNDLETOOL_JAR_PATH =
-      "//third_party/android_build_tools/bundletool/bundletool.jar"
+      "//third_party/android_build_tools/bundletool/cipd/bundletool.jar"
 
   # Declare a target for c-preprocessor-generated java files
   #
