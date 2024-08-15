@@ -60,6 +60,9 @@ class SerialService : public blink::mojom::SerialService,
   void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
+  // Map persistent identifier of a serial port to a token.
+  using TokenMap = base::flat_map<std::string, base::UnguessableToken>;
+
   friend class content::DocumentUserData<SerialService>;
 
   void FinishGetPorts(GetPortsCallback callback,
@@ -68,6 +71,12 @@ class SerialService : public blink::mojom::SerialService,
                          device::mojom::SerialPortInfoPtr port);
   void OnWatcherConnectionError();
   void DecrementActiveFrameCount();
+
+  // Covert `port` to a type used in the renderer side. It might replace
+  // `port.token` with one from `token_map_` if `port` can provide a persistent
+  // identifier and be found in `token_map_`.
+  blink::mojom::SerialPortInfoPtr ToBlinkType(
+      const device::mojom::SerialPortInfo& port);
 
   mojo::ReceiverSet<blink::mojom::SerialService> receivers_;
   mojo::RemoteSet<blink::mojom::SerialServiceClient> clients_;
@@ -82,6 +91,10 @@ class SerialService : public blink::mojom::SerialService,
   // Maps every receiver to a token to allow closing particular connections when
   // the user revokes a permission.
   std::multimap<const base::UnguessableToken, mojo::ReceiverId> watcher_ids_;
+
+  // This token map stores tokens for serial ports that can provide a persistent
+  // identifier.
+  TokenMap token_map_;
 
   base::WeakPtrFactory<SerialService> weak_factory_{this};
 

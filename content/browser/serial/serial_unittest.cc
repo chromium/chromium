@@ -304,6 +304,44 @@ TEST_F(SerialTest, OpenAndNavigateCrossOrigin) {
   EXPECT_FALSE(port.is_connected());
 }
 
+TEST_F(SerialTest, SameBluetoothSerialPortSameToken) {
+  NavigateAndCommit(GURL(kTestUrl));
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetPrimaryMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+  MockSerialServiceClient client;
+  service->SetClient(client.BindNewPipeAndPassRemote());
+  service.FlushForTesting();
+  ASSERT_TRUE(observer());
+
+  const device::BluetoothUUID kServiceClassId(
+      "ac822b69-d7e9-4bab-8fa6-ce40c87e1ac4");
+  base::UnguessableToken bluetooth_token;
+  std::vector<device::mojom::SerialPortInfoPtr> ports;
+  for (size_t i = 0; i < 2; i++) {
+    auto port = device::mojom::SerialPortInfo::New();
+    port->token = base::UnguessableToken::Create();
+    port->bluetooth_service_class_id = kServiceClassId;
+    ports.push_back(std::move(port));
+    if (i == 0) {
+      // Both SerialPortInfos describe the same port (same device address and
+      // service UUID). When the ports are delivered to the renderer, the
+      // second port reuses the token from the first port even though they were
+      // created with different tokens.
+      bluetooth_token = ports[i]->token;
+    }
+  }
+
+  for (size_t i = 0; i < 2; i++) {
+    TestFuture<blink::mojom::SerialPortInfoPtr> future;
+    EXPECT_CALL(delegate(), HasPortPermission(_, _)).WillOnce(Return(true));
+    EXPECT_CALL(client, OnPortConnectedStateChanged)
+        .WillOnce(InvokeFuture(future));
+    observer()->OnPortAdded(*ports[i]);
+    EXPECT_EQ(future.Get()->token, bluetooth_token);
+  }
+}
+
 TEST_F(SerialTest, AddAndRemovePorts) {
   NavigateAndCommit(GURL(kTestUrl));
 

@@ -214,19 +214,6 @@ void BluetoothAdapterFloss::PopulateInitialDevices() {
   FlossDBusManager::Get()->GetAdapterClient()->GetConnectedDevices();
 }
 
-void BluetoothAdapterFloss::ClearAllDevices() {
-  // Move all elements of the original devices list to a new list here,
-  // leaving the original list empty so that when we send DeviceRemoved(),
-  // GetDevices() returns no devices.
-  DevicesMap devices_swapped;
-  devices_swapped.swap(devices_);
-
-  for (auto& iter : devices_swapped) {
-    for (auto& observer : observers_)
-      observer.DeviceRemoved(this, iter.second.get());
-  }
-}
-
 void BluetoothAdapterFloss::Init() {
   // If dbus is shutdown or ObjectManager isn't supported, we just return
   // without initializing anything.

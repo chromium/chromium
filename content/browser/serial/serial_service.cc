@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -23,27 +24,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
-
-namespace {
-
-blink::mojom::SerialPortInfoPtr ToBlinkType(
-    const device::mojom::SerialPortInfo& port) {
-  auto info = blink::mojom::SerialPortInfo::New();
-  info->token = port.token;
-  info->has_usb_vendor_id = port.has_vendor_id;
-  if (port.has_vendor_id)
-    info->usb_vendor_id = port.vendor_id;
-  info->has_usb_product_id = port.has_product_id;
-  if (port.has_product_id)
-    info->usb_product_id = port.product_id;
-  if (port.bluetooth_service_class_id) {
-    info->bluetooth_service_class_id = port.bluetooth_service_class_id;
-  }
-  info->connected = port.connected;
-  return info;
-}
-
-}  // namespace
 
 SerialService::SerialService(RenderFrameHost* rfh)
     : DocumentUserData<SerialService>(rfh) {
@@ -273,6 +253,40 @@ void SerialService::DecrementActiveFrameCount() {
   auto* web_contents_impl = static_cast<WebContentsImpl*>(
       WebContents::FromRenderFrameHost(&render_frame_host()));
   web_contents_impl->DecrementSerialActiveFrameCount();
+}
+
+blink::mojom::SerialPortInfoPtr SerialService::ToBlinkType(
+    const device::mojom::SerialPortInfo& port) {
+  auto info = blink::mojom::SerialPortInfo::New();
+  std::optional<std::string> persistent_identifier;
+
+  info->has_usb_vendor_id = port.has_vendor_id;
+  if (port.has_vendor_id) {
+    info->usb_vendor_id = port.vendor_id;
+  }
+  info->has_usb_product_id = port.has_product_id;
+  if (port.has_product_id) {
+    info->usb_product_id = port.product_id;
+  }
+  if (port.bluetooth_service_class_id) {
+    info->bluetooth_service_class_id = port.bluetooth_service_class_id;
+    // Mac address + service uuid can persistently identify a serial port.
+    persistent_identifier = base::UTF16ToUTF8(port.path.LossyDisplayName()) +
+                            info->bluetooth_service_class_id->value();
+  }
+  info->connected = port.connected;
+  if (persistent_identifier) {
+    auto it = token_map_.find(*persistent_identifier);
+    if (it == token_map_.end()) {
+      auto result = token_map_.insert({*persistent_identifier, port.token});
+      CHECK(result.second);
+      it = result.first;
+    }
+    info->token = it->second;
+  } else {
+    info->token = port.token;
+  }
+  return info;
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(SerialService);

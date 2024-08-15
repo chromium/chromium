@@ -932,6 +932,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   // Number of DiscoverySessions with the status of SCANNING.
   int NumScanningDiscoverySessions() const;
 
+  // Clear `devices_` and send device removed event for each one of them.
+  void ClearAllDevices();
+
   // UI thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
