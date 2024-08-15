@@ -204,6 +204,8 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   base::Time GetLastMaintenanceTimeForTesting() const;
 
+  static int GetCurrentVersionNumberForTesting();
+
  private:
   bool EnsureDBInitialized();
   bool InitializeDB();

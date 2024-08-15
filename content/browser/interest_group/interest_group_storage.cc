@@ -5946,6 +5946,10 @@ base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
   return last_maintenance_time_;
 }
 
+/* static */ int InterestGroupStorage::GetCurrentVersionNumberForTesting() {
+  return kCurrentVersionNumber;
+}
+
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,
                                                  sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

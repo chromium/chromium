@@ -54,6 +54,9 @@ using ::testing::UnorderedElementsAreArray;
 using SellerCapabilities = blink::SellerCapabilities;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
+constexpr char kFullOriginStr[] = "https://full.example.com";
+constexpr char kPartialOriginStr[] = "https://partial.example.com";
+
 class InterestGroupStorageTest : public testing::Test {
  public:
   InterestGroupStorageTest() = default;
@@ -125,101 +128,96 @@ class InterestGroupStorageTest : public testing::Test {
     return result;
   }
 
+  blink::InterestGroup ProduceAllFields() {
+    return blink::TestInterestGroupBuilder(/*owner=*/kFullOrigin,
+                                           /*name=*/"full")
+        .SetPriority(1.0)
+        .SetEnableBiddingSignalsPrioritization(true)
+        .SetPriorityVector({{{"a", 2}, {"b", -2.2}}})
+        .SetPrioritySignalsOverrides({{{"a", -2}, {"c", 10}, {"d", 1.2}}})
+        .SetSellerCapabilities(
+            {{{kFullOrigin, {SellerCapabilities::kInterestGroupCounts}},
+              {kPartialOrigin, {SellerCapabilities::kLatencyStats}}}})
+        .SetAllSellersCapabilities({SellerCapabilities::kInterestGroupCounts,
+                                    SellerCapabilities::kLatencyStats})
+        .SetExecutionMode(blink::InterestGroup::ExecutionMode::kFrozenContext)
+        .SetBiddingUrl(GURL("https://full.example.com/bid"))
+        .SetBiddingWasmHelperUrl(GURL("https://full.example.com/bid_wasm"))
+        .SetUpdateUrl(GURL("https://full.example.com/update"))
+        .SetTrustedBiddingSignalsUrl(GURL("https://full.example.com/signals"))
+        .SetTrustedBiddingSignalsKeys(
+            std::vector<std::string>{"a", "b", "c", "d"})
+        .SetTrustedBiddingSignalsSlotSizeMode(
+            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
+                kAllSlotsRequestedSizes)
+        .SetMaxTrustedBiddingSignalsURLLength(8000)
+        .SetTrustedBiddingSignalsCoordinator(
+            url::Origin::Create(GURL("https://coordinator.test/")))
+        .SetUserBiddingSignals("foo")
+        .SetAds(std::vector<InterestGroup::Ad>{
+            blink::InterestGroup::Ad(
+                GURL("https://full.example.com/ad1"), "metadata1", "group_1",
+                "buyer_id", "shared_id",
+                std::vector<std::string>{"selectable_id1", "selectable_id2"},
+                "adRenderId",
+                std::vector<url::Origin>{
+                    url::Origin::Create(GURL("https://reporting.com"))}),
+            blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
+                                     "metadata2", "group_2", "buyer_id2")})
+        .SetAdComponents(std::vector<InterestGroup::Ad>{
+            blink::InterestGroup::Ad(
+                GURL("https://full.example.com/adcomponent1"), "metadata1c",
+                "group_1", /*buyer_reporting_id=*/std::nullopt,
+                /*buyer_and_seller_reporting_id=*/std::nullopt,
+                /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                "adRenderId2"),
+            blink::InterestGroup::Ad(
+                GURL("https://full.example.com/adcomponent2"), "metadata2c",
+                "group_2")})
+        .SetAdSizes(
+            {{{"size_1",
+               blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                             blink::AdSize::LengthUnit::kPixels)},
+              {"size_2",
+               blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
+                             blink::AdSize::LengthUnit::kPixels)},
+              {"size_3",
+               blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 100,
+                             blink::AdSize::LengthUnit::kScreenWidth)}}})
+        .SetSizeGroups(
+            {{{"group_1", std::vector<std::string>{"size_1"}},
+              {"group_2", std::vector<std::string>{"size_1", "size_2"}},
+              {"group_3", std::vector<std::string>{"size_3"}}}})
+        .SetAuctionServerRequestFlags(
+            {blink::AuctionServerRequestFlagsEnum::kOmitAds,
+             blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+        // Note that `additional_bid_key` can only be set for negative
+        // interest groups, so cannot be set here.
+        .SetAggregationCoordinatorOrigin(
+            url::Origin::Create(GURL("https://coordinator.test/")))
+        .Build();
+  }
+
   // This test is in a helper function so that it can also be run after
   // UpgradeFromV6.
   void StoresAllFieldsTest() {
-    const url::Origin partial_origin =
-        url::Origin::Create(GURL("https://partial.example.com"));
-    InterestGroup partial = NewInterestGroup(partial_origin, "partial");
-    const url::Origin full_origin =
-        url::Origin::Create(GURL("https://full.example.com"));
+    InterestGroup partial = NewInterestGroup(kPartialOrigin, "partial");
 
-    InterestGroup full =
-        blink::TestInterestGroupBuilder(/*owner=*/full_origin, /*name=*/"full")
-            .SetPriority(1.0)
-            .SetEnableBiddingSignalsPrioritization(true)
-            .SetPriorityVector({{{"a", 2}, {"b", -2.2}}})
-            .SetPrioritySignalsOverrides({{{"a", -2}, {"c", 10}, {"d", 1.2}}})
-            .SetSellerCapabilities(
-                {{{full_origin, {SellerCapabilities::kInterestGroupCounts}},
-                  {partial_origin, {SellerCapabilities::kLatencyStats}}}})
-            .SetAllSellersCapabilities(
-                {SellerCapabilities::kInterestGroupCounts,
-                 SellerCapabilities::kLatencyStats})
-            .SetExecutionMode(
-                blink::InterestGroup::ExecutionMode::kFrozenContext)
-            .SetBiddingUrl(GURL("https://full.example.com/bid"))
-            .SetBiddingWasmHelperUrl(GURL("https://full.example.com/bid_wasm"))
-            .SetUpdateUrl(GURL("https://full.example.com/update"))
-            .SetTrustedBiddingSignalsUrl(
-                GURL("https://full.example.com/signals"))
-            .SetTrustedBiddingSignalsKeys(
-                std::vector<std::string>{"a", "b", "c", "d"})
-            .SetTrustedBiddingSignalsSlotSizeMode(
-                blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
-                    kAllSlotsRequestedSizes)
-            .SetMaxTrustedBiddingSignalsURLLength(8000)
-            .SetTrustedBiddingSignalsCoordinator(
-                url::Origin::Create(GURL("https://coordinator.test/")))
-            .SetUserBiddingSignals("foo")
-            .SetAds(std::vector<InterestGroup::Ad>{
-                blink::InterestGroup::Ad(
-                    GURL("https://full.example.com/ad1"), "metadata1",
-                    "group_1", "buyer_id", "shared_id",
-                    std::vector<std::string>{"selectable_id1",
-                                             "selectable_id2"},
-                    "adRenderId",
-                    std::vector<url::Origin>{
-                        url::Origin::Create(GURL("https://reporting.com"))}),
-                blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                         "metadata2", "group_2", "buyer_id2")})
-            .SetAdComponents(std::vector<InterestGroup::Ad>{
-                blink::InterestGroup::Ad(
-                    GURL("https://full.example.com/adcomponent1"), "metadata1c",
-                    "group_1", /*buyer_reporting_id=*/std::nullopt,
-                    /*buyer_and_seller_reporting_id=*/std::nullopt,
-                    /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
-                    "adRenderId2"),
-                blink::InterestGroup::Ad(
-                    GURL("https://full.example.com/adcomponent2"), "metadata2c",
-                    "group_2")})
-            .SetAdSizes(
-                {{{"size_1",
-                   blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
-                                 blink::AdSize::LengthUnit::kPixels)},
-                  {"size_2",
-                   blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
-                                 blink::AdSize::LengthUnit::kPixels)},
-                  {"size_3",
-                   blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth,
-                                 100,
-                                 blink::AdSize::LengthUnit::kScreenWidth)}}})
-            .SetSizeGroups(
-                {{{"group_1", std::vector<std::string>{"size_1"}},
-                  {"group_2", std::vector<std::string>{"size_1", "size_2"}},
-                  {"group_3", std::vector<std::string>{"size_3"}}}})
-            .SetAuctionServerRequestFlags(
-                {blink::AuctionServerRequestFlagsEnum::kOmitAds,
-                 blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
-            // Note that `additional_bid_key` can only be set for negative
-            // interest groups, so cannot be set here.
-            .SetAggregationCoordinatorOrigin(
-                url::Origin::Create(GURL("https://coordinator.test/")))
-            .Build();
+    InterestGroup full = ProduceAllFields();
 
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
-    storage->JoinInterestGroup(partial, partial_origin.GetURL());
-    storage->JoinInterestGroup(full, full_origin.GetURL());
+    storage->JoinInterestGroup(partial, kPartialOrigin.GetURL());
+    storage->JoinInterestGroup(full, kFullOrigin.GetURL());
 
     std::vector<StorageInterestGroup> storage_interest_groups =
-        storage->GetInterestGroupsForOwner(partial_origin);
+        storage->GetInterestGroupsForOwner(kPartialOrigin);
     ASSERT_EQ(1u, storage_interest_groups.size());
     IgExpectEqualsForTesting(
         /*actual=*/storage_interest_groups[0].interest_group,
         /*expected=*/partial);
 
-    storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+    storage_interest_groups = storage->GetInterestGroupsForOwner(kFullOrigin);
     ASSERT_EQ(1u, storage_interest_groups.size());
     IgExpectEqualsForTesting(
         /*actual=*/storage_interest_groups[0].interest_group,
@@ -262,7 +260,7 @@ class InterestGroupStorageTest : public testing::Test {
     updated.ads = update.ads;
     updated.ad_components = update.ad_components;
 
-    storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
+    storage_interest_groups = storage->GetInterestGroupsForOwner(kFullOrigin);
     ASSERT_EQ(1u, storage_interest_groups.size());
     IgExpectEqualsForTesting(
         /*actual=*/storage_interest_groups[0].interest_group,
@@ -275,6 +273,10 @@ class InterestGroupStorageTest : public testing::Test {
     EXPECT_NE(storage_interest_groups[0].join_time,
               storage_interest_groups[0].last_updated);
   }
+
+  const url::Origin kFullOrigin = url::Origin::Create(GURL(kFullOriginStr));
+  const url::Origin kPartialOrigin =
+      url::Origin::Create(GURL(kPartialOriginStr));
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1669,6 +1671,45 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
 
 TEST_F(InterestGroupStorageTest, StoresAllFields) {
   StoresAllFieldsTest();
+}
+
+TEST_F(InterestGroupStorageTest, DumpAllIgFields) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("dump-all-ig-fields")) {
+    // This is not part of the proper test, but rather serves as a utility run
+    // on developer workstations for generating new autogenSchemaV[n].sql files
+    // from the current database -- these are used by upgrade tests.
+    // TODO(crbug.com/355010821): Include the specific name of test that does
+    // this once implemented.
+    {
+      blink::InterestGroup full = ProduceAllFields();
+      std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+      storage->JoinInterestGroup(full, kFullOrigin.GetURL());
+    }
+
+    base::FilePath out_sql_path;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &out_sql_path);
+    out_sql_path = out_sql_path.AppendASCII(base::StringPrintf(
+        "content/test/data/interest_group/autogenSchemaV%d.sql",
+        InterestGroupStorage::GetCurrentVersionNumberForTesting()));
+    // NOTE: This command will be run on POSIX and Windows workstations. To see
+    // command line output for debugging, redirect it to a file.
+    std::string dump_db_command = base::StringPrintf(
+        "sqlite3 %s .dump > %s", db_path().MaybeAsASCII().c_str(),
+        out_sql_path.MaybeAsASCII().c_str());
+    LOG(INFO) << "--dump-all-ig-fields command (make sure sqlite3 is in $PATH "
+                 "/ %PATH%): "
+              << dump_db_command;
+    LOG(INFO) << "sqlite3 can be installed from a package from your OS, or "
+                 "built from the Chromium repo via the `sqlite_shell` GN "
+                 "target -- just make sure to rename it to / have a symlink "
+                 "called sqlite3 on the path.";
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch("dry-run")) {
+      LOG(INFO) << "--dump-all-ig-fields command not run due to --dry-run";
+    } else {
+      LOG(INFO) << "Running --dump-all-ig-fields command";
+      EXPECT_EQ(0, std::system(dump_db_command.c_str()));
+    }
+  }
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
