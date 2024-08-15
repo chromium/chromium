@@ -230,6 +230,7 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
       base::UTF8ToUTF16(assignment->course_work_title));
   GetViewAccessibility().SetDescription(
       base::JoinString(a11y_description_parts, u", "));
+  UpdateAccessibleDefaultAction();
 
   views::FocusRing::Install(this);
   views::FocusRing* const focus_ring = views::FocusRing::Get(this);
@@ -245,16 +246,19 @@ GlanceablesClassroomItemView::GlanceablesClassroomItemView(
 
 GlanceablesClassroomItemView::~GlanceablesClassroomItemView() = default;
 
-void GlanceablesClassroomItemView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-
-  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
-}
-
 void GlanceablesClassroomItemView::Layout(PassKey) {
   LayoutSuperclass<views::Button>(this);
   views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
+}
+
+void GlanceablesClassroomItemView::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
+  UpdateAccessibleDefaultAction();
+}
+
+void GlanceablesClassroomItemView::UpdateAccessibleDefaultAction() {
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kClick);
 }
 
 BEGIN_METADATA(GlanceablesClassroomItemView)
