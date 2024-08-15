@@ -194,8 +194,15 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
 }
 
+// TODO(https://crbug.com/350021928): Flaky on Linux builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TriggerEntryPointWithNavigation \
+  DISABLED_TriggerEntryPointWithNavigation
+#else
+#define MAYBE_TriggerEntryPointWithNavigation TriggerEntryPointWithNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       TriggerEntryPointWithNavigation) {
+                       MAYBE_TriggerEntryPointWithNavigation) {
   // Mock EntryPointInfo returned by ClusterManager.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
                                                {GURL(kTestUrl3), kProductId3},
@@ -230,8 +237,17 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       TriggerEntryPointWithNavigation_NotShowForSameProduct) {
+// TODO(https://crbug.com/350021928): Flaky on Linux builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TriggerEntryPointWithNavigation_NotShowForSameProduct \
+  DISABLED_TriggerEntryPointWithNavigation_NotShowForSameProduct
+#else
+#define MAYBE_TriggerEntryPointWithNavigation_NotShowForSameProduct \
+  TriggerEntryPointWithNavigation_NotShowForSameProduct
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ProductSpecificationsEntryPointControllerBrowserTest,
+    MAYBE_TriggerEntryPointWithNavigation_NotShowForSameProduct) {
   // Mock EntryPointInfo returned by ClusterManager which contains two products
   // with the same product ID.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
@@ -751,9 +767,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 
+// TODO(https://crbug.com/350021928): Flaky on Linux builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TriggerEntryPointWithNavigation_ServerClustering \
+  DISABLED_TriggerEntryPointWithNavigation_ServerClustering
+#else
+#define MAYBE_TriggerEntryPointWithNavigation_ServerClustering \
+  TriggerEntryPointWithNavigation_ServerClustering
+#endif
 IN_PROC_BROWSER_TEST_F(
     ProductSpecificationsEntryPointControllerWithServerClusteringBrowserTest,
-    TriggerEntryPointWithNavigation_ServerClustering) {
+    MAYBE_TriggerEntryPointWithNavigation_ServerClustering) {
   // Mock EntryPointInfo returned by ClusterManager.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
                                                {GURL(kTestUrl3), kProductId3},
