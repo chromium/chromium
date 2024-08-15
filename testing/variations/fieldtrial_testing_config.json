@@ -5574,6 +5574,7 @@
                         "AvoidResourceRequestCopies",
                         "CreateSpareRendererOnBrowserContextCreation",
                         "EnsureExistingRendererAlive",
+                        "InputStreamOptimizations",
                         "LazyBindJsInjection",
                         "PrecompileInlineScripts",
                         "SkipUnnecessaryThreadHopsForParseHeaders",
@@ -12257,21 +12258,6 @@
                     "name": "Disabled_InputDeviceSettingsSplit",
                     "disable_features": [
                         "InputDeviceSettingsSplit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "InputStreamOptimizations": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InputStreamOptimizations"
                     ]
                 }
             ]
