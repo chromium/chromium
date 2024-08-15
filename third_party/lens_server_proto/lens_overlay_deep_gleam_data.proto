@@ -1,0 +1,130 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_text.proto";
+
+message DeepGleamData {
+  oneof rendering_oneof {
+    TranslationData translation = 10;
+  }
+
+  repeated string visual_object_id = 11;
+
+  reserved 1, 2, 3, 4, 5, 6, 7, 8, 9, 12;
+}
+
+message TranslationData {
+  message Status {
+    enum Code {
+      UNKNOWN = 0;
+      SUCCESS = 1;
+      SERVER_ERROR = 2;
+      UNSUPPORTED_LANGUAGE_PAIR = 3;
+      SAME_LANGUAGE = 4;
+      UNKNOWN_SOURCE_LANGUAGE = 5;
+      INVALID_REQUEST = 6;
+      DEADLINE_EXCEEDED = 7;
+      EMPTY_TRANSLATION = 8;
+      NO_OP_TRANSLATION = 9;
+    }
+
+    Code code = 1;
+  }
+  Status status = 1;
+  string target_language = 2;
+  string source_language = 3;
+
+  // The translated text.
+  string translation = 4;
+
+  // Style as the aggregation of the styles of the words in the original text.
+  message TextStyle {
+    // The foreground color of text in aRGB format.
+    uint32 text_color = 1;
+
+    // The background color of text in aRGB format.
+    uint32 background_primary_color = 2;
+
+    reserved 3, 4;
+  }
+
+  // Properties of the image used to inpaint the source text.
+  message BackgroundImageData {
+    // Image bytes to inpaint the source text. Contains image bytes in the
+    // format specified in file_format.
+    bytes background_image = 1;
+
+    // Width of background_image in pixels.
+    int32 image_width = 2;
+
+    // Height of background_image in pixels.
+    int32 image_height = 3;
+
+    // Vertical padding to apply to the text box before drawing the background
+    // image. Expressed as a fraction of the text box height, i.e. 1.0 means
+    // that the height should be doubled. Half of the padding should be added on
+    // the top and half on the bottom.
+    float vertical_padding = 4;
+
+    // Horizontal padding to apply to the text box before drawing the background
+    // image. Expressed as a fraction of the text box height. Half of the
+    // padding should be added on the left and half on the right.
+    float horizontal_padding = 5;
+
+    // File format of the bytes in background_image.
+    enum FileFormat {
+      UNKNOWN = 0;
+      RAW_BYTES_RGBA = 1;
+      PNG_RGBA = 2;
+      WEBP_RGBA = 3;
+      JPEG_RGB_PNG_MASK = 4;
+    }
+    FileFormat file_format = 6;
+
+    // Text mask for the generated background image.
+    bytes text_mask = 7;
+  }
+
+  message Line {
+    // A substring from the translation from start to end (exclusive),
+    // that needs to be distributed on this line, measured in Unicode
+    // characters. If not set, the Line doesn't have any translation.
+    int32 start = 1;
+    int32 end = 2;
+
+    message Word {
+      // A substring from the translation from start to end (exclusive),
+      // representing a word (without separator), measured in Unicode
+      // characters.
+      int32 start = 1;
+      int32 end = 2;
+    }
+
+    TextStyle style = 3;
+
+    repeated Word word = 5;
+
+    // Background image data is set only when inpainting is computed.
+    BackgroundImageData background_image_data = 9;
+
+    reserved 4, 6, 7, 8;
+  }
+
+  repeated Line line = 5;
+
+  // The original writing direction of the source text.
+  WritingDirection writing_direction = 7;
+  Alignment alignment = 8;
+
+  // Whether the text is justified.
+  bool justified = 9;
+
+  reserved 6;
+}

@@ -9,6 +9,7 @@ _proto_files = [
   "lens_overlay_client_logs.proto",
   "lens_overlay_client_platform.proto",
   "lens_overlay_cluster_info.proto",
+  "lens_overlay_deep_gleam_data.proto",
   "lens_overlay_filters.proto",
   "lens_overlay_geometry.proto",
   "lens_overlay_image_crop.proto",

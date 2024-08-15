@@ -10,6 +10,7 @@ package lens;
 
 import "lens_overlay_client_context.proto";
 import "lens_overlay_cluster_info.proto";
+import "lens_overlay_deep_gleam_data.proto";
 import "lens_overlay_image_crop.proto";
 import "lens_overlay_image_data.proto";
 import "lens_overlay_interaction_request_metadata.proto";
@@ -45,10 +46,13 @@ message LensOverlayObjectsResponse {
   // Text.
   Text text = 3;
 
+  // Gleams.
+  repeated DeepGleamData deep_gleams = 4;
+
   // The cluster info.
   LensOverlayClusterInfo cluster_info = 7;
 
-  reserved 1, 4, 5, 6;
+  reserved 1, 5, 6;
 }
 
 message LensOverlayInteractionRequest {
