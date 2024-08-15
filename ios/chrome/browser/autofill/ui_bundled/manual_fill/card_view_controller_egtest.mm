@@ -464,6 +464,14 @@ void DismissPaymentBottomSheet() {
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
 
+  // Refresh the view by scrolling to the top as the virtual card and regular
+  // card cells are otherwise superimposed. We don't think this issue is likely
+  // to happen in production, but it's worth investigating further.
+  // TODO(crbug.com/359542780): Remove when rendering issue is fixed.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+
   // Assert presence of virtual card.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           @"Mastercard \nVirtual card")]
@@ -1005,6 +1013,14 @@ void DismissPaymentBottomSheet() {
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
+
+  // Refresh the view by scrolling to the top as the virtual card and regular
+  // card cells are otherwise superimposed. We don't think this issue is likely
+  // to happen in production, but it's worth investigating further.
+  // TODO(crbug.com/359542780): Remove when rendering issue is fixed.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Assert presence of virtual card.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
