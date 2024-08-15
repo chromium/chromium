@@ -16,6 +16,7 @@
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_request.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
 
 namespace net {
@@ -86,6 +87,7 @@ class HttpStreamPool::Group {
   // the number of active streams do not exceed the global/per-group limits.
   std::unique_ptr<HttpStreamPoolHandle> CreateHandle(
       std::unique_ptr<StreamSocket> socket,
+      StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);
 
   // Creates a text-based HttpStream from `socket`. Call sites must ensure that
@@ -93,6 +95,7 @@ class HttpStreamPool::Group {
   // `socket` must not be negotiated to use HTTP/2.
   std::unique_ptr<HttpStream> CreateTextBasedStream(
       std::unique_ptr<StreamSocket> socket,
+      StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);
 
   // Releases a StreamSocket that was used to create a text-based HttpStream.

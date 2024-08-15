@@ -45,6 +45,7 @@
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -410,8 +411,9 @@ class HttpStreamPoolJobTest : public TestWithTaskEnvironment {
                                                     /*is_websocket=*/false));
     auto socket = FakeStreamSocket::CreateForSpdy();
     socket->set_peer_addr(peer_addr);
-    auto handle =
-        group.CreateHandle(std::move(socket), LoadTimingInfo::ConnectTiming());
+    auto handle = group.CreateHandle(
+        std::move(socket), StreamSocketHandle::SocketReuseType::kUnused,
+        LoadTimingInfo::ConnectTiming());
 
     base::WeakPtr<SpdySession> spdy_session;
     int rv = spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
@@ -1160,7 +1162,9 @@ TEST_F(HttpStreamPoolJobTest, ReachedPoolLimit) {
   std::vector<std::unique_ptr<HttpStream>> streams_a;
   for (size_t i = 0; i < kMaxPerGroup; ++i) {
     streams_a.emplace_back(group_a.CreateTextBasedStream(
-        std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming()));
+        std::make_unique<FakeStreamSocket>(),
+        StreamSocketHandle::SocketReuseType::kUnused,
+        LoadTimingInfo::ConnectTiming()));
   }
 
   ASSERT_FALSE(pool().ReachedMaxStreamLimit());
@@ -1328,7 +1332,9 @@ TEST_F(HttpStreamPoolJobTest, UseIdleStreamSocketAfterRelease) {
   std::vector<std::unique_ptr<HttpStream>> streams;
   for (size_t i = 0; i < pool().max_stream_sockets_per_group(); ++i) {
     std::unique_ptr<HttpStream> http_stream = group.CreateTextBasedStream(
-        std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
+        std::make_unique<FakeStreamSocket>(),
+        StreamSocketHandle::SocketReuseType::kUnused,
+        LoadTimingInfo::ConnectTiming());
     streams.emplace_back(std::move(http_stream));
   }
   ASSERT_EQ(group.ActiveStreamSocketCount(),
@@ -1381,7 +1387,9 @@ TEST_F(HttpStreamPoolJobTest,
   // Create an HttpStream in group B. The pool should reach its limit.
   Group& group_b = pool().GetOrCreateGroupForTesting(key_b);
   std::unique_ptr<HttpStream> stream1 = group_b.CreateTextBasedStream(
-      std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   ASSERT_TRUE(pool().ReachedMaxStreamLimit());
 
   // Request a stream in group B. The request should close an idle stream in
@@ -1520,8 +1528,10 @@ TEST_F(HttpStreamPoolJobTest,
   StreamRequester requester;
   requester.set_destination("https://a.test");
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
-  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
+  std::unique_ptr<HttpStream> stream =
+      group.CreateTextBasedStream(std::make_unique<FakeStreamSocket>(),
+                                  StreamSocketHandle::SocketReuseType::kUnused,
+                                  LoadTimingInfo::ConnectTiming());
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
 
   ssl_config_service()->NotifySSLContextConfigChange();
@@ -2324,7 +2334,9 @@ TEST_F(HttpStreamPoolJobTest, PreconnectReachedPoolLimit) {
 
   auto key_a = StreamKeyBuilder("http://a.test").Build();
   pool().GetOrCreateGroupForTesting(key_a).CreateTextBasedStream(
-      std::make_unique<FakeStreamSocket>(), LoadTimingInfo::ConnectTiming());
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
@@ -2398,6 +2410,80 @@ TEST_F(HttpStreamPoolJobTest, RequestStreamAndPreconnectWhileFailing) {
 
   Preconnector preconnector2(kDestination);
   EXPECT_THAT(preconnector2.Preconnect(pool()), IsOk());
+}
+
+TEST_F(HttpStreamPoolJobTest, ReuseTypeUnused) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+  RunUntilIdle();
+  ASSERT_THAT(requester.result(), Optional(IsOk()));
+  std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
+  ASSERT_FALSE(stream->IsConnectionReused());
+}
+
+TEST_F(HttpStreamPoolJobTest, ReuseTypeUnusedIdle) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  // Preconnect to put an idle stream to the pool.
+  Preconnector preconnector("http://a.test");
+  preconnector.Preconnect(pool());
+  RunUntilIdle();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+  ASSERT_EQ(pool()
+                .GetOrCreateGroupForTesting(preconnector.GetStreamKey())
+                .IdleStreamSocketCount(),
+            1u);
+
+  StreamRequester requester;
+  requester.RequestStream(pool());
+  RunUntilIdle();
+  ASSERT_THAT(requester.result(), Optional(IsOk()));
+  std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
+  ASSERT_TRUE(stream->IsConnectionReused());
+}
+
+TEST_F(HttpStreamPoolJobTest, ReuseTypeReusedIdle) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto data = std::make_unique<SequencedSocketData>();
+  data->set_connect_data(MockConnect(ASYNC, OK));
+  socket_factory()->AddSocketDataProvider(data.get());
+
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  RunUntilIdle();
+  ASSERT_THAT(requester1.result(), Optional(IsOk()));
+  std::unique_ptr<HttpStream> stream1 = requester1.ReleaseStream();
+  ASSERT_FALSE(stream1->IsConnectionReused());
+
+  // Destroy the stream to make it an idle stream.
+  stream1.reset();
+
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  RunUntilIdle();
+  ASSERT_THAT(requester2.result(), Optional(IsOk()));
+  std::unique_ptr<HttpStream> stream2 = requester2.ReleaseStream();
+  ASSERT_TRUE(stream2->IsConnectionReused());
 }
 
 TEST_F(HttpStreamPoolJobTest, QuicOk) {

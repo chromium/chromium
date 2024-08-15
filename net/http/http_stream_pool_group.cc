@@ -125,6 +125,7 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
+    StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
@@ -134,15 +135,17 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
   auto handle = std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
                                                        generation_);
   handle->set_connect_timing(connect_timing);
+  handle->set_reuse_type(reuse_type);
   return handle;
 }
 
 std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
     std::unique_ptr<StreamSocket> socket,
+    StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   return std::make_unique<HttpBasicStream>(
-      CreateHandle(std::move(socket), std::move(connect_timing)),
+      CreateHandle(std::move(socket), reuse_type, std::move(connect_timing)),
       /*is_for_get_to_http_proxy=*/false);
 }
 

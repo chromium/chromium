@@ -70,7 +70,8 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStream) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
@@ -82,7 +83,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUnused) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -103,7 +105,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUsed) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -133,7 +136,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketNotIdle) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -148,7 +152,8 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketDisconnected) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -168,7 +173,8 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketReceivedDataUnexpectedly) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -260,7 +266,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -281,7 +288,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
@@ -305,7 +313,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeIgnored) {
   auto stream_socket = std::make_unique<FakeStreamSocket>();
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);

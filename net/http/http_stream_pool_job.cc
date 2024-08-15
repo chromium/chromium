@@ -29,6 +29,7 @@
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/spdy/spdy_http_stream.h"
@@ -37,6 +38,17 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
+
+namespace {
+
+StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
+    const StreamSocket& stream_socket) {
+  return stream_socket.WasEverUsed()
+             ? StreamSocketHandle::SocketReuseType::kReusedIdle
+             : StreamSocketHandle::SocketReuseType::kUnusedIdle;
+}
+
+}  // namespace
 
 HttpStreamPool::Job::RequestEntry::RequestEntry(Job* job) : job_(job) {
   CHECK(job_);
@@ -190,11 +202,13 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
   // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
+    const StreamSocketHandle::SocketReuseType reuse_type =
+        GetReuseTypeFromIdleStreamSocket(*stream_socket);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&Job::CreateTextBasedStreamAndNotify,
                        weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
-                       LoadTimingInfo::ConnectTiming()));
+                       reuse_type, LoadTimingInfo::ConnectTiming()));
     return request;
   }
 
@@ -277,7 +291,9 @@ void HttpStreamPool::Job::ProcessPendingRequest() {
 
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
-    CreateTextBasedStreamAndNotify(std::move(stream_socket),
+    const StreamSocketHandle::SocketReuseType reuse_type =
+        GetReuseTypeFromIdleStreamSocket(*stream_socket);
+    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
                                    LoadTimingInfo::ConnectTiming());
     return;
   }
@@ -959,12 +975,13 @@ void HttpStreamPool::Job::ProcessPreconnectsAfterAttemptComplete(int rv) {
 
 void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
     std::unique_ptr<StreamSocket> stream_socket,
+    StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
   NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
   CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
 
   std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
-      std::move(stream_socket), std::move(connect_timing));
+      std::move(stream_socket), reuse_type, std::move(connect_timing));
   NotifyStreamReady(std::move(http_stream), negotiated_protocol);
   // `this` may be deleted.
 }
@@ -1116,12 +1133,13 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
 
   spdy_throttle_timer_.Stop();
 
+  const auto reuse_type = StreamSocketHandle::SocketReuseType::kUnused;
   if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
     CHECK(!spdy_session_pool()->FindAvailableSession(
         group_->spdy_session_key(), enable_ip_based_pooling_,
         /*is_websocket=*/false, net_log()));
     std::unique_ptr<HttpStreamPoolHandle> handle = group_->CreateHandle(
-        std::move(stream_socket), std::move(connect_timing));
+        std::move(stream_socket), reuse_type, std::move(connect_timing));
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
             spdy_session_key(), std::move(handle), net_log(), &spdy_session_);
@@ -1143,7 +1161,7 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   ProcessPreconnectsAfterAttemptComplete(rv);
 
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
-  CreateTextBasedStreamAndNotify(std::move(stream_socket),
+  CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
                                  std::move(connect_timing));
 }
 

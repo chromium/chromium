@@ -28,6 +28,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -286,6 +287,7 @@ class HttpStreamPool::Job
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket,
+      StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);
 
   void CreateSpdyStreamAndNotify();
