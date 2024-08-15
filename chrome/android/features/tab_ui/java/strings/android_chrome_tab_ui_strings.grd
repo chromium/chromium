@@ -884,6 +884,12 @@
       <message name="IDS_AUTO_OPEN_SYNCED_TAB_GROUPS_SUMMARY" desc="A title to show in the top toolbar when the Tabs settings page is open.">
         Automatically open tab groups from other devices
       </message>
+      <message name="IDS_SHARE_TITLES_AND_URLS_WITH_OS_SETTING_TEXT" desc="Description for the switch in tabs settings to toggle sharing titles the urls with os.">
+        Share titles and the URLs of open tabs from this device with the operating system
+      </message>
+      <message name="IDS_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE_SETTING_TEXT" desc="Text of the Learn more link.">
+        <ph name="BEGIN_LINK1">&lt;link&gt;</ph>Learn more<ph name="END_LINK1">&lt;/link&gt;</ph>
+      </message>
 
     <!-- Archived tabs strings -->
       <message name="IDS_ARCHIVED_TABS_DIALOG_TITLE" desc="The toolbar title for the archived tabs dialog.">
