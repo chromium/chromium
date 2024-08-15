@@ -19,6 +19,7 @@
 #include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "tab_android_data_provider.h"
@@ -40,7 +41,8 @@ class WebContents;
 }  // namespace content
 
 class TabAndroid : public TabAndroidDataProvider,
-                   public base::SupportsUserData {
+                   public base::SupportsUserData,
+                   public tabs::TabInterface {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -181,6 +183,23 @@ class TabAndroid : public TabAndroidDataProvider,
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
   base::WeakPtr<TabAndroid> GetWeakPtr();
+
+  // tabs::TabInterface:
+  content::WebContents* GetContents() const override;
+  base::CallbackListSubscription RegisterWillDiscardContents(
+      WillDiscardContentsCallback callback) override;
+  bool IsInForeground() const override;
+  base::CallbackListSubscription RegisterDidEnterForeground(
+      DidEnterForegroundCallback callback) override;
+  base::CallbackListSubscription RegisterWillEnterBackground(
+      WillEnterBackgroundCallback callback) override;
+  base::CallbackListSubscription RegisterWillDetach(
+      WillDetach callback) override;
+  bool CanShowModalUI() const override;
+  std::unique_ptr<tabs::ScopedTabModalUI> ShowModalUI() override;
+  bool IsInNormalWindow() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
+  tabs::TabFeatures* GetTabFeatures() override;
 
  private:
   JavaObjectWeakGlobalRef weak_java_tab_;

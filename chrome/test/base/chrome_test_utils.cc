@@ -5,6 +5,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -27,6 +28,17 @@ content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test) {
 #else
   return browser_test->browser()->tab_strip_model()->GetActiveWebContents();
 #endif
+}
+
+tabs::TabInterface* GetActiveTabInterface(PlatformBrowserTest* browser_test) {
+  // TODO(yzshen): Once BrowserWindowInterface is supported on Android, consider
+  // using it to get the active tab.
+  content::WebContents* active_web_contents =
+      GetActiveWebContents(browser_test);
+  if (!active_web_contents) {
+    return nullptr;
+  }
+  return tabs::TabInterface::GetFromContents(active_web_contents);
 }
 
 Profile* GetProfile(PlatformBrowserTest* browser_test) {
