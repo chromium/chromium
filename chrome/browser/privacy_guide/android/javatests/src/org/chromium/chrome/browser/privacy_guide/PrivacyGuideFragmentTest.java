@@ -347,10 +347,13 @@ public class PrivacyGuideFragmentTest {
         mRenderTestRule.render(getRootView(), "privacy_guide_msbb");
     }
 
+    // TODO(crbug.com/359897525): Add a pixel test when PrivacySandboxPrivacyGuideAdTopics is
+    // enabled for better coverage.
     @Test
     @LargeTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS)
     public void testRenderMSBBCardPG3() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.MSBB);
@@ -396,6 +399,8 @@ public class PrivacyGuideFragmentTest {
         mRenderTestRule.render(getRootView(), "privacy_guide_cookies");
     }
 
+    // TODO(crbug.com/359897525): Add a pixel test when PrivacySandboxPrivacyGuideAdTopics is
+    // enabled for better coverage.
     @Test
     @LargeTest
     @Feature({"RenderTest"})
@@ -403,12 +408,15 @@ public class PrivacyGuideFragmentTest {
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
         ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS)
     public void testRenderSearchSuggestionsCardPG3() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.SEARCH_SUGGESTIONS);
         mRenderTestRule.render(getRootView(), "privacy_guide_search_suggestions");
     }
 
+    // TODO(crbug.com/359897525): Add a pixel test when PrivacySandboxPrivacyGuideAdTopics is
+    // enabled for better coverage.
     @Test
     @LargeTest
     @Feature({"RenderTest"})
@@ -416,6 +424,7 @@ public class PrivacyGuideFragmentTest {
         ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
         ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_GUIDE_AD_TOPICS)
     public void testRenderPreloadCardPG3() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.PRELOAD);
