@@ -5721,7 +5721,7 @@
   {
     "name": "launcher-continue-section-with-recents",
     "owners": ["tbarzic@chromium.org", "mmourgos@chromium.org"],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "launcher-fuzzy-match-across-providers",
