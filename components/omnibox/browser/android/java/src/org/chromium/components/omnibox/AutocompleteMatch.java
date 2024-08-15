@@ -288,6 +288,17 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
+    private void setAnswerTemplate(byte[] serializedAnswerTemplate) {
+        if (serializedAnswerTemplate != null) {
+            try {
+                mAnswerTemplate = RichAnswerTemplate.parseFrom(serializedAnswerTemplate);
+            } catch (InvalidProtocolBufferException e) {
+                mAnswerTemplate = null;
+            }
+        }
+    }
+
+    @CalledByNative
     private void setDescription(
             String description,
             int[] descriptionClassificationOffsets,
@@ -443,6 +454,9 @@ public class AutocompleteMatch {
         }
 
         AutocompleteMatch suggestion = (AutocompleteMatch) obj;
+        boolean answer_template_is_equal =
+                (mAnswerTemplate == null && suggestion.mAnswerTemplate == null)
+                        || mAnswerTemplate.equals(suggestion.mAnswerTemplate);
         return mType == suggestion.mType
                 && mNativeMatch == suggestion.mNativeMatch
                 && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)
@@ -458,7 +472,9 @@ public class AutocompleteMatch {
                 && ObjectsCompat.equals(mAnswer, suggestion.mAnswer)
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
                 && Arrays.equals(mPostData, suggestion.mPostData)
-                && mGroupId == suggestion.mGroupId;
+                && mGroupId == suggestion.mGroupId
+                && mAnswerType == suggestion.mAnswerType
+                && answer_template_is_equal;
     }
 
     /**
@@ -507,7 +523,8 @@ public class AutocompleteMatch {
                         "mGroupId=" + mGroupId,
                         "mDisplayTextClassifications=" + mDisplayTextClassifications,
                         "mDescriptionClassifications=" + mDescriptionClassifications,
-                        "mAnswer=" + mAnswer);
+                        "mAnswer=" + mAnswer,
+                        "mAnswerTemplate=" + mAnswerTemplate);
         return pieces.toString();
     }
 

@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "components/omnibox/browser/clipboard_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
@@ -218,9 +219,22 @@ void AutocompleteMatch::UpdateJavaDestinationUrl() {
 void AutocompleteMatch::UpdateJavaAnswer() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutocompleteMatch_setAnswer(
-        env, *java_match_,
-        answer ? answer->CreateJavaObject(answer_type) : nullptr);
+    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+      ScopedJavaLocalRef<jbyteArray> j_answer_template;
+      if (answer_template) {
+        std::string str_answer_template;
+        if (answer_template->SerializeToString(&str_answer_template)) {
+          j_answer_template =
+              base::android::ToJavaByteArray(env, str_answer_template);
+        }
+      }
+      Java_AutocompleteMatch_setAnswerTemplate(
+          env, *java_match_, answer_template ? j_answer_template : nullptr);
+    } else {
+      Java_AutocompleteMatch_setAnswer(
+          env, *java_match_,
+          answer ? answer->CreateJavaObject(answer_type) : nullptr);
+    }
   }
 }
 
