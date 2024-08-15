@@ -771,6 +771,12 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.4.9 -> 1.5.0"
 
+[[audits.fend-core]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.5.0 -> 1.5.1"
+notes = "Only `Cargo.toml` changes + defining two new measurement units."
+
 [[audits.flate2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
