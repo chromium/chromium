@@ -3181,7 +3181,7 @@
       },
       'win11-rel-dev': {
         'mixins': [
-          'win11',
+          'win11-any',
         ],
         'test_suites': {
            'gtest_tests': 'chromium_dev_win_gtests',
