@@ -9,7 +9,7 @@
 
 validateInputFromAnotherBuilder('hardSigmoid');
 
-validateSingleInputOperation('hardSigmoid');
+validateUnaryOperation('hardSigmoid', floatingPointTypes);
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);

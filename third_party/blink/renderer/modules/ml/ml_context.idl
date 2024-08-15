@@ -107,8 +107,6 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits elu;
   MLGatherSupportLimits gather;
   MLSingleInputSupportLimits gelu;
-  MLSingleInputSupportLimits hardSigmoid;
-  MLSingleInputSupportLimits hardSwish;
   MLSingleInputSupportLimits leakyRelu;
   MLSingleInputSupportLimits relu;
   MLSingleInputSupportLimits sigmoid;

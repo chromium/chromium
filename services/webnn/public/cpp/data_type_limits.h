@@ -49,8 +49,6 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gather_input,
                  SupportedDataTypes gather_indices,
                  SupportedDataTypes gelu_input,
-                 SupportedDataTypes hard_sigmoid_input,
-                 SupportedDataTypes hard_swish_input,
                  SupportedDataTypes leaky_relu_input,
                  SupportedDataTypes relu_input,
                  SupportedDataTypes sigmoid_input,
@@ -108,8 +106,6 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;
   SupportedDataTypes gelu_input;
-  SupportedDataTypes hard_sigmoid_input;
-  SupportedDataTypes hard_swish_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes relu_input;
   SupportedDataTypes sigmoid_input;
@@ -158,8 +154,6 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.tan_input == rhs.tan_input &&
          lhs.elu_input == rhs.elu_input &&
          lhs.gelu_input == rhs.gelu_input &&
-         lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
-         lhs.hard_swish_input == rhs.hard_swish_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.relu_input == rhs.relu_input &&
          lhs.sigmoid_input == rhs.sigmoid_input &&

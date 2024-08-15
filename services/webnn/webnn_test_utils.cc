@@ -478,8 +478,6 @@ ContextProperties GetContextPropertiesForTesting() {
                          /*gather_input=*/SupportedDataTypes::All(),
                          /*gather_indices=*/SupportedDataTypes::All(),
                          /*gelu_input=*/SupportedDataTypes::All(),
-                         /*hard_sigmoid_input=*/SupportedDataTypes::All(),
-                         /*hard_swish_input=*/SupportedDataTypes::All(),
                          /*leaky_relu_input=*/SupportedDataTypes::All(),
                          /*relu_input=*/SupportedDataTypes::All(),
                          /*sigmoid_input=*/SupportedDataTypes::All(),

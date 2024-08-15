@@ -79,8 +79,6 @@ struct DataTypeLimits {
   SupportedDataTypes gather_indices;
 
   SupportedDataTypes gelu_input;
-  SupportedDataTypes hard_sigmoid_input;
-  SupportedDataTypes hard_swish_input;
   SupportedDataTypes leaky_relu_input;
   SupportedDataTypes relu_input;
   SupportedDataTypes sigmoid_input;

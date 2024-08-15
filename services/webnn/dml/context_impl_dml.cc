@@ -186,13 +186,6 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_hard_sigmoid_operator_desc
-       /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
-
-       // HardSwish is emulated when the feature level is less than 6.2.
-       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_hard_swish_operator_desc
-       /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
-
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_leaky_relu_operator_desc
        /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
 

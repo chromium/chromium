@@ -1508,34 +1508,40 @@ MLOperand* MLGraphBuilder::gruCell(const MLOperand* input,
   return output;
 }
 
-MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
-                                       const MLHardSigmoidOptions* options,
-                                       ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
-  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
-
-  // According to WebNN spec
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hardsigmoid, the output
-  // tensor of softplus has the same type and dimensions as its input.
-  return BuildUnaryOperator(
-      this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSigmoid,
-      ml_context_->GetProperties().data_type_limits.hard_sigmoid_input, input,
-      options);
-}
-
 MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
                                      const MLOperatorOptions* options,
                                      ExceptionState& exception_state) {
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  // The input data type must be one of the floating point types. Although this
+  // constraint is not specified in current WebNN spec, there is a feature
+  // request for that: https://github.com/webmachinelearning/webnn/issues/283
+  //
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hard-swish, the output
   // tensor of hard-swish has the same data type and dimensions as its input.
   return BuildUnaryOperator(
       this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSwish,
-      ml_context_->GetProperties().data_type_limits.hard_swish_input, input,
-      options);
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
+}
+
+MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
+                                       const MLHardSigmoidOptions* options,
+                                       ExceptionState& exception_state) {
+  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
+  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
+
+  // The current spec doesn't specify the operand data type constraints of
+  // hardSigmoid. An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hardsigmoid, the output
+  // tensor of softplus has the same type and dimensions as its input.
+  return BuildUnaryOperator(
+      this, exception_state, webnn::mojom::blink::Operation::Tag::kHardSigmoid,
+      webnn::DataTypeConstraint::kFloat16To32, input, options);
 }
 
 MLOperand* MLGraphBuilder::instanceNormalization(
