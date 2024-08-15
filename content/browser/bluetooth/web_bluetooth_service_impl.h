@@ -167,6 +167,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            SecWatchAdvertisementsReqAfterFirstSuccess);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTestWithBaseAdapter,
                            EmulatedAdapterRemovalRestoresOriginalAdapter);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           ServiceDestroyedDuringAdapterAcquisition);
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,

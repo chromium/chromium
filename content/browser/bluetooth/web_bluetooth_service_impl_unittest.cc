@@ -1235,6 +1235,36 @@ TEST_F(WebBluetoothServiceImplTest,
   EXPECT_CALL(*adapter_, StopScan).Times(1);
 }
 
+TEST_F(WebBluetoothServiceImplTest, ServiceDestroyedDuringAdapterAcquisition) {
+  // Remove the adapter configured by the base test to ensure an async
+  // AcquireAdapter flow.
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
+
+  // Due to the service being destroyed before acquisition, this adapter will
+  // never receive these observer calls.
+  EXPECT_CALL(*adapter_, AddObserver).Times(0);
+  EXPECT_CALL(*adapter_, RemoveObserver).Times(0);
+
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter_);
+
+  // Post a task that destroys the service during adapter acquisition.
+  // This is a hack; destruction is normally implicitly triggered by
+  // navigation or destruction of the frame itself, and not explicitly
+  // like this test does.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        WebBluetoothServiceImpl::DeleteForCurrentDocument(
+            &service_ptr_.ExtractAsDangling()->render_frame_host());
+      }));
+
+  // GetAvailability connects the Web Bluetooth service to the adapter,
+  // running through the AcquireAdapter flow.
+  TestFuture<bool> future_1;
+  service_ptr_->GetAvailability(future_1.GetCallback());
+  EXPECT_TRUE(future_1.Wait());
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
+}
+
 class WebBluetoothServiceImplTestWithBaseAdapter
     : public RenderViewHostImplTestHarness,
       public WithParamInterface<bool> {
