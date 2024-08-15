@@ -565,9 +565,15 @@ void InitWithRandom(const gfx::Size size,
   }
 }
 
+struct VulkanOverlayAdaptorTestParam {
+  TiledImageFormat tiling;
+  gfx::Size size;
+  gfx::OverlayTransform transform;
+};
+
 class VulkanOverlayAdaptorTest
     : public testing::Test,
-      public testing::WithParamInterface<TiledImageFormat> {
+      public testing::WithParamInterface<VulkanOverlayAdaptorTestParam> {
  public:
   VulkanOverlayAdaptorTest();
   ~VulkanOverlayAdaptorTest() = default;
@@ -576,7 +582,25 @@ class VulkanOverlayAdaptorTest
     template <class ParamType>
     std::string operator()(
         const testing::TestParamInfo<ParamType>& info) const {
-      return base::StringPrintf("%s", (info.param == kMM21) ? "MM21" : "MT2T");
+      std::string ret = info.param.tiling == kMM21 ? "MM21" : "MT2T";
+      ret += "_" + info.param.size.ToString();
+      switch (info.param.transform) {
+        case gfx::OVERLAY_TRANSFORM_NONE:
+          ret += "_rot0";
+          break;
+        case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90:
+          ret += "_rot90";
+          break;
+        case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180:
+          ret += "_rot180";
+          break;
+        case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
+          ret += "_rot270";
+          break;
+        default:
+          NOTREACHED() << "Invalid transform: " << info.param.transform;
+      }
+      return ret;
     }
   };
 
@@ -747,11 +771,12 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
 }
 
 TEST_P(VulkanOverlayAdaptorTest, Correctness) {
-  bool is_10bit = GetParam() == kMT2T;
+  bool is_10bit = GetParam().tiling == kMT2T;
+  const gfx::Size& output_size = GetParam().size;
+  const gfx::OverlayTransform transform = GetParam().transform;
 
   auto in_mailbox = gpu::Mailbox::Generate();
   auto out_mailbox = gpu::Mailbox::Generate();
-  gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
 
   test::Image image(media::g_source_directory.Append(
       base::FilePath(is_10bit ? kMT2TImage : kMM21Image)));
@@ -766,11 +791,10 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
       CreateVideoFrame(in_mailbox, image.Size(), image.VisibleRect(),
                        std::move(init_cb), is_10bit);
 
-  gfx::Size output_size(800, 1200);
   auto out_frame = CreateFramebuffer(out_mailbox, output_size, is_10bit);
 
   auto vulkan_overlay_adaptor =
-      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam().tiling);
 
   bool performed_cleanup = false;
   auto fence_helper =
@@ -836,12 +860,16 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
 TEST_P(VulkanOverlayAdaptorTest, Performance) {
   constexpr size_t kNumberOfTestFrames = 10;
   constexpr size_t kNumberOfTestCycles = 200;
-  constexpr int kTestImageWidth = 1920;
-  constexpr int kTestImageHeight = 1088;
 
-  const bool is_10bit = GetParam() == kMT2T;
+  const bool is_10bit = GetParam().tiling == kMT2T;
+  const gfx::Size& test_image_size = GetParam().size;
+  const gfx::OverlayTransform transform = GetParam().transform;
+  gfx::Size output_size = test_image_size;
+  if (transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90 ||
+      transform == gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270) {
+    output_size.Transpose();
+  }
 
-  gfx::Size test_image_size(kTestImageWidth, kTestImageHeight);
   gfx::Size test_coded_size(
       base::bits::AlignUp(base::checked_cast<size_t>(test_image_size.width()),
                           kMM21TileWidth),
@@ -860,22 +888,20 @@ TEST_P(VulkanOverlayAdaptorTest, Performance) {
                                     std::move(init_cb), is_10bit);
 
     out_mailboxes[i] = gpu::Mailbox::Generate();
-    out_frames[i] =
-        CreateFramebuffer(out_mailboxes[i], test_image_size, is_10bit);
+    out_frames[i] = CreateFramebuffer(out_mailboxes[i], output_size, is_10bit);
   }
 
   auto vulkan_overlay_adaptor =
-      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
+      VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam().tiling);
 
   auto start_time = base::TimeTicks::Now();
   for (size_t i = 0; i < kNumberOfTestCycles; i++) {
     ProcessMailboxes(
         in_mailboxes[i % kNumberOfTestFrames], test_image_size,
         out_mailboxes[i % kNumberOfTestFrames],
-        gfx::RectF(base::checked_cast<float>(test_image_size.width()),
-                   base::checked_cast<float>(test_image_size.height())),
-        gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE,
-        *vulkan_overlay_adaptor);
+        gfx::RectF(base::checked_cast<float>(output_size.width()),
+                   base::checked_cast<float>(output_size.height())),
+        gfx::RectF(1.0f, 1.0f), transform, *vulkan_overlay_adaptor);
   }
   auto end_time = base::TimeTicks::Now();
 
@@ -886,10 +912,77 @@ TEST_P(VulkanOverlayAdaptorTest, Performance) {
                    {"FramesPerSecond", fps}});
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VulkanOverlayAdaptorTest,
-                         testing::Values(kMM21, kMT2T),
-                         VulkanOverlayAdaptorTest::PrintToStringParamName());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VulkanOverlayAdaptorTest,
+    testing::Values(
+        VulkanOverlayAdaptorTestParam({kMM21, gfx::Size(320, 240),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMM21, gfx::Size(1280, 720),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMM21, gfx::Size(1920, 1080),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(320, 240),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1280, 720),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1920, 1080),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMM21, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam({kMT2T, gfx::Size(320, 240),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMT2T, gfx::Size(1280, 720),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam({kMT2T, gfx::Size(1920, 1080),
+                                       gfx::OVERLAY_TRANSFORM_NONE}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(320, 240),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1280, 720),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1920, 1080),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(240, 320),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(720, 1280),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270}),
+        VulkanOverlayAdaptorTestParam(
+            {kMT2T, gfx::Size(1080, 1920),
+             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270})),
+    VulkanOverlayAdaptorTest::PrintToStringParamName());
 
 }  // namespace
 }  // namespace media
