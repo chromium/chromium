@@ -6,19 +6,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -36,6 +28,19 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -78,20 +83,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "frame_name": "noframe",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -109,6 +105,20 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "frame_name": "noframe",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -914,19 +924,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -944,6 +946,19 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -986,20 +1001,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "frame_name": "noframe",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -1017,6 +1023,20 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "frame_name": "noframe",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -1953,24 +1973,16 @@
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -1989,11 +2001,24 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2025,25 +2050,16 @@
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "frame_name": "noframe",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -2062,11 +2078,25 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "frame_name": "noframe",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2867,24 +2897,16 @@
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -2903,11 +2925,24 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -2939,25 +2974,16 @@
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "frame_name": "noframe",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -2976,11 +3002,25 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "frame_name": "noframe",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -3943,7 +3983,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html",
@@ -4020,7 +4060,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html",
@@ -4545,7 +4585,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html",
@@ -4622,7 +4662,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html",
@@ -4826,19 +4866,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -4856,6 +4888,19 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -4898,20 +4943,11 @@
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_a/destination.html",
-                  "frame_name": "noframe",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_a/destination.html"
                   } ]
                } ]
             }, {
@@ -4929,6 +4965,20 @@
                      "url": "/banners/link_capturing/scope_a/start.html"
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
+               } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_a/destination.html",
+                  "frame_name": "noframe",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_a/destination.html"
+                  } ]
                } ]
             } ]
          }
@@ -5825,7 +5875,7 @@
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -5855,7 +5905,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -5870,7 +5920,7 @@
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -5902,7 +5952,7 @@
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -5932,7 +5982,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -5948,7 +5998,7 @@
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6459,7 +6509,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -6536,7 +6586,7 @@
                } ]
             }, {
                "app_scope": "/banners/link_capturing/scope_a/",
-               "browser_type": "TYPE_APP_POPUP",
+               "browser_type": "TYPE_APP",
                "tabs": [ {
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html",
@@ -6737,24 +6787,16 @@
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -6773,11 +6815,24 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -6809,25 +6864,16 @@
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
                "tabs": [ {
+                  "active": true,
                   "current_url": "blank",
                   "history": [ {
                      "transition": "auto_toplevel",
                      "url": "blank"
-                  } ]
-               }, {
-                  "active": true,
-                  "current_url": "/banners/link_capturing/scope_b/destination.html",
-                  "frame_name": "noframe",
-                  "has_opener": true,
-                  "history": [ {
-                     "referrer": "/banners/link_capturing/scope_a/start.html",
-                     "transition": "link",
-                     "url": "/banners/link_capturing/scope_b/destination.html"
                   } ]
                } ]
             }, {
@@ -6846,11 +6892,25 @@
                   } ],
                   "launchParams": [ "/banners/link_capturing/scope_a/start.html" ]
                } ]
+            }, {
+               "app_scope": "/banners/link_capturing/scope_a/",
+               "browser_type": "TYPE_APP",
+               "tabs": [ {
+                  "active": true,
+                  "current_url": "/banners/link_capturing/scope_b/destination.html",
+                  "frame_name": "noframe",
+                  "has_opener": true,
+                  "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
+                     "transition": "link",
+                     "url": "/banners/link_capturing/scope_b/destination.html"
+                  } ]
+               } ]
             } ]
          }
       },
       "AppWnd_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9190,7 +9250,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9221,7 +9281,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9244,7 +9304,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9276,7 +9336,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaButton_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9866,7 +9926,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9897,7 +9957,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9920,7 +9980,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9952,7 +10012,7 @@
          }
       },
       "Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12096,7 +12156,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12131,7 +12191,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12154,7 +12214,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12190,7 +12250,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaButton_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12780,7 +12840,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetBlank": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12811,7 +12871,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12834,7 +12894,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetNoFrame": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -12866,7 +12926,7 @@
          }
       },
       "Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithOpener_TargetSelf": {
-         "disabled": true,
+         "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",

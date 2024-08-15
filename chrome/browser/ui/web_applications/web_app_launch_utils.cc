@@ -979,73 +979,77 @@ std::optional<std::pair<Browser*, int>> MaybeHandleAppNavigation(
   std::optional<webapps::AppId> controlling_app_id =
       registrar.FindAppThatCapturesLinksInScope(params.url);
 
-  const bool comes_from_app_browser =
-      params.browser && web_app::AppBrowserController::IsWebApp(params.browser);
-
-  const bool is_aux_context = IsAuxiliaryBrowsingContext(params);
+  std::optional<webapps::AppId> current_browser_app_id =
+      params.browser && web_app::AppBrowserController::IsWebApp(params.browser)
+          ? std::optional(params.browser->app_controller()->app_id())
+          : std::nullopt;
 
   const bool is_user_modified_click =
       params.disposition == WindowOpenDisposition::NEW_WINDOW ||
       params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
+  // Case: Any click (user modified or non-modified) with auxiliary browsing
+  // context. Only needs to be handled if it is triggered in the context of an
+  // app browser.
+  if (IsAuxiliaryBrowsingContext(params)) {
+    if (current_browser_app_id.has_value()) {
+      Browser* app_window = CreateWebAppWindowFromNavigationParams(
+          *current_browser_app_id, params);
+      return std::pair(app_window, -1);
+    }
+    return std::nullopt;
+  }
+
   // Case: User-modified clicks.
-  if (comes_from_app_browser && is_user_modified_click) {
-    CHECK(params.browser->app_controller());
-    const webapps::AppId& current_app_id =
-        params.browser->app_controller()->app_id();
-
-    // Case: User modified clicks with an auxiliary browsing context.
-    if (is_aux_context) {
-      // TOOD(crbug.com/359420120): Handle auxiliary browsing context behavior
-      // holistically.
-      Browser* app_window =
-          CreateWebAppWindowFromNavigationParams(current_app_id, params);
-      return std::pair(app_window, -1);
-    }
-
-    // Case: Shift-clicks with a new top level browsing context.
-    if (params.disposition == WindowOpenDisposition::NEW_WINDOW &&
-        controlling_app_id.has_value() &&
-        OpensInStandaloneExperience(*controlling_app_id)) {
-      Browser* app_window =
-          CreateWebAppWindowFromNavigationParams(*controlling_app_id, params);
-
-      // TODO(crbug.com/359605935): Move this logic to occur later after/in
-      // CreateTargetContents in browser_navigator.cc, to ensure `contents`
-      // isn't a nullptr.
-      MaybeEnqueueLaunchParams(params.contents_to_insert.get(),
-                               *controlling_app_id, params.url,
-                               /*wait_for_navigation_to_complete=*/true);
-      return std::pair(app_window, -1);
-    }
-
-    // Case: Middle clicks with a new top level browsing context.
-    if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-        OpensInStandaloneExperience(current_app_id) &&
-        registrar.IsUrlInAppScope(params.url, current_app_id) &&
-        registrar.CapturesLinksInScope(current_app_id)) {
-      if (!params.browser->app_controller()->ShouldHideNewTabButton()) {
-        // Apps that support tabbed mode can open a new tab in the current app
-        // browser itself.
-        return std::pair(params.browser, -1);
-      } else {
+  if (is_user_modified_click) {
+    if (current_browser_app_id.has_value()) {
+      // Case: Shift-clicks with a new top level browsing context.
+      if (params.disposition == WindowOpenDisposition::NEW_WINDOW &&
+          controlling_app_id.has_value() &&
+          OpensInStandaloneExperience(*controlling_app_id)) {
         Browser* app_window =
-            CreateWebAppWindowFromNavigationParams(current_app_id, params);
+            CreateWebAppWindowFromNavigationParams(*controlling_app_id, params);
 
         // TODO(crbug.com/359605935): Move this logic to occur later after/in
         // CreateTargetContents in browser_navigator.cc, to ensure `contents`
         // isn't a nullptr.
         MaybeEnqueueLaunchParams(params.contents_to_insert.get(),
-                                 current_app_id, params.url,
+                                 *controlling_app_id, params.url,
                                  /*wait_for_navigation_to_complete=*/true);
         return std::pair(app_window, -1);
       }
+
+      const webapps::AppId& current_app_id = *current_browser_app_id;
+
+      // Case: Middle clicks with a new top level browsing context.
+      if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+          OpensInStandaloneExperience(current_app_id) &&
+          registrar.IsUrlInAppScope(params.url, current_app_id) &&
+          registrar.CapturesLinksInScope(current_app_id)) {
+        if (!params.browser->app_controller()->ShouldHideNewTabButton()) {
+          // Apps that support tabbed mode can open a new tab in the current app
+          // browser itself.
+          return std::pair(params.browser, -1);
+        } else {
+          Browser* app_window =
+              CreateWebAppWindowFromNavigationParams(current_app_id, params);
+
+          // TODO(crbug.com/359605935): Move this logic to occur later after/in
+          // CreateTargetContents in browser_navigator.cc, to ensure `contents`
+          // isn't a nullptr.
+          MaybeEnqueueLaunchParams(params.contents_to_insert.get(),
+                                   current_app_id, params.url,
+                                   /*wait_for_navigation_to_complete=*/true);
+          return std::pair(app_window, -1);
+        }
+      }
     }
+    return std::nullopt;
   }
 
   // Case: Left click, non-user-modified. Capturable.
-  if (!is_aux_context && controlling_app_id &&
-      params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
+  if (params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB &&
+      controlling_app_id) {
     const webapps::AppId& app_id = controlling_app_id.value();
     blink::mojom::DisplayMode app_display_mode =
         registrar.GetEffectiveDisplayModeFromManifest(app_id);
