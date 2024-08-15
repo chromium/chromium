@@ -693,7 +693,6 @@ class CrossbenchTest(object):
     binary_manager.InitDependencyManager(None)
     self.options = options
     self.isolated_out_dir = isolated_out_dir
-    self.url = []
     browser_arg = self._get_browser_arg(options.passthrough_args)
     self.is_android = self._is_android(browser_arg)
     self._find_browser(browser_arg)
@@ -724,11 +723,15 @@ class CrossbenchTest(object):
       fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
     # The fileserver localhost port number is set to 8000. See:
     # third_party/crossbench/crossbench/network/local_fileserver.py
-    self.url = ['--url=http://localhost:8000']
-    fileserver_relative_path = CHROMIUM_SRC_DIR / fileserver_path
+    http_port = 8000
+    fileserver_relative_path = str(CHROMIUM_SRC_DIR / fileserver_path)
     # Replacing --fileserver with --network.
     self.options.passthrough_args.remove(arg)
-    return [f'--network={fileserver_relative_path}']
+    return [
+        self._create_network_json('local',
+                                  path=fileserver_relative_path,
+                                  url=f'http://localhost:{http_port}')
+    ]
 
   def _create_wpr_network(self, args):
     wpr_arg = self._get_arg(args, '--wpr')
@@ -737,15 +740,24 @@ class CrossbenchTest(object):
     else:
       # TODO: Use update_wpr library when it supports Crossbench archive files.
       wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
-    archive = PAGE_SETS_DATA / wpr_name
+    archive = str(PAGE_SETS_DATA / wpr_name)
     if not (wpr_go := binary_manager.FetchPath(
         'wpr_go', os_name='linux', arch='x86_64')):
       raise ValueError(f'wpr_go not found: {wpr_go}')
-    wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"{wpr_go}"}}'
     if wpr_arg:
       # Replacing --wpr with --network.
       self.options.passthrough_args.remove(wpr_arg)
-    return [f'--network={wpr_config}']
+    return [self._create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
+
+  def _create_network_json(self, config_type, path, url=None, wpr_go_bin=None):
+    network_dict = {'type': config_type}
+    network_dict['path'] = path
+    if url:
+      network_dict['url'] = url
+    if wpr_go_bin:
+      network_dict['wpr_go_bin'] = wpr_go_bin
+    network_json = json.dumps(network_dict)
+    return f'--network={network_json}'
 
   def _get_arg(self, args, arg, must_exists=False):
     if _args := [a for a in args if a.startswith(arg)]:
@@ -812,8 +824,7 @@ class CrossbenchTest(object):
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return ([sys.executable] + [self.options.executable] + [benchmark] +
             [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
-            self.driver_path_arg + self.network + self.url +
-            self._get_default_args())
+            self.driver_path_arg + self.network + self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,

@@ -316,25 +316,33 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     fake_args = self._create_crossbench_args() + ['--fileserver']
     options = run_performance_tests.parse_arguments(fake_args)
     src_dir = run_performance_tests.CHROMIUM_SRC_DIR
-    local_fileserver = src_dir / 'third_party/speedometer/v3.0'
-    expected_network = [f'--network={local_fileserver}']
+    local_fileserver = str(src_dir / 'third_party/speedometer/v3.0')
+    expected_dict = {
+        'type': 'local',
+        'path': local_fileserver,
+        'url': 'http://localhost:8000'
+    }
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
-    self.assertEqual(crosebench_test.network, expected_network)
-    self.assertEqual(crosebench_test.url, ['--url=http://localhost:8000'])
+    network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
 
   def testCrossbenchGetTargetFileServer(self):
     fake_args = self._create_crossbench_args() + ['--fileserver=foo']
     options = run_performance_tests.parse_arguments(fake_args)
     src_dir = run_performance_tests.CHROMIUM_SRC_DIR
-    local_fileserver = src_dir / 'foo'
-    expected_network = [f'--network={local_fileserver}']
+    local_fileserver = str(src_dir / 'foo')
+    expected_dict = {
+        'type': 'local',
+        'path': local_fileserver,
+        'url': 'http://localhost:8000'
+    }
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
-    self.assertEqual(crosebench_test.network, expected_network)
-    self.assertEqual(crosebench_test.url, ['--url=http://localhost:8000'])
+    network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
 
   @mock.patch.object(binary_manager, 'FetchPath')
   def testCrossbenchGetDefaultWpr(self, mock_fetch_path):
@@ -342,13 +350,17 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     fake_args = self._create_crossbench_args() + ['--wpr']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
-    archive = data_dir / 'crossbench_android_speedometer_3.0_000.wprgo'
-    wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"wpr_go_path"}}'
-    expected_network = [f'--network={wpr_config}']
+    archive = str(data_dir / 'crossbench_android_speedometer_3.0_000.wprgo')
+    expected_dict = {
+        'type': 'wpr',
+        'path': archive,
+        'wpr_go_bin': 'wpr_go_path'
+    }
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
-    self.assertEqual(crosebench_test.network, expected_network)
+    network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
 
   @mock.patch.object(binary_manager, 'FetchPath')
   def testCrossbenchGetTargetWpr(self, mock_fetch_path):
@@ -356,13 +368,17 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     fake_args = self._create_crossbench_args() + ['--wpr=foo']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
-    archive = data_dir / 'foo'
-    wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"wpr_go_path"}}'
-    expected_network = [f'--network={wpr_config}']
+    archive = str(data_dir / 'foo')
+    expected_dict = {
+        'type': 'wpr',
+        'path': archive,
+        'wpr_go_bin': 'wpr_go_path'
+    }
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
-    self.assertEqual(crosebench_test.network, expected_network)
+    network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
 
   def _create_crossbench_args(self, browser='./chrome'):
     return [
