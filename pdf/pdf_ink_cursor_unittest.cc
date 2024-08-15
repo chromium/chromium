@@ -14,19 +14,19 @@ namespace {
 
 TEST(PdfInkCursorTest, CursorDiameterFromBrushSize) {
   // Very small brush sizes result in a minimum cursor size.
-  EXPECT_FLOAT_EQ(6.0f, CursorDiameterFromBrushSize(1.0f));
-  EXPECT_FLOAT_EQ(6.0f, CursorDiameterFromBrushSize(2.0f));
-  EXPECT_FLOAT_EQ(6.0f, CursorDiameterFromBrushSize(4.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSize(1.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSize(2.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSize(4.0f));
 
   // Small brush sizes have a small offset value.
-  EXPECT_FLOAT_EQ(7.0f, CursorDiameterFromBrushSize(5.0f));
-  EXPECT_FLOAT_EQ(8.0f, CursorDiameterFromBrushSize(6.0f));
-  EXPECT_FLOAT_EQ(11.0f, CursorDiameterFromBrushSize(9.0f));
+  EXPECT_EQ(7, CursorDiameterFromBrushSize(5.0f));
+  EXPECT_EQ(8, CursorDiameterFromBrushSize(6.0f));
+  EXPECT_EQ(11, CursorDiameterFromBrushSize(9.0f));
 
   // Larger brush sizes have a larger offset value.
-  EXPECT_FLOAT_EQ(14.0f, CursorDiameterFromBrushSize(10.0f));
-  EXPECT_FLOAT_EQ(15.0f, CursorDiameterFromBrushSize(11.0f));
-  EXPECT_FLOAT_EQ(20.0f, CursorDiameterFromBrushSize(16.0f));
+  EXPECT_EQ(14, CursorDiameterFromBrushSize(10.0f));
+  EXPECT_EQ(15, CursorDiameterFromBrushSize(11.0f));
+  EXPECT_EQ(20, CursorDiameterFromBrushSize(16.0f));
 }
 
 TEST(PdfInkCursorTest, GenerateToolCursor) {
@@ -37,7 +37,7 @@ TEST(PdfInkCursorTest, GenerateToolCursor) {
   // 3) The right edge, which is the outline color. Note that lighter cursor
   // colors have a darker outline color, and vice versa.
   {
-    SkBitmap bitmap = GenerateToolCursor(SK_ColorBLACK, 6.0f);
+    SkBitmap bitmap = GenerateToolCursor(SK_ColorBLACK, 6);
     ASSERT_EQ(6, bitmap.width());
     ASSERT_EQ(6, bitmap.height());
     ASSERT_FALSE(bitmap.drawsNothing());
@@ -46,7 +46,7 @@ TEST(PdfInkCursorTest, GenerateToolCursor) {
     EXPECT_EQ(SkColorSetARGB(0x18, 0xAA, 0xAA, 0xAA), bitmap.getColor(5, 0));
   }
   {
-    SkBitmap bitmap = GenerateToolCursor(SK_ColorRED, 8.0f);
+    SkBitmap bitmap = GenerateToolCursor(SK_ColorRED, 8);
     ASSERT_EQ(8, bitmap.width());
     ASSERT_EQ(8, bitmap.height());
     ASSERT_FALSE(bitmap.drawsNothing());
@@ -55,7 +55,7 @@ TEST(PdfInkCursorTest, GenerateToolCursor) {
     EXPECT_EQ(SkColorSetARGB(0xF0, 0xAA, 0xAA, 0xAA), bitmap.getColor(7, 4));
   }
   {
-    SkBitmap bitmap = GenerateToolCursor(SK_ColorWHITE, 20.0f);
+    SkBitmap bitmap = GenerateToolCursor(SK_ColorWHITE, 20);
     ASSERT_EQ(20, bitmap.width());
     ASSERT_EQ(20, bitmap.height());
     ASSERT_FALSE(bitmap.drawsNothing());

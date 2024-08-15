@@ -16,13 +16,13 @@ namespace chrome_pdf {
 // Converts brush size into cursor diameter, for use with GenerateToolCursor().
 // `brush_size` must be in the range that passes the validation performed by
 // PdfInkBrush::CheckToolSizeIsInRange().
-float CursorDiameterFromBrushSize(float brush_size);
+int CursorDiameterFromBrushSize(float brush_size);
 
 // Draws a custom circular cursor to represent the brush/highlighter/eraser
 // tool. `diameter` must be in the range [6, 32]. If it is too small, then it
 // becomes too hard to see. If it is too big, then it may not display due to OS
 // limitations.
-SkBitmap GenerateToolCursor(SkColor color, float diameter);
+SkBitmap GenerateToolCursor(SkColor color, int diameter);
 
 }  // namespace chrome_pdf
 
