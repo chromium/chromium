@@ -7,6 +7,7 @@
 
 #include "base/functional/overloaded.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -490,8 +491,17 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }
 
+// TODO(crbug/360014853): ActionItemsOverflowAndReappear is failing on
+// linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ActionItemsOverflowAndReappear \
+  DISABLED_ActionItemsOverflowAndReappear
+#else
+#define MAYBE_ActionItemsOverflowAndReappear ActionItemsOverflowAndReappear
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       ActionItemsOverflowAndReappear) {
+                       MAYBE_ActionItemsOverflowAndReappear) {
   RunTestSequence(PinBookmarkToToolbar(), SetBrowserSuperWide(),
                   // Pinned bookmark button is visible.
                   CheckActionItemOverflowed(
@@ -512,8 +522,18 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                   WaitForHide(kToolbarOverflowButtonElementId));
 }
 
+// TODO(crbug/360014853): ActionItemsShowInMenuAndActivateFromMenu is failing
+// on linux-lacros-tester-rel.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ActionItemsShowInMenuAndActivateFromMenu \
+  DISABLED_ActionItemsShowInMenuAndActivateFromMenu
+#else
+#define MAYBE_ActionItemsShowInMenuAndActivateFromMenu \
+  ActionItemsShowInMenuAndActivateFromMenu
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       ActionItemsShowInMenuAndActivateFromMenu) {
+                       MAYBE_ActionItemsShowInMenuAndActivateFromMenu) {
   RunTestSequence(
       PinBookmarkToToolbar(), SetBrowserSuperWide(), Do([this]() {
         AddDummyButtonsToToolbarTillElementOverflows(
