@@ -3845,6 +3845,7 @@ if (!is_android) {
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_apitest.cc",
         "../browser/controlled_frame/controlled_frame_dialog_browsertest.cc",
+        "../browser/controlled_frame/controlled_frame_new_window_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_permission_request_browsertest.cc",
         "../browser/extensions/alert_apitest.cc",
         "../browser/extensions/all_urls_apitest.cc",
