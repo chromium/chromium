@@ -57,9 +57,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
  protected:
   void StartChecker() {
     checker_ = std::make_unique<RequirementsChecker>(extension_);
-    // TODO(michaelpg): This should normally not have to be async. Use Run()
-    // instead of RunUntilComplete() after crbug.com/708354 is addressed.
-    runner_.RunUntilComplete(checker_.get());
+    runner_.Run(checker_.get());
   }
 
   void RequireFeature(const char feature[]) {

@@ -41,7 +41,7 @@ void RequirementsChecker::Start(ResultCallback callback) {
                            weak_ptr_factory_.GetWeakPtr()));
     webgl_checker->CheckGpuFeatureAvailability();
   } else {
-    PostRunCallback();
+    RunCallback();
   }
 }
 
@@ -60,21 +60,12 @@ void RequirementsChecker::VerifyWebGLAvailability(bool available) {
     errors_.insert(Error::kWebglNotSupported);
   }
 
-  PostRunCallback();
-}
-
-void RequirementsChecker::PostRunCallback() {
-  // TODO(michaelpg): This always forces the callback to run asynchronously
-  // to maintain the assumption in
-  // ExtensionService::LoadExtensionsFromCommandLineFlag(). Remove these helper
-  // functions after crbug.com/708354 is addressed.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&RequirementsChecker::RunCallback,
-                                weak_ptr_factory_.GetWeakPtr()));
+  RunCallback();
 }
 
 void RequirementsChecker::RunCallback() {
   DCHECK(callback_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback_).Run(errors_);
 }
 
