@@ -1076,7 +1076,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     }
 
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL: {
-      ShowCustomizeChromeSidePanel();
+      ShowCustomizeChromeSidePanel(CustomizeChromeSection::kAppearance);
       break;
     }
 
