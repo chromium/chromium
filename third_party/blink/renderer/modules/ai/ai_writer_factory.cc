@@ -36,6 +36,7 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
         resolver_(resolver),
         shared_context_string_(shared_context_string),
         abort_signal_(signal) {
+    CHECK(resolver_);
     SetContextLifecycleNotifier(ai->GetExecutionContext());
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
@@ -65,18 +66,18 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   }
 
   void OnResult(mojo::PendingRemote<mojom::blink::AIWriter> writer) override {
-    if (resolver_) {
-      if (writer) {
-        resolver_->Resolve(MakeGarbageCollected<AIWriter>(
-            ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(writer),
-            shared_context_string_));
-      } else {
-        resolver_->Reject(DOMException::Create(
-            kExceptionMessageUnableToCreateWriter,
-            DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
-      }
+    if (!resolver_) {
+      return;
     }
-    Cleanup();
+    if (writer) {
+      resolver_->Resolve(MakeGarbageCollected<AIWriter>(
+          ai_->GetExecutionContext(), ai_->GetTaskRunner(), std::move(writer),
+          shared_context_string_));
+    } else {
+      resolver_->Reject(DOMException::Create(
+          kExceptionMessageUnableToCreateWriter,
+          DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
+    }
   }
 
   // ContextLifecycleObserver methods
@@ -84,11 +85,11 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
 
  private:
   void OnAborted() {
-    if (resolver_) {
-      resolver_->Reject(DOMException::Create(
-          "Aborted",
-          DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+    if (!resolver_) {
+      return;
     }
+    resolver_->Reject(DOMException::Create(
+        "Aborted", DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
     Cleanup();
   }
 
@@ -106,6 +107,7 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
   HeapMojoReceiver<mojom::blink::AIManagerCreateWriterClient,
                    CreateWriterClient>
       receiver_;
+  // `resolver_` will be reset on Cleanup().
   Member<ScriptPromiseResolver<AIWriter>> resolver_;
   const String shared_context_string_;
   SelfKeepAlive<CreateWriterClient> keep_alive_{this};
