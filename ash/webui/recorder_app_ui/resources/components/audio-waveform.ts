@@ -166,6 +166,9 @@ export class AudioWaveform extends ReactiveLitElement {
       }
 
       .bar {
+        /* Don't block hover on the background. */
+        pointer-events: none;
+
         .speaker-single & {
           fill: var(--cros-sys-primary);
 
@@ -241,6 +244,9 @@ export class AudioWaveform extends ReactiveLitElement {
 
       .playhead {
         fill: var(--cros-sys-on_surface_variant);
+
+        /* Don't block hover on the background. */
+        pointer-events: none;
       }
     `,
   ];
