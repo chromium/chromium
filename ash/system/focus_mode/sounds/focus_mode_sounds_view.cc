@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
@@ -311,18 +312,22 @@ void FocusModeSoundsView::CreateHeader(
       std::make_unique<TabSlider>(/*max_tab_num=*/2));
   sound_tab_slider->GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 
-  soundscape_button_ = sound_tab_slider->AddButton<LabelSliderButton>(
+  soundscape_button_ = sound_tab_slider->AddButton<IconLabelSliderButton>(
       base::BindRepeating(&FocusModeSoundsView::OnSoundscapeButtonToggled,
                           weak_factory_.GetWeakPtr()),
+      &kFocusSoundsIcon,
       l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON));
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON),
+      /*tooltip_text_base=*/u"", /*horizontal=*/true);
   soundscape_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
 
-  youtube_music_button_ = sound_tab_slider->AddButton<LabelSliderButton>(
+  youtube_music_button_ = sound_tab_slider->AddButton<IconLabelSliderButton>(
       base::BindRepeating(&FocusModeSoundsView::OnYouTubeMusicButtonToggled,
                           weak_factory_.GetWeakPtr()),
+      &kYtmIcon,
       l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON));
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON),
+      /*tooltip_text_base=*/u"", /*horizontal=*/true);
   youtube_music_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
 
   if (!is_network_connected) {

@@ -47,7 +47,9 @@ constexpr int kLabelButtonMinWidth = 80;
 constexpr gfx::Insets kLabelButtonBorderInsets = gfx::Insets::VH(6, 16);
 
 // Icon + label buttons' layout parameters.
-constexpr gfx::Insets kIconLabelButtonMargins = gfx::Insets(8);
+constexpr gfx::Insets kIconLabelButtonVerticalMargins = gfx::Insets(8);
+constexpr gfx::Insets kIconLabelButtonHorizontalMargins =
+    gfx::Insets::VH(8, 16);
 constexpr int kIconLabelSpacing = 6;
 
 }  // namespace
@@ -239,14 +241,18 @@ END_METADATA
 IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
                                              const gfx::VectorIcon* icon,
                                              const std::u16string& text,
-                                             const std::u16string& tooltip_text)
+                                             const std::u16string& tooltip_text,
+                                             bool horizontal)
     : TabSliderButton(std::move(callback),
                       tooltip_text.empty() ? text : tooltip_text),
       image_view_(AddChildView(std::make_unique<views::ImageView>())),
       label_(AddChildView(std::make_unique<views::Label>(text))) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/kIconLabelButtonMargins,
+      horizontal ? views::BoxLayout::Orientation::kHorizontal
+                 : views::BoxLayout::Orientation::kVertical,
+      /*inside_border_insets=*/
+      (horizontal ? kIconLabelButtonHorizontalMargins
+                  : kIconLabelButtonVerticalMargins),
       /*between_child_spacing=*/kIconLabelSpacing));
 
   DCHECK(icon);

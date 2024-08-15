@@ -120,7 +120,9 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
   raw_ptr<views::Label> label_;
 };
 
-// A `TabSliderButton` which shows an icon above a label.
+// A `TabSliderButton` which shows an icon either:
+// - Next to a label (`horizontal == true`).
+// - Above a label (`horizontal == false`).
 class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   METADATA_HEADER(IconLabelSliderButton, TabSliderButton)
 
@@ -135,7 +137,8 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   IconLabelSliderButton(PressedCallback callback,
                         const gfx::VectorIcon* icon,
                         const std::u16string& text,
-                        const std::u16string& tooltip_text_base = u"");
+                        const std::u16string& tooltip_text_base = u"",
+                        bool horizontal = false);
   IconLabelSliderButton(const IconLabelSliderButton&) = delete;
   IconLabelSliderButton& operator=(const IconLabelSliderButton&) = delete;
   ~IconLabelSliderButton() override;
