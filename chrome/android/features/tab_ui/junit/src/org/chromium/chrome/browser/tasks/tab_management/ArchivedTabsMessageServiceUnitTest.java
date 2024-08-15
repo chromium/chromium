@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -74,12 +75,15 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
     @Mock private Runnable mAppendMessageRunnable;
+    @Mock private TabListCoordinator mTabListCoordinator;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserver;
 
     private Activity mActivity;
     private ViewGroup mRootView;
     private ArchivedTabsMessageService mArchivedTabsMessageService;
     private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<TabListCoordinator> mTabListCoordinatorSupplier =
+            new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() throws Exception {
@@ -88,7 +92,10 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         doReturn(TIME_DELTA_DAYS).when(mTabArchiveSettings).getArchiveTimeDeltaDays();
         doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
+        mTabListCoordinatorSupplier.set(mTabListCoordinator);
+    }
 
+    private void createArchivedTabsMessageService() {
         mArchivedTabsMessageService =
                 new ArchivedTabsMessageService(
                         mActivity,
@@ -102,7 +109,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mBackPressManager,
                         mModalDialogManager,
                         mTracker,
-                        mAppendMessageRunnable);
+                        mAppendMessageRunnable,
+                        mTabListCoordinatorSupplier);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);
@@ -120,6 +128,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testTabAddedThenRemoved() {
+        createArchivedTabsMessageService();
         PropertyModel customCardPropertyModel =
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
 
@@ -140,6 +149,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testSendDuplicateMessage() {
+        createArchivedTabsMessageService();
         PropertyModel customCardPropertyModel =
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
 
@@ -170,6 +180,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testClickCard() {
+        createArchivedTabsMessageService();
         PropertyModel customCardPropertyModel =
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
         customCardPropertyModel.get(CLICK_HANDLER).run();
@@ -179,6 +190,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testCustomViewDetached() {
+        createArchivedTabsMessageService();
         mRootView.addView(mArchivedTabsMessageService.getCustomView());
         assertNotNull(mArchivedTabsMessageService.getCustomView().getParent());
 
@@ -188,6 +200,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testSettingsChangesUpdatesMessage() {
+        createArchivedTabsMessageService();
         PropertyModel customCardPropertyModel =
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
 
@@ -198,6 +211,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testDestroy() {
+        createArchivedTabsMessageService();
         mArchivedTabsMessageService.destroy();
         verify(mTabArchiveSettings).removeObserver(mTabArchiveSettingsObserver.getValue());
         verify(mArchivedTabsDialogCoordinator).destroy();
@@ -206,6 +220,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Test
     public void testIphShownThisSession() {
         TabArchiveSettings.setIphShownThisSession(true);
+        createArchivedTabsMessageService();
 
         PropertyModel customCardPropertyModel =
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
@@ -216,11 +231,16 @@ public class ArchivedTabsMessageServiceUnitTest {
         assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
 
         doReturn(8).when(mArchivedTabModel).getCount();
-        verify(mMessageObserver, times(1))
-                .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
+        verify(mMessageObserver).messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
         mTabCountSupplier.set(8);
+        doReturn(true)
+                .when(mTabListCoordinator)
+                .specialItemExists(MessageType.ARCHIVED_TABS_MESSAGE);
+        mArchivedTabsMessageService.onAppendedMessage();
+        ShadowLooper.runUiThreadTasks();
 
         // The bit should be reset.
         assertFalse(TabArchiveSettings.getIphShownThisSession());
+        verify(mTabListCoordinator).setRecyclerViewPosition(any());
     }
 }

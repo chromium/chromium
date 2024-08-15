@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardV
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
@@ -18,12 +19,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.OnTabSelectingListener;
+import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -73,6 +78,22 @@ public class ArchivedTabsMessageService extends MessageService
                     mCustomCardView =
                             LayoutInflater.from(mContext)
                                     .inflate(R.layout.archived_tabs_message_card_view, null);
+                    if (mShowTwoStepIPH) {
+                        mCustomCardView.addOnAttachStateChangeListener(
+                                new OnAttachStateChangeListener() {
+                                    @Override
+                                    public void onViewAttachedToWindow(@NonNull View view) {
+                                        HighlightParams params =
+                                                new HighlightParams(HighlightShape.CIRCLE);
+                                        params.setBoundsRespectPadding(false);
+                                        ViewHighlighter.turnOnHighlight(mEndIconView, params);
+                                        mCustomCardView.removeOnAttachStateChangeListener(this);
+                                    }
+
+                                    @Override
+                                    public void onViewDetachedFromWindow(@NonNull View view) {}
+                                });
+                    }
                     mEndIconView = mCustomCardView.findViewById(R.id.end_image);
                     mCustomCardModel =
                             new PropertyModel.Builder(ArchivedTabsCardViewProperties.ALL_KEYS)
@@ -116,6 +137,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull Tracker mTracker;
     private final @NonNull Runnable mAppendMessageRunnable;
+    private final @NonNull Supplier<TabListCoordinator> mTabListCoordinatorSupplier;
 
     private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
@@ -125,6 +147,7 @@ public class ArchivedTabsMessageService extends MessageService
     private PropertyModel mCustomCardModel;
     private boolean mMessageSentToQueue;
     private OnTabSelectingListener mOnTabSelectingListener;
+    private boolean mShowTwoStepIPH;
 
     ArchivedTabsMessageService(
             @NonNull Context context,
@@ -138,7 +161,8 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull BackPressManager backPressManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Tracker tracker,
-            @NonNull Runnable appendMessageRunnable) {
+            @NonNull Runnable appendMessageRunnable,
+            @NonNull Supplier<TabListCoordinator> tabListCoordinatorSupplier) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
         mContext = context;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
@@ -152,6 +176,12 @@ public class ArchivedTabsMessageService extends MessageService
         mModalDialogManager = modalDialogManager;
         mTracker = tracker;
         mAppendMessageRunnable = appendMessageRunnable;
+        mTabListCoordinatorSupplier = tabListCoordinatorSupplier;
+        // Capture this value immediately before it expires when the IPH is dismissed, which will
+        // happen regardless of user behavior. The TabArchiveSettings tracks whether the main IPH
+        // was followed. When that's true, the archived tabs message should be highlighted as part
+        // of the 2-step IPH.
+        mShowTwoStepIPH = TabArchiveSettings.getIphShownThisSession();
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
@@ -203,6 +233,29 @@ public class ArchivedTabsMessageService extends MessageService
     // MessageUpdateObserver implementation.
 
     @Override
+    public void onAppendedMessage() {
+        // When the two-step IPH is active, highlight the end icon.
+        if (mShowTwoStepIPH) {
+            mShowTwoStepIPH = false;
+            // Reset this manually, in case the IPH wasn't dismissed for some reason.
+            TabArchiveSettings.setIphShownThisSession(false);
+            // Scrolling the recycler view only works when posted.
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (!mTabListCoordinatorSupplier.hasValue()) return;
+                        TabListCoordinator tabListCoordiantor = mTabListCoordinatorSupplier.get();
+                        if (tabListCoordiantor.specialItemExists(
+                                MessageType.ARCHIVED_TABS_MESSAGE)) {
+                            mTabListCoordinatorSupplier
+                                    .get()
+                                    .setRecyclerViewPosition(new RecyclerViewPosition(0, 0));
+                        }
+                    });
+        }
+    }
+
+    @Override
     public void onRemoveAllAppendedMessage() {
         if (mCustomCardView == null) return;
         // When messages are removed, detach the custom view.
@@ -229,16 +282,6 @@ public class ArchivedTabsMessageService extends MessageService
         if (mMessageSentToQueue) return;
         if (mArchivedTabModel == null) return;
         if (mArchivedTabModel.getCount() <= 0) return;
-        if (TabArchiveSettings.getIphShownThisSession()) {
-            mEndIconView.post(
-                    () -> {
-                        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-                        params.setBoundsRespectPadding(false);
-                        ViewHighlighter.turnOnHighlight(mEndIconView, params);
-                        // Only highlight the view once per session.
-                    });
-            TabArchiveSettings.setIphShownThisSession(false);
-        }
         updateModelProperties();
         sendAvailabilityNotification(new ArchivedTabsMessageData(this));
         mMessageSentToQueue = true;
