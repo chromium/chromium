@@ -1029,6 +1029,9 @@ public class TabGroupModelFilter extends TabModelFilter {
         RecordHistogram.recordCount1000Histogram(
                 "TabGroups.NumberOfRootIdsFixed", fixedRootIdCount);
 
+        // There's an assertion being hit where archived/restored tabs are being counted as part of
+        // a tab group. See crbug.com/356330532 for more details.
+        resetFilterState();
         addTabGroupIdsForAllTabGroups();
     }
 
