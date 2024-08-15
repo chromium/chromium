@@ -44,6 +44,7 @@ namespace blink {
 class Document;
 class ExceptionState;
 class SlotAssignment;
+class ReferenceTargetIdObserver;
 class V8ObservableArrayCSSStyleSheet;
 class WhitespaceAttacher;
 
@@ -139,6 +140,10 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void SetDelegatesFocus(bool flag) { delegates_focus_ = flag; }
   bool delegatesFocus() const { return delegates_focus_; }
 
+  void setReferenceTarget(const AtomicString& reference_target);
+  const AtomicString& referenceTarget() const;
+  Element* referenceTargetElement() const;
+
   bool IsManualSlotting() const {
     return slot_assignment_mode_ ==
            static_cast<unsigned>(SlotAssignmentMode::kManual);
@@ -196,6 +201,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                                  ExceptionState&) override;
 
  private:
+  friend class ReferenceTargetIdObserver;
+
   void ChildrenChanged(const ChildrenChange&) override;
 
   SlotAssignment& EnsureSlotAssignment();
@@ -206,8 +213,11 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     --child_shadow_root_count_;
   }
 
+  void ReferenceTargetChanged();
+
   Member<SlotAssignment> slot_assignment_;
   Member<CustomElementRegistry> registry_;
+  Member<ReferenceTargetIdObserver> reference_target_id_observer_;
   unsigned child_shadow_root_count_ : 16;
   unsigned mode_ : 2;
   unsigned registered_with_parent_shadow_root_ : 1;

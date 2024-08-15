@@ -3799,7 +3799,21 @@ bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
   }
 
   // Return true if any ancestor is a label, as in <label><input></label>.
-  return Traversal<HTMLLabelElement>::FirstAncestor(elem);
+  if (Traversal<HTMLLabelElement>::FirstAncestor(elem)) {
+    return true;
+  }
+
+  // If the element is the reference target of its shadow host, also check if
+  // the host may have a label.
+  if (ShadowRoot* shadow_root = elem.ContainingShadowRoot()) {
+    if (shadow_root->referenceTargetElement() == &elem) {
+      if (HTMLElement* host = DynamicTo<HTMLElement>(shadow_root->host())) {
+        return MayHaveHTMLLabel(*host);
+      }
+    }
+  }
+
+  return false;
 }
 
 bool AXObjectCacheImpl::IsLabelOrDescription(Element& element) {

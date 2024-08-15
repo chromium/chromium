@@ -59,7 +59,7 @@ class CORE_EXPORT LiveNodeListBase : public GarbageCollectedMixin {
 
   virtual ~LiveNodeListBase() = default;
 
-  ContainerNode& RootNode() const;
+  virtual ContainerNode& RootNode() const;
 
   void DidMoveToDocument(Document& old_document, Document& new_document);
   ALWAYS_INLINE bool IsRootedAtTreeScope() const {

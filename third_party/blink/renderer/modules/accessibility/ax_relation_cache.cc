@@ -682,7 +682,10 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
   } else if (element && element->HasExplicitlySetAttrAssociatedElements(
                             html_names::kAriaOwnsAttr)) {
     UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
-        owner, *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr),
+        owner,
+        // TODO (crbug.com/353750122): Set resolve_reference_target to false.
+        *element->GetAttrAssociatedElements(html_names::kAriaOwnsAttr,
+                                            /*resolve_reference_target*/ true),
         owned_children, force);
   } else {
     // Figure out the ids that actually correspond to children that exist
@@ -1104,7 +1107,7 @@ Node* AXRelationCache::LabelChanged(HTMLLabelElement& label) {
   }
 
   all_previously_seen_label_target_ids_.insert(id);
-  return label.control();
+  return label.Control();
 }
 
 void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {

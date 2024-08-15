@@ -3856,6 +3856,12 @@
       status: "experimental",
     },
     {
+      // Reference Target allows IDREF attributes to refer inside Shadow DOM.
+      // crbug.com/346835896
+      name: "ShadowRootReferenceTarget",
+      status: "test",
+    },
+    {
       // crbug.com/329677645
       name: "ShapeResultCachedPreviousSafeToBreakOffset",
       status: "stable",

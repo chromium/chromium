@@ -970,7 +970,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     if (IsRedundantLabel(label)) {
       if (ignored_reasons) {
         ignored_reasons->push_back(
-            IgnoredReason(kAXLabelFor, AXObjectCache().Get(label->control())));
+            IgnoredReason(kAXLabelFor, AXObjectCache().Get(label->Control())));
       }
       return kIgnoreObject;
     }
@@ -5020,7 +5020,7 @@ bool AXNodeObject::IsRedundantLabel(HTMLLabelElement* label) {
   // ATs do not already have features to combine labels and controls, e.g.
   // removing redundant announcements caused by having text and named controls
   // as separate objects.
-  HTMLInputElement* input = DynamicTo<HTMLInputElement>(label->control());
+  HTMLInputElement* input = DynamicTo<HTMLInputElement>(label->Control());
   if (!input)
     return false;
 
@@ -7635,7 +7635,7 @@ AXObject* AXNodeObject::AccessibilityHitTest(const gfx::Point& point) const {
     // If this element is the label of a control, a hit test should return the
     // control. The label is ignored because it's already reflected in the name.
     if (auto* label = DynamicTo<HTMLLabelElement>(result->GetNode())) {
-      if (HTMLElement* control = label->control()) {
+      if (HTMLElement* control = label->Control()) {
         if (AXObject* ax_control = AXObjectCache().Get(control)) {
           return ax_control;
         }

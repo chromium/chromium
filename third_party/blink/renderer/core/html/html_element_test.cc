@@ -298,13 +298,13 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
   EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
 
-  target->setAnchorElement(anchor2);
+  target->setAnchorElementForBinding(anchor2);
 
   EXPECT_EQ(target->anchorElement(), anchor2);
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
   EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
 
-  target->setAnchorElement(nullptr);
+  target->setAnchorElementForBinding(nullptr);
 
   EXPECT_FALSE(target->anchorElement());
   EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
@@ -354,7 +354,7 @@ TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
   HTMLElement* target2 =
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target2")));
 
-  target2->setAnchorElement(anchor);
+  target2->setAnchorElementForBinding(anchor);
 
   EXPECT_EQ(target1->anchorElement(), anchor);
   EXPECT_EQ(target2->anchorElement(), anchor);
@@ -379,7 +379,7 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 
   HTMLElement* target2 = To<HTMLElement>(
       GetDocument().CreateElementForBinding(AtomicString("div")));
-  target2->setAnchorElement(anchor);
+  target2->setAnchorElementForBinding(anchor);
 
   EXPECT_FALSE(target1->anchorElement());
   EXPECT_FALSE(target2->anchorElement());

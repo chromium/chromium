@@ -274,8 +274,13 @@ class CORE_EXPORT HTMLInputElement
 
   bool WillRespondToMouseClickEvents() override;
 
-  HTMLElement* list() const;
+  // Returns the DataList element associated via the list attribute, if any.
+  // Resolves the reference target if necessary. This element may be inside a
+  // shadow root, and should not be returned to JavaScript.
   HTMLDataListElement* DataList() const;
+  // For JavaScript binding, return the DataList element without resolving the
+  // reference target, to avoid exposing shadow root content to JavaScript.
+  HTMLElement* listForBinding() const;
   bool HasValidDataListOptions() const;
   void ListAttributeTargetChanged();
   // Associated <datalist> options which match to the current INPUT value.

@@ -230,7 +230,8 @@ Element* HTMLAreaElement::interestTargetElement() {
     return nullptr;
   }
 
-  return GetElementAttribute(html_names::kInteresttargetAttr);
+  return GetElementAttributeResolvingReferenceTarget(
+      html_names::kInteresttargetAttr);
 }
 
 AtomicString HTMLAreaElement::interestAction() const {

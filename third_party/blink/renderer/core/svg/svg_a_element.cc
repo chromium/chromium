@@ -176,7 +176,8 @@ Element* SVGAElement::interestTargetElement() {
     return nullptr;
   }
 
-  return GetElementAttribute(svg_names::kInteresttargetAttr);
+  return GetElementAttributeResolvingReferenceTarget(
+      svg_names::kInteresttargetAttr);
 }
 
 AtomicString SVGAElement::interestAction() const {

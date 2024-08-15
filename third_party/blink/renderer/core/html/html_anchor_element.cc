@@ -624,7 +624,8 @@ Element* HTMLAnchorElement::interestTargetElement() {
     return nullptr;
   }
 
-  return GetElementAttribute(html_names::kInteresttargetAttr);
+  return GetElementAttributeResolvingReferenceTarget(
+      html_names::kInteresttargetAttr);
 }
 
 AtomicString HTMLAnchorElement::interestAction() const {

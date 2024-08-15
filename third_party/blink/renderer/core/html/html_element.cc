@@ -3252,6 +3252,11 @@ bool HTMLElement::IsValidElement() {
 }
 
 bool HTMLElement::IsLabelable() const {
+  if (auto* target = DynamicTo<HTMLElement>(
+          GetShadowReferenceTarget(html_names::kForAttr))) {
+    return target->IsLabelable();
+  }
+
   return IsFormAssociatedCustomElement();
 }
 
@@ -3259,7 +3264,7 @@ bool HTMLElement::HasActiveLabel() const {
   for (const Element* active_element :
        GetDocument().UserActionElements().ActiveElements()) {
     const HTMLLabelElement* label = DynamicTo<HTMLLabelElement>(active_element);
-    if (label && label->control() == this) {
+    if (label && label->Control() == this) {
       return true;
     }
   }

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <input id="input1" aria-activedescendant="x-listbox1">
+    <x-listbox1 id="x-listbox1" role="listbox">
+      <template shadowrootmode="closed" shadowrootreferencetarget="option-2">
+        <option id="option-1">Option 1</option>
+        <option id="option-2">Option 2</option>
+        <option id="option-3">Option 3</option>
+      </template>
+    </x-listbox1>
+  </div>
+
+  <script>
+    test(function (t) {
+      const axInput = accessibilityController.accessibleElementById("input1");
+      assert_equals(axInput.activeDescendant.name, "Option 2");
+    }, "aria-activedescendant targeting a custom element with shadowrootreferencetarget.");
+  </script>
+
+
+  <script>
+    customElements.define(
+      "x-listbox2",
+      class XListbox2 extends HTMLElement {
+        constructor() {
+          super();
+          this.shadowRoot_ = this.attachShadow({ mode: "closed" });
+          this.shadowRoot_.innerHTML = `
+        <div id="real-listbox" role="listbox">
+          <div id="option-a" role="option">Option A</div>
+          <div id="option-b" role="option">Option B</div>
+          <div id="option-c" role="option">Option C</div>
+        </div>
+      `;
+          this.shadowRoot_.referenceTarget = "option-c";
+        }
+
+        setReferenceTarget(target) {
+          this.shadowRoot_.referenceTarget = target;
+        }
+      }
+    );
+  </script>
+
+  <div class="container">
+    <input id="input2" aria-activedescendant="x-listbox2">
+    <x-listbox2 id="x-listbox2" role="listbox"></x-listbox2>
+  </div>
+
+  <script>
+    test(function (t) {
+      const axInput = accessibilityController.accessibleElementById("input2");
+      assert_equals(axInput.activeDescendant.name, "Option C");
+    }, "ShadowRoot.referenceTarget property works on an imperatively defined custom element.");
+
+    test(function (t) {
+      const axInput = accessibilityController.accessibleElementById("input2");
+      const listbox = document.getElementById("x-listbox2");
+      listbox.setReferenceTarget("option-a");
+      assert_equals(axInput.activeDescendant.name, "Option A");
+    }, "Modifying a ShadowRoot's referenceTarget also updates the accessibility object.");
+  </script>
+
+</body>
+
+</html>

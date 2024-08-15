@@ -727,7 +727,7 @@ Node* Element::Clone(Document& factory,
                                         : FocusDelegation::kNone,
           shadow_root->GetSlotAssignmentMode(), /*registry*/ nullptr,
           shadow_root->serializable(),
-          /*clonable*/ true);
+          /*clonable*/ true, shadow_root->referenceTarget());
 
       // 7.2 Set copy’s shadow root’s declarative to node’s shadow root’s
       // declarative.
@@ -894,6 +894,40 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   }
 }
 
+Element* Element::GetShadowReferenceTarget(const QualifiedName& name) const {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+    return nullptr;
+  }
+
+  // TODO (crbug.com/353750122): Disallow aria-owns from participating in
+  // ReferenceTarget.
+
+  if (ShadowRoot* shadow_root = GetShadowRoot()) {
+    if (Element* target = shadow_root->referenceTargetElement()) {
+      if (Element* inner_target = target->GetShadowReferenceTarget(name)) {
+        return inner_target;
+      }
+      return target;
+    }
+  }
+  return nullptr;
+}
+
+Element* Element::GetShadowReferenceTargetOrSelf(const QualifiedName& name) {
+  if (Element* target = GetShadowReferenceTarget(name)) {
+    return target;
+  }
+  return this;
+}
+
+const Element* Element::GetShadowReferenceTargetOrSelf(
+    const QualifiedName& name) const {
+  if (Element* target = GetShadowReferenceTarget(name)) {
+    return target;
+  }
+  return this;
+}
+
 Element* Element::getElementByIdIncludingDisconnected(
     const Element& element,
     const AtomicString& id) const {
@@ -944,8 +978,18 @@ Element* Element::GetElementAttribute(const QualifiedName& name) const {
   return getElementByIdIncludingDisconnected(*this, id);
 }
 
+Element* Element::GetElementAttributeResolvingReferenceTarget(
+    const QualifiedName& name) const {
+  if (Element* element = GetElementAttribute(name)) {
+    return element->GetShadowReferenceTargetOrSelf(name);
+  }
+
+  return nullptr;
+}
+
 HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
-    const QualifiedName& name) {
+    const QualifiedName& name,
+    bool resolve_reference_target) {
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#attr-associated-elements
   // 1. Let elements be an empty list.
   HeapVector<Member<Element>>* result_elements =
@@ -958,6 +1002,10 @@ HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       // 3.1. If attrElement is not a descendant of any of element's
       // shadow-including ancestors, then continue.
       if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attr_element)) {
+        if (resolve_reference_target) {
+          // 3.NEW. Resolve the referenceTarget of attr_element
+          attr_element = attr_element->GetShadowReferenceTargetOrSelf(name);
+        }
         // 3.2. Append attrElement to elements.
         result_elements->push_back(attr_element);
       }
@@ -994,6 +1042,10 @@ HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
       Element* candidate =
           getElementByIdIncludingDisconnected(*this, AtomicString(id));
       if (candidate) {
+        if (resolve_reference_target) {
+          // 4.3.NEW. Resolve the referenceTarget of the candidate element
+         candidate = candidate->GetShadowReferenceTargetOrSelf(attr);
+        }
         // 4.3.2. Append candidate to elements.
         result_elements->push_back(candidate);
       }
@@ -1008,7 +1060,8 @@ FrozenArray<Element>* Element::GetElementArrayAttribute(
   // https://html.spec.whatwg.org/multipage/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element-3
 
   // 1. Let elements be this's attr-associated elements.
-  HeapVector<Member<Element>>* elements = GetAttrAssociatedElements(name);
+  HeapVector<Member<Element>>* elements =
+      GetAttrAssociatedElements(name, /*resolve_reference_target=*/false);
 
   CachedAttrAssociatedElementsMap* cached_attr_associated_elements_map =
       GetDocument().GetCachedAttrAssociatedElementsMap(this);
@@ -1260,10 +1313,24 @@ Element* Element::anchorElement() const {
   if (!IsInTreeScope()) {
     return nullptr;
   }
+  return GetElementAttributeResolvingReferenceTarget(html_names::kAnchorAttr);
+}
+
+// For JavaScript binding, return the anchor element without resolving the
+// reference target, to avoid exposing shadow root content to JS.
+Element* Element::anchorElementForBinding() const {
+  // TODO(crbug.com/1425215): Fix GetElementAttribute() for out-of-tree-scope
+  // elements, so that we can remove the hack below.
+  if (!RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
+    return nullptr;
+  }
+  if (!IsInTreeScope()) {
+    return nullptr;
+  }
   return GetElementAttribute(html_names::kAnchorAttr);
 }
 
-void Element::setAnchorElement(Element* new_element) {
+void Element::setAnchorElementForBinding(Element* new_element) {
   CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
   SetElementAttribute(html_names::kAnchorAttr, new_element);
   EnsureAnchorElementObserver().Notify();
@@ -5602,9 +5669,9 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     }
   }
 
-  ShadowRoot& shadow_root =
-      AttachShadowRootInternal(mode, focus_delegation, slot_assignment,
-                               registry, serializable, clonable);
+  ShadowRoot& shadow_root = AttachShadowRootInternal(
+      mode, focus_delegation, slot_assignment, registry, serializable, clonable,
+      /*reference_target*/ g_null_atom);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -5613,12 +5680,14 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   return &shadow_root;
 }
 
-bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
-                                          String mode_string,
-                                          FocusDelegation focus_delegation,
-                                          SlotAssignmentMode slot_assignment,
-                                          bool serializable,
-                                          bool clonable) {
+bool Element::AttachDeclarativeShadowRoot(
+    HTMLTemplateElement& template_element,
+    String mode_string,
+    FocusDelegation focus_delegation,
+    SlotAssignmentMode slot_assignment,
+    bool serializable,
+    bool clonable,
+    const AtomicString& reference_target) {
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
@@ -5635,9 +5704,9 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
 
   // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
   // argument here.
-  ShadowRoot& shadow_root =
-      AttachShadowRootInternal(mode, focus_delegation, slot_assignment,
-                               /*registry*/ nullptr, serializable, clonable);
+  ShadowRoot& shadow_root = AttachShadowRootInternal(
+      mode, focus_delegation, slot_assignment,
+      /*registry*/ nullptr, serializable, clonable, reference_target);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -5659,13 +5728,16 @@ ShadowRoot& Element::AttachShadowRootInternal(
     SlotAssignmentMode slot_assignment_mode,
     CustomElementRegistry* registry,
     bool serializable,
-    bool clonable) {
+    bool clonable,
+    const AtomicString& reference_target) {
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
   DCHECK(type == ShadowRootMode::kOpen || type == ShadowRootMode::kClosed)
       << type;
   DCHECK(!AlwaysCreateUserAgentShadowRoot());
+  DCHECK(reference_target.IsNull() ||
+         RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled());
 
   GetDocument().SetContainsShadowRoot();
 
@@ -5685,12 +5757,16 @@ ShadowRoot& Element::AttachShadowRootInternal(
   // 6. Set shadow’s delegates focus to init’s delegatesFocus.
   shadow_root.SetDelegatesFocus(focus_delegation ==
                                 FocusDelegation::kDelegateFocus);
-  // NEW. Set shadow’s "is declarative shadow root" property to false.
+  // 9. Set shadow’s declarative to false.
   shadow_root.SetIsDeclarativeShadowRoot(false);
 
   shadow_root.SetRegistry(registry);
+  // 11. Set shadow’s serializable to serializable.
   shadow_root.setSerializable(serializable);
+  // 10. Set shadow’s clonable to clonable.
   shadow_root.setClonable(clonable);
+  // NEW. Set reference target.
+  shadow_root.setReferenceTarget(reference_target);
 
   // 7. If this’s custom element state is "precustomized" or "custom", then set
   // shadow’s available to element internals to true.

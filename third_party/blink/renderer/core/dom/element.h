@@ -285,6 +285,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetFloatingPointAttribute(const QualifiedName& attribute_name,
                                  double value);
 
+  // If this element hosts a shadow root with a referenceTarget, returns the
+  // target element inside the shadow root. In the case where there are multiple
+  // nested layers of shadow roots, returns the innermost target element.
+  Element* GetShadowReferenceTarget(const QualifiedName& name) const;
+
+  // Same as GetShadowReferenceTarget, but returns this element instead of
+  // nullptr in the case where there is no shadow root reference target.
+  Element* GetShadowReferenceTargetOrSelf(const QualifiedName& name);
+  const Element* GetShadowReferenceTargetOrSelf(
+      const QualifiedName& name) const;
+
   // Returns true if |this| element has attr-associated elements that were set
   // via the IDL, rather than computed from the content attribute.
   // See
@@ -294,9 +305,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // computes aria-owns differently for element reflection.
   bool HasExplicitlySetAttrAssociatedElements(const QualifiedName& name);
   Element* GetElementAttribute(const QualifiedName& name) const;
+  Element* GetElementAttributeResolvingReferenceTarget(
+      const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
   HeapVector<Member<Element>>* GetAttrAssociatedElements(
-      const QualifiedName& name);
+      const QualifiedName& name,
+      bool resolve_reference_target);
 
   // If treescope_element is connected, then we will search treescope_element's
   // TreeScope for an element with the id. If treescope_element is disconnected,
@@ -802,7 +816,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    FocusDelegation,
                                    SlotAssignmentMode,
                                    bool serializable,
-                                   bool clonable);
+                                   bool clonable,
+                                   const AtomicString& reference_target);
 
   ShadowRoot& CreateUserAgentShadowRoot(
       SlotAssignmentMode = SlotAssignmentMode::kNamed);
@@ -811,7 +826,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                        SlotAssignmentMode,
                                        CustomElementRegistry*,
                                        bool serializable,
-                                       bool clonable);
+                                       bool clonable,
+                                       const AtomicString& reference_target);
   // This version is for testing only, and allows easy attachment of a shadow
   // root, specifying only the type and none of the other arguments.
   ShadowRoot& AttachShadowRootForTesting(ShadowRootMode type) {
@@ -819,7 +835,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                     SlotAssignmentMode::kNamed,
                                     /*registry*/ nullptr,
                                     /*serializable*/ false,
-                                    /*clonable*/ false);
+                                    /*clonable*/ false,
+                                    /*reference_target*/ g_null_atom);
   }
 
   // Returns the shadow root attached to this element if it is a shadow host.
@@ -1399,7 +1416,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // TODO(crbug.com/40059176) If the HTMLAnchorAttribute feature is disabled,
   // this will return nullptr;
   Element* anchorElement() const;
-  void setAnchorElement(Element*);
+  Element* anchorElementForBinding() const;
+  void setAnchorElementForBinding(Element*);
 
   AnchorPositionScrollData& EnsureAnchorPositionScrollData();
   void RemoveAnchorPositionScrollData();

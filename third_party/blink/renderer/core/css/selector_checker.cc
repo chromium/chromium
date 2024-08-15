@@ -111,7 +111,7 @@ static bool MatchesSpatialNavigationFocusPseudoClass(const Element& element) {
 
 static bool MatchesHasDatalistPseudoClass(const Element& element) {
   auto* html_input_element = DynamicTo<HTMLInputElement>(element);
-  return html_input_element && html_input_element->list();
+  return html_input_element && html_input_element->DataList();
 }
 
 static bool MatchesListBoxPseudoClass(const Element& element) {

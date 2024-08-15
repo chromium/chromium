@@ -49,7 +49,9 @@ namespace blink {
 HTMLLabelElement::HTMLLabelElement(Document& document)
     : HTMLElement(html_names::kLabelTag, document), processing_click_(false) {}
 
-HTMLElement* HTMLLabelElement::control() const {
+// For JavaScript binding, return the control element without resolving the
+// reference target, to avoid exposing shadow root content to JS.
+HTMLElement* HTMLLabelElement::controlForBinding() const {
   // https://html.spec.whatwg.org/C/#labeled-control
   const AtomicString& control_id = FastGetAttribute(html_names::kForAttr);
   if (control_id.IsNull()) {
@@ -88,8 +90,22 @@ HTMLElement* HTMLLabelElement::control() const {
   return nullptr;
 }
 
+HTMLElement* HTMLLabelElement::Control() const {
+  HTMLElement* control = controlForBinding();
+  if (!control) {
+    return nullptr;
+  }
+
+  if (auto* reference_target =
+          control->GetShadowReferenceTarget(html_names::kForAttr)) {
+    return DynamicTo<HTMLElement>(reference_target);
+  }
+
+  return control;
+}
+
 HTMLFormElement* HTMLLabelElement::form() const {
-  if (HTMLElement* control = this->control()) {
+  if (HTMLElement* control = Control()) {
     if (auto* form_control_element = DynamicTo<HTMLFormControlElement>(control))
       return form_control_element->Form();
     if (control->IsFormAssociatedCustomElement())
@@ -105,7 +121,7 @@ void HTMLLabelElement::SetActive(bool active) {
   }
 
   // Also update our corresponding control.
-  HTMLElement* control_element = control();
+  HTMLElement* control_element = Control();
   if (control_element && control_element->IsActive() != IsActive())
     control_element->SetActive(IsActive());
 }
@@ -117,7 +133,7 @@ void HTMLLabelElement::SetHovered(bool hovered) {
   }
 
   // Also update our corresponding control.
-  HTMLElement* element = control();
+  HTMLElement* element = Control();
   if (element && element->IsHovered() != IsHovered())
     element->SetHovered(IsHovered());
 }
@@ -151,7 +167,7 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
 // TODO(crbug.com/1523168): Remove this method when the flag is removed.
 bool HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
   if (evt.type() == event_type_names::kClick && !processing_click_) {
-    HTMLElement* element = control();
+    HTMLElement* element = Control();
 
     // If we can't find a control or if the control received the click
     // event, then there's no need for us to do anything.
@@ -240,8 +256,9 @@ bool HTMLLabelElement::HasActivationBehavior() const {
 }
 
 bool HTMLLabelElement::WillRespondToMouseClickEvents() {
-  if (control() && control()->WillRespondToMouseClickEvents())
+  if (Control() && Control()->WillRespondToMouseClickEvents()) {
     return true;
+  }
 
   return HTMLElement::WillRespondToMouseClickEvents();
 }
@@ -258,7 +275,7 @@ void HTMLLabelElement::Focus(const FocusParams& params) {
     return;
 
   // To match other browsers, always restore previous selection.
-  if (HTMLElement* element = control()) {
+  if (HTMLElement* element = Control()) {
     element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
                                params.source_capabilities, params.options,
                                params.focus_trigger));
@@ -267,9 +284,9 @@ void HTMLLabelElement::Focus(const FocusParams& params) {
 
 void HTMLLabelElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
-  if (HTMLElement* element = control())
+  if (HTMLElement* element = Control()) {
     element->AccessKeyAction(creation_scope);
-  else
+  } else
     HTMLElement::AccessKeyAction(creation_scope);
 }
 

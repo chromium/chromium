@@ -345,7 +345,8 @@ HTMLFormControlElement::popoverTargetElement() {
   }
 
   Element* target_element;
-  target_element = GetElementAttribute(html_names::kPopovertargetAttr);
+  target_element = GetElementAttributeResolvingReferenceTarget(
+      html_names::kPopovertargetAttr);
 
   // The selectlist element's button which opens its listbox forms an implicit
   // popover trigger for the listbox in order to function properly with light
