@@ -2755,6 +2755,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
   <int value="2" label="Not supported due to missing location"/>
+  <int value="3" label="Not supported due to missing collection"/>
 </enum>
 
 <enum name="WallpaperType">

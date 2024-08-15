@@ -6481,7 +6481,7 @@ class WallpaperControllerVersionedWallpaperInfoTest
 };
 
 TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
-       RecordNotSupportedMigrationStatus) {
+       RecordNotSupportedNoLocationMigrationStatus) {
   WallpaperInfo unmigrated_info = {"", WALLPAPER_LAYOUT_CENTER_CROPPED,
                                    WallpaperType::kOnline, base::Time::Now()};
   unmigrated_info.collection_id =
@@ -6497,6 +6497,25 @@ TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
   histogram_tester().ExpectBucketCount("Ash.Wallpaper.Online.MigrationStatus",
                                        MigrationStatus::kNotSupportedNoLocation,
                                        1);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
+                                      1);
+}
+
+TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
+       RecordNotSupportedNoCollectionMigrationStatus) {
+  WallpaperInfo unmigrated_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                                   WallpaperType::kOnline, base::Time::Now()};
+  unmigrated_info.version = base::Version();
+  ScopedDictPrefUpdate wallpaper_update(local_state(),
+                                        prefs::kUserWallpaperInfo);
+  wallpaper_update->Set(kAccountId1.GetUserEmail(), unmigrated_info.ToDict());
+
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+
+  histogram_tester().ExpectBucketCount(
+      "Ash.Wallpaper.Online.MigrationStatus",
+      MigrationStatus::kNotSupportedNoCollection, 1);
   histogram_tester().ExpectTotalCount("Ash.Wallpaper.Online.MigrationLatency",
                                       1);
 }
