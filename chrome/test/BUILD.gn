@@ -12378,7 +12378,6 @@ if (is_win) {
       "//chrome",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
-      "//mojo:buildflags",
       "//testing/gtest",
     ]
 

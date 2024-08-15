@@ -13,7 +13,6 @@ import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
-import("//mojo/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -2213,8 +2212,7 @@ test("content_browsertests") {
     deps += [ "//device/vr:vr_fakes" ]
   }
 
-  if ((is_win || is_chromeos || is_linux) && !is_tsan &&
-      mojo_support_legacy_core) {
+  if ((is_win || is_chromeos || is_linux) && !is_tsan) {
     # NOTE: We don't bother to build these tests when TSan is enabled, because
     # they can't properly launch a child content_shell in that environment.
     sources += [ "../browser/launch_as_mojo_client_browsertest.cc" ]

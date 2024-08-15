@@ -25,10 +25,7 @@ group("mojo") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "MOJO_USE_APPLE_CHANNEL=$mojo_use_apple_channel",
-    "MOJO_SUPPORT_LEGACY_CORE=$mojo_support_legacy_core",
-  ]
+  flags = [ "MOJO_USE_APPLE_CHANNEL=$mojo_use_apple_channel" ]
 }
 
 group("tests") {
@@ -59,16 +56,13 @@ test("mojo_unittests") {
     "//mojo/public/js/ts/bindings/tests",
   ]
 
-  if (is_linux && mojo_support_legacy_core) {
+  if (is_linux) {
     deps += [ "//mojo/proxy:tests" ]
   }
 }
 
 test("mojo_perftests") {
-  sources = []
-  if (mojo_support_legacy_core) {
-    sources += [ "//mojo/core/handle_table_perftest.cc" ]
-  }
+  sources = [ "//mojo/core/handle_table_perftest.cc" ]
   deps = [
     "//mojo/core/test:run_all_perftests",
     "//mojo/core/test:test_support",

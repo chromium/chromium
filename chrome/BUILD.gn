@@ -24,7 +24,6 @@ import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
-import("//mojo/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -370,7 +369,7 @@ if (!is_android && !is_mac) {
         }
       }
 
-      if ((is_chromeos_ash || is_win) && mojo_support_legacy_core) {
+      if (is_chromeos_ash || is_win) {
         data_deps += [ "//mojo/core:shared_library" ]
       }
 

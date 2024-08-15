@@ -38,8 +38,10 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
+#include "mojo/core/core.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/node_controller.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_switches.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -47,11 +49,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
-#include "mojo/core/core.h"
-#include "mojo/core/node_controller.h"
-#endif
 
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include "base/mac/mach_port_rendezvous.h"
@@ -659,7 +656,6 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe));
 }
 
-#if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 // Temporary removed support for reinvitation for non-isolated connections.
 TEST_F(MAYBE_InvitationTest, DISABLED_Reinvitation) {
   // The gist of this test is that a process should be able to accept an
@@ -709,7 +705,6 @@ TEST_F(MAYBE_InvitationTest, DISABLED_Reinvitation) {
 
   WaitForProcessToTerminate(child_process);
 }
-#endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 
 DEFINE_TEST_CLIENT(ReinvitationClient) {
   MojoHandle invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_NONE);

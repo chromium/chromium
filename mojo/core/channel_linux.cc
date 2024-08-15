@@ -43,7 +43,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "mojo/buildflags.h"
+#include "mojo/core/core.h"
 #include "mojo/core/embedder/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
