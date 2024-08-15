@@ -708,6 +708,8 @@ ci.thin_tester(
             gs_bucket = "chromium-ci-skylab",
         ),
     ),
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "gtest",
@@ -753,8 +755,8 @@ ci.thin_tester(
             gs_bucket = "chromium-ci-skylab",
         ),
     ),
-    # Tast tests should be monitored by CrOS gardeners, not Chromium gardeners.
-    gardener_rotations = args.ignore_default(gardener_rotations.CHROMIUMOS),
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "tast",
