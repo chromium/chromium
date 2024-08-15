@@ -412,6 +412,27 @@ bool EnclaveCanBeDefault(Profile* profile) {
 
 #endif
 
+bool SkipGpmPasskeyCreationForOwnAccount(
+    device::FidoRequestType request_type,
+    const std::string& rp_id,
+    std::string_view user_name,
+    const CoreAccountInfo& primary_account_info) {
+  // Don't let GPM create a passkey for its own account within itself.
+  //
+  // The request username is either the full email address (GAIA users) or just
+  // the local part (google.com users).
+  //
+  // Note that if the string does not contain an '@', `substr(0, npos)` will
+  // return the whole string.
+  const std::string account_email_local_part =
+      primary_account_info.email.substr(0,
+                                        primary_account_info.email.find('@'));
+  return request_type == device::FidoRequestType::kMakeCredential &&
+         rp_id == kGoogleRpId &&
+         (user_name == primary_account_info.email ||
+          user_name == account_email_local_part);
+}
+
 }  // namespace
 
 // ---------------------------------------------------------------------
@@ -1103,14 +1124,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
       const auto consent = signin::ConsentLevel::kSignin;
       if (identity_manager->HasPrimaryAccount(consent)) {
-        std::string account_name =
-            identity_manager->GetPrimaryAccountInfo(consent).email;
-        // The enclave should not allow a credential to be created within it for
-        // the same Google account.
-        if (rp_id != kGoogleRpId ||
-            request_type != device::FidoRequestType::kMakeCredential ||
-            user_name.value_or("") != account_name) {
-          dialog_model_->account_name = std::move(account_name);
+        CoreAccountInfo account_info =
+            identity_manager->GetPrimaryAccountInfo(consent);
+        if (SkipGpmPasskeyCreationForOwnAccount(
+                request_type, rp_id, user_name.value_or(""), account_info)) {
+          FIDO_LOG(EVENT)
+              << "Creation in GPM not offered (same primary account)";
+        } else {
+          dialog_model_->account_name = std::move(account_info.email);
           enclave_controller_ = std::make_unique<GPMEnclaveController>(
               GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
               user_verification_requirement,

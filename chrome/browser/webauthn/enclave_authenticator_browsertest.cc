@@ -129,6 +129,7 @@ using trusted_vault::MockTrustedVaultConnection;
 constexpr int32_t kSecretVersion = 417;
 constexpr uint8_t kSecurityDomainSecret[32] = {0};
 constexpr char kEmail[] = "test@gmail.com";
+constexpr char kEmailLocalPartOnly[] = "test";
 // This value is derived by the Sync testing code from `kEmail` but is needed
 // directly in these tests in order to simulate the `StoreKeys` calls to the
 // `EnclaveManager`.
@@ -2407,6 +2408,30 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
         web_contents,
         base::ReplaceStringPlaceholders(kMakeCredentialGoogle, {kEmail},
                                         /*offsets=*/nullptr));
+    delegate_observer()->WaitForUI();
+    EXPECT_TRUE(
+        base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+          return absl::holds_alternative<
+              AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+        }));
+    dialog_model()->CancelAuthenticatorRequest();
+    std::string script_result;
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+    delegate_observer()->WaitForDelegateDestruction();
+  }
+
+  // For Google-internal users, the username in the create request is just the
+  // local part of the email address. Enclave should not appear for those cases
+  // either.
+  {
+    CheckRegistrationStateNotRequested();
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(
+        web_contents, base::ReplaceStringPlaceholders(kMakeCredentialGoogle,
+                                                      {kEmailLocalPartOnly},
+                                                      /*offsets=*/nullptr));
     delegate_observer()->WaitForUI();
     EXPECT_TRUE(
         base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
