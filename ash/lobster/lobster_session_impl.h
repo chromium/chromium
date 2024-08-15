@@ -22,7 +22,7 @@ class LobsterClient;
 
 class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
  public:
-  using ActionCallback = base::OnceCallback<void(std::string_view)>;
+  using ActionCallback = base::OnceCallback<void(const std::string&)>;
 
   explicit LobsterSessionImpl(std::unique_ptr<LobsterClient> client);
   ~LobsterSessionImpl() override;

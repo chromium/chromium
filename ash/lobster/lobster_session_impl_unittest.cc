@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
-
 namespace {
 
 class MockLobsterClient : public LobsterClient {
