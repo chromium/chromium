@@ -208,6 +208,7 @@ interface ShoppingServiceHandlerFactory {
 };
 
 // Browser-side handler for requests from WebUI page.
+// TODO(b/359684506): Move feature-specific functions to separate handlers.
 interface ShoppingServiceHandler {
   // Returns all the tracked product info from bookmarks.
   GetAllPriceTrackedBookmarkProductInfo()
@@ -322,6 +323,10 @@ interface ShoppingServiceHandler {
   // succeeded (i.e. whether the disclosure is shown).
   MaybeShowProductSpecificationDisclosure(array<url.mojom.Url> urls,
       string name) => (bool disclosure_shown);
+
+  // Gets called when user has explicitly declined the product specification
+  // disclosure.
+  DeclineProductSpecificationDisclosure();
 
   // Sync user account.
   ShowSyncSetupFlow();

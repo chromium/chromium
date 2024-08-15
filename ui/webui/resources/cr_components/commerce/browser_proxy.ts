@@ -54,6 +54,7 @@ export interface BrowserProxy {
       version: ProductSpecificationsDisclosureVersion): void;
   maybeShowProductSpecificationDisclosure(urls: Url[], name: string):
       Promise<{disclosureShown: boolean}>;
+  declineProductSpecificationDisclosure(): void;
   showSyncSetupFlow(): void;
 }
 
@@ -195,6 +196,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
     return this.handler.maybeShowProductSpecificationDisclosure(urls, name);
+  }
+
+  declineProductSpecificationDisclosure() {
+    this.handler.declineProductSpecificationDisclosure();
   }
 
   getCallbackRouter() {

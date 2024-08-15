@@ -81,6 +81,7 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
   }
 
   protected declineDisclosure() {
+    this.shoppingApi_.declineProductSpecificationDisclosure();
     chrome.send('dialogClose');
   }
 }

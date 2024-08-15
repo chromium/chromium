@@ -167,6 +167,7 @@ class ShoppingServiceHandler
       const std::vector<GURL>& urls,
       const std::string& name,
       MaybeShowProductSpecificationDisclosureCallback callback) override;
+  void DeclineProductSpecificationDisclosure() override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,

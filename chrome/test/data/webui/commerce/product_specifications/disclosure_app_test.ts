@@ -181,6 +181,12 @@ suite('DisclosureAppTest', () => {
     assertTrue(!!declineButton);
     declineButton.click();
 
+    // Ensure browser is called about declining the disclosure.
+    assertEquals(
+        1,
+        shoppingServiceApi.getCallCount(
+            'declineProductSpecificationDisclosure'));
+
     // Received signal to close dialog.
     assertEquals(receivedMessage, 'dialogClose');
 

@@ -44,6 +44,10 @@ inline constexpr char kEmptyPostData[] = "";
 // Http GET method.
 inline constexpr char kGetHttpMethod[] = "GET";
 
+// The maximum enforced interval (in days) between two triggers of the product
+// specifications entry point.
+inline constexpr int kProductSpecMaxEntryPointTriggeringInterval = 64;
+
 // OAuth name used for network request.
 inline constexpr char kOAuthName[] = "chromememex_svc";
 

@@ -75,6 +75,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'setProductSpecificationsUserFeedback',
       'setProductSpecificationDisclosureAcceptVersion',
       'maybeShowProductSpecificationDisclosure',
+      'declineProductSpecificationDisclosure',
       'showSyncSetupFlow',
     ]);
 
@@ -230,6 +231,10 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
   maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
     this.methodCalled('maybeShowProductSpecificationDisclosure', urls, name);
     return Promise.resolve({disclosureShown: false});
+  }
+
+  declineProductSpecificationDisclosure() {
+    this.methodCalled('declineProductSpecificationDisclosure');
   }
 
   showSyncSetupFlow() {

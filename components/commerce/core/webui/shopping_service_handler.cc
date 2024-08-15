@@ -1075,6 +1075,27 @@ void ShoppingServiceHandler::MaybeShowProductSpecificationDisclosure(
   std::move(callback).Run(show);
 }
 
+void ShoppingServiceHandler::DeclineProductSpecificationDisclosure() {
+  if (!pref_service_) {
+    return;
+  }
+  int current_gap_time = pref_service_->GetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays);
+  // Double the gap time for every dismiss, starting from one day.
+  if (current_gap_time == 0) {
+    current_gap_time = 1;
+  } else {
+    current_gap_time = std::min(2 * current_gap_time,
+                                kProductSpecMaxEntryPointTriggeringInterval);
+  }
+  pref_service_->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays,
+      current_gap_time);
+  pref_service_->SetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime,
+      base::Time::Now());
+}
+
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& set) {
   remote_page_->OnProductSpecificationsSetAdded(ProductSpecsSetToMojo(set));

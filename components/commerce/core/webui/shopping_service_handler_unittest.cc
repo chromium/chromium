@@ -1222,6 +1222,34 @@ TEST_F(ShoppingServiceHandlerTest,
   run_loop.Run();
 }
 
+TEST_F(ShoppingServiceHandlerTest, TestDeclineProductSpecificationDisclosure) {
+  ASSERT_EQ(0,
+            pref_service_->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
+  base::Time last_dismiss_time = pref_service_->GetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime);
+
+  handler_->DeclineProductSpecificationDisclosure();
+
+  ASSERT_EQ(1,
+            pref_service_->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
+  ASSERT_GT(pref_service_->GetTime(
+                commerce::kProductSpecificationsEntryPointLastDismissedTime),
+            last_dismiss_time);
+
+  last_dismiss_time = pref_service_->GetTime(
+      commerce::kProductSpecificationsEntryPointLastDismissedTime);
+  handler_->DeclineProductSpecificationDisclosure();
+
+  ASSERT_EQ(2,
+            pref_service_->GetInteger(
+                commerce::kProductSpecificationsEntryPointShowIntervalInDays));
+  ASSERT_GT(pref_service_->GetTime(
+                commerce::kProductSpecificationsEntryPointLastDismissedTime),
+            last_dismiss_time);
+}
+
 class ShoppingServiceHandlerFeatureDisableTest : public testing::Test {
  public:
   ShoppingServiceHandlerFeatureDisableTest() {

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
@@ -31,9 +32,6 @@ constexpr int kEligibleWindowUrlCountForValidation = 2;
 // Number of URLs of the same cluster that a window needs to contain in order
 // for the entry point to trigger for navigation.
 constexpr int kEligibleWindowUrlCountForNavigationTriggering = 3;
-// The maximum enforced interval (in days) between two triggering of the entry
-// point.
-constexpr int kMaxEntryPointTriggeringInterval = 64;
 // The maximum length of the entry point title.
 constexpr int kEntryPointTitleMaxLength = 24;
 
@@ -199,8 +197,8 @@ void ProductSpecificationsEntryPointController::OnEntryPointDismissed() {
   if (current_gap_time == 0) {
     current_gap_time = 1;
   } else {
-    current_gap_time =
-        std::min(2 * current_gap_time, kMaxEntryPointTriggeringInterval);
+    current_gap_time = std::min(2 * current_gap_time,
+                                kProductSpecMaxEntryPointTriggeringInterval);
   }
   prefs->SetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays,
