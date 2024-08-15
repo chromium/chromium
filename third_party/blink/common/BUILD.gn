@@ -423,6 +423,7 @@ source_set("common_unittests_sources") {
     "interest_group/devtools_serialization_unittest.cc",
     "interest_group/interest_group_mojom_traits_test.cc",
     "interest_group/interest_group_unittest.cc",
+    "interest_group/test/interest_group_test_utils_unittest.cc",
     "loader/inter_process_time_ticks_converter_unittest.cc",
     "loader/mime_sniffing_throttle_unittest.cc",
     "loader/referrer_utils_unittest.cc",
@@ -468,6 +469,7 @@ source_set("common_unittests_sources") {
   ]
 
   deps = [
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/ukm:test_support",
@@ -483,6 +485,7 @@ source_set("common_unittests_sources") {
     "//skia/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:test_headers",
     "//third_party/blink/public/common:buildflags",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom/tokens:tokens_traits_headers",
@@ -530,13 +533,21 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "interest_group/test/interest_group_test_utils.cc",
     "interest_group/test_interest_group_builder.cc",
     "origin_trials/scoped_test_origin_trial_policy.cc",
   ]
 
-  deps = [ "//third_party/blink/public:test_headers" ]
+  deps = [
+    "//base",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+  ]
 
-  visibility = [ "//third_party/blink/public:test_support" ]
+  visibility = [
+    ":common_unittests_sources",
+    "//third_party/blink/public:test_support",
+  ]
 }
 
 if (use_fuzzing_engine_with_lpm) {
