@@ -836,6 +836,9 @@ extern const char kEnableSearchEngineChoiceDescription[];
 extern const char kClayBlockingDialogName[];
 extern const char kClayBlockingDialogDescription[];
 
+extern const char kTemplateUrlReconciliationName[];
+extern const char kTemplateUrlReconciliationDialogDescription[];
+
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 

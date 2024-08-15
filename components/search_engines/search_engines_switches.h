@@ -109,6 +109,10 @@ BASE_DECLARE_FEATURE(kPrefetchParameterFix);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests);
 
+// Switch guarding TemplateURL reconciliation mechanism.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kTemplateUrlReconciliation);
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

@@ -1459,6 +1459,11 @@ const char kClayBlockingDialogDescription[] =
     "Enables the blocking dialog that directs users to complete their choice of"
     "default apps (for Browser & Search) in Android.";
 
+const char kTemplateUrlReconciliationName[] = "Merge TemplateUrl definitions";
+const char kTemplateUrlReconciliationDialogDescription[] =
+    "Allows Chrome to reconcile TemplateUrl definitions coming from external "
+    "sources with its internal database.";
+
 const char kEnableNetworkLoggingToFileName[] = "Enable network logging to file";
 const char kEnableNetworkLoggingToFileDescription[] =
     "Enables network logging to a file named netlog.json in the user data "

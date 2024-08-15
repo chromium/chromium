@@ -102,4 +102,9 @@ BASE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests,
              "RemoveSearchboxStatsParamFromPrefetchRequests",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kTemplateUrlReconciliation,
+             "TemplateUrlReconciliation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace switches
