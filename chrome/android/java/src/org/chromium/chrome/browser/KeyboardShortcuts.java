@@ -548,7 +548,7 @@ public class KeyboardShortcuts {
         }
 
         if (isCurrentTabVisible) {
-            switch (keyCodeAndMeta) {
+            switch (semanticMeaning) {
                 case KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB:
                     if (tabSwitchingEnabled) {
                         int numCode = keyCode - KeyEvent.KEYCODE_0;
