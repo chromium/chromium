@@ -345,6 +345,15 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
                            body_length);
 }
 
+// TODO(https://crbug.com/353490734): Inline it. We made it a method due to
+// this rule:
+// https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/histograms/README.md#don_t-use-same-inline-string-in-multiple-places
+// If callsite is only one, we can inline it again.
+void RecordAfterClickRedirectChainSize(size_t redirect_chain_size) {
+  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
+                           redirect_chain_size);
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -1317,8 +1326,7 @@ void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
 void PrefetchContainer::OnReturnPrefetchToServe(bool served,
                                                 const GURL& navigated_url) {
   if (served) {
-    UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
-                             redirect_chain_.size());
+    RecordAfterClickRedirectChainSize(redirect_chain_.size());
     navigated_to_ = true;
   }
 
