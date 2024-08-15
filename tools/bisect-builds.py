@@ -14,6 +14,7 @@ it will ask you whether it is good or bad before continuing the search.
 
 import abc
 import base64
+import glob
 import importlib
 import json
 import optparse
@@ -21,15 +22,13 @@ import os
 import platform
 import re
 import shlex
-import shutil
 import subprocess
 import sys
 import tempfile
-import time
 import threading
 import traceback
 import urllib.request, urllib.parse, urllib.error
-from distutils.version import LooseVersion
+from distutils.version import LooseVersion as BaseLooseVersion
 from xml.etree import ElementTree
 import zipfile
 
@@ -193,24 +192,6 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-win64-clang.zip',
             'archive_extract_dir': 'chrome-win64-clang'
         },
-        'lacros64': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'lacros64/',
-            'archive_name': 'lacros.zip',
-            'archive_extract_dir': 'chrome-lacros64'
-        },
-        'lacros-arm32': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'lacros-arm32/',
-            'archive_name': 'lacros.zip',
-            'archive_extract_dir': 'chrome-lacros-arm32'
-        },
-        'lacros-arm64': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'lacros-arm64/',
-            'archive_name': 'lacros.zip',
-            'archive_extract_dir': 'chrome-lacros-arm64'
-        },
     },
     'official': {
         'android-arm': {
@@ -250,26 +231,6 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-perf-win.zip',
             'archive_extract_dir': 'full-build-win32'
         },
-        'lacros64': {
-            'binary_name': 'chrome',
-            'listing_platform_dir':
-            'chromeos-amd64-generic-lacros-builder-perf/',
-            'archive_name': 'chrome-perf-lacros64.zip',
-            'archive_extract_dir': 'full-build-linux'
-        },
-        'lacros-arm32': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'chromeos-arm-generic-lacros-builder-perf/',
-            'archive_name': 'chrome-perf-lacros-arm32.zip',
-            'archive_extract_dir': 'full-build-linux'
-        },
-        'lacros-arm64': {
-            'binary_name': 'chrome',
-            'listing_platform_dir':
-            'chromeos-arm64-generic-lacros-builder-perf/',
-            'archive_name': 'chrome-perf-lacros-arm64.zip',
-            'archive_extract_dir': 'full-build-linux'
-        }
     },
     'snapshot': {
         'android-arm': {
@@ -338,24 +299,6 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-win.zip',
             'archive_extract_dir': 'chrome-win'
         },
-        'lacros64': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'lacros64/',
-            'archive_name': 'lacros.zip',
-            'archive_extract_dir': 'chrome-lacros64'
-        },
-        'lacros-arm32': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'lacros_arm/',
-            'archive_name': 'lacros.zip',
-            'archive_extract_dir': 'chrome-lacros-arm32'
-        },
-        'lacros-arm64': {
-            'binary_name': 'chrome',
-            'listing_platform_dir': 'lacros_arm64/',
-            'archive_name': 'lacros.zip',
-            'archive_extract_dir': 'chrome-lacros-arm64'
-        }
     },
     'asan': {},
 }
@@ -515,12 +458,16 @@ class ArchiveBuild(abc.ABC):
     self.good_revision = options.good
     self.bad_revision = options.bad
     self.use_local_cache = options.use_local_cache
-
+    # PATH_CONTEXT
     path_context = PATH_CONTEXT[self.build_type].get(self.platform, {})
     self.binary_name = path_context.get('binary_name')
     self.listing_platform_dir = path_context.get('listing_platform_dir')
     self.archive_name = path_context.get('archive_name')
     self.archive_extract_dir = path_context.get('archive_extract_dir')
+    # run_revision options
+    self.profile = options.profile
+    self.command = options.command
+    self.num_runs = options.times
 
   @property
   @abc.abstractmethod
@@ -673,6 +620,78 @@ class ArchiveBuild(abc.ABC):
     """Gets as a DownloadJob that download the specific revision in threads."""
     return DownloadJob(self.get_download_url(revision), revision, name)
 
+  def _get_extra_args(self):
+    """Get extra chrome args"""
+    return ['--user-data-dir=%s' % self.profile]
+
+  def _get_extract_binary_glob(self, tempdir):
+    """Get the pathname for extracted chrome binary"""
+    return '%s/*/%s' % (tempdir, self.binary_name)
+
+  def _install_revision(self, download, tempdir):
+    """Unzip and/or install the given download to tempdir. Return executable
+    binary."""
+    UnzipFilenameToDir(download, tempdir)
+    # Searching for the executable, it's unlikely the zip file contains multiple
+    # folders with the binary_name.
+    executables = glob.glob(self._get_extract_binary_glob(tempdir))
+    if len(executables) == 0:
+      raise BisectException('Can not find the executable binary from %s' %
+                            tempdir)
+    elif len(executables) > 1:
+      raise BisectException('Multiple executables found: %s' % executables)
+    return os.path.abspath(executables[0])
+
+  def _launch_revision(self, tempdir, executable, args=()):
+    args = [*self._get_extra_args(), *args]
+    runcommand = []
+    # TODO: self.command
+    for token in shlex.split(self.command):
+      if token == '%a':
+        runcommand.extend(args)
+      else:
+        runcommand.append(
+            token.replace('%p', executable).replace('%s', ' '.join(args)))
+
+    # is_verbos is a global variable.
+    if is_verbose:
+      print(('Running ' + str(runcommand)))
+    # Run the build as many times as specified.
+    subproc = subprocess.Popen(runcommand,
+                               cwd=tempdir,
+                               bufsize=-1,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+    (stdout, stderr) = subproc.communicate()
+    return subproc.returncode, stdout, stderr
+
+  def run_revision(self, download, args):
+    """Run downloaded archive"""
+    # Create a temp directory and unzip the revision into it.
+    with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
+      # On Windows 10, file system needs to be readable from App Container.
+      if sys.platform == 'win32' and platform.release() == '10':
+        icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
+        proc = subprocess.Popen(icacls_cmd,
+                                bufsize=0,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        proc.communicate()
+      executable = self._install_revision(download, tempdir)
+      result = None
+      for _ in range(self.num_runs):
+        returncode, _, _ = result = self._launch_revision(
+            tempdir, executable, args)
+        if returncode:
+          break
+      return result
+
+
+class LooseVersion(BaseLooseVersion):
+
+  def __hash__(self):
+    return hash(str(self))
+
 
 class ReleaseBuild(ArchiveBuild):
 
@@ -745,22 +764,6 @@ class ReleaseBuild(ArchiveBuild):
   def get_download_url(self, revision):
     return '%s/%s/%s%s' % (self._get_release_bucket(), revision,
                            self.listing_platform_dir, self.archive_name)
-
-
-class AndroidReleaseBuild(ReleaseBuild):
-
-  def __init__(self, options, device=None):
-    super().__init__(options)
-    self.apk = options.apk
-    self.signed = options.signed
-    self.device = device
-    self.archive_name = GetAndroidApkFilename(self)
-
-  def _get_release_bucket(self):
-    if self.signed:
-      return ANDROID_RELEASE_BASE_URL_SIGNED
-    else:
-      return ANDROID_RELEASE_BASE_URL
 
 
 class ArchiveBuildWithCommitPosition(ArchiveBuild):
@@ -976,16 +979,96 @@ class ASANBuild(SnapshotBuild):
     return '%s/%s' % (self.base_url, self._get_marker_for_revision(revision))
 
 
-def create_archive_build(options, device=None):
+class AndroidBuildMixin:
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.apk = options.apk
+    self.device = InitializeAndroidDevice(options.device_id, self.apk, None)
+    if not self.device:
+      raise BisectException('Failed to initialize device.')
+    # The args could be set via self.run_revision
+    self.flags = flag_changer.FlagChanger(
+        self.device, chrome.PACKAGE_INFO[self.apk].cmdline_file)
+    self.binary_name = GetAndroidApkFilename(self)
+
+  def _install_revision(self, download, tempdir):
+    apk_path = super()._install_revision(download, tempdir)
+    InstallOnAndroid(self.device, apk_path)
+
+  def _launch_revision(self, tempdir, executable, args=()):
+    self.flags.ReplaceFlags(args)
+    LaunchOnAndroid(self.device, self.apk)
+    return (0, sys.stdout, sys.stderr)
+
+  def _get_extract_binary_glob(self, tempdir):
+    return '%s/*/apks/%s' % (tempdir, self.binary_name)
+
+
+class AndroidReleaseBuild(AndroidBuildMixin, ReleaseBuild):
+
+  def __init__(self, options):
+    super().__init__(options)
+    self.signed = options.signed
+    # We could download the apk directly from build bucket
+    self.archive_name = GetAndroidApkFilename(self)
+
+  def _get_release_bucket(self):
+    if self.signed:
+      return ANDROID_RELEASE_BASE_URL_SIGNED
+    else:
+      return ANDROID_RELEASE_BASE_URL
+
+  def _get_rev_list(self, min_rev=None, max_rev=None):
+    # Android release builds store archives directly in a GCS bucket that
+    # contains a large number of objects. Listing the full revision list takes
+    # too much time, so we should disallow it and fail fast.
+    if not min_rev or not max_rev:
+      raise BisectException(
+          "Could not found enough revisions for Android %s release channel." %
+          self.apk)
+    return super()._get_rev_list(min_rev, max_rev)
+
+  def _install_revision(self, download, tempdir):
+    # AndroidRelease build downloads the apks directly from GCS bucket.
+    InstallOnAndroid(self.device, download)
+
+
+class LinuxReleaseBuild(ReleaseBuild):
+
+  def _get_extra_args(self):
+    args = super()._get_extra_args()
+    # The sandbox must be run as root on release Chrome, so bypass it.
+    if self.platform.startswith('linux'):
+      args.append('--no-sandbox')
+    return args
+
+
+class AndroidOfficialBuild(AndroidBuildMixin, OfficialBuild):
+  pass
+
+
+class AndroidSnapshotBuild(AndroidBuildMixin, SnapshotBuild):
+  pass
+
+
+def create_archive_build(options):
   if options.release_builds:
-    if 'android' in options.archive:
-      return AndroidReleaseBuild(options, device)
+    if options.archive.startswith('android'):
+      return AndroidReleaseBuild(options)
+    elif options.archive.startswith('linux'):
+      return LinuxReleaseBuild(options)
     return ReleaseBuild(options)
   elif options.official_builds:
+    if options.archive.startswith('android'):
+      return AndroidOfficialBuild(options)
     return OfficialBuild(options)
   elif options.asan:
+    # ASANBuild is only supported on win/linux/mac.
     return ASANBuild(options)
   else:
+    if options.archive.startswith('android'):
+      return AndroidSnapshotBuild(options)
     return SnapshotBuild(options)
 
 
@@ -1255,188 +1338,17 @@ def GetAndroidApkFilename(context):
   return _GetMappingFromAndroidApk(context, context.apk)[context.apk]
 
 
-def RunRevisionForAndroid(context, revision, zip_file):
-  """Installs apk and launches chrome for android bisect."""
-
-  # For release, we directly download the apk file from gcs.
-  # For non-release, we download a zip file first, then un-zip the file
-  # to a temporary folder and locate the apk file.
-  if context.is_release:
-    InstallOnAndroid(context.device, zip_file)
-    LaunchOnAndroid(context.device, context.apk)
-    return (0, sys.stdout, sys.stderr)
-
-  try:
-    tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
-    UnzipFilenameToDir(zip_file, tempdir)
-
-    apk_dir = os.path.join(tempdir, context._archive_extract_dir, 'apks')
-    apk_path = os.path.join(apk_dir, GetAndroidApkFilename(context))
-    if not os.path.exists(apk_path):
-      print('%s does not exist.' % apk_path)
-      if os.path.exists(apk_dir):
-        print('\nAre you passing the correct --apk flag? Some older revisions '
-              'do not build all apk types.')
-        print(f'The list of available --apk options for {revision=}:')
-        apk_files = [f for f in os.listdir(apk_dir) if f.endswith('.apk')]
-        not_available = []
-        for apk_file in apk_files:
-          mapping = _GetMappingFromAndroidApk(context, apk_file)
-          for apk_opt, apk_name in mapping.items():
-            if apk_file == apk_name:
-              print(f'- {apk_file}, use this by passing --apk={apk_opt}')
-              break
-          else:
-            not_available.append(apk_file)
-        print('\nThese filenames do not map to any configured APK variants: '
-              f'{not_available}')
-      exit(1)
-    InstallOnAndroid(context.device, apk_path)
-    LaunchOnAndroid(context.device, context.apk)
-  finally:
-    try:
-      shutil.rmtree(tempdir, True)
-    except Exception:
-      pass
-  return (0, sys.stdout, sys.stderr)
-
-
-def InstallRevisionForLacros(context, zip_file):
-  """Install revision on cros device."""
-
-  try:
-    tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
-    UnzipFilenameToDir(zip_file, tempdir)
-    if context.is_official:
-      tempdir = os.path.join(tempdir, context._archive_extract_dir)
-
-    cmdline = [
-        context.deploy_chrome_path, '--build-dir=' + tempdir,
-        '--device=' + context.device, '--nostrip', '--lacros', '--reset-lacros'
-    ]
-    print('Lacros deploy command:\n')
-    print(' '.join(cmdline))
-    subproc = subprocess.Popen(cmdline)
-    (stdout, stderr) = subproc.communicate()
-    if subproc.returncode == 0:
-      print('deploy succeeded!')
-      print('You may now click Lacros icon on DUT to start testing.')
-    else:
-      print('deploy failed!')
-    return (subproc.returncode, stdout, stderr)
-  finally:
-    try:
-      shutil.rmtree(tempdir, True)
-    except Exception:
-      pass
-
-
-def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
+def RunRevision(archive_build, revision, zip_file, args):
   """Given a zipped revision, unzip it and run the test."""
   print('Trying revision %s...' % str(revision))
-  if context.platform.startswith('android-'):
-    return RunRevisionForAndroid(context, revision, zip_file)
-
-  if context.platform in ['lacros64', 'lacros-arm32', 'lacros-arm64']:
-    return InstallRevisionForLacros(context, zip_file)
-
-  # Create a temp directory and unzip the revision into it.
-  cwd = os.getcwd()
-  tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
-  # On Windows 10, file system needs to be readable from App Container.
-  if sys.platform == 'win32' and platform.release() == '10':
-    icacls_cmd = ['icacls', tempdir, '/grant', '*S-1-15-2-2:(OI)(CI)(RX)']
-    proc = subprocess.Popen(icacls_cmd,
-                            bufsize=0,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    proc.communicate()
-
-  UnzipFilenameToDir(zip_file, tempdir)
-
-  # Special case for perf builds. The directory can be either versioned
-  # or unversioned. For example, full-build-linux directory will be converted to
-  # full-build-linux_<revision_number> directoy.
-  if context.is_official:
-    unversioned_archive = os.path.join(tempdir, context._archive_extract_dir)
-    if os.path.isdir(unversioned_archive):
-      versioned_archive = os.path.join(
-          tempdir, '%s_%s' % (context._archive_extract_dir, revision))
-      # On Windows this renaming can transiently fail - because of
-      # antivirus software, even in monitoring mode? - so retry it up
-      # to a few times. It seems it can fail for at least 10 seconds
-      # in a row on developers' machines.
-      retries = 20
-      succeeded = False
-      while not succeeded:
-        try:
-          os.rename(unversioned_archive, versioned_archive)
-          succeeded = True
-        except Exception as e:
-          retries -= 1
-          if retries == 0:
-            print('Failed to rename: ' + unversioned_archive)
-            print('              to: ' + versioned_archive)
-            raise e
-          time.sleep(1)
-  # Hack: Chrome OS archives are missing icudtl.dat; try to copy it from
-  # the local directory.
-  if context.platform == 'chromeos' and revision < 591483:
-    icudtl_path = 'third_party/icu/common/icudtl.dat'
-    if not os.access(icudtl_path, os.F_OK):
-      print('Couldn\'t find: ' + icudtl_path)
-      sys.exit()
-    os.system('cp %s %s/chrome-linux/' % (icudtl_path, tempdir))
-
-  os.chdir(tempdir)
-
-  # Run the build as many times as specified.
-  testargs = ['--user-data-dir=%s' % profile] + args
-  # The sandbox must be run as root on release Chrome, so bypass it.
-  if ((context.is_release) and context.platform.startswith('linux')):
-    testargs.append('--no-sandbox')
-
-  runcommand = []
-  for token in shlex.split(command):
-    if token == '%a':
-      runcommand.extend(testargs)
-    else:
-      runcommand.append(
-          token.replace('%p', os.path.abspath(
-              context.GetLaunchPath(revision))).replace('%s',
-                                                        ' '.join(testargs)))
-
-  if is_verbose:
-    print(('Running ' + str(runcommand)))
-
-  result = None
-  try:
-    for _ in range(num_runs):
-      use_shell = ('android' in context.platform
-                   or 'webview' in context.platform)
-      subproc = subprocess.Popen(runcommand,
-                                 shell=use_shell,
-                                 bufsize=-1,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-      (stdout, stderr) = subproc.communicate()
-      result = (subproc.returncode, stdout, stderr)
-      if subproc.returncode:
-        break
-    return result
-  finally:
-    os.chdir(cwd)
-    try:
-      shutil.rmtree(tempdir, True)
-    except Exception:
-      pass
+  return archive_build.run_revision(zip_file, args)
 
 
 # The arguments release_builds, status, stdout and stderr are unused.
 # They are present here because this function is passed to Bisect which then
 # calls it with 5 arguments.
 # pylint: disable=W0613
-def AskIsGoodBuild(rev, release_builds, exit_status, stdout, stderr):
+def AskIsGoodBuild(rev, exit_status, stdout, stderr):
   """Asks the user whether build |rev| is good or bad."""
   # Loop until we get a response that we can parse.
   while True:
@@ -1452,7 +1364,7 @@ def AskIsGoodBuild(rev, release_builds, exit_status, stdout, stderr):
       print(stderr)
 
 
-def IsGoodASANBuild(rev, release_builds, exit_status, stdout, stderr):
+def IsGoodASANBuild(rev, exit_status, stdout, stderr):
   """Determine if an ASAN build |rev| is good or bad
 
   Will examine stderr looking for the error message emitted by ASAN. If not
@@ -1466,10 +1378,10 @@ def IsGoodASANBuild(rev, release_builds, exit_status, stdout, stderr):
     if bad_count > 0:
       print('Revision %d determined to be bad.' % rev)
       return 'b'
-  return AskIsGoodBuild(rev, release_builds, exit_status, stdout, stderr)
+  return AskIsGoodBuild(rev, exit_status, stdout, stderr)
 
 
-def DidCommandSucceed(rev, release_builds, exit_status, stdout, stderr):
+def DidCommandSucceed(rev, exit_status, stdout, stderr):
   if exit_status:
     print('Bad revision: %s' % rev)
     return 'b'
@@ -1486,7 +1398,8 @@ class DownloadJob:
     self.rev = rev
     self.name = name
 
-    fd, self.tmp_file = tempfile.mkstemp()
+    _, ext = os.path.splitext(urllib.parse.urlparse(self.url).path)
+    fd, self.tmp_file = tempfile.mkstemp(suffix=ext)
     os.close(fd)
     self.quit_event = threading.Event()
     self.progress_event = threading.Event()
@@ -1563,42 +1476,33 @@ class DownloadJob:
       raise
 
 
-def VerifyEndpoint(fetch, context, rev, profile, num_runs, command, try_args,
-                   evaluate, expected_answer):
+def VerifyEndpoint(fetch, archive_build, rev, try_args, evaluate,
+                   expected_answer):
   zip_file = fetch.wait_for()
   try:
-    (exit_status, stdout, stderr) = RunRevision(context, rev, zip_file, profile,
-                                                num_runs, command, try_args)
+    (exit_status, stdout, stderr) = RunRevision(archive_build, rev, zip_file,
+                                                try_args)
   except Exception as e:
     if not isinstance(e, SystemExit):
       traceback.print_exc(file=sys.stderr)
     exit_status = None
     stdout = None
     stderr = None
-  if (evaluate(rev, context.is_release, exit_status, stdout, stderr)
-      != expected_answer):
+  if (evaluate(rev, exit_status, stdout, stderr) != expected_answer):
     print('Unexpected result at a range boundary! Your range is not correct.')
     raise SystemExit
 
 
-def Bisect(context,
-           archive_build,
-           num_runs=1,
-           command='%p %a',
+def Bisect(archive_build,
            try_args=(),
-           profile='profile',
            evaluate=AskIsGoodBuild,
-           verify_range=False,
-           archive=None):
+           verify_range=False):
   """Runs a binary search on to determine the last known good revision.
 
     Args:
-      context: PathContext object initialized with user provided parameters.
       archive_build: ArchiveBuild object initialized with user provided
                parameters.
-      num_runs: Number of times to run each build for asking good/bad.
       try_args: A tuple of arguments to pass to the test application.
-      profile: The name of the user profile to run with.
       evaluate: A function which returns 'g' if the argument build is good,
                'b' if it's bad or 'u' if unknown.
       verify_range: If true, tests the first and last revisions in the range
@@ -1621,7 +1525,7 @@ def Bisect(context,
 
   print('Downloading list of known revisions.', end=' ')
   print('If the range is large, this can take several minutes...')
-  if not context.use_local_cache:
+  if not archive_build.use_local_cache:
     print('(use --use-local-cache to cache and re-use the list of revisions)')
   else:
     print()
@@ -1640,10 +1544,10 @@ def Bisect(context,
     maxrev_fetch = archive_build.get_download_job(revlist[maxrev],
                                                   'maxrev_fetch').start()
     try:
-      VerifyEndpoint(minrev_fetch, context, revlist[minrev], profile, num_runs,
-          command, try_args, evaluate, 'b' if bad_rev < good_rev else 'g')
-      VerifyEndpoint(maxrev_fetch, context, revlist[maxrev], profile, num_runs,
-          command, try_args, evaluate, 'g' if bad_rev < good_rev else 'b')
+      VerifyEndpoint(minrev_fetch, archive_build, revlist[minrev], try_args,
+                     evaluate, 'b' if bad_rev < good_rev else 'g')
+      VerifyEndpoint(maxrev_fetch, archive_build, revlist[maxrev], try_args,
+                     evaluate, 'g' if bad_rev < good_rev else 'b')
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
       fetch.stop()
@@ -1691,8 +1595,7 @@ def Bisect(context,
     stderr = None
     try:
       zip_file = fetch.wait_for()
-      (exit_status, stdout, stderr) = RunRevision(context, rev, zip_file,
-                                                  profile, num_runs, command,
+      (exit_status, stdout, stderr) = RunRevision(archive_build, rev, zip_file,
                                                   try_args)
     except SystemExit:
       raise
@@ -1703,7 +1606,7 @@ def Bisect(context,
     # On that basis, kill one of the background downloads and complete the
     # other, as described in the comments above.
     try:
-      answer = evaluate(rev, context.is_release, exit_status, stdout, stderr)
+      answer = evaluate(rev, exit_status, stdout, stderr)
       prefetch_revisions = True
       if ((answer == 'g' and good_rev < bad_rev)
           or (answer == 'b' and bad_rev < good_rev)):
@@ -1772,7 +1675,7 @@ def Bisect(context,
 
     rev = revlist[pivot]
 
-  return (revlist[minrev], revlist[maxrev], context)
+  return (revlist[minrev], revlist[maxrev])
 
 
 def GetBlinkDEPSRevisionForChromiumRevision(self, rev):
@@ -2171,10 +2074,6 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
                     dest='device_id',
                     type='str',
                     help='Device to run the bisect on.')
-  parser.add_option('--deploy-chrome-path',
-                    dest='deploy_chrome_path',
-                    type='str',
-                    help='deploy_chrome binary path.')
   parser.add_option('--update-script',
                     dest='update_script',
                     action='store_true',
@@ -2293,25 +2192,10 @@ def main():
     print(e)
     sys.exit(1)
 
-  device = None
-  if opts.archive.startswith('android-'):
-    device = InitializeAndroidDevice(opts.device_id, opts.apk, args)
-    if not device:
-      raise BisectException('Failed to initialize device.')
-
-  deploy_chrome_path = None
-  if opts.archive in ['lacros64', 'lacros-arm32', 'lacros-arm64']:
-    if not opts.device_id:
-      raise BisectException('Please specify device id for a cros device.')
-    device = opts.device_id
-    if not opts.deploy_chrome_path:
-      raise BisectException('Please specify deploy_chrome path.')
-    deploy_chrome_path = opts.deploy_chrome_path
-
-  # Create the context. Initialize 0 for the revisions as they are set below.
-  context = PathContext(opts, device)
   # Create the AbstractBuild object.
-  archive_build = create_archive_build(opts, device)
+  archive_build = create_archive_build(opts)
+  # Create the context. Initialize 0 for the revisions as they are set below.
+  context = PathContext(opts, getattr(archive_build, 'device', None))
 
   if context.is_release:
     if opts.archive.startswith('android-'):
@@ -2322,13 +2206,11 @@ def main():
         print('WARNING: Android release typically only uploads channel builds, '
               f'so you will often see "Found 0 builds" with --apk={context.apk}'
               '. Switch to using --apk=chrome_stable or one of the other '
-              'channels if you see `RuntimeError: We don\'t have enough builds '
-              'to bisect. revlist: []`.\n')
+              'channels if you see `[Bisect Exception]: Could not found enough'
+              'revisions for Android chrome release channel.\n')
   # We might converted good and bad to commit position as int.
   context.good_revision = archive_build.good_revision
   context.bad_revision = archive_build.bad_revision
-
-  context.deploy_chrome_path = deploy_chrome_path
 
   if opts.times < 1:
     print(('Number of times to run (%d) must be greater than or equal to 1.' %
@@ -2348,9 +2230,8 @@ def main():
   good_rev = context.good_revision
   bad_rev = context.bad_revision
 
-  (min_chromium_rev, max_chromium_rev,
-   context) = Bisect(context, archive_build, opts.times, opts.command, args,
-                     opts.profile, evaluator, opts.verify_range, opts.archive)
+  min_chromium_rev, max_chromium_rev = Bisect(archive_build, args, evaluator,
+                                              opts.verify_range)
 
   # Get corresponding blink revisions.
   try:
