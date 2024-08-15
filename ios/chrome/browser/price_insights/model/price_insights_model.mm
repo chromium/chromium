@@ -103,6 +103,7 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
   }
 
   price_insights_executions_[url]->is_subscribed_processed = true;
+  RunCallbacks(url);
 }
 
 void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
