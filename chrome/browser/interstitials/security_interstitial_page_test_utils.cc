@@ -101,10 +101,9 @@ HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
   }
   bool use_new_interstitial = base::FeatureList::IsEnabled(
       features::kHttpsFirstModeInterstitialAugust2024Refresh);
-  std::string substring =
-      use_new_interstitial
-          ? "is preventing Chrome from establishing a secure connection"
-          : "this site does not support HTTPS.";
+  std::string substring = use_new_interstitial
+                              ? "doesn’t support a secure connection"
+                              : "this site does not support HTTPS.";
   if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(), substring)) {
     return HFMInterstitialType::kStandard;
   }

@@ -492,15 +492,15 @@
   </message>
 
   <message name="IDS_HTTPS_ONLY_BALANCED_MODE_HEADING" desc="Large heading of the warning shown when an http only site is loaded with https-only balanced mode active">
-    <ph name="SITE">$1<ex>example.com</ex></ph> is preventing Chrome from establishing a secure connection
+    <ph name="SITE">$1<ex>example.com</ex></ph> doesn’t support a secure connection
   </message>
   <message name="IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Balanced Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
-    Attackers will be able to see and change any data sent between you and this site.
-    &lt;ul&gt;
-    &lt;li&gt;If you’re currently on a public network, such as an airport or hotel wifi, consider trying again when you’re connected to a trusted network (e.g., at home or at work).&lt;/li&gt;
-    &lt;li&gt;If you know the site owner, ask them to fix this.&lt;/li&gt;
-    &lt;/ul&gt;
-    <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+      <ph name="LIST_ITEM">&lt;li&gt;</ph><ph name="BEGIN_STRONG">&lt;strong&gt;</ph>Attackers can see and change<ph name="END_STRONG">&lt;/strong&gt;</ph> information you send or receive from the site.
+      <ph name="LIST_ITEM">&lt;li&gt;</ph><ph name="BEGIN_STRONG">&lt;strong&gt;</ph>It's safest to visit this site later<ph name="END_STRONG">&lt;/strong&gt;</ph> if you're using a public network. There is less risk from a trusted network, like your home or work Wi-Fi.
+    <ph name="END_LIST">&lt;/ul&gt;</ph>
+
+    You might also contact the site owner and suggest they upgrade to HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
 
   <message name="IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">
