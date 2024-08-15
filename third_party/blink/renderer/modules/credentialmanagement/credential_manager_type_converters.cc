@@ -309,8 +309,9 @@ TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
 // static
 PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
     const String& type) {
-  if (type == "public-key")
+  if (type == "public-key") {
     return PublicKeyCredentialType::PUBLIC_KEY;
+  }
   NOTREACHED_IN_MIGRATION();
   return PublicKeyCredentialType::PUBLIC_KEY;
 }
@@ -319,33 +320,43 @@ PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
 std::optional<AuthenticatorTransport>
 TypeConverter<std::optional<AuthenticatorTransport>, String>::Convert(
     const String& transport) {
-  if (transport == "usb")
+  if (transport == "usb") {
     return AuthenticatorTransport::USB;
-  if (transport == "nfc")
+  }
+  if (transport == "nfc") {
     return AuthenticatorTransport::NFC;
-  if (transport == "ble")
+  }
+  if (transport == "ble") {
     return AuthenticatorTransport::BLE;
+  }
   // "cable" is the old name for "hybrid" and we accept either.
-  if (transport == "cable" || transport == "hybrid")
+  if (transport == "cable" || transport == "hybrid") {
     return AuthenticatorTransport::HYBRID;
-  if (transport == "internal")
+  }
+  if (transport == "internal") {
     return AuthenticatorTransport::INTERNAL;
+  }
   return std::nullopt;
 }
 
 // static
 String TypeConverter<String, AuthenticatorTransport>::Convert(
     const AuthenticatorTransport& transport) {
-  if (transport == AuthenticatorTransport::USB)
+  if (transport == AuthenticatorTransport::USB) {
     return "usb";
-  if (transport == AuthenticatorTransport::NFC)
+  }
+  if (transport == AuthenticatorTransport::NFC) {
     return "nfc";
-  if (transport == AuthenticatorTransport::BLE)
+  }
+  if (transport == AuthenticatorTransport::BLE) {
     return "ble";
-  if (transport == AuthenticatorTransport::HYBRID)
+  }
+  if (transport == AuthenticatorTransport::HYBRID) {
     return "hybrid";
-  if (transport == AuthenticatorTransport::INTERNAL)
+  }
+  if (transport == AuthenticatorTransport::INTERNAL) {
     return "internal";
+  }
   NOTREACHED_IN_MIGRATION();
   return "usb";
 }
@@ -354,12 +365,15 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
 std::optional<blink::mojom::blink::ResidentKeyRequirement>
 TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
               String>::Convert(const String& requirement) {
-  if (requirement == "discouraged")
+  if (requirement == "discouraged") {
     return ResidentKeyRequirement::DISCOURAGED;
-  if (requirement == "preferred")
+  }
+  if (requirement == "preferred") {
     return ResidentKeyRequirement::PREFERRED;
-  if (requirement == "required")
+  }
+  if (requirement == "required") {
     return ResidentKeyRequirement::REQUIRED;
+  }
 
   // AuthenticatorSelection.resident_key is defined as DOMString expressing a
   // ResidentKeyRequirement and unknown values must be treated as if the
@@ -371,12 +385,15 @@ TypeConverter<std::optional<blink::mojom::blink::ResidentKeyRequirement>,
 std::optional<UserVerificationRequirement>
 TypeConverter<std::optional<UserVerificationRequirement>, String>::Convert(
     const String& requirement) {
-  if (requirement == "required")
+  if (requirement == "required") {
     return UserVerificationRequirement::REQUIRED;
-  if (requirement == "preferred")
+  }
+  if (requirement == "preferred") {
     return UserVerificationRequirement::PREFERRED;
-  if (requirement == "discouraged")
+  }
+  if (requirement == "discouraged") {
     return UserVerificationRequirement::DISCOURAGED;
+  }
   return std::nullopt;
 }
 
@@ -384,14 +401,18 @@ TypeConverter<std::optional<UserVerificationRequirement>, String>::Convert(
 std::optional<AttestationConveyancePreference>
 TypeConverter<std::optional<AttestationConveyancePreference>, String>::Convert(
     const String& preference) {
-  if (preference == "none")
+  if (preference == "none") {
     return AttestationConveyancePreference::NONE;
-  if (preference == "indirect")
+  }
+  if (preference == "indirect") {
     return AttestationConveyancePreference::INDIRECT;
-  if (preference == "direct")
+  }
+  if (preference == "direct") {
     return AttestationConveyancePreference::DIRECT;
-  if (preference == "enterprise")
+  }
+  if (preference == "enterprise") {
     return AttestationConveyancePreference::ENTERPRISE;
+  }
   return std::nullopt;
 }
 
@@ -399,12 +420,15 @@ TypeConverter<std::optional<AttestationConveyancePreference>, String>::Convert(
 std::optional<AuthenticatorAttachment> TypeConverter<
     std::optional<AuthenticatorAttachment>,
     std::optional<String>>::Convert(const std::optional<String>& attachment) {
-  if (!attachment.has_value())
+  if (!attachment.has_value()) {
     return AuthenticatorAttachment::NO_PREFERENCE;
-  if (attachment.value() == "platform")
+  }
+  if (attachment.value() == "platform") {
     return AuthenticatorAttachment::PLATFORM;
-  if (attachment.value() == "cross-platform")
+  }
+  if (attachment.value() == "cross-platform") {
     return AuthenticatorAttachment::CROSS_PLATFORM;
+  }
   return std::nullopt;
 }
 
@@ -413,10 +437,12 @@ LargeBlobSupport
 TypeConverter<LargeBlobSupport, std::optional<String>>::Convert(
     const std::optional<String>& large_blob_support) {
   if (large_blob_support) {
-    if (*large_blob_support == "required")
+    if (*large_blob_support == "required") {
       return LargeBlobSupport::REQUIRED;
-    if (*large_blob_support == "preferred")
+    }
+    if (*large_blob_support == "preferred") {
       return LargeBlobSupport::PREFERRED;
+    }
   }
 
   // Unknown values are treated as preferred.
@@ -606,6 +632,8 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       mojo_options->attestation = *attestation;
     }
   }
+
+  mojo_options->attestation_formats = options.attestationFormats();
 
   mojo_options->protection_policy = blink::mojom::ProtectionPolicy::UNSPECIFIED;
   mojo_options->enforce_protection_policy = false;

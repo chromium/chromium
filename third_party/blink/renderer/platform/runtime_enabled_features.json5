@@ -4621,6 +4621,11 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
     },
+    // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats
+    {
+      name: "WebAuthenticationAttestationFormats",
+      status: "experimental",
+    },
     // Methods for deserializing WebAuthn requests from JSON/serializing
     // responses into JSON.
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson

@@ -515,6 +515,8 @@ public class Fido2ApiTestHelper {
          * supports it */
         options.authenticatorSelection.authenticatorAttachment =
                 AuthenticatorAttachment.CROSS_PLATFORM;
+
+        options.attestationFormats = new String[0];
         return options;
     }
 

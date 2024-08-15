@@ -562,6 +562,9 @@ struct PublicKeyCredentialCreationOptions {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptionsjson-attestationformats
+  array<string> attestation_formats;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
