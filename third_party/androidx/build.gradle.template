@@ -84,7 +84,7 @@ dependencies {
     compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
-    compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
+    compile 'androidx.savedstate:savedstate-android:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'
