@@ -18,12 +18,21 @@ RTCRtpScriptTransformer::RTCRtpScriptTransformer(ScriptState* script_state,
                                         std::move(options.ports))),
       rtc_encoded_underlying_source_(
           MakeGarbageCollected<RTCEncodedUnderlyingSourceWrapper>(
-              script_state)) {
-  // Scope is needed because this call may not come directly from JavaScript.
+              script_state)),
+      rtc_encoded_underlying_sink_(
+          MakeGarbageCollected<RTCEncodedUnderlyingSinkWrapper>(script_state)) {
+  // scope is needed because this call may not come directly from JavaScript,
+  // and ReadableStream::CreateWithCountQueueingStrategy requires entering the
+  // ScriptState.
   ScriptState::Scope scope(script_state);
   readable_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, rtc_encoded_underlying_source_,
       /*high_water_mark=*/0);
+  // The high water mark for the stream is set to 1 so that the stream seems
+  // ready to write, but without queuing frames.
+  writable_ = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, rtc_encoded_underlying_sink_,
+      /*high_water_mark=*/1);
 }
 
 void RTCRtpScriptTransformer::Trace(Visitor* visitor) const {
@@ -31,7 +40,9 @@ void RTCRtpScriptTransformer::Trace(Visitor* visitor) const {
   visitor->Trace(serialized_data_);
   visitor->Trace(ports_);
   visitor->Trace(readable_);
+  visitor->Trace(writable_);
   visitor->Trace(rtc_encoded_underlying_source_);
+  visitor->Trace(rtc_encoded_underlying_sink_);
 }
 
 //  Relies on [CachedAttribute] to ensure it isn't run more than once.
@@ -48,38 +59,32 @@ bool RTCRtpScriptTransformer::IsOptionsDirty() const {
   return serialized_data_->IsDataDirty();
 }
 
-void RTCRtpScriptTransformer::CreateAudioUnderlyingSource(
-    WTF::CrossThreadOnceClosure disconnect_callback_source) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  rtc_encoded_underlying_source_->CreateAudioUnderlyingSource(
-      std::move(disconnect_callback_source));
-}
-
-void RTCRtpScriptTransformer::CreateVideoUnderlyingSource(
-    WTF::CrossThreadOnceClosure disconnect_callback_source) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  rtc_encoded_underlying_source_->CreateVideoUnderlyingSource(
-      std::move(disconnect_callback_source));
-}
-
-void RTCRtpScriptTransformer::SetVideoTransformerCallback(
-    scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
-        encoded_video_transformer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  encoded_video_transformer_ = std::move(encoded_video_transformer);
-  encoded_video_transformer_->SetTransformerCallback(
-      rtc_encoded_underlying_source_->GetVideoTransformer());
-  encoded_video_transformer_->SetSourceTaskRunner(task_runner_);
-}
-
-void RTCRtpScriptTransformer::SetAudioTransformerCallback(
+void RTCRtpScriptTransformer::SetUpAudio(
+    WTF::CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  encoded_audio_transformer_ = std::move(encoded_audio_transformer);
-  encoded_audio_transformer_->SetTransformerCallback(
+  rtc_encoded_underlying_source_->CreateAudioUnderlyingSource(
+      std::move(disconnect_callback_source));
+  encoded_audio_transformer->SetTransformerCallback(
       rtc_encoded_underlying_source_->GetAudioTransformer());
-  encoded_audio_transformer_->SetSourceTaskRunner(task_runner_);
+  encoded_audio_transformer->SetSourceTaskRunner(task_runner_);
+  rtc_encoded_underlying_sink_->CreateAudioUnderlyingSink(
+      std::move(encoded_audio_transformer));
+}
+
+void RTCRtpScriptTransformer::SetUpVideo(
+    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+        encoded_video_transformer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  rtc_encoded_underlying_source_->CreateVideoUnderlyingSource(
+      std::move(disconnect_callback_source));
+  encoded_video_transformer->SetTransformerCallback(
+      rtc_encoded_underlying_source_->GetVideoTransformer());
+  encoded_video_transformer->SetSourceTaskRunner(task_runner_);
+  rtc_encoded_underlying_sink_->CreateVideoUnderlyingSink(
+      std::move(encoded_video_transformer));
 }
 
 }  // namespace blink

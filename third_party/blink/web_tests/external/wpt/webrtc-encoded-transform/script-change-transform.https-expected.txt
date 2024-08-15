@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot read properties of undefined (reading 'getWriter')
 [FAIL] change sender transform
   promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to set the 'transform' property on 'RTCRtpSender': Transform already set"
 Harness: the test ran to completion.

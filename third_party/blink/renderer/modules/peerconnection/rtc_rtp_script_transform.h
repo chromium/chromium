@@ -45,18 +45,18 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
   RTCRtpScriptTransform() = default;
   ~RTCRtpScriptTransform() override = default;
 
-  // Called on the main thread when the RTCTransformEvent is created.
-  void SetTransformer(
+  // Called after the RTCTransformEvent is fired.
+  void SetRtpTransformer(
       CrossThreadWeakHandle<RTCRtpScriptTransformer>,
       scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner);
 
-  // Called on the main thread in the setter of the transform in RTCRtpSender
-  // or RTCRtpReceiver.
-  void CreateUnderlyingSourceAndSetAudioTransformer(
+  // Called when this transform is assigned to an RTCRtpSender or
+  // RTCRtpReceiver.
+  void CreateAudioUnderlyingSourceAndSink(
       WTF::CrossThreadOnceClosure disconnect_callback_source,
       scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
           encoded_audio_transformer);
-  void CreateUnderlyingSourceAndSetVideoTransformer(
+  void CreateVideoUnderlyingSourceAndSink(
       WTF::CrossThreadOnceClosure disconnect_callback_source,
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
           encoded_video_transformer);
@@ -70,25 +70,35 @@ class MODULES_EXPORT RTCRtpScriptTransform : public ScriptWrappable {
     return is_attached_;
   }
 
- private:
-  void CreateUnderlyingSource(
-      WTF::CrossThreadOnceClosure disconnect_callback_source,
-      String kind);
+  void CreateVideoUnderlyingSink(
+      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+          encoded_video_transformer);
 
-  void CreateUnderlyingSourceInternal(
-      const String& kind,
-      WTF::CrossThreadOnceClosure disconnect_callback_source);
+  void CreateAudioUnderlyingSink(
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+          encoded_audio_transformer);
+
+ private:
+  // These methods post a task to the worker to set up an
+  // RTCRtpScriptTransformer. They are called when the RTCRtpScriptTransformer
+  // is assigned to a sender or receiver.
+  void SetUpAudioRtpTransformer(
+      WTF::CrossThreadOnceClosure disconnect_callback_source,
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>);
+  void SetUpVideoRtpTransformer(
+      WTF::CrossThreadOnceClosure disconnect_callback_source,
+      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::optional<CrossThreadWeakHandle<RTCRtpScriptTransformer>> transformer_
+  std::optional<CrossThreadWeakHandle<RTCRtpScriptTransformer>> rtp_transformer_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner_
+  scoped_refptr<base::SingleThreadTaskRunner> rtp_transformer_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // These fields are used to store the callbacks only if the transformer has
-  // not been created/set yet. The callbacks will be invoked once the
-  // transformer becomes available.
+  // These fields are used to store the callbacks only if the
+  // RTCRtpScriptTransformer has not been created/set yet. The callbacks will be
+  // invoked once the RTCRtpScriptTransformer becomes available.
   WTF::CrossThreadOnceClosure disconnect_callback_source_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

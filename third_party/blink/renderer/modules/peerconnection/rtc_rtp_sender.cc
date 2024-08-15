@@ -1382,7 +1382,7 @@ void RTCRtpSender::setTransform(RTCRtpScriptTransform* transform,
   transform_ = transform;
   transform_->Attach();
   if (kind_ == "audio") {
-    transform_->CreateUnderlyingSourceAndSetAudioTransformer(
+    transform_->CreateAudioUnderlyingSourceAndSink(
         WTF::CrossThreadBindOnce(
             &RTCRtpSender::UnregisterEncodedAudioStreamCallback,
             WrapCrossThreadWeakPersistent(this)),
@@ -1390,7 +1390,7 @@ void RTCRtpSender::setTransform(RTCRtpScriptTransform* transform,
     return;
   }
   CHECK_EQ(kind_, "video");
-  transform_->CreateUnderlyingSourceAndSetVideoTransformer(
+  transform_->CreateVideoUnderlyingSourceAndSink(
       WTF::CrossThreadBindOnce(
           &RTCRtpSender::UnregisterEncodedVideoStreamCallback,
           WrapCrossThreadWeakPersistent(this)),

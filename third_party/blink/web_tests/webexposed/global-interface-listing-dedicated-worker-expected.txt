@@ -1769,6 +1769,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter options
 [Worker]     getter readable
+[Worker]     getter writable
 [Worker]     method constructor
 [Worker] interface RTCRtpSendResult
 [Worker]     attribute @@toStringTag

@@ -2422,11 +2422,8 @@ crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-054.html 
 crbug.com/932343 [ Mac ] external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
 
 # WebRTC Encoded Transform
-crbug.com/354881878 external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html [ Skip Timeout ]
-crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-change-transform.https.html [ Skip Timeout ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-metadata-transform.https.html [ Skip Timeout ]
-crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform.https.html [ Skip Timeout ]
-crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-write-twice-transform.https.html [ Skip Timeout ]
+crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-change-transform.https.html [ Skip Timeout ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-generateKeyFrame.https.html [ Crash Skip ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-sendKeyFrameRequest.https.html [ Failure Skip ]
 

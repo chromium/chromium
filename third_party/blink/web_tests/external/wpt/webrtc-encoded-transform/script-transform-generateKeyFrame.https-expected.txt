@@ -1,24 +1,23 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot read properties of undefined (reading 'getWriter')
 [FAIL] generateKeyFrame() throws for audio
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: Message: transformer.generateKeyFrame is not a function expected "InvalidStateError" but got "TypeError"
 [FAIL] generateKeyFrame(null) resolves for video sender, and throws for video receiver
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 [FAIL] generateKeyFrame throws NotAllowedError for invalid rid
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: Message: transformer.generateKeyFrame is not a function expected "NotAllowedError" but got "TypeError"
 [FAIL] generateKeyFrame throws NotFoundError for unknown rid
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: Message: transformer.generateKeyFrame is not a function expected "NotFoundError" but got "TypeError"
 [FAIL] generateKeyFrame throws for unset transforms
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 [FAIL] generateKeyFrame timestamp should advance
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 [FAIL] await generateKeyFrame, await generateKeyFrame should see an increase in count of keyframes
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 [FAIL] generateKeyFrame rejects when the sender is negotiated inactive, and resumes succeeding when negotiated back to active
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 [FAIL] generateKeyFrame rejects when the sender is stopped, even without negotiation
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 [FAIL] generateKeyFrame rejects with a null track
-  assert_equals: expected (string) "got frame" but got (object) object "[object Object]"
+  assert_equals: expected "success" but got "failure"
 Harness: the test ran to completion.
 

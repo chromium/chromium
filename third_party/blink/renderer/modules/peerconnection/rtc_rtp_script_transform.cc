@@ -41,7 +41,7 @@ Event* CreateRTCTransformEvent(
   PostCrossThreadTask(
       *transform_task_runner, FROM_HERE,
       CrossThreadBindOnce(
-          &RTCRtpScriptTransform::SetTransformer,
+          &RTCRtpScriptTransform::SetRtpTransformer,
           MakeUnwrappingCrossThreadWeakHandle(transform),
           MakeCrossThreadWeakHandle(event->transformer()),
           WrapRefCounted(ExecutionContext::From(script_state)
@@ -87,106 +87,82 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
   return transform;
 }
 
-void RTCRtpScriptTransform::CreateUnderlyingSource(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
-    String kind) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (transformer_) {
-    CreateUnderlyingSourceInternal(kind, std::move(disconnect_callback_source));
-  } else {
-    // Saving these fields so once the transformer is set,
-    // CreateUnderlyingSourceInternal can be called.
-    kind_ = kind;
-    disconnect_callback_source_ = std::move(disconnect_callback_source);
-  }
-}
-
-void RTCRtpScriptTransform::CreateUnderlyingSourceAndSetAudioTransformer(
+void RTCRtpScriptTransform::CreateAudioUnderlyingSourceAndSink(
     WTF::CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CreateUnderlyingSource(std::move(disconnect_callback_source), "audio");
-  if (transformer_) {
-    PostCrossThreadTask(
-        *transformer_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &RTCRtpScriptTransformer::SetAudioTransformerCallback,
-            MakeUnwrappingCrossThreadWeakHandle(*transformer_),
-            std::move(encoded_audio_transformer)));
+  if (rtp_transformer_) {
+    SetUpAudioRtpTransformer(std::move(disconnect_callback_source),
+                             std::move(encoded_audio_transformer));
   } else {
-    // Saving the audio transformer so once the transformer is set,
-    // SetAudioTransformerCallback can be called.
+    // Saving these fields so once the transformer is set,
+    // SetUpAudioRtpTransformer can be called.
     encoded_audio_transformer_ = std::move(encoded_audio_transformer);
+    disconnect_callback_source_ = std::move(disconnect_callback_source);
   }
 }
 
-void RTCRtpScriptTransform::CreateUnderlyingSourceAndSetVideoTransformer(
+void RTCRtpScriptTransform::CreateVideoUnderlyingSourceAndSink(
     WTF::CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CreateUnderlyingSource(std::move(disconnect_callback_source), "video");
-  if (transformer_) {
-    PostCrossThreadTask(
-        *transformer_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &RTCRtpScriptTransformer::SetVideoTransformerCallback,
-            MakeUnwrappingCrossThreadWeakHandle(*transformer_),
-            std::move(encoded_video_transformer)));
+  if (rtp_transformer_) {
+    SetUpVideoRtpTransformer(std::move(disconnect_callback_source),
+                             std::move(encoded_video_transformer));
   } else {
-    // Saving the video transformer so once the transformer is set,
-    // SetVideoTransformerCallback can be called.
+    // Saving these fields so once the transformer is set,
+    // SetUpVideoRtpTransformer can be called.
     encoded_video_transformer_ = std::move(encoded_video_transformer);
+    disconnect_callback_source_ = std::move(disconnect_callback_source);
   }
 }
 
-void RTCRtpScriptTransform::CreateUnderlyingSourceInternal(
-    const String& kind,
-    WTF::CrossThreadOnceClosure disconnect_callback_source) {
+void RTCRtpScriptTransform::SetUpAudioRtpTransformer(
+    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+        encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(transformer_);
-  if (kind == "audio") {
-    PostCrossThreadTask(
-        *transformer_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &RTCRtpScriptTransformer::CreateAudioUnderlyingSource,
-            MakeUnwrappingCrossThreadWeakHandle(*transformer_),
-            std::move(disconnect_callback_source)));
-    return;
-  }
-  CHECK_EQ(kind, "video");
-  PostCrossThreadTask(*transformer_task_runner_, FROM_HERE,
-                      WTF::CrossThreadBindOnce(
-                          &RTCRtpScriptTransformer::CreateVideoUnderlyingSource,
-                          MakeUnwrappingCrossThreadWeakHandle(*transformer_),
-                          std::move(disconnect_callback_source)));
+  CHECK(rtp_transformer_);
+  PostCrossThreadTask(
+      *rtp_transformer_task_runner_, FROM_HERE,
+      WTF::CrossThreadBindOnce(
+          &RTCRtpScriptTransformer::SetUpAudio,
+          MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_),
+          std::move(disconnect_callback_source),
+          std::move(encoded_audio_transformer)));
 }
 
-void RTCRtpScriptTransform::SetTransformer(
+void RTCRtpScriptTransform::SetUpVideoRtpTransformer(
+    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+        encoded_video_transformer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(rtp_transformer_);
+  PostCrossThreadTask(
+      *rtp_transformer_task_runner_, FROM_HERE,
+      WTF::CrossThreadBindOnce(
+          &RTCRtpScriptTransformer::SetUpVideo,
+          MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_),
+          std::move(disconnect_callback_source),
+          std::move(encoded_video_transformer)));
+}
+
+void RTCRtpScriptTransform::SetRtpTransformer(
     CrossThreadWeakHandle<RTCRtpScriptTransformer> transformer,
     scoped_refptr<base::SingleThreadTaskRunner> transformer_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transformer_.emplace(std::move(transformer));
-  transformer_task_runner_ = transformer_task_runner;
-  if (disconnect_callback_source_) {
-    CreateUnderlyingSourceInternal(kind_,
-                                   std::move(disconnect_callback_source_));
+  rtp_transformer_.emplace(std::move(transformer));
+  rtp_transformer_task_runner_ = std::move(transformer_task_runner);
+  if (disconnect_callback_source_ && encoded_audio_transformer_) {
+    SetUpAudioRtpTransformer(std::move(disconnect_callback_source_),
+                             std::move(encoded_audio_transformer_));
+    return;
   }
-  if (encoded_audio_transformer_) {
-    PostCrossThreadTask(
-        *transformer_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &RTCRtpScriptTransformer::SetAudioTransformerCallback,
-            MakeUnwrappingCrossThreadWeakHandle(*transformer_),
-            std::move(encoded_audio_transformer_)));
-  } else if (encoded_video_transformer_) {
-    PostCrossThreadTask(
-        *transformer_task_runner_, FROM_HERE,
-        WTF::CrossThreadBindOnce(
-            &RTCRtpScriptTransformer::SetVideoTransformerCallback,
-            MakeUnwrappingCrossThreadWeakHandle(*transformer_),
-            std::move(encoded_video_transformer_)));
+  if (disconnect_callback_source_ && encoded_video_transformer_) {
+    SetUpVideoRtpTransformer(std::move(disconnect_callback_source_),
+                             std::move(encoded_video_transformer_));
   }
 }
 
