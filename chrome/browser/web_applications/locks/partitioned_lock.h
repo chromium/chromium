@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_
-#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_H_
 
 #include <iosfwd>
 
 #include "base/functional/callback.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
 
-namespace content {
+namespace web_app {
 
 // Represents a granted lock by the PartitionedLockManager. When this object is
 // destroyed, the lock is released. Since default construction is supported,
@@ -67,6 +67,6 @@ bool operator!=(const PartitionedLock& x, const PartitionedLock& y);
 // Comparison operator to allow sorting for locking / unlocking order.
 bool operator<(const PartitionedLock& x, const PartitionedLock& y);
 
-}  // namespace content
+}  // namespace web_app
 
-#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_H_

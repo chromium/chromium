@@ -7,9 +7,9 @@
 #include <memory>
 #include <ostream>
 
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
@@ -73,7 +73,7 @@ WebContentsManager& Lock::web_contents_manager() {
   return lock_manager_->provider().web_contents_manager();
 }
 
-Lock::Lock(std::unique_ptr<content::PartitionedLockHolder> holder,
+Lock::Lock(std::unique_ptr<PartitionedLockHolder> holder,
            base::WeakPtr<WebAppLockManager> lock_manager)
     : holder_(std::move(holder)), lock_manager_(std::move(lock_manager)) {}
 

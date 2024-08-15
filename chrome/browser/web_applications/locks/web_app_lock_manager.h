@@ -13,7 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace base {
@@ -121,12 +121,12 @@ class WebAppLockManager {
  private:
   // Acquires the lock for the given `lock`, calling `on_lock_acquired` when
   // complete.
-  void AcquireLock(base::WeakPtr<content::PartitionedLockHolder> holder,
+  void AcquireLock(base::WeakPtr<PartitionedLockHolder> holder,
                    const LockDescription& lock,
                    base::OnceClosure on_lock_acquired,
                    const base::Location& location);
 
-  content::PartitionedLockManager lock_manager_;
+  PartitionedLockManager lock_manager_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   base::WeakPtrFactory<WebAppLockManager> weak_factory_{this};
 };

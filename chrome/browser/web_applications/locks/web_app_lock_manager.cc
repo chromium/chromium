@@ -22,12 +22,12 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
@@ -55,56 +55,51 @@ const char* KeysOnStaticPartitionToString(KeysOnStaticPartition key) {
   }
 }
 
-content::PartitionedLockManager::PartitionedLockRequest GetAllAppsLock(
-    content::PartitionedLockManager::LockType type) {
-  return content::PartitionedLockManager::PartitionedLockRequest(
-      content::PartitionedLockId(
+PartitionedLockManager::PartitionedLockRequest GetAllAppsLock(
+    PartitionedLockManager::LockType type) {
+  return PartitionedLockManager::PartitionedLockRequest(
+      PartitionedLockId(
           {static_cast<int>(LockPartition::kStatic),
            base::NumberToString(KeysOnStaticPartition::kAllApps)}),
       type);
 }
 
-content::PartitionedLockManager::PartitionedLockRequest
-GetSharedWebContentsLock() {
-  return content::PartitionedLockManager::PartitionedLockRequest(
-      content::PartitionedLockId(
-          {static_cast<int>(LockPartition::kStatic),
-           base::NumberToString(
-               KeysOnStaticPartition::kBackgroundWebContents)}),
-      content::PartitionedLockManager::LockType::kExclusive);
+PartitionedLockManager::PartitionedLockRequest GetSharedWebContentsLock() {
+  return PartitionedLockManager::PartitionedLockRequest(
+      PartitionedLockId({static_cast<int>(LockPartition::kStatic),
+                         base::NumberToString(
+                             KeysOnStaticPartition::kBackgroundWebContents)}),
+      PartitionedLockManager::LockType::kExclusive);
 }
 
-std::vector<content::PartitionedLockManager::PartitionedLockRequest>
+std::vector<PartitionedLockManager::PartitionedLockRequest>
 GetExclusiveAppIdLocks(const base::flat_set<webapps::AppId>& app_ids) {
-  std::vector<content::PartitionedLockManager::PartitionedLockRequest>
-      lock_requests;
+  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   for (const webapps::AppId& app_id : app_ids) {
     lock_requests.emplace_back(
-        content::PartitionedLockId(
-            {static_cast<int>(LockPartition::kApp), app_id}),
-        content::PartitionedLockManager::LockType::kExclusive);
+        PartitionedLockId({static_cast<int>(LockPartition::kApp), app_id}),
+        PartitionedLockManager::LockType::kExclusive);
   }
   return lock_requests;
 }
 
-std::vector<content::PartitionedLockManager::PartitionedLockRequest>
+std::vector<PartitionedLockManager::PartitionedLockRequest>
 GetLockRequestsForLock(const LockDescription& lock) {
-  std::vector<content::PartitionedLockManager::PartitionedLockRequest> requests;
+  std::vector<PartitionedLockManager::PartitionedLockRequest> requests;
   switch (lock.type()) {
     case LockDescription::Type::kNoOp:
       return {};
     case LockDescription::Type::kApp:
       requests = GetExclusiveAppIdLocks(lock.app_ids());
       requests.push_back(
-          GetAllAppsLock(content::PartitionedLockManager::LockType::kShared));
+          GetAllAppsLock(PartitionedLockManager::LockType::kShared));
       return requests;
     case LockDescription::Type::kAllAppsLock:
-      return {GetAllAppsLock(
-          content::PartitionedLockManager::LockType::kExclusive)};
+      return {GetAllAppsLock(PartitionedLockManager::LockType::kExclusive)};
     case LockDescription::Type::kAppAndWebContents:
       requests = GetExclusiveAppIdLocks(lock.app_ids());
       requests.push_back(
-          GetAllAppsLock(content::PartitionedLockManager::LockType::kShared));
+          GetAllAppsLock(PartitionedLockManager::LockType::kShared));
       requests.push_back(GetSharedWebContentsLock());
       return requests;
     case LockDescription::Type::kBackgroundWebContents:
@@ -116,9 +111,8 @@ GetLockRequestsForLock(const LockDescription& lock) {
 void LogLockRequest(
     const LockDescription& description,
     const base::Location& location,
-    const std::vector<content::PartitionedLockManager::PartitionedLockRequest>&
-        requests,
-    const content::PartitionedLockManager& lock_manager) {
+    const std::vector<PartitionedLockManager::PartitionedLockRequest>& requests,
+    const PartitionedLockManager& lock_manager) {
   DVLOG(1) << "Requesting or upgrading to lock " << description
            << " for location " << location.ToString();
   std::vector<base::Location> locations =
@@ -144,7 +138,7 @@ void WebAppLockManager::SetProvider(base::PassKey<WebAppCommandManager>,
 
 bool WebAppLockManager::IsSharedWebContentsLockFree() {
   return lock_manager_.TestLock(GetSharedWebContentsLock()) ==
-         content::PartitionedLockManager::TestLockResult::kFree;
+         PartitionedLockManager::TestLockResult::kFree;
 }
 
 template <>
@@ -154,11 +148,9 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kNoOp);
 
-  auto lock = base::WrapUnique(
-      new NoopLock(std::make_unique<content::PartitionedLockHolder>(),
-                   weak_factory_.GetWeakPtr()));
-  base::WeakPtr<content::PartitionedLockHolder> holder =
-      lock->holder_->AsWeakPtr();
+  auto lock = base::WrapUnique(new NoopLock(
+      std::make_unique<PartitionedLockHolder>(), weak_factory_.GetWeakPtr()));
+  base::WeakPtr<PartitionedLockHolder> holder = lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)),
               location);
@@ -174,12 +166,10 @@ void WebAppLockManager::AcquireLock(
         LockDescription::Type::kBackgroundWebContents);
 
   auto lock = base::WrapUnique(new SharedWebContentsLock(
-      weak_factory_.GetWeakPtr(),
-      std::make_unique<content::PartitionedLockHolder>(),
+      weak_factory_.GetWeakPtr(), std::make_unique<PartitionedLockHolder>(),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey())));
 
-  base::WeakPtr<content::PartitionedLockHolder> holder =
-      lock->holder_->AsWeakPtr();
+  base::WeakPtr<PartitionedLockHolder> holder = lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)),
               location);
@@ -192,12 +182,10 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kApp);
 
-  auto lock = base::WrapUnique(
-      new AppLock(weak_factory_.GetWeakPtr(),
-                  std::make_unique<content::PartitionedLockHolder>()));
+  auto lock = base::WrapUnique(new AppLock(
+      weak_factory_.GetWeakPtr(), std::make_unique<PartitionedLockHolder>()));
 
-  base::WeakPtr<content::PartitionedLockHolder> holder =
-      lock->holder_->AsWeakPtr();
+  base::WeakPtr<PartitionedLockHolder> holder = lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)),
               location);
@@ -212,12 +200,10 @@ void WebAppLockManager::AcquireLock(
   CHECK(lock_description.type() == LockDescription::Type::kAppAndWebContents);
 
   auto lock = base::WrapUnique(new SharedWebContentsWithAppLock(
-      weak_factory_.GetWeakPtr(),
-      std::make_unique<content::PartitionedLockHolder>(),
+      weak_factory_.GetWeakPtr(), std::make_unique<PartitionedLockHolder>(),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey())));
 
-  base::WeakPtr<content::PartitionedLockHolder> holder =
-      lock->holder_->AsWeakPtr();
+  base::WeakPtr<PartitionedLockHolder> holder = lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)),
               location);
@@ -230,11 +216,9 @@ void WebAppLockManager::AcquireLock(
     const base::Location& location) {
   CHECK(lock_description.type() == LockDescription::Type::kAllAppsLock);
 
-  auto lock = base::WrapUnique(
-      new AllAppsLock(weak_factory_.GetWeakPtr(),
-                      std::make_unique<content::PartitionedLockHolder>()));
-  base::WeakPtr<content::PartitionedLockHolder> holder =
-      lock->holder_->AsWeakPtr();
+  auto lock = base::WrapUnique(new AllAppsLock(
+      weak_factory_.GetWeakPtr(), std::make_unique<PartitionedLockHolder>()));
+  base::WeakPtr<PartitionedLockHolder> holder = lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,
               base::BindOnce(std::move(on_lock_acquired), std::move(lock)),
               location);
@@ -253,10 +237,10 @@ WebAppLockManager::UpgradeAndAcquireLock(
   auto result_lock = base::WrapUnique(new SharedWebContentsWithAppLock(
       weak_factory_.GetWeakPtr(), std::move(lock->holder_),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey())));
-  base::WeakPtr<content::PartitionedLockHolder> holder =
+  base::WeakPtr<PartitionedLockHolder> holder =
       result_lock->holder_->AsWeakPtr();
 
-  content::PartitionedLockManager::AcquireOptions options;
+  PartitionedLockManager::AcquireOptions options;
   options.ensure_async = true;
 #if DCHECK_IS_ON()
   LogLockRequest(*result_lock_description, location,
@@ -280,10 +264,10 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
 
   auto result_lock = base::WrapUnique(
       new AppLock(weak_factory_.GetWeakPtr(), std::move(lock->holder_)));
-  base::WeakPtr<content::PartitionedLockHolder> holder =
+  base::WeakPtr<PartitionedLockHolder> holder =
       result_lock->holder_->AsWeakPtr();
 
-  content::PartitionedLockManager::AcquireOptions options;
+  PartitionedLockManager::AcquireOptions options;
   options.ensure_async = true;
 #if DCHECK_IS_ON()
   LogLockRequest(*result_lock_description, location,
@@ -297,7 +281,7 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
 }
 
 base::Value WebAppLockManager::ToDebugValue() const {
-  return lock_manager_.ToDebugValue([](const content::PartitionedLockId& lock)
+  return lock_manager_.ToDebugValue([](const PartitionedLockId& lock)
                                         -> std::string {
     // Out of bounds things should NOT happen here, but given this is being
     // called from debug UI, it's better to return something reasonable
@@ -333,14 +317,13 @@ base::Value WebAppLockManager::ToDebugValue() const {
   });
 }
 
-void WebAppLockManager::AcquireLock(
-    base::WeakPtr<content::PartitionedLockHolder> holder,
-    const LockDescription& lock_description,
-    base::OnceClosure on_lock_acquired,
-    const base::Location& location) {
-  std::vector<content::PartitionedLockManager::PartitionedLockRequest>
-      requests = GetLockRequestsForLock(lock_description);
-  content::PartitionedLockManager::AcquireOptions options;
+void WebAppLockManager::AcquireLock(base::WeakPtr<PartitionedLockHolder> holder,
+                                    const LockDescription& lock_description,
+                                    base::OnceClosure on_lock_acquired,
+                                    const base::Location& location) {
+  std::vector<PartitionedLockManager::PartitionedLockRequest> requests =
+      GetLockRequestsForLock(lock_description);
+  PartitionedLockManager::AcquireOptions options;
   options.ensure_async = true;
 #if DCHECK_IS_ON()
   LogLockRequest(lock_description, location, requests, lock_manager_);

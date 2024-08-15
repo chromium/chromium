@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
-#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 
 #include <deque>
 #include <iosfwd>
@@ -21,14 +21,14 @@
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
 
 namespace base {
 class Value;
 }
 
-namespace content {
+namespace web_app {
 
 // Used to receive and hold locks from a PartitionedLockManager. This struct
 // enables the PartitionedLock objects to always live in the destination of the
@@ -193,6 +193,6 @@ bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
 bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
 
-}  // namespace content
+}  // namespace web_app
 
-#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_MANAGER_H_

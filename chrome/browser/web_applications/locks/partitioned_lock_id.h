@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_ID_H_
-#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_ID_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_ID_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_ID_H_
 
 #include <iosfwd>
 #include <string>
 
-namespace content {
+namespace web_app {
 
 struct PartitionedLockId {
   int partition;
@@ -22,6 +22,6 @@ bool operator<(const PartitionedLockId& x, const PartitionedLockId& y);
 bool operator==(const PartitionedLockId& x, const PartitionedLockId& y);
 bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y);
 
-}  // namespace content
+}  // namespace web_app
 
-#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_ID_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_PARTITIONED_LOCK_ID_H_

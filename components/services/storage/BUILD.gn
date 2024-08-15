@@ -30,6 +30,12 @@ source_set("storage") {
     "dom_storage/storage_area_impl.h",
     "indexed_db/leveldb/leveldb_state.cc",
     "indexed_db/leveldb/leveldb_state.h",
+    "indexed_db/locks/partitioned_lock.cc",
+    "indexed_db/locks/partitioned_lock.h",
+    "indexed_db/locks/partitioned_lock_id.cc",
+    "indexed_db/locks/partitioned_lock_id.h",
+    "indexed_db/locks/partitioned_lock_manager.cc",
+    "indexed_db/locks/partitioned_lock_manager.h",
     "indexed_db/scopes/leveldb_scope.cc",
     "indexed_db/scopes/leveldb_scope.h",
     "indexed_db/scopes/leveldb_scope_deletion_mode.h",
@@ -83,7 +89,6 @@ source_set("storage") {
   ]
 
   public_deps = [
-    ":lock_manager",
     ":test_api_stubs",
     "//base",
     "//components/services/storage/dom_storage:local_storage_proto",
@@ -108,19 +113,6 @@ source_set("storage") {
     "//storage/browser",
     "//storage/common",
   ]
-}
-
-component("lock_manager") {
-  sources = [
-    "indexed_db/locks/partitioned_lock.cc",
-    "indexed_db/locks/partitioned_lock.h",
-    "indexed_db/locks/partitioned_lock_id.cc",
-    "indexed_db/locks/partitioned_lock_id.h",
-    "indexed_db/locks/partitioned_lock_manager.cc",
-    "indexed_db/locks/partitioned_lock_manager.h",
-  ]
-  deps = [ "//base" ]
-  defines = [ "IS_LOCK_MANAGER_IMPL" ]
 }
 
 # This is its own component target because it exposes global state to multiple

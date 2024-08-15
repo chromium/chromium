@@ -13,11 +13,11 @@
 
 namespace content {
 class WebContents;
-struct PartitionedLockHolder;
 }  // namespace content
 
 namespace web_app {
 
+struct PartitionedLockHolder;
 class WebAppLockManager;
 
 // This locks the background shared web contents that is used by the
@@ -56,7 +56,7 @@ class SharedWebContentsLock : public Lock,
  private:
   friend class WebAppLockManager;
   SharedWebContentsLock(base::WeakPtr<WebAppLockManager> lock_manager,
-                        std::unique_ptr<content::PartitionedLockHolder> holder,
+                        std::unique_ptr<PartitionedLockHolder> holder,
                         content::WebContents& shared_web_contents);
 
   base::WeakPtrFactory<SharedWebContentsLock> weak_factory_{this};
