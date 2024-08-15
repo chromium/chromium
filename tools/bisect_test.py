@@ -5,11 +5,10 @@
 import functools
 import io
 import json
+import optparse
 import os
 import unittest
 import subprocess
-import sys
-import optparse
 from unittest.mock import Mock, MagicMock, mock_open, patch
 
 bisect_builds = __import__('bisect-builds')
@@ -40,45 +39,36 @@ else:
                                          new_callable=WrappedMock)
 
 
-class FakeProcess:
-  called_num_times = 0
-
-  def __init__(self, returncode):
-    self.returncode = returncode
-    FakeProcess.called_num_times += 1
-
-  def communicate(self):
-    return ('', '')
-
-
 class BisectTest(unittest.TestCase):
 
-  patched = []
   max_rev = 10000
-  fake_process_return_code = 0
-
-  def monkey_patch(self, obj, name, new):
-    patcher = patch.object(obj, name, new)
-    patcher.start()
-
-  def clear_patching(self):
-    patch.stopall()
 
   def setUp(self):
-    FakeProcess.called_num_times = 0
-    self.fake_process_return_code = 0
-    self.monkey_patch(bisect_builds.DownloadJob, 'Start', lambda *args: None)
-    self.monkey_patch(bisect_builds.DownloadJob, 'Stop', lambda *args: None)
-    self.monkey_patch(bisect_builds.DownloadJob, 'WaitFor', lambda *args: None)
-    self.monkey_patch(bisect_builds, 'UnzipFilenameToDir', lambda *args: None)
-    self.monkey_patch(
-        subprocess, 'Popen',
-        lambda *args, **kwargs: FakeProcess(self.fake_process_return_code))
-    self.monkey_patch(bisect_builds.SnapshotBuild, '_get_rev_list',
-                      lambda *args: range(self.max_rev))
+    patch('bisect-builds.DownloadJob.fetch').start()
+    patch('bisect-builds.UnzipFilenameToDir').start()
+    patch('bisect-builds.SnapshotBuild._get_rev_list',
+          return_value=range(self.max_rev)).start()
+    # Windows uses platform.release() and icacls to setup App Container. Which
+    # could generate 2 additional Popen calls. This popen filtered the args to
+    # mock only the chrome executions.
+    popen = subprocess.Popen
+    self.mock_popen_called = 0
+    self.mock_popen_returncode = 0
+
+    def popen_mock_filter(args, *nargs, **kwargs):
+      if isinstance(args, list) and args and 'chrome' in args[0]:
+        self.mock_popen_called += 1
+        return Mock(
+            **{
+                'returncode': self.mock_popen_returncode,
+                'communicate.return_value': ('', '')
+            })
+      return popen(args, *nargs, **kwargs)
+
+    self.mock_popen = patch('subprocess.Popen', wraps=popen_mock_filter).start()
 
   def tearDown(self):
-    self.clear_patching()
+    patch.stopall()
 
   def bisect(self, good_rev, bad_rev, evaluate, num_runs=1):
     base_url = bisect_builds.CHROMIUM_BASE_URL
@@ -114,15 +104,51 @@ class BisectTest(unittest.TestCase):
     self.assertEqual(self.bisect(200, 2000, lambda *args: 'g'), (1999, 2000))
 
   def testBisectMultipleRunsEarlyReturn(self):
-    self.fake_process_return_code = 1
+    self.mock_popen_returncode = 1
     self.assertEqual(self.bisect(1, 3, lambda *args: 'b', num_runs=10), (1, 2))
-    self.assertEqual(FakeProcess.called_num_times, 1)
+    self.assertEqual(self.mock_popen_called, 1)
 
-  @unittest.skipIf(sys.platform == 'win32', 'Test fails on Windows due to '
-                   'https://crbug.com/1393138')
   def testBisectAllRunsWhenAllSucceed(self):
     self.assertEqual(self.bisect(1, 3, lambda *args: 'b', num_runs=10), (1, 2))
-    self.assertEqual(FakeProcess.called_num_times, 10)
+    self.assertEqual(self.mock_popen_called, 10)
+
+
+class DownloadJobTest(unittest.TestCase):
+
+  @patch('bisect-builds.gsutil_download')
+  def test_fetch_gsutil(self, mock_gsutil_download):
+    fetch = bisect_builds.DownloadJob('gs://some-file.zip', 123)
+    fetch.start()
+    fetch.wait_for()
+    mock_gsutil_download.assert_called_once()
+
+  @patch('urllib.request.urlretrieve')
+  def test_fetch_http(self, mock_urlretrieve):
+    fetch = bisect_builds.DownloadJob('http://some-file.zip', 123)
+    fetch.start()
+    fetch.wait_for()
+    mock_urlretrieve.assert_called_once()
+
+  @patch('tempfile.mkstemp', return_value=(321, 'some-file.zip'))
+  @patch('os.close')
+  @patch('os.unlink')
+  def test_should_del(self, mock_unlink, mock_close, mock_mkstemp):
+    fetch = bisect_builds.DownloadJob('http://some-file.zip', 123)
+    del fetch
+    mock_unlink.assert_called_with('some-file.zip')
+    mock_close.assert_called_once()
+    mock_mkstemp.assert_called_once()
+
+  @patch('urllib.request.urlretrieve')
+  def test_stop_wait_for_should_be_able_to_reenter(self, mock_urlretrieve):
+    fetch = bisect_builds.DownloadJob('http://some-file.zip', 123)
+    fetch.start()
+    fetch.wait_for()
+    fetch.wait_for()
+    fetch.stop()
+    fetch.stop()
+    fetch.wait_for()
+    fetch.stop()
 
 
 class ArchiveBuildTest(unittest.TestCase):

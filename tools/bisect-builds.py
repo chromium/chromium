@@ -296,13 +296,11 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-linux.zip',
             'archive_extract_dir': 'chrome-linux'
         },
-        # Note: changed at revision 591483; see GetDownloadURL and GetLaunchPath
-        # below where these are patched.
         'chromeos': {
             'binary_name': 'chrome',
             'listing_platform_dir': 'Linux_ChromiumOS_Full/',
-            'archive_name': 'chrome-linux.zip',
-            'archive_extract_dir': 'chrome-linux'
+            'archive_name': 'chrome-chromeos.zip',
+            'archive_extract_dir': 'chrome-chromeos'
         },
         'mac': {
             'binary_name': 'Chromium.app/Contents/MacOS/Chromium',
@@ -322,19 +320,17 @@ PATH_CONTEXT = {
             'archive_name': 'chrome-mac.zip',
             'archive_extract_dir': 'chrome-mac'
         },
-        # Note: changed at revision 591483; see GetDownloadURL and GetLaunchPath
-        # below where these are patched.
         'win': {
             'binary_name': 'chrome.exe',
             'listing_platform_dir': 'Win/',
-            'archive_name': 'chrome-win32.zip',
-            'archive_extract_dir': 'chrome-win32'
+            'archive_name': 'chrome-win.zip',
+            'archive_extract_dir': 'chrome-win'
         },
         'win64': {
             'binary_name': 'chrome.exe',
             'listing_platform_dir': 'Win_x64/',
-            'archive_name': 'chrome-win32.zip',
-            'archive_extract_dir': 'chrome-win32'
+            'archive_name': 'chrome-win.zip',
+            'archive_extract_dir': 'chrome-win'
         },
         'win-arm64': {
             'binary_name': 'chrome.exe',
@@ -633,7 +629,8 @@ class ArchiveBuild(abc.ABC):
 
     # Filter for just the range between good and bad.
     rev_list = [x for x in rev_list_all if min_rev <= x <= max_rev]
-    if len(rev_list) < 2:  # Don't have enough builds to bisect.
+    # Don't have enough builds to bisect.
+    if len(rev_list) < 2:
       rev_list_min, rev_list_max = rev_list_all[0], rev_list_all[-1]
       # Check for specifying a number before the available range.
       if max_rev < rev_list_min:
@@ -666,6 +663,15 @@ class ArchiveBuild(abc.ABC):
         self.bad_revision = rev_list[0]
         self.good_revision = rev_list[-1]
     return rev_list
+
+  @abc.abstractmethod
+  def get_download_url(self, revision):
+    """Gets the download URL for the specific revision."""
+    raise NotImplemented()
+
+  def get_download_job(self, revision, name=None):
+    """Gets as a DownloadJob that download the specific revision in threads."""
+    return DownloadJob(self.get_download_url(revision), revision, name)
 
 
 class ReleaseBuild(ArchiveBuild):
@@ -736,6 +742,10 @@ class ReleaseBuild(ArchiveBuild):
     revisions = super()._load_rev_list_cache()
     return [LooseVersion(x) for x in revisions]
 
+  def get_download_url(self, revision):
+    return '%s/%s/%s%s' % (self._get_release_bucket(), revision,
+                           self.listing_platform_dir, self.archive_name)
+
 
 class AndroidReleaseBuild(ReleaseBuild):
 
@@ -793,6 +803,10 @@ class OfficialBuild(ArchiveBuildWithCommitPosition):
   @property
   def _rev_list_cache_key(self):
     return self._get_listing_url()
+
+  def get_download_url(self, revision):
+    return '%s/%s%s_%s.zip' % (PERF_BASE_URL, self.listing_platform_dir,
+                               self.archive_extract_dir, revision)
 
 
 class SnapshotBuild(ArchiveBuildWithCommitPosition):
@@ -901,6 +915,10 @@ class SnapshotBuild(ArchiveBuildWithCommitPosition):
   def _rev_list_cache_key(self):
     return self._get_listing_url()
 
+  def get_download_url(self, revision):
+    return '%s/%s%s/%s' % (self.base_url, self.listing_platform_dir, revision,
+                           self.archive_name)
+
 
 class ASANBuild(SnapshotBuild):
   """ASANBuilds works like SnapshotBuild which fetch from commondatastorage, but
@@ -953,6 +971,9 @@ class ASANBuild(SnapshotBuild):
     # The build type is hardcoded as release in the original code.
     return '%s-%s/%s-%d.zip' % (self.GetASANPlatformDir(), self.asan_build_type,
                                 self.GetASANBaseName(), revision)
+
+  def get_download_url(self, revision):
+    return '%s/%s' % (self.base_url, self._get_marker_for_revision(revision))
 
 
 def create_archive_build(options, device=None):
@@ -1072,37 +1093,6 @@ class PathContext(object):
     else:
       return self.platform
 
-  def GetDownloadURL(self, revision):
-    """Gets the download URL for a build archive of a specific revision."""
-    archive_name = self.archive_name
-    # At revision 591483, the names of two of the archives changed
-    # due to: https://chromium-review.googlesource.com/#/q/1226086
-    # See: http://crbug.com/789612
-    # revision passed in can either be a cr commit position(int),
-    # or a chrome version(str).
-    if '.' not in str(revision) and revision >= 591483:
-      if self.platform == 'chromeos':
-        archive_name = 'chrome-chromeos.zip'
-      elif self.platform in ('win', 'win64'):
-        archive_name = 'chrome-win.zip'
-
-    if self.is_asan:
-      return '%s/%s-%s/%s-%d.zip' % (ASAN_BASE_URL,
-                                     self.GetASANPlatformDir(), self.build_type,
-                                     self.GetASANBaseName(), revision)
-    if self.is_release:
-      return '%s/%s/%s%s' % (self.GetReleaseBucket(), revision,
-                             self._listing_platform_dir, archive_name)
-
-    if self.is_official:
-      return '%s/%s%s_%s.zip' % (PERF_BASE_URL, self._listing_platform_dir,
-                                 self._archive_extract_dir, revision)
-    else:
-      if str(revision) in self.githash_svn_dict:
-        revision = self.githash_svn_dict[str(revision)]
-      return '%s/%s%s/%s' % (self.base_url, self._listing_platform_dir,
-                             revision, archive_name)
-
   def GetLastChangeURL(self):
     """Returns a URL to the LAST_CHANGE file."""
     return self.base_url + '/' + self._listing_platform_dir + 'LAST_CHANGE'
@@ -1124,14 +1114,6 @@ class PathContext(object):
       extract_dir = '%s_%s' % (self._archive_extract_dir, revision)
     else:
       extract_dir = self._archive_extract_dir
-      # At revision 591483, the names of two of the archives changed
-      # due to: https://chromium-review.googlesource.com/#/q/1226086
-      # See: http://crbug.com/789612
-      if '.' not in str(revision) and revision >= 591483:
-        if self.platform == 'chromeos':
-          extract_dir = 'chrome-chromeos'
-        elif self.platform in ('win', 'win64'):
-          extract_dir = 'chrome-win'
 
     return os.path.join(extract_dir, self._binary_name)
 
@@ -1253,43 +1235,6 @@ def UnzipFilenameToDir(filename, directory):
 def gsutil_download(download_url, filename):
   command = ['cp', download_url, filename]
   RunGsutilCommand(command)
-
-
-def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
-  """Downloads and unzips revision |rev|.
-  @param context A PathContext instance.
-  @param rev The Chromium revision number/tag to download.
-  @param filename The destination for the downloaded file.
-  @param quit_event A threading.Event which will be set by the main thread to
-                    indicate that the download should be aborted.
-  @param progress_event A threading.Event which will be set by the main thread
-                    to indicate that the progress of the download should be
-                    displayed.
-  """
-  def ReportHook(blocknum, blocksize, totalsize):
-    if quit_event and quit_event.is_set():
-      raise RuntimeError('Aborting download of revision %s' % str(rev))
-    if progress_event and progress_event.is_set():
-      size = blocknum * blocksize
-      if totalsize == -1:  # Total size not known.
-        progress = 'Received %d bytes' % size
-      else:
-        size = min(totalsize, size)
-        progress = 'Received %d of %d bytes, %.2f%%' % (
-            size, totalsize, 100.0 * size / totalsize)
-      # Send a \r to let all progress messages use just one line of output.
-      sys.stdout.write('\r' + progress)
-      sys.stdout.flush()
-  download_url = context.GetDownloadURL(rev)
-  try:
-    if download_url.startswith('gs'):
-      gsutil_download(download_url, filename)
-    else:
-      urllib.request.urlretrieve(download_url, filename, ReportHook)
-      if progress_event and progress_event.is_set():
-        print()
-  except RuntimeError:
-    pass
 
 
 def _GetMappingFromAndroidApk(context, apk):
@@ -1533,47 +1478,78 @@ def DidCommandSucceed(rev, release_builds, exit_status, stdout, stderr):
     return 'g'
 
 
-class DownloadJob(object):
-  """DownloadJob represents a task to download a given Chromium revision."""
+class DownloadJob:
+  """DownloadJob represents a task to download a given url."""
 
-  def __init__(self, context, name, rev, zip_file):
-    super(DownloadJob, self).__init__()
-    # Store off the input parameters.
-    self.context = context
-    self.name = name
+  def __init__(self, url, rev, name=None):
+    self.url = url
     self.rev = rev
-    self.zip_file = zip_file
+    self.name = name
+
+    fd, self.tmp_file = tempfile.mkstemp()
+    os.close(fd)
     self.quit_event = threading.Event()
     self.progress_event = threading.Event()
     self.thread = None
 
-  def Start(self):
-    """Starts the download."""
-    fetchargs = (self.context,
-                 self.rev,
-                 self.zip_file,
-                 self.quit_event,
-                 self.progress_event)
-    self.thread = threading.Thread(target=FetchRevision,
-                                   name=self.name,
-                                   args=fetchargs)
-    self.thread.start()
+  def _clear_up_tmp_files(self):
+    if self.tmp_file:
+      try:
+        os.unlink(self.tmp_file)
+        self.tmp_file = None
+      except FileNotFoundError:
+        # Handle missing archives.
+        pass
 
-  def Stop(self):
+  def __del__(self):
+    self._clear_up_tmp_files()
+
+  def _report_hook(self, blocknum, blocksize, totalsize):
+    if self.quit_event and self.quit_event.is_set():
+      raise RuntimeError('Aborting download of revision %s' % str(self.rev))
+    if not self.progress_event or not self.progress_event.is_set():
+      return
+    size = blocknum * blocksize
+    if totalsize == -1:  # Total size not known.
+      progress = 'Received %d bytes' % size
+    else:
+      size = min(totalsize, size)
+      progress = 'Received %d of %d bytes, %.2f%%' % (size, totalsize,
+                                                      100.0 * size / totalsize)
+    # Send a \r to let all progress messages use just one line of output.
+    print(progress, end='\r', flush=True)
+
+  def fetch(self):
+    try:
+      if self.url.startswith('gs'):
+        gsutil_download(self.url, self.tmp_file)
+      else:
+        urllib.request.urlretrieve(self.url, self.tmp_file, self._report_hook)
+        if self.progress_event and self.progress_event.is_set():
+          print()
+    except RuntimeError:
+      pass
+
+  def start(self):
+    """Start the download in a thread."""
+    assert self.thread is None, "DownloadJob is already started."
+    self.thread = threading.Thread(target=self.fetch, name=self.name)
+    self.thread.start()
+    return self
+
+  def stop(self):
     """Stops the download which must have been started previously."""
     assert self.thread, 'DownloadJob must be started before Stop is called.'
     self.quit_event.set()
     self.thread.join()
-    try:
-      os.unlink(self.zip_file)
-    except FileNotFoundError:
-      # Handle missing archives.
-      pass
+    self._clear_up_tmp_files()
 
-  def WaitFor(self):
-    """Prints a message and waits for the download to complete. The download
-    must have been started previously."""
-    assert self.thread, 'DownloadJob must be started before WaitFor is called.'
+  def wait_for(self):
+    """Prints a message and waits for the download to complete.
+    The method will return the path of downloaded files.
+    """
+    if not self.thread:
+      self.start()
     print('Downloading revision %s...' % str(self.rev))
     self.progress_event.set()  # Display progress of download.
     try:
@@ -1581,18 +1557,18 @@ class DownloadJob(object):
         # The parameter to join is needed to keep the main thread responsive to
         # signals. Without it, the program will not respond to interruptions.
         self.thread.join(1)
+      return self.tmp_file
     except (KeyboardInterrupt, SystemExit):
-      self.Stop()
+      self.stop()
       raise
 
 
 def VerifyEndpoint(fetch, context, rev, profile, num_runs, command, try_args,
                    evaluate, expected_answer):
-  fetch.WaitFor()
+  zip_file = fetch.wait_for()
   try:
-    (exit_status, stdout, stderr) = RunRevision(context, rev, fetch.zip_file,
-                                                profile, num_runs, command,
-                                                try_args)
+    (exit_status, stdout, stderr) = RunRevision(context, rev, zip_file, profile,
+                                                num_runs, command, try_args)
   except Exception as e:
     if not isinstance(e, SystemExit):
       traceback.print_exc(file=sys.stderr)
@@ -1640,42 +1616,29 @@ def Bisect(context,
     - If rev 50 is bad, the download of rev 75 is cancelled, and the next test
       is run on rev 25.
   """
-  good_rev = context.good_revision
-  bad_rev = context.bad_revision
-  cwd = os.getcwd()
+  good_rev = archive_build.good_revision
+  bad_rev = archive_build.bad_revision
 
   print('Downloading list of known revisions.', end=' ')
   print('If the range is large, this can take several minutes...')
-  if not context.use_local_cache and not context.is_release:
+  if not context.use_local_cache:
     print('(use --use-local-cache to cache and re-use the list of revisions)')
   else:
     print()
-  _GetDownloadPath = lambda rev: os.path.join(cwd,
-      '%s-%s' % (str(rev), context.archive_name))
   revlist = archive_build.get_rev_list()
-
-  # Get a list of revisions to bisect across.
-  if len(revlist) < 2:  # Don't have enough builds to bisect.
-    msg = 'We don\'t have enough builds to bisect. revlist: %s' % revlist
-    raise RuntimeError(msg)
 
   # Figure out our bookends and first pivot point; fetch the pivot revision.
   minrev = 0
   maxrev = len(revlist) - 1
   pivot = maxrev // 2
   rev = revlist[pivot]
-  fetch = DownloadJob(context, 'initial_fetch', rev, _GetDownloadPath(rev))
-  fetch.Start()
+  fetch = archive_build.get_download_job(rev, 'initial_fetch').start()
 
   if verify_range:
-    minrev_fetch = DownloadJob(
-        context, 'minrev_fetch', revlist[minrev],
-        _GetDownloadPath(revlist[minrev]))
-    maxrev_fetch = DownloadJob(
-        context, 'maxrev_fetch', revlist[maxrev],
-        _GetDownloadPath(revlist[maxrev]))
-    minrev_fetch.Start()
-    maxrev_fetch.Start()
+    minrev_fetch = archive_build.get_download_job(revlist[minrev],
+                                                  'minrev_fetch').start()
+    maxrev_fetch = archive_build.get_download_job(revlist[maxrev],
+                                                  'maxrev_fetch').start()
     try:
       VerifyEndpoint(minrev_fetch, context, revlist[minrev], profile, num_runs,
           command, try_args, evaluate, 'b' if bad_rev < good_rev else 'g')
@@ -1683,17 +1646,17 @@ def Bisect(context,
           command, try_args, evaluate, 'g' if bad_rev < good_rev else 'b')
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
-      fetch.Stop()
+      fetch.stop()
       sys.exit(0)
     finally:
-      minrev_fetch.Stop()
-      maxrev_fetch.Stop()
+      minrev_fetch.stop()
+      maxrev_fetch.stop()
 
-  fetch.WaitFor()
+  fetch.wait_for()
 
   # Binary search time!
   prefetch_revisions = True
-  while fetch and fetch.zip_file and maxrev - minrev > 1:
+  while fetch and maxrev - minrev > 1:
     if bad_rev < good_rev:
       min_str, max_str = 'bad', 'good'
     else:
@@ -1713,26 +1676,24 @@ def Bisect(context,
     if prefetch_revisions:
       if down_pivot != pivot and down_pivot != minrev:
         down_rev = revlist[down_pivot]
-        down_fetch = DownloadJob(context, 'down_fetch', down_rev,
-                                 _GetDownloadPath(down_rev))
-        down_fetch.Start()
-
+        down_fetch = archive_build.get_download_job(down_rev,
+                                                    'down_fetch').start()
     up_pivot = int((maxrev - pivot) / 2) + pivot
+    up_fetch = None
     if prefetch_revisions:
-      up_fetch = None
       if up_pivot != pivot and up_pivot != maxrev:
         up_rev = revlist[up_pivot]
-        up_fetch = DownloadJob(context, 'up_fetch', up_rev,
-                               _GetDownloadPath(up_rev))
-        up_fetch.Start()
+        up_fetch = archive_build.get_download_job(up_rev, 'up_fetch').start()
 
     # Run test on the pivot revision.
     exit_status = None
     stdout = None
     stderr = None
     try:
-      (exit_status, stdout, stderr) = RunRevision(
-          context, rev, fetch.zip_file, profile, num_runs, command, try_args)
+      zip_file = fetch.wait_for()
+      (exit_status, stdout, stderr) = RunRevision(context, rev, zip_file,
+                                                  profile, num_runs, command,
+                                                  try_args)
     except SystemExit:
       raise
     except Exception:
@@ -1746,24 +1707,24 @@ def Bisect(context,
       prefetch_revisions = True
       if ((answer == 'g' and good_rev < bad_rev)
           or (answer == 'b' and bad_rev < good_rev)):
-        fetch.Stop()
+        fetch.stop()
         minrev = pivot
         if down_fetch:
-          down_fetch.Stop()  # Kill the download of the older revision.
+          down_fetch.stop()  # Kill the download of the older revision.
           fetch = None
         if up_fetch:
-          up_fetch.WaitFor()
+          up_fetch.wait_for()
           pivot = up_pivot
           fetch = up_fetch
       elif ((answer == 'b' and good_rev < bad_rev)
             or (answer == 'g' and bad_rev < good_rev)):
-        fetch.Stop()
+        fetch.stop()
         maxrev = pivot
         if up_fetch:
-          up_fetch.Stop()  # Kill the download of the newer revision.
+          up_fetch.stop()  # Kill the download of the newer revision.
           fetch = None
         if down_fetch:
-          down_fetch.WaitFor()
+          down_fetch.wait_for()
           pivot = down_pivot
           fetch = down_fetch
       elif answer == 'r':
@@ -1771,7 +1732,7 @@ def Bisect(context,
         prefetch_revisions = False
       elif answer == 'u':
         # Nuke the revision from the revlist and choose a new pivot.
-        fetch.Stop()
+        fetch.stop()
         revlist.pop(pivot)
         maxrev -= 1  # Assumes maxrev >= pivot.
 
@@ -1787,27 +1748,26 @@ def Bisect(context,
             fetch = up_fetch
           else:
             fetch = down_fetch
-          fetch.WaitFor()
+          fetch.wait_for()
           if fetch == up_fetch:
             pivot = up_pivot - 1  # Subtracts 1 because revlist was resized.
           else:
             pivot = down_pivot
 
         if down_fetch and fetch != down_fetch:
-          down_fetch.Stop()
+          down_fetch.stop()
         if up_fetch and fetch != up_fetch:
-          up_fetch.Stop()
+          up_fetch.stop()
       else:
         assert False, 'Unexpected return value from evaluate(): ' + answer
     except (KeyboardInterrupt, SystemExit):
       print('Cleaning up...')
-      for f in [_GetDownloadPath(rev),
-                _GetDownloadPath(revlist[down_pivot]),
-                _GetDownloadPath(revlist[up_pivot])]:
-        try:
-          os.unlink(f)
-        except OSError:
-          pass
+      if fetch:
+        fetch.stop()
+      if down_fetch:
+        down_fetch.stop()
+      if up_fetch:
+        up_fetch.stop()
       sys.exit(0)
 
     rev = revlist[pivot]
