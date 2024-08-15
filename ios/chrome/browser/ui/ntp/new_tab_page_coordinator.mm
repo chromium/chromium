@@ -1685,6 +1685,31 @@
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
+
+      if (IsHomeCustomizationEnabled()) {
+        [self.NTPMetricsRecorder
+            recordCustomizationState:[self currentCustomizationState]];
+
+        PrefService* prefService = self.prefService;
+        BOOL safetyCheckEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
+        BOOL setUpListEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackSetUpListEnabled);
+        BOOL tabResumptionEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
+        BOOL parcelTrackingEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+        [self.NTPMetricsRecorder
+            recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
+                                                safetyCheck:safetyCheckEnabled
+
+                                              tabResumption:tabResumptionEnabled
+                                             parcelTracking:
+                                                 parcelTrackingEnabled];
+      }
+
+      // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home
+      // Customization launches.
       if (self.NTPMediator.feedHeaderVisible) {
         if ([self.feedExpandedPref value] || IsHomeCustomizationEnabled()) {
           [self.NTPMetricsRecorder
@@ -1758,6 +1783,50 @@
   }
   [_customizationCoordinator presentCustomizationMenuAtPage:page
                                                    animated:animated];
+}
+
+// Returns the current customization state represnting the visibility of NTP
+// components.
+- (IOSNTPImpressionCustomizationState)currentCustomizationState {
+  CHECK(IsHomeCustomizationEnabled());
+  PrefService* prefService = self.prefService;
+  BOOL MVTEnabled =
+      prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
+  BOOL magicStackEnabled =
+      prefService->GetBoolean(prefs::kHomeCustomizationMagicStackEnabled);
+  BOOL feedEnabled = prefService->GetBoolean(prefs::kArticlesForYouEnabled);
+
+  // All components enabled/disabled.
+  if (MVTEnabled && magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kAllEnabled;
+  }
+  if (!MVTEnabled && !magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kAllDisabled;
+  }
+
+  // 2 components enabled.
+  if (MVTEnabled && magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMVTAndMagicStackEnabled;
+  }
+  if (MVTEnabled && !magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMVTAndFeedEnabled;
+  }
+  if (!MVTEnabled && magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMagicStackAndFeedEnabled;
+  }
+
+  // 1 component enabled.
+  if (MVTEnabled && !magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMVTEnabled;
+  }
+  if (!MVTEnabled && magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMagicStackEnabled;
+  }
+  if (!MVTEnabled && !magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kFeedEnabled;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 #pragma mark - AccountMenuCoordinatorDelegate
