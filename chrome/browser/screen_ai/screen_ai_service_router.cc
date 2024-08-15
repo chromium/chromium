@@ -429,18 +429,6 @@ void ScreenAIServiceRouter::SetLibraryLoadState(int request_id,
       elapsed_time);
 
   CallPendingStatusRequests(service, successful);
-
-  if (successful) {
-    return;
-  }
-  switch (service) {
-    case Service::kOCR:
-      ocr_service_.reset();
-      break;
-    case Service::kMainContentExtraction:
-      main_content_extraction_service_.reset();
-      break;
-  }
 }
 
 bool ScreenAIServiceRouter::IsConnectionBoundForTesting(Service service) {
