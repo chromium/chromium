@@ -30,8 +30,14 @@ bool StructTraits<DecryptedResponseDataView, DecryptedResponse>::Read(
           data.message_type(), &out->message_type))
     return false;
 
+  if (!data.ReadSecondaryAddressBytes(&out->secondary_address_bytes)) {
+    return false;
+  }
+
   base::ranges::copy(address_bytes, out->address_bytes.begin());
   base::ranges::copy(salt_bytes, out->salt.begin());
+  out->flags = data.flags();
+  out->num_addresses = data.num_addresses();
 
   return true;
 }

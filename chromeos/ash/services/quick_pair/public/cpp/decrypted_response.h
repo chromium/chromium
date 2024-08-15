@@ -26,6 +26,14 @@ struct DecryptedResponse {
       FastPairMessageType message_type,
       std::array<uint8_t, kDecryptedResponseAddressByteSize> address_bytes,
       std::array<uint8_t, kDecryptedResponseSaltByteSize> salt);
+  DecryptedResponse(
+      FastPairMessageType message_type,
+      std::array<uint8_t, kDecryptedResponseAddressByteSize> address_bytes,
+      std::array<uint8_t, kDecryptedResponseSaltByteSize> salt,
+      std::optional<uint8_t> flags,
+      std::optional<uint8_t> num_addresses,
+      std::optional<std::array<uint8_t, kDecryptedResponseAddressByteSize>>
+          secondary_address_bytes);
   DecryptedResponse(const DecryptedResponse&);
   DecryptedResponse(DecryptedResponse&&);
   DecryptedResponse& operator=(const DecryptedResponse&);
@@ -35,6 +43,11 @@ struct DecryptedResponse {
   FastPairMessageType message_type;
   std::array<uint8_t, kDecryptedResponseAddressByteSize> address_bytes;
   std::array<uint8_t, kDecryptedResponseSaltByteSize> salt;
+  // Key-based Pairing Extended Response
+  std::optional<uint8_t> flags;
+  std::optional<uint8_t> num_addresses;
+  std::optional<std::array<uint8_t, kDecryptedResponseAddressByteSize>>
+      secondary_address_bytes;
 };
 
 }  // namespace quick_pair

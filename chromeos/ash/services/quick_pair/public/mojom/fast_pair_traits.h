@@ -59,6 +59,23 @@ class StructTraits<DecryptedResponseDataView, DecryptedResponse> {
     return std::vector<uint8_t>(r.salt.begin(), r.salt.end());
   }
 
+  static std::optional<uint8_t> flags(const DecryptedResponse& r) {
+    return r.flags;
+  }
+
+  static std::optional<uint8_t> num_addresses(const DecryptedResponse& r) {
+    return r.num_addresses;
+  }
+
+  static std::optional<std::vector<uint8_t>> secondary_address_bytes(
+      const DecryptedResponse& r) {
+    if (!r.secondary_address_bytes.has_value()) {
+      return std::nullopt;
+    }
+    return std::vector<uint8_t>(r.secondary_address_bytes.value().begin(),
+                                r.secondary_address_bytes.value().end());
+  }
+
   static bool Read(DecryptedResponseDataView data, DecryptedResponse* out);
 };
 
