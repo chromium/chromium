@@ -4812,6 +4812,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.GetAuthTokenResultForGeo"
+    enum="IpProtectionGetAuthTokenResultForGeo" expires_after="2025-02-09">
+  <owner>abhipatel@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    This metric tracks the effectiveness of token caching in IpProtection,
+    especially during network transitions or non-ideal conditions. It records
+    the outcome of `IpProtectionConfigCache::GetAuthToken()` requests, focusing
+    on token availability and its alignment with the current or a previously
+    cached geographical location. The four possible outcomes indicate successful
+    token retrieval (for current or other geo), or unavailability with or
+    without other cached tokens. This metric is only measured when geo caching
+    is enabled.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled as well as the feature parameter,
+    IpPrivacyCacheTokensByGeo. Some kind of platform-dependent signin is also
+    required.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.GetProxyListResult"
     enum="IpProtectionGetProxyListResult" expires_after="2025-02-10">
   <owner>ashleynewson@chromium.org</owner>

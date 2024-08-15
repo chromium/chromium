@@ -22,6 +22,27 @@ namespace network {
 
 namespace {
 
+IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo
+GetAuthTokenResultForGeo(bool is_token_available,
+                         bool is_cache_empty,
+                         bool does_requested_geo_match_current) {
+  if (is_token_available) {
+    if (does_requested_geo_match_current) {
+      return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+          kAvailableForCurrentGeo;
+    }
+    return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+        kAvailableForOtherCachedGeo;
+  }
+
+  if (!is_cache_empty) {
+    return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+        kUnavailableButCacheContainsTokens;
+  }
+  return IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+      kUnavailableCacheEmpty;
+}
+
 // Minimum time before actual expiration that a token is considered
 // "expired" and removed. The maximum time is given by the
 // `IpPrivacyExpirationFuzz` feature param.
@@ -336,13 +357,9 @@ std::optional<BlindSignedAuthToken>
 IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::optional<BlindSignedAuthToken> result;
-  if (geo_id == "") {
-    return result;
-  }
-
   RemoveExpiredTokens();
 
+  std::optional<BlindSignedAuthToken> result;
   size_t tokens_in_cache = 0;
   // Checks to see if the geo is available in the map and then checks if the
   // cache itself is not empty.
@@ -353,6 +370,13 @@ IpProtectionTokenCacheManagerImpl::GetAuthToken(const std::string& geo_id) {
     result.emplace(std::move(it->second.front()));
     it->second.pop_front();
     tokens_spent_++;
+  }
+
+  if (enable_token_caching_by_geo_) {
+    base::UmaHistogramEnumeration(
+        "NetworkService.IpProtection.GetAuthTokenResultForGeo",
+        GetAuthTokenResultForGeo(result.has_value(), cache_by_geo_.empty(),
+                                 geo_id == current_geo_id_));
   }
 
   base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",

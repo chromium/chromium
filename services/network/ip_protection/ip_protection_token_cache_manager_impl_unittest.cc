@@ -39,6 +39,8 @@ constexpr char kProxyBTokenExpirationRateHistogram[] =
     "NetworkService.IpProtection.ProxyB.TokenExpirationRate";
 constexpr char kTokenBatchGenerationTimeHistogram[] =
     "NetworkService.IpProtection.TokenBatchGenerationTime";
+constexpr char kGetAuthTokenResultForGeoHistogram[] =
+    "NetworkService.IpProtection.GetAuthTokenResultForGeo";
 
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
@@ -376,6 +378,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenEmpty) {
 
   EXPECT_FALSE(ipp_proxy_a_token_cache_manager_->GetAuthToken());
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
+  // No sample taken since geo caching is disabled.
+  histogram_tester_.ExpectTotalCount(kGetAuthTokenResultForGeoHistogram, 0);
 }
 
 // `GetAuthToken()` returns nullopt on an empty cache for specified geo.
@@ -385,6 +389,11 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenEmptyForGeo) {
   EXPECT_FALSE(
       ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
   ExpectHistogramState(HistogramState{.success = 0, .failure = 1});
+  histogram_tester_.ExpectUniqueSample(
+      kGetAuthTokenResultForGeoHistogram,
+      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+          kUnavailableCacheEmpty,
+      1);
 }
 
 // `GetAuthToken()` returns a token on a cache containing unexpired tokens.
@@ -403,6 +412,8 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenSuccessful) {
   EXPECT_EQ(token->geo_hint, kMountainViewGeo);
   ExpectHistogramState(
       HistogramState{.success = 1, .failure = 0, .generated = 1});
+  // No sample taken since geo caching is disabled.
+  histogram_tester_.ExpectTotalCount(kGetAuthTokenResultForGeoHistogram, 0);
 }
 
 // `GetAuthToken()` returns a token cached by geo.
@@ -425,6 +436,38 @@ TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForGeoSuccessful) {
   EXPECT_EQ(token->geo_hint, kMountainViewGeo);
   ExpectHistogramState(
       HistogramState{.success = 1, .failure = 0, .generated = 1});
+  histogram_tester_.ExpectUniqueSample(
+      kGetAuthTokenResultForGeoHistogram,
+      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+          kAvailableForCurrentGeo,
+      1);
+}
+
+// `GetAuthToken()` requested for geo not available while other tokens are
+// available.
+TEST_F(IpProtectionTokenCacheManagerImplTest, GetAuthTokenForUnavailableGeo) {
+  SetUpIpProtectionTokenCacheManager(kEnableTokenCacheByGeo);
+
+  EXPECT_CALL(mock_config_cache_, GeoObserved(testing::_)).Times(1);
+
+  // Cache contains Mountain view geo tokens.
+  mock_.ExpectTryGetAuthTokensCall(
+      expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
+  CallTryGetAuthTokensAndWait(IpProtectionProxyLayer::kProxyA);
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+
+  // Requesting token from geo that is not Mountain View.
+  std::optional<BlindSignedAuthToken> token =
+      ipp_proxy_a_token_cache_manager_->GetAuthToken(kSunnyvaleGeoId);
+
+  ASSERT_FALSE(token);
+  ExpectHistogramState(
+      HistogramState{.success = 0, .failure = 1, .generated = 1});
+  histogram_tester_.ExpectUniqueSample(
+      kGetAuthTokenResultForGeoHistogram,
+      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+          kUnavailableButCacheContainsTokens,
+      1);
 }
 
 // `GetAuthToken()` returns nullopt on a cache containing expired tokens.
@@ -960,6 +1003,14 @@ TEST_F(IpProtectionTokenCacheManagerImplTest,
   // Old Geo can still be used if tokens are available.
   ASSERT_TRUE(
       ipp_proxy_a_token_cache_manager_->GetAuthToken(kMountainViewGeoId));
+
+  // Metric should only be counted when the geo requested is not the current
+  // geo.
+  histogram_tester_.ExpectBucketCount(
+      kGetAuthTokenResultForGeoHistogram,
+      IpProtectionTokenCacheManagerImpl::AuthTokenResultForGeo::
+          kAvailableForOtherCachedGeo,
+      1);
 }
 
 // Existing state with valid non-expired tokens. `SetCurrentGeo` is called
