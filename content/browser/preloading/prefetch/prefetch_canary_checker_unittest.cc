@@ -8,8 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
