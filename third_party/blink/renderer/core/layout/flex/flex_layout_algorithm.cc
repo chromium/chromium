@@ -673,18 +673,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
     all_items_have_non_auto_cross_sizes &= !cross_axis_length.HasAuto();
 
-    std::optional<MinMaxSizesResult> min_max_sizes;
+    bool depends_on_min_max_sizes = false;
     auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
-      if (!min_max_sizes) {
-        // We want the child's intrinsic inline sizes in its writing mode, so
-        // pass child's writing mode as the first parameter, which is nominally
-        // |container_writing_mode|.
-        const auto child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-        min_max_sizes =
-            child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
-      }
-      return *min_max_sizes;
+      depends_on_min_max_sizes = true;
+      // We want the child's intrinsic inline sizes in its writing mode, so
+      // pass child's writing mode as the first parameter, which is nominally
+      // |container_writing_mode|.
+      const auto child_space =
+          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+      return child.ComputeMinMaxSizes(child_writing_mode, type, child_space);
     };
 
     auto InlineSizeFunc = [&]() -> LayoutUnit {
@@ -697,6 +694,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const LayoutResult* layout_result = nullptr;
     auto BlockSizeFunc = [&](SizeType type) -> LayoutUnit {
+      // This function mirrors the logic within `BlockNode::ComputeMinMaxSizes`.
       if (!layout_result) {
         ConstraintSpace child_space =
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
@@ -708,27 +706,35 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         DCHECK(layout_result);
       }
 
-      if (type == SizeType::kContent && child.HasAspectRatio() &&
-          !child.IsReplaced()) {
+      // Don't apply any special aspect-ratio treatment for replaced elements.
+      const LayoutUnit intrinsic_size = layout_result->IntrinsicBlockSize();
+      if (child.IsReplaced()) {
+        return intrinsic_size;
+      }
+
+      const bool has_aspect_ratio = !child_style.AspectRatio().IsAuto();
+      if (has_aspect_ratio && type == SizeType::kContent) {
         const LayoutUnit inline_size = InlineSizeFunc();
         if (inline_size != kIndefiniteSize) {
           return BlockSizeFromAspectRatio(
               border_padding_in_child_writing_mode, child.GetAspectRatio(),
               child_style.BoxSizingForAspectRatio(), inline_size);
         }
+      }
 
+      // Constrain the intrinsic-size by the transferred min/max constraints.
+      if (has_aspect_ratio) {
         const MinMaxSizes inline_min_max = ComputeMinMaxInlineSizes(
             flex_basis_space, child, border_padding_in_child_writing_mode,
             /* auto_min_length */ nullptr, MinMaxSizesFunc);
         const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
-            child.GetAspectRatio(), inline_min_max,
+            child_style.LogicalAspectRatio(), inline_min_max,
             border_padding_in_child_writing_mode,
-            child.Style().BoxSizingForAspectRatio());
-        return min_max.ClampSizeToMinAndMax(
-            layout_result->IntrinsicBlockSize());
+            child_style.BoxSizingForAspectRatio());
+        return min_max.ClampSizeToMinAndMax(intrinsic_size);
       }
 
-      return layout_result->IntrinsicBlockSize();
+      return intrinsic_size;
     };
 
     const Length& flex_basis = child_style.FlexBasis();
@@ -828,34 +834,22 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     std::optional<Length> auto_min_length;
     if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
       const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
-        const LayoutUnit intrinsic_size =
+        const LayoutUnit content_size =
             is_main_axis_inline_axis
-                ? MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size
-                : BlockSizeFunc(SizeType::kIntrinsic);
+                ? MinMaxSizesFunc(SizeType::kContent).sizes.min_size
+                : BlockSizeFunc(SizeType::kContent);
 
-        // If appropriate clamp by the transferred min/max sizes.
-        if (child.HasAspectRatio()) {
-          const MinMaxSizes min_max_sizes_in_cross_axis_direction =
+        // For non-replaced elements with an aspect-ratio ensure the size
+        // provided by the aspect-ratio encompasses the min-intrinsic size.
+        if (!child.IsReplaced() && !child_style.AspectRatio().IsAuto()) {
+          return std::max(
+              content_size,
               is_main_axis_inline_axis
-                  ? ComputeMinMaxBlockSizes(
-                        flex_basis_space, child,
-                        border_padding_in_child_writing_mode,
-                        /* auto_min_length */ nullptr, BlockSizeFunc)
-                  : ComputeMinMaxInlineSizes(
-                        flex_basis_space, child,
-                        border_padding_in_child_writing_mode,
-                        /* auto_min_length */ nullptr, MinMaxSizesFunc);
-          auto transferred_min_max_func =
-              is_main_axis_inline_axis ? ComputeTransferredMinMaxInlineSizes
-                                       : ComputeTransferredMinMaxBlockSizes;
-          const MinMaxSizes transferred_min_max = transferred_min_max_func(
-              child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
-              border_padding_in_child_writing_mode,
-              child.Style().BoxSizingForAspectRatio());
-          return transferred_min_max.ClampSizeToMinAndMax(intrinsic_size);
+                  ? MinMaxSizesFunc(SizeType::kIntrinsic).sizes.min_size
+                  : BlockSizeFunc(SizeType::kIntrinsic));
         }
 
-        return intrinsic_size;
+        return content_size;
       })();
       DCHECK_GE(content_size_suggestion, main_axis_border_padding);
 
@@ -946,7 +940,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                       main_axis_border_padding, physical_child_margins,
                       scrollbars, baseline_writing_mode, baseline_group,
                       is_initial_block_size_indefinite,
-                      is_used_flex_basis_indefinite, min_max_sizes.has_value())
+                      is_used_flex_basis_indefinite, depends_on_min_max_sizes)
         .ng_input_node_ = child;
     // Save the layout result so that we can maybe reuse it later.
     if (layout_result && !is_main_axis_inline_axis) {
