@@ -20,10 +20,6 @@ BASE_FEATURE(kPushMessagingGcmEndpointEnvironment,
              "PushMessagingGcmEndpointEnvironment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<std::string> kPushMessagingGcmEndpointUrl{
-    &kPushMessagingGcmEndpointEnvironment, "PushMessagingGcmEndpointUrl",
-    kPushMessagingGcmEndpoint};
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRevokeNotificationsPermissionIfDisabledOnAppLevel,
              "RevokeNotificationsPermissionIfDisabledOnAppLevel",

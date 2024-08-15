@@ -5,14 +5,26 @@
 #include "chrome/browser/push_messaging/push_messaging_utils.h"
 
 #include "base/base64url.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
+#include "chrome/common/channel_info.h"
 #include "url/gurl.h"
 
 namespace push_messaging {
 
+std::string GetGcmEndpointForChannel(version_info::Channel channel) {
+  if (base::FeatureList::IsEnabled(
+          features::kPushMessagingGcmEndpointEnvironment)) {
+    if (channel != version_info::Channel::STABLE) {
+      return kPushMessagingStagingGcmEndpoint;
+    }
+  }
+  return kPushMessagingGcmEndpoint;
+}
+
 GURL CreateEndpoint(const std::string& subscription_id) {
-  const GURL endpoint(features::kPushMessagingGcmEndpointUrl.Get() +
+  const GURL endpoint(GetGcmEndpointForChannel(chrome::GetChannel()) +
                       subscription_id);
   DCHECK(endpoint.is_valid());
   return endpoint;
