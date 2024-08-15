@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">šliaužiklis</translation>
 <translation id="1211441953136645838">išnaša</translation>
 <translation id="1281252709823657822">dialogo langas</translation>
+<translation id="1306460908038601864">Išjungta</translation>
 <translation id="1335095011850992622">titrai</translation>
 <translation id="1342835525016946179">artikelis</translation>
 <translation id="1359897965706325498">reklamjuostė</translation>
+<translation id="1480676835519562650">keli pasirenkami, pasirinkta: <ph name="SELECTED" /> iš <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">regionas</translation>
 <translation id="1650423536718072820">citata</translation>
+<translation id="1681022320378710418">dabartinis laikas</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
 <translation id="1821985195704844674">medžio tinklelis</translation>
 <translation id="1823704031293214298">puslapio poraštė</translation>
 <translation id="1838681052457320736">įspėjimo dialogo langas</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">trynimas</translation>
 <translation id="1907737156431278478">pavyzdys</translation>
 <translation id="1930711995431081526">būsena</translation>
+<translation id="2031987842108996681">Raudonasis kanalas</translation>
 <translation id="2158401438286456825">puslapių sąrašas</translation>
 <translation id="2291999235780842123">žymimasis laukelis</translation>
 <translation id="2311842470354187719">puslapio lūžis</translation>
 <translation id="2335594187091864976">datos ir laiko rinkiklis</translation>
 <translation id="2508569020611168319">skirtukų sąrašas</translation>
+<translation id="2530182415807757784">keli pasirenkami, niekas nepasirinkta.</translation>
+<translation id="2634240155926812724">Žaliasis kanalas</translation>
 <translation id="2657045182931379222">grafikos objektas</translation>
 <translation id="2674318244760992338">poraštė</translation>
 <translation id="2723001399770238859">garso įrašas</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">pastaba</translation>
 <translation id="3175736971608411871">laikmatis</translation>
 <translation id="3199563858620722075">jungtinis laukelis</translation>
+<translation id="3220661731597678625">dabartinis veiksmas</translation>
+<translation id="3329013043687509092">Spalvų sodrumas</translation>
 <translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3557673793733683882"><ph name="HEADING_LEVEL" /> antraštė</translation>
 <translation id="3670698553867754311">savaitės rinkiklis</translation>
 <translation id="3706100364254443312">jungiklis</translation>
 <translation id="3808586225841795776">terminas</translation>
+<translation id="3914173277599553213">Būtina</translation>
 <translation id="3920932319529768807">išvada</translation>
 <translation id="3924558731517983934">programa</translation>
 <translation id="3944740393230681990">prologas</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">viršelis</translation>
 <translation id="4757246831282535685">skirtuko skydelis</translation>
 <translation id="479989351350248267">ieškoti</translation>
+<translation id="4912200001568447310">dabartinis elementas</translation>
 <translation id="4912536737030637138">bibliografijos įrašas</translation>
 <translation id="492244087561876220">komentaras</translation>
+<translation id="4924138096460353083">neapibrėžta</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> pasirinkta</translation>
 <translation id="5022314756875057021">eilučių grupė</translation>
 <translation id="5034860022980953847">eigos indikatorius</translation>
 <translation id="5093189678851173835">epigrafas</translation>
+<translation id="509897012892853729">Mėlynasis kanalas</translation>
 <translation id="512758898067543763">eilutės antraštė</translation>
 <translation id="5143125788380636750">epilogas</translation>
 <translation id="5406322316791861025">iliustracija</translation>
+<translation id="5425179576310518467">dabartinė data</translation>
 <translation id="5453733299334684579">medžio elementas</translation>
 <translation id="546643433018805598">apatinis indeksas</translation>
 <translation id="5476505524087279545">Nuimti žymėjimą</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">mygtukas</translation>
 <translation id="5693537480074347398">viršutinis indeksas</translation>
 <translation id="576709008726043716">įžanga</translation>
+<translation id="5860033963881614850">Išjungta</translation>
 <translation id="591047860372322273">paieškos laukelis</translation>
+<translation id="5916664084637901428">Įjungta</translation>
 <translation id="5987525920412732405">sukimo mygtukas</translation>
 <translation id="6023896073578205740">sąrašo laukelis</translation>
 <translation id="6119846243427417423">suaktyvinti</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">matuoklis</translation>
 <translation id="6166809985690652833">baigiamasis žodis</translation>
+<translation id="6212595056017402527">dabartinis puslapis</translation>
 <translation id="6213469881011901533">aiškinamasis terminų žodynas</translation>
+<translation id="6281588256137006900">Šviesumas</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">padėka</translation>
 <translation id="648732519525291180">laiko rinkiklis</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">citata</translation>
 <translation id="693476918119313863">antraštė</translation>
 <translation id="6981594929165378967">įterpimas</translation>
+<translation id="698788488269350478">išskleistas.</translation>
 <translation id="7034405885550056553">pasiūlymas</translation>
+<translation id="7102274145889307184">dabartinė vietovė</translation>
 <translation id="7139483182332611405">įvadas</translation>
 <translation id="7198226213493847604">iššokantysis meniu mygtukas</translation>
 <translation id="7214187073215825913">turinio informacija</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">rodyklė</translation>
 <translation id="7740050170769002709">HTML turinys</translation>
 <translation id="7802800022689234070">paskelbimo trikampis</translation>
+<translation id="7852167693871241274">Atspalvio šliaužiklis</translation>
 <translation id="7891486169920085145">skaidiklis</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> nepasirinkta</translation>
 <translation id="8034303206267677282">svarbus</translation>
 <translation id="8053789581856978548">paieškos teksto laukas</translation>
 <translation id="8057695513531652401">pranešimas</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">skyrius</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">iššokantysis dialogo lango mygtukas</translation>
+<translation id="8889402386540077796">Spalva</translation>
+<translation id="894736920926684893">Formato perjungiklis</translation>
 <translation id="9002566407876343676">atidaryti</translation>
 <translation id="901834265349196618">El. paštas</translation>
 <translation id="9048119486235211610">naršymas</translation>

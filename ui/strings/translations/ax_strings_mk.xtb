@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">лизгач</translation>
 <translation id="1211441953136645838">референца</translation>
 <translation id="1281252709823657822">дијалог</translation>
+<translation id="1306460908038601864">Исклучени</translation>
 <translation id="1335095011850992622">благодарност</translation>
 <translation id="1342835525016946179">статија</translation>
 <translation id="1359897965706325498">банер</translation>
+<translation id="1480676835519562650">повеќе опции за избор, избрани се <ph name="SELECTED" /> од <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">регион</translation>
 <translation id="1650423536718072820">цитат</translation>
+<translation id="1681022320378710418">тековно време</translation>
+<translation id="1727839386348365796">Пипета</translation>
 <translation id="1821985195704844674">мрежа на дрвото</translation>
 <translation id="1823704031293214298">подножје на страницата</translation>
 <translation id="1838681052457320736">дијалог за предупредување</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">бришење</translation>
 <translation id="1907737156431278478">пример</translation>
 <translation id="1930711995431081526">статус</translation>
+<translation id="2031987842108996681">Црвен канал</translation>
 <translation id="2158401438286456825">список со страници</translation>
 <translation id="2291999235780842123">поле за избор</translation>
 <translation id="2311842470354187719">прелом на страница</translation>
 <translation id="2335594187091864976">избирач на датум и време</translation>
 <translation id="2508569020611168319">список со картички</translation>
+<translation id="2530182415807757784">повеќе опции за избор, ниедна не е избрана.</translation>
+<translation id="2634240155926812724">Зелен канал</translation>
 <translation id="2657045182931379222">графички објект</translation>
 <translation id="2674318244760992338">подножје</translation>
 <translation id="2723001399770238859">аудио</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">забелешка</translation>
 <translation id="3175736971608411871">тајмер</translation>
 <translation id="3199563858620722075">поле со комбинации</translation>
+<translation id="3220661731597678625">тековен чекор</translation>
+<translation id="3329013043687509092">Заситеност</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3557673793733683882">наслов <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">избирач на седмица</translation>
 <translation id="3706100364254443312">прекинувач</translation>
 <translation id="3808586225841795776">термин</translation>
+<translation id="3914173277599553213">Потребно</translation>
 <translation id="3920932319529768807">заклучок</translation>
 <translation id="3924558731517983934">апликација</translation>
 <translation id="3944740393230681990">пролог</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">корица</translation>
 <translation id="4757246831282535685">табла со картички</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4912200001568447310">тековна ставка</translation>
 <translation id="4912536737030637138">библиографски запис</translation>
 <translation id="492244087561876220">коментар</translation>
+<translation id="4924138096460353083">Неодредено</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" />, избрано</translation>
 <translation id="5022314756875057021">група редови</translation>
 <translation id="5034860022980953847">индикатор за напредокот</translation>
 <translation id="5093189678851173835">епиграф</translation>
+<translation id="509897012892853729">Син канал</translation>
 <translation id="512758898067543763">наслов на ред</translation>
 <translation id="5143125788380636750">епилог</translation>
 <translation id="5406322316791861025">слика</translation>
+<translation id="5425179576310518467">тековен датум</translation>
 <translation id="5453733299334684579">ставка на дрво</translation>
 <translation id="546643433018805598">долен индекс</translation>
 <translation id="5476505524087279545">поништи избор</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">копче</translation>
 <translation id="5693537480074347398">горен индекс</translation>
 <translation id="576709008726043716">вовед</translation>
+<translation id="5860033963881614850">Исклучено</translation>
 <translation id="591047860372322273">поле за пребарување</translation>
+<translation id="5916664084637901428">Вклучено</translation>
 <translation id="5987525920412732405">копче за приспособување</translation>
 <translation id="6023896073578205740">поле со список</translation>
 <translation id="6119846243427417423">активирај</translation>
 <translation id="6150588977291308318">библиографија</translation>
 <translation id="6164829606128959761">мерач</translation>
 <translation id="6166809985690652833">поговор</translation>
+<translation id="6212595056017402527">тековна страница</translation>
 <translation id="6213469881011901533">поимник</translation>
+<translation id="6281588256137006900">Осветленост</translation>
 <translation id="6281763101136022427">URL</translation>
 <translation id="6453774872122745852">признанија</translation>
 <translation id="648732519525291180">избирач на време</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">цитат на блок</translation>
 <translation id="693476918119313863">заглавие</translation>
 <translation id="6981594929165378967">вметнување</translation>
+<translation id="698788488269350478">Проширено.</translation>
 <translation id="7034405885550056553">предлог</translation>
+<translation id="7102274145889307184">тековна локација</translation>
 <translation id="7139483182332611405">предговор</translation>
 <translation id="7198226213493847604">копче за скокачко мени</translation>
 <translation id="7214187073215825913">информации за содржините</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">индекс</translation>
 <translation id="7740050170769002709">ХТМЛ содржина</translation>
 <translation id="7802800022689234070">триаголник за откривање</translation>
+<translation id="7852167693871241274">Лизгач за нијанси</translation>
 <translation id="7891486169920085145">разделница</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" />, не е избрано</translation>
 <translation id="8034303206267677282">силно</translation>
 <translation id="8053789581856978548">пребарај текстуално поле</translation>
 <translation id="8057695513531652401">напомена</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">поглавје</translation>
 <translation id="8851136666856101339">главно</translation>
 <translation id="8861621546968757188">копче за скокачки дијалог</translation>
+<translation id="8889402386540077796">Нијанса</translation>
+<translation id="894736920926684893">Копче за менување на форматот</translation>
 <translation id="9002566407876343676">отвори</translation>
 <translation id="901834265349196618">е-пошта</translation>
 <translation id="9048119486235211610">навигација</translation>

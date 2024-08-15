@@ -6,15 +6,11 @@
 <translation id="1142001580032786438">Прикажи го избирачот за седмица</translation>
 <translation id="1171774979989969504">Внесете адреса на е-пошта.</translation>
 <translation id="1178581264944972037">Пауза</translation>
-<translation id="1306460908038601864">Исклучени</translation>
 <translation id="1311894908970423688">Вредноста мора да биде <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="1480676835519562650">повеќе опции за избор, избрани се <ph name="SELECTED" /> од <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1591562245178063882">Овој месец</translation>
 <translation id="1637811476055996098">Избери датотеки</translation>
 <translation id="1680090928918677457">Користи камера</translation>
-<translation id="1681022320378710418">тековно време</translation>
-<translation id="1727839386348365796">Пипета</translation>
 <translation id="1729654308190250600">Внесете адреса на е-пошта што не е празна.</translation>
 <translation id="1758486001363313524">Друго...</translation>
 <translation id="1787192514241997742">вкупно време: <ph name="REMAINING_TIME" /></translation>
@@ -24,7 +20,6 @@
 <translation id="1938124657309484470">Вредноста мора да биде <ph name="MAXIMUM_DATE_OR_TIME" /> или порано.</translation>
 <translation id="1946271899482435442">Прикажи го избирачот на датум</translation>
 <translation id="1993104285338243655">Префрлено на отсликување</translation>
-<translation id="2031987842108996681">Црвен канал</translation>
 <translation id="2060505056492490888">„<ph name="DOT" />“ се користи на погрешно место во „<ph name="INVALIDDOMAIN" />“.</translation>
 <translation id="2068711044993563745">Минималната вредност (<ph name="MINIMUM" />) мора да биде помала од максималната вредност (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Денес</translation>
@@ -37,11 +32,9 @@
 <translation id="245932805758469625">број на преостанати секунди од видеото</translation>
 <translation id="248395913932153421">Ден</translation>
 <translation id="2507943997699731163">Пополнете го ова поле.</translation>
-<translation id="2530182415807757784">повеќе опции за избор, ниедна не е избрана.</translation>
 <translation id="2561842179657104141">прикажи повеќе контроли на аудиовизуелни содржини</translation>
 <translation id="2572483411312390101">репродуцирај</translation>
 <translation id="2613802280814924224">Внесете важечка вредност. Најблиската важечка вредност е <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Зелен канал</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2746543609216772311">Вредноста мора да биде <ph name="MINIMUM_DATE_OR_TIME" /> или подоцна.</translation>
@@ -51,9 +44,7 @@
 <translation id="3053226512517284904">прикажи го менито за звучни описи</translation>
 <translation id="3075154866155599887">Внесете важечка вредност. Полето е нецелосно или има неважечки датум.</translation>
 <translation id="310520048233152454">Внесете URL.</translation>
-<translation id="3220661731597678625">тековен чекор</translation>
 <translation id="3321030238473337787">Брзина на репродукција</translation>
-<translation id="3329013043687509092">Заситеност</translation>
 <translation id="3450233048674729344">Вредноста мора да биде помала или еднаква на <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Излези од „Слика во слика“</translation>
@@ -61,7 +52,6 @@
 <translation id="3822383571486410024">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите <ph name="CURRENT_LENGTH" /> знаци).</translation>
 <translation id="383465348367842624">Дел по кој следува „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Излези од цел екран</translation>
-<translation id="3914173277599553213">Потребно</translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4103419683916926126">Милисекунди</translation>
 <translation id="4201051445878709314">Прикажи го претходниот месец</translation>
@@ -74,18 +64,14 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="4792862212177489858">Споделете локација</translation>
 <translation id="4812940957355064477">Внесете број.</translation>
-<translation id="4912200001568447310">тековна ставка</translation>
 <translation id="4915360478455618802">Прикажи го избирачот за време</translation>
-<translation id="4924138096460353083">Неодредено</translation>
 <translation id="49269513399674318">Користи микрофон</translation>
 <translation id="4950364064308314478">Прикажи го избирачот за локален датум и време</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" />, избрано</translation>
 <translation id="4975562563186953947">Избрани: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Вклучи звук</translation>
 <translation id="49969490063480558">Внесете дел по „<ph name="ATSIGN" />“. Адресата „<ph name="INVALIDADDRESS" />“ е некомплетна.</translation>
 <translation id="5037575921016181960">Силна лозинка</translation>
 <translation id="5090250355906949916">лизгач на времепловот на видеото</translation>
-<translation id="509897012892853729">Син канал</translation>
 <translation id="5117590920725113268">Прикажи го следниот месец</translation>
 <translation id="5164977714490026579">Вредноста мора да биде поголема или еднаква на <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
@@ -96,7 +82,6 @@
 <translation id="5334352251556557839">Не може да пушта аудиовизуелни содржини.</translation>
 <translation id="537648784377940524">Најраниот датум (<ph name="MIN_DATE_OR_TIME" />) мора да биде пред најдоцниот датум (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5378437566635403538">Проширено, дијалогот е отворен.</translation>
-<translation id="5425179576310518467">тековен датум</translation>
 <translation id="5466621249238537318">Изберете една или повеќе датотеки.</translation>
 <translation id="5468998798572797635">излези од цел екран</translation>
 <translation id="5514612371225420585">Датотека на вашиот уред</translation>
@@ -108,18 +93,14 @@
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5786442179789148008">Ќе се прикаже менито за брзина на репродукцијата</translation>
 <translation id="5787939484346677755">Проширено, достапни се опции за автоматско довршување.</translation>
-<translation id="5860033963881614850">Исклучено</translation>
 <translation id="588258955323874662">Цел екран</translation>
 <translation id="5888666972993069672">Сега се емитува на <ph name="DEVICE_FRIENDLY_NAME" /></translation>
-<translation id="5916664084637901428">Вклучено</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="5966707198760109579">Седмица</translation>
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6011459053400940133">лизгач за јачина на звук</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6165053282446038410">Проширено, достапни се <ph name="COUNT" /> опции за автоматско довршување.</translation>
-<translation id="6212595056017402527">тековна страница</translation>
-<translation id="6281588256137006900">Осветленост</translation>
 <translation id="6310801910862476708">Излези од „слика во слика“</translation>
 <translation id="6398862346408813489">Прикажи ја таблата за избирање месеци</translation>
 <translation id="6404546809543547843">временска линија на аудио</translation>
@@ -139,11 +120,9 @@
 <translation id="6843725295806269523">исклучи тон</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">преземи аудиовизуелни содржини</translation>
-<translation id="698788488269350478">Проширено.</translation>
 <translation id="6989848892321993519">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите 1 знак).</translation>
 <translation id="7080893216867146095">Споделувањето локација е дозволено</translation>
 <translation id="709897737746224366">Усогласете го бараниот формат.</translation>
-<translation id="7102274145889307184">тековна локација</translation>
 <translation id="7134810312945846184">Користи микрофон и камера</translation>
 <translation id="7263440858009898357">Изберете ставка од листата.</translation>
 <translation id="7320576522385648310">се презема</translation>
@@ -157,10 +136,8 @@
 <translation id="775297008183122718">Неважечка вредност</translation>
 <translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">пауза</translation>
-<translation id="7852167693871241274">Лизгач за нијанси</translation>
 <translation id="7888071071722539607">Опфатете „<ph name="ATSIGN" />“ во адресата на е-пошта. Во „<ph name="INVALIDADDRESS" />“ недостига „<ph name="ATSIGN" />“.</translation>
 <translation id="795667975304826397">Нема избрана датотека</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" />, не е избрано</translation>
 <translation id="8117451130807776954">Оваа седмица</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">yyyy</translation>
@@ -180,9 +157,7 @@
 <translation id="8750798805984357768">Изберете една од опциите.</translation>
 <translation id="8845239796550121995">Сега се емитува на вашиот TV</translation>
 <translation id="8875657656876809964">Грешка при репродукција на видео</translation>
-<translation id="8889402386540077796">Нијанса</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="894736920926684893">Копче за менување на форматот</translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="901493112792887934">тековно време во секунди</translation>
 <translation id="9093215626363556771">излези од „слика во слика“</translation>

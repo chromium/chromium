@@ -6,15 +6,11 @@
 <translation id="1142001580032786438">Wochenauswahl anzeigen</translation>
 <translation id="1171774979989969504">Gib eine E-Mail-Adresse ein.</translation>
 <translation id="1178581264944972037">Pause</translation>
-<translation id="1306460908038601864">Aus</translation>
 <translation id="1311894908970423688">Der Wert muss <ph name="VALUE_DATE_OR_TIME" /> sein.</translation>
-<translation id="1480676835519562650">Mehrfachauswahl, <ph name="SELECTED" /> von <ph name="COUNT" /> ausgewählt.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Aktueller Monat</translation>
 <translation id="1637811476055996098">Dateien auswählen</translation>
 <translation id="1680090928918677457">Kamera verwenden</translation>
-<translation id="1681022320378710418">aktuelle Uhrzeit</translation>
-<translation id="1727839386348365796">Pipette</translation>
 <translation id="1729654308190250600">Gib eine E-Mail-Adresse ein.</translation>
 <translation id="1758486001363313524">Andere...</translation>
 <translation id="1787192514241997742">Gesamtzeit: <ph name="REMAINING_TIME" /></translation>
@@ -24,7 +20,6 @@
 <translation id="1938124657309484470">Verwende <ph name="MAXIMUM_DATE_OR_TIME" /> oder einen früheren Wert.</translation>
 <translation id="1946271899482435442">Datumsauswahl anzeigen</translation>
 <translation id="1993104285338243655">Zu 1:1-Wiedergabe gewechselt</translation>
-<translation id="2031987842108996681">Rotkanal</translation>
 <translation id="2060505056492490888">Das Punktzeichen "<ph name="DOT" />" steht in "<ph name="INVALIDDOMAIN" />" an einer falschen Stelle.</translation>
 <translation id="2068711044993563745">Der Mindestwert (<ph name="MINIMUM" />) muss kleiner als der Höchstwert (<ph name="MAXIMUM" />) sein.</translation>
 <translation id="2148716181193084225">Heute</translation>
@@ -37,11 +32,9 @@
 <translation id="245932805758469625">verbleibende Videozeit in Sekunden</translation>
 <translation id="248395913932153421">Tag</translation>
 <translation id="2507943997699731163">Fülle dieses Feld aus.</translation>
-<translation id="2530182415807757784">Mehrfachauswahl, nichts ausgewählt.</translation>
 <translation id="2561842179657104141">weitere Mediensteuerelemente anzeigen</translation>
 <translation id="2572483411312390101">Wiedergeben</translation>
 <translation id="2613802280814924224">Gib einen gültigen Wert ein. Der nächstliegende gültige Wert ist <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Grünkanal</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2723001399770238859">Audio</translation>
 <translation id="2746543609216772311">Verwende <ph name="MINIMUM_DATE_OR_TIME" /> oder einen späteren Wert.</translation>
@@ -51,9 +44,7 @@
 <translation id="3053226512517284904">Menü für Audiobeschreibungen anzeigen</translation>
 <translation id="3075154866155599887">Gib einen gültigen Wert ein. Das Feld ist nicht vollständig oder enthält ein ungültiges Datum.</translation>
 <translation id="310520048233152454">Gib eine URL ein.</translation>
-<translation id="3220661731597678625">aktueller Schritt</translation>
 <translation id="3321030238473337787">Wiedergabegeschwindigkeit</translation>
-<translation id="3329013043687509092">Sättigung</translation>
 <translation id="3450233048674729344">Wert muss kleiner als oder gleich <ph name="MAXIMUM" /> sein.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
@@ -61,7 +52,6 @@
 <translation id="3822383571486410024">Verlängere diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwendest du <ph name="CURRENT_LENGTH" /> Zeichen.</translation>
 <translation id="383465348367842624">Vor dem <ph name="ATSIGN" />-Zeichen darf das Zeichen "<ph name="INVALIDCHARACTER" />" nicht verwendet werden.</translation>
 <translation id="3846214748874656680">Vollbildmodus beenden</translation>
-<translation id="3914173277599553213">Erforderlich</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4103419683916926126">Millisekunden</translation>
 <translation id="4201051445878709314">Vorherigen Monat anzeigen</translation>
@@ -74,18 +64,14 @@
 <translation id="4763480195061959176">Video</translation>
 <translation id="4792862212177489858">Standort teilen</translation>
 <translation id="4812940957355064477">Gib eine Nummer ein.</translation>
-<translation id="4912200001568447310">aktuelles Element</translation>
 <translation id="4915360478455618802">Uhrzeitauswahl anzeigen</translation>
-<translation id="4924138096460353083">Unbestimmt</translation>
 <translation id="49269513399674318">Mikrofon verwenden</translation>
 <translation id="4950364064308314478">Lokale Datums- und Uhrzeitauswahl anzeigen</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> ausgewählt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ausgewählt</translation>
 <translation id="4992066212339426712">Stummschaltung aufheben</translation>
 <translation id="49969490063480558">Gib etwas nach dem <ph name="ATSIGN" />-Zeichen ein. Die Angabe „<ph name="INVALIDADDRESS" />“ ist unvollständig.</translation>
 <translation id="5037575921016181960">Starkes Passwort</translation>
 <translation id="5090250355906949916">Video-Zeitachse</translation>
-<translation id="509897012892853729">Blaukanal</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
 <translation id="5164977714490026579">Wert muss größer als oder gleich <ph name="MINIMUM" /> sein.</translation>
 <translation id="5196716972587102051">2</translation>
@@ -96,7 +82,6 @@
 <translation id="5334352251556557839">Medien können nicht abgespielt werden.</translation>
 <translation id="537648784377940524">Das Mindestdatum (<ph name="MIN_DATE_OR_TIME" />) muss vor dem Maximaldatum (<ph name="MAX_DATE_OR_TIME" />) liegen.</translation>
 <translation id="5378437566635403538">maximiert, Dialogfeld geöffnet.</translation>
-<translation id="5425179576310518467">aktuelles Datum</translation>
 <translation id="5466621249238537318">Wähle eine oder mehrere Dateien aus.</translation>
 <translation id="5468998798572797635">Vollbildmodus beenden</translation>
 <translation id="5514612371225420585">Datei auf deinem Gerät</translation>
@@ -108,18 +93,14 @@
 <translation id="57838592816432529">Stummschalten</translation>
 <translation id="5786442179789148008">Menü für Wiedergabegeschwindigkeit einblenden</translation>
 <translation id="5787939484346677755">maximiert, Optionen für automatische Vervollständigung sind verfügbar.</translation>
-<translation id="5860033963881614850">Aus</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5888666972993069672">Wird gerade auf <ph name="DEVICE_FRIENDLY_NAME" /> gestreamt</translation>
-<translation id="5916664084637901428">An</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="5966707198760109579">Woche</translation>
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6011459053400940133">Schieberegler für die Lautstärke</translation>
 <translation id="6015796118275082299">Jahr</translation>
 <translation id="6165053282446038410">maximiert, <ph name="COUNT" /> Optionen für automatische Vervollständigung sind verfügbar.</translation>
-<translation id="6212595056017402527">aktuelle Seite</translation>
-<translation id="6281588256137006900">Helligkeit</translation>
 <translation id="6310801910862476708">Bild im Bild beenden</translation>
 <translation id="6398862346408813489">Auswahlbereich für Monatsanzeige</translation>
 <translation id="6404546809543547843">Audio-Zeitachse</translation>
@@ -139,11 +120,9 @@
 <translation id="6843725295806269523">Stumm</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">Medien herunterladen</translation>
-<translation id="698788488269350478">maximiert.</translation>
 <translation id="6989848892321993519">Verlängere diesen Text auf mindestens <ph name="MIN_CHARACTERS" /> Zeichen. Derzeit verwendest du 1 Zeichen.</translation>
 <translation id="7080893216867146095">Standortfreigabe erlaubt</translation>
 <translation id="709897737746224366">Deine Eingabe muss mit dem geforderten Format übereinstimmen.</translation>
-<translation id="7102274145889307184">aktueller Standort</translation>
 <translation id="7134810312945846184">Mikrofon und Kamera verwenden</translation>
 <translation id="7263440858009898357">Wähle ein Element in der Liste aus.</translation>
 <translation id="7320576522385648310">Wird zwischengespeichert</translation>
@@ -157,10 +136,8 @@
 <translation id="775297008183122718">Ungültiger Eintrag</translation>
 <translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">Pausieren</translation>
-<translation id="7852167693871241274">Schieberegler für den Farbton</translation>
 <translation id="7888071071722539607">Die E-Mail-Adresse muss ein <ph name="ATSIGN" />-Zeichen enthalten. In der Angabe "<ph name="INVALIDADDRESS" />" fehlt ein <ph name="ATSIGN" />-Zeichen.</translation>
 <translation id="795667975304826397">Keine ausgewählt</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> nicht ausgewählt</translation>
 <translation id="8117451130807776954">Diese Woche</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">jjjj</translation>
@@ -180,9 +157,7 @@
 <translation id="8750798805984357768">Wähle eine dieser Optionen aus.</translation>
 <translation id="8845239796550121995">Wird gerade auf deinen Fernseher gestreamt</translation>
 <translation id="8875657656876809964">Videowiedergabefehler</translation>
-<translation id="8889402386540077796">Farbton</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="894736920926684893">Formatregler</translation>
 <translation id="8987927404178983737">Monat</translation>
 <translation id="901493112792887934">Aktuelle Dauer in Sekunden</translation>
 <translation id="9093215626363556771">Bild im Bild beenden</translation>

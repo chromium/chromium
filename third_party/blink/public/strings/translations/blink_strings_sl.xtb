@@ -6,15 +6,11 @@
 <translation id="1142001580032786438">Prikaz izbirnika tedna</translation>
 <translation id="1171774979989969504">Vnesite e-poštni naslov</translation>
 <translation id="1178581264944972037">Prekini</translation>
-<translation id="1306460908038601864">Izklopljeno</translation>
 <translation id="1311894908970423688">Vrednost mora biti <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="1480676835519562650">Izbrati je mogoče več otrok, izbranih je toliko: <ph name="SELECTED" /> od <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">Običajen</translation>
 <translation id="1591562245178063882">Ta mesec</translation>
 <translation id="1637811476055996098">Izberi datoteke</translation>
 <translation id="1680090928918677457">Uporabi kamero</translation>
-<translation id="1681022320378710418">trenutni čas</translation>
-<translation id="1727839386348365796">Kapalka</translation>
 <translation id="1729654308190250600">Vnesite e-poštni naslov (polje ne sme biti prazno).</translation>
 <translation id="1758486001363313524">Drugo ...</translation>
 <translation id="1787192514241997742">skupni čas: <ph name="REMAINING_TIME" /></translation>
@@ -24,7 +20,6 @@
 <translation id="1938124657309484470">Vrednost mora biti <ph name="MAXIMUM_DATE_OR_TIME" /> ali prej.</translation>
 <translation id="1946271899482435442">Pokaži izbirnik datuma</translation>
 <translation id="1993104285338243655">Preklopljeno na zrcaljenje</translation>
-<translation id="2031987842108996681">Rdeči kanal</translation>
 <translation id="2060505056492490888">»<ph name="DOT" />« je na napačnem mestu v »<ph name="INVALIDDOMAIN" />«.</translation>
 <translation id="2068711044993563745">Najmanjša vrednost (<ph name="MINIMUM" />) mora biti manjša od največje vrednosti (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Danes</translation>
@@ -37,11 +32,9 @@
 <translation id="245932805758469625">preostale sekunde videoposnetka</translation>
 <translation id="248395913932153421">Dan</translation>
 <translation id="2507943997699731163">Izpolnite to polje</translation>
-<translation id="2530182415807757784">Mogoče je izbrati več otrok, izbran ni noben.</translation>
 <translation id="2561842179657104141">prikaz več kontrolnikov za predstavnost</translation>
 <translation id="2572483411312390101">predvajanje</translation>
 <translation id="2613802280814924224">Vnesite veljavno vrednost. Najbližja veljavna vrednost je <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Zeleni kanal</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2723001399770238859">zvok</translation>
 <translation id="2746543609216772311">Vrednost mora biti <ph name="MINIMUM_DATE_OR_TIME" /> ali pozneje.</translation>
@@ -51,9 +44,7 @@
 <translation id="3053226512517284904">meni za prikaz zvočnih opisov</translation>
 <translation id="3075154866155599887">Vnesite veljavno vrednost. Vnos v polje je nepopoln ali vsebuje neveljaven datum.</translation>
 <translation id="310520048233152454">Vnesite URL.</translation>
-<translation id="3220661731597678625">trenutni korak</translation>
 <translation id="3321030238473337787">Hitrost predvajanja</translation>
-<translation id="3329013043687509092">Nasičenost</translation>
 <translation id="3450233048674729344">Vrednost mora biti manjša od <ph name="MAXIMUM" /> ali enaka.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Zapri način slike v sliki</translation>
@@ -61,7 +52,6 @@
 <translation id="3822383571486410024">Podaljšajte to besedilo na toliko znakov ali več: <ph name="MIN_CHARACTERS" /> (trenutno uporabljate toliko znakov: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Del pred »<ph name="ATSIGN" />« ne sme vsebovati znaka »<ph name="INVALIDCHARACTER" />«.</translation>
 <translation id="3846214748874656680">Zapri celozaslonski način</translation>
-<translation id="3914173277599553213">Obvezno</translation>
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
 <translation id="4103419683916926126">Milisekunde</translation>
 <translation id="4201051445878709314">Prikaz prejšnjega meseca</translation>
@@ -74,18 +64,14 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4792862212177489858">Objavi lokacijo</translation>
 <translation id="4812940957355064477">Vnesite številko.</translation>
-<translation id="4912200001568447310">trenutni element</translation>
 <translation id="4915360478455618802">Prikaz izbirnika ure</translation>
-<translation id="4924138096460353083">nedoločeno</translation>
 <translation id="49269513399674318">Uporabi mikrofon</translation>
 <translation id="4950364064308314478">Prikaz izbirnika lokalnega datuma in ure</translation>
-<translation id="4971739861736909480">Izbran je predmet <ph name="ACCNAME" /></translation>
 <translation id="4975562563186953947">Št. izbranih: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Vklopi zvok</translation>
 <translation id="49969490063480558">Vnesite nekaj po znaku »<ph name="ATSIGN" />«. Naslov »<ph name="INVALIDADDRESS" />« je nepopoln.</translation>
 <translation id="5037575921016181960">Močno geslo</translation>
 <translation id="5090250355906949916">časovni krmilnik za predvajanje videoposnetka</translation>
-<translation id="509897012892853729">Modri kanal</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5164977714490026579">Vrednost mora biti večja od <ph name="MINIMUM" /> ali enaka.</translation>
 <translation id="5196716972587102051">2</translation>
@@ -96,7 +82,6 @@
 <translation id="5334352251556557839">Predstavnosti ni mogoče predvajati.</translation>
 <translation id="537648784377940524">Najzgodnejši datum (<ph name="MIN_DATE_OR_TIME" />) mora biti pred najpoznejšim datumom (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5378437566635403538">razširjen, pogovorno okno odprto.</translation>
-<translation id="5425179576310518467">trenutni datum</translation>
 <translation id="5466621249238537318">Izberite eno ali več datotek.</translation>
 <translation id="5468998798572797635">izhod iz celozaslonskega načina</translation>
 <translation id="5514612371225420585">Datoteka v napravi</translation>
@@ -108,18 +93,14 @@
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5786442179789148008">prikaz menija za hitrost predvajanja</translation>
 <translation id="5787939484346677755">razširjen, na voljo so možnosti samodokončanja.</translation>
-<translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
 <translation id="5888666972993069672">Predvajanje v napravi <ph name="DEVICE_FRIENDLY_NAME" /></translation>
-<translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
 <translation id="5966707198760109579">Teden</translation>
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6011459053400940133">drsnik za glasnost</translation>
 <translation id="6015796118275082299">Leto</translation>
 <translation id="6165053282446038410">razširjen, na voljo je toliko možnosti samodokončanja: <ph name="COUNT" />.</translation>
-<translation id="6212595056017402527">trenutna stran</translation>
-<translation id="6281588256137006900">Svetlost</translation>
 <translation id="6310801910862476708">Zapri način slike v sliki</translation>
 <translation id="6398862346408813489">Prikaz podokna za izbiro meseca</translation>
 <translation id="6404546809543547843">časovni krmilnik za predvajanje zvoka</translation>
@@ -139,11 +120,9 @@
 <translation id="6843725295806269523">nemo</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">prenos predstavnosti</translation>
-<translation id="698788488269350478">razširjen.</translation>
 <translation id="6989848892321993519">Podaljšajte to besedilo na toliko znakov ali več: <ph name="MIN_CHARACTERS" /> (trenutno uporabljate en znak).</translation>
 <translation id="7080893216867146095">Deljenje lokacije je dovoljeno</translation>
 <translation id="709897737746224366">Poskrbite za ujemanje z zahtevano obliko.</translation>
-<translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7134810312945846184">Uporabi mikrofon in kamero</translation>
 <translation id="7263440858009898357">Izberite element s seznama.</translation>
 <translation id="7320576522385648310">medpomnjenje</translation>
@@ -157,10 +136,8 @@
 <translation id="775297008183122718">Neveljaven vnos</translation>
 <translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">premor</translation>
-<translation id="7852167693871241274">Drsnik za odtenek</translation>
 <translation id="7888071071722539607">V e-poštnem naslovu mora biti znak »<ph name="ATSIGN" />«. V naslovu »<ph name="INVALIDADDRESS" />« manjka »<ph name="ATSIGN" />«.</translation>
 <translation id="795667975304826397">Nobena datoteka ni izbrana</translation>
-<translation id="7962328325860248200">Predmet <ph name="ACCNAME" /> ni izbran</translation>
 <translation id="8117451130807776954">Ta teden</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">llll</translation>
@@ -180,9 +157,7 @@
 <translation id="8750798805984357768">Izberite eno od teh možnosti.</translation>
 <translation id="8845239796550121995">Predvajanje na televizorju</translation>
 <translation id="8875657656876809964">Napaka pri predvajanju videoposnetka</translation>
-<translation id="8889402386540077796">Odtenek</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="894736920926684893">Orodje za preklapljanje oblik</translation>
 <translation id="8987927404178983737">Mesec</translation>
 <translation id="901493112792887934">trenutni čas v sekundah</translation>
 <translation id="9093215626363556771">zapiranje načina slike v sliki</translation>

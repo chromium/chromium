@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">klizač</translation>
 <translation id="1211441953136645838">završna napomena</translation>
 <translation id="1281252709823657822">dijalog</translation>
+<translation id="1306460908038601864">Isključeno</translation>
 <translation id="1335095011850992622">zasluge</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">baner</translation>
+<translation id="1480676835519562650">više opcija za izbor, izabranih: <ph name="SELECTED" /> od <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1650423536718072820">kratki citat</translation>
+<translation id="1681022320378710418">trenutno vreme</translation>
+<translation id="1727839386348365796">Pipeta</translation>
 <translation id="1821985195704844674">mreža stabla</translation>
 <translation id="1823704031293214298">podnožje stranice</translation>
 <translation id="1838681052457320736">dijalog obaveštenja</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">brisanje</translation>
 <translation id="1907737156431278478">primer</translation>
 <translation id="1930711995431081526">status</translation>
+<translation id="2031987842108996681">Crveni kanal</translation>
 <translation id="2158401438286456825">lista stranica</translation>
 <translation id="2291999235780842123">polje za potvrdu</translation>
 <translation id="2311842470354187719">prelom stranice</translation>
 <translation id="2335594187091864976">birač datuma i vremena</translation>
 <translation id="2508569020611168319">lista kartica</translation>
+<translation id="2530182415807757784">više opcija za izbor, nijedna nije izabrana.</translation>
+<translation id="2634240155926812724">Zeleni kanal</translation>
 <translation id="2657045182931379222">grafički objekat</translation>
 <translation id="2674318244760992338">podnožje</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">beleška</translation>
 <translation id="3175736971608411871">tajmer</translation>
 <translation id="3199563858620722075">kombinovani okvir</translation>
+<translation id="3220661731597678625">aktuelni korak</translation>
+<translation id="3329013043687509092">Zasićenost boja</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3557673793733683882">zaglavlje <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">birač nedelja</translation>
 <translation id="3706100364254443312">prekidač</translation>
 <translation id="3808586225841795776">termin</translation>
+<translation id="3914173277599553213">Obavezno</translation>
 <translation id="3920932319529768807">zaključak</translation>
 <translation id="3924558731517983934">aplikacija</translation>
 <translation id="3944740393230681990">prolog</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">korice</translation>
 <translation id="4757246831282535685">tabla sa karticama</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4912200001568447310">aktuelna stavka</translation>
 <translation id="4912536737030637138">bibliografska stavka</translation>
 <translation id="492244087561876220">komentar</translation>
+<translation id="4924138096460353083">neodređeno</translation>
+<translation id="4971739861736909480">Izabrano: <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">grupa redova</translation>
 <translation id="5034860022980953847">indikator napretka</translation>
 <translation id="5093189678851173835">natpis</translation>
+<translation id="509897012892853729">Plavi kanal</translation>
 <translation id="512758898067543763">zaglavlje reda</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5406322316791861025">cifra</translation>
+<translation id="5425179576310518467">trenutni datum</translation>
 <translation id="5453733299334684579">stavka stabla</translation>
 <translation id="546643433018805598">indeksni tekst</translation>
 <translation id="5476505524087279545">opozovi izbor</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">dugme</translation>
 <translation id="5693537480074347398">eksponentni tekst</translation>
 <translation id="576709008726043716">uvod</translation>
+<translation id="5860033963881614850">Isključeno</translation>
 <translation id="591047860372322273">okvir za pretragu</translation>
+<translation id="5916664084637901428">Uključeno</translation>
 <translation id="5987525920412732405">dugme za promenu vrednosti</translation>
 <translation id="6023896073578205740">okvir sa listom</translation>
 <translation id="6119846243427417423">aktiviraj</translation>
 <translation id="6150588977291308318">bibliografija</translation>
 <translation id="6164829606128959761">merač</translation>
 <translation id="6166809985690652833">pogovor</translation>
+<translation id="6212595056017402527">aktuelna stranica</translation>
 <translation id="6213469881011901533">rečnik termina</translation>
+<translation id="6281588256137006900">Svetlina</translation>
 <translation id="6281763101136022427">URL</translation>
 <translation id="6453774872122745852">priznanja</translation>
 <translation id="648732519525291180">birač vremena</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">izdvojeni citat</translation>
 <translation id="693476918119313863">zaglavlje</translation>
 <translation id="6981594929165378967">umetanje</translation>
+<translation id="698788488269350478">prošireno.</translation>
 <translation id="7034405885550056553">predlog</translation>
+<translation id="7102274145889307184">trenutna lokacija</translation>
 <translation id="7139483182332611405">predgovor</translation>
 <translation id="7198226213493847604">iskačuće dugme menija</translation>
 <translation id="7214187073215825913">informacije o sadržaju</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">indeks</translation>
 <translation id="7740050170769002709">HTML sadržaj</translation>
 <translation id="7802800022689234070">trougao za otkrivanje</translation>
+<translation id="7852167693871241274">Klizač za nijansu</translation>
 <translation id="7891486169920085145">razdelnik</translation>
+<translation id="7962328325860248200">Nije izabrano: <ph name="ACCNAME" /></translation>
 <translation id="8034303206267677282">jako</translation>
 <translation id="8053789581856978548">polje za tekst pretrage</translation>
 <translation id="8057695513531652401">obaveštenje</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">poglavlje</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">iskačuće dugme za dijalog</translation>
+<translation id="8889402386540077796">Nijansa</translation>
+<translation id="894736920926684893">Meni za formatiranje</translation>
 <translation id="9002566407876343676">otvaranje</translation>
 <translation id="901834265349196618">imejl</translation>
 <translation id="9048119486235211610">navigacija</translation>

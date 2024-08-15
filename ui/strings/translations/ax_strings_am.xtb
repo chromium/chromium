@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">ተንሸራታች</translation>
 <translation id="1211441953136645838">የግርጌ ማስታወሻ</translation>
 <translation id="1281252709823657822">መገናኛ</translation>
+<translation id="1306460908038601864">ጠፍቷል</translation>
 <translation id="1335095011850992622">ክሬዲቶች</translation>
 <translation id="1342835525016946179">ጽሁፍ</translation>
 <translation id="1359897965706325498">ሰንደቅ</translation>
+<translation id="1480676835519562650">በብዛት ሊመረጥ የሚችል፣ <ph name="SELECTED" /> ከ<ph name="COUNT" /> ተመርጠዋል።</translation>
 <translation id="1589122976691792535">ክልል</translation>
 <translation id="1650423536718072820">ጥቅስ</translation>
+<translation id="1681022320378710418">የአሁኑ ሰዓት</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
 <translation id="1821985195704844674">የዛፍ ፍርግርግ</translation>
 <translation id="1823704031293214298">ገፅ ግርጌ</translation>
 <translation id="1838681052457320736">የማንቂያ መገናኛ</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ስረዛ</translation>
 <translation id="1907737156431278478">ምሳሌ</translation>
 <translation id="1930711995431081526">ሁኔታ</translation>
+<translation id="2031987842108996681">ቀይ ሰርጥ</translation>
 <translation id="2158401438286456825">የገጽ ዝርዝር</translation>
 <translation id="2291999235780842123">አመልካች ሳጥን</translation>
 <translation id="2311842470354187719">ገፅ ከፋይ</translation>
 <translation id="2335594187091864976">የቀን እና የሰዓት መራጭ</translation>
 <translation id="2508569020611168319">የትር ዝርዝር</translation>
+<translation id="2530182415807757784">በብዛት ሊመረጥ የሚችል፣ ምንም አልተመረጠም።</translation>
+<translation id="2634240155926812724">አረንጓዴ ሰርጥ</translation>
 <translation id="2657045182931379222">ግራፊካዊ ነገር</translation>
 <translation id="2674318244760992338">ግርጌ</translation>
 <translation id="2723001399770238859">ድምፅ</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">ሰዓት ቆጣሪ</translation>
 <translation id="3199563858620722075">ጥምድ ሳጥን</translation>
+<translation id="3220661731597678625">የአሁኑ ደረጃ</translation>
+<translation id="3329013043687509092">የቀለም ሙሌት</translation>
 <translation id="3486220673238053218">ብየና</translation>
 <translation id="3557673793733683882">አርዕስት <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">ሳምንት መራጭ</translation>
 <translation id="3706100364254443312">ቀይር</translation>
 <translation id="3808586225841795776">የጊዜ ቆይታ</translation>
+<translation id="3914173277599553213">የሚያስፈልግ</translation>
 <translation id="3920932319529768807">ድምዳሜ</translation>
 <translation id="3924558731517983934">መተግበሪያ</translation>
 <translation id="3944740393230681990">ቅድመ-ታሪክ</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">ሽፋን</translation>
 <translation id="4757246831282535685">የትር ፓነል</translation>
 <translation id="479989351350248267">ፈልግ</translation>
+<translation id="4912200001568447310">የአሁን ንጥል</translation>
 <translation id="4912536737030637138">የዋቢ መጽሐፍት ግቤት</translation>
 <translation id="492244087561876220">አስተያየት</translation>
+<translation id="4924138096460353083">ያልተወሰነ</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> ተመርጧል</translation>
 <translation id="5022314756875057021">የረድፍ ቡድን</translation>
 <translation id="5034860022980953847">የሂደት አመልካች</translation>
 <translation id="5093189678851173835">የተቀረጸ ጽሁፍ</translation>
+<translation id="509897012892853729">ሰማያዊ ሰርጥ</translation>
 <translation id="512758898067543763">የረድፍ ራስጌ</translation>
 <translation id="5143125788380636750">ድሕረ ታሪክ</translation>
 <translation id="5406322316791861025">ምስል</translation>
+<translation id="5425179576310518467">የአሁኑ ቀን</translation>
 <translation id="5453733299334684579">የዛፍ ንጥል</translation>
 <translation id="546643433018805598">ግርጌ አደር</translation>
 <translation id="5476505524087279545">አታመልክት</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">አዝራር</translation>
 <translation id="5693537480074347398">ራስጌ አደር</translation>
 <translation id="576709008726043716">መግቢያ</translation>
+<translation id="5860033963881614850">አጥፋ</translation>
 <translation id="591047860372322273">የፍለጋ ሳጥን</translation>
+<translation id="5916664084637901428">በርቷል</translation>
 <translation id="5987525920412732405">ማሾሪያ አዝራር</translation>
 <translation id="6023896073578205740">የዝርዝር ሳጥን</translation>
 <translation id="6119846243427417423">አንቃ</translation>
 <translation id="6150588977291308318">ዋቢ መጽሐፍት</translation>
 <translation id="6164829606128959761">ሜትር</translation>
 <translation id="6166809985690652833">ድሕረ ቃል</translation>
+<translation id="6212595056017402527">የአሁኑ ገፅ</translation>
 <translation id="6213469881011901533">ሙዳየ ቃላት</translation>
+<translation id="6281588256137006900">ፍካት</translation>
 <translation id="6281763101136022427">ዩአርኤል</translation>
 <translation id="6453774872122745852">ምስጋና</translation>
 <translation id="648732519525291180">ሰዓት መራጭ</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">የጽሑፍ ጥቅስ</translation>
 <translation id="693476918119313863">ራስጌ</translation>
 <translation id="6981594929165378967">ማስገባት</translation>
+<translation id="698788488269350478">ተዘርግቷል።</translation>
 <translation id="7034405885550056553">የአስተያየት ጥቆማ</translation>
+<translation id="7102274145889307184">የአሁኑ አካባቢ</translation>
 <translation id="7139483182332611405">መቅድም</translation>
 <translation id="7198226213493847604">የምናለ ብቅ-ባይ አዝራር</translation>
 <translation id="7214187073215825913">የይዘት መረጃ</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">መረጃ ጠቋሚ</translation>
 <translation id="7740050170769002709">የኤች ቲ ኤም ኤል ይዘት</translation>
 <translation id="7802800022689234070">ይፋ ማሳወቂያ ሦስት ማዕዘን</translation>
+<translation id="7852167693871241274">የለይ ቀለም ተንሸራታች</translation>
 <translation id="7891486169920085145">መክፈያ</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> አልተመረጠም</translation>
 <translation id="8034303206267677282">ጠንካራ</translation>
 <translation id="8053789581856978548">የጽሑፍ መስክ ፈልግ</translation>
 <translation id="8057695513531652401">ማስታወቂያ</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">ምዕራፍ</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">የመገናኛ ብቅ-ባይ አዝራር</translation>
+<translation id="8889402386540077796">ለይ ቀለም</translation>
+<translation id="894736920926684893">የቅርጸት መቀያየሪያ</translation>
 <translation id="9002566407876343676">ክፈት</translation>
 <translation id="901834265349196618">ኢሜይል</translation>
 <translation id="9048119486235211610">አሰሳ</translation>

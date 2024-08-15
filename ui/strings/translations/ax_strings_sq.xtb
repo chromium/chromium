@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">rrëshqitës</translation>
 <translation id="1211441953136645838">shënim fundor</translation>
 <translation id="1281252709823657822">dialog</translation>
+<translation id="1306460908038601864">Joaktiv</translation>
 <translation id="1335095011850992622">kredite</translation>
 <translation id="1342835525016946179">artikull</translation>
 <translation id="1359897965706325498">banderolë</translation>
+<translation id="1480676835519562650">me zgjedhje të shumëfishtë, <ph name="SELECTED" /> nga <ph name="COUNT" /> të zgjedhura.</translation>
 <translation id="1589122976691792535">rajoni</translation>
 <translation id="1650423536718072820">citim i theksuar</translation>
+<translation id="1681022320378710418">ora aktuale</translation>
+<translation id="1727839386348365796">Pikatorja</translation>
 <translation id="1821985195704844674">rrjeta pemë</translation>
 <translation id="1823704031293214298">fundi i faqes</translation>
 <translation id="1838681052457320736">dialogu i sinjalizimit</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">fshirje</translation>
 <translation id="1907737156431278478">shembull</translation>
 <translation id="1930711995431081526">statusi</translation>
+<translation id="2031987842108996681">Kanali i kuq</translation>
 <translation id="2158401438286456825">listë faqeje</translation>
 <translation id="2291999235780842123">kutia e kontrollit</translation>
 <translation id="2311842470354187719">thyerje faqeje</translation>
 <translation id="2335594187091864976">zgjedhësi i datës dhe orës</translation>
 <translation id="2508569020611168319">lista e skedave</translation>
+<translation id="2530182415807757784">me zgjedhje të shumëfishtë, nuk është zgjedhur asnjë.</translation>
+<translation id="2634240155926812724">Kanali i gjelbër</translation>
 <translation id="2657045182931379222">objekt grafik</translation>
 <translation id="2674318244760992338">shënime në fund të faqes</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">shënim</translation>
 <translation id="3175736971608411871">kohëmatës</translation>
 <translation id="3199563858620722075">kutia e kombinuar</translation>
+<translation id="3220661731597678625">hapi aktual</translation>
+<translation id="3329013043687509092">Ngopje</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3557673793733683882">titulli <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">zgjedhësi i javës</translation>
 <translation id="3706100364254443312">çelësi</translation>
 <translation id="3808586225841795776">termi</translation>
+<translation id="3914173277599553213">Kërkohet</translation>
 <translation id="3920932319529768807">konkluzion</translation>
 <translation id="3924558731517983934">aplikacion</translation>
 <translation id="3944740393230681990">prolog</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">kapak</translation>
 <translation id="4757246831282535685">paneli i skedave</translation>
 <translation id="479989351350248267">kërko</translation>
+<translation id="4912200001568447310">artikulli aktual</translation>
 <translation id="4912536737030637138">hyrje bibliografike</translation>
 <translation id="492244087561876220">koment</translation>
+<translation id="4924138096460353083">i papërcaktuar</translation>
+<translation id="4971739861736909480">Përzgjedhur: <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">grupi i rreshtit</translation>
 <translation id="5034860022980953847">treguesi i progresit</translation>
 <translation id="5093189678851173835">epigraf</translation>
+<translation id="509897012892853729">Kanali blu</translation>
 <translation id="512758898067543763">koka e rreshtit</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5406322316791861025">figura</translation>
+<translation id="5425179576310518467">data aktuale</translation>
 <translation id="5453733299334684579">artikull i pemës</translation>
 <translation id="546643433018805598">shkrim i poshtëm</translation>
 <translation id="5476505524087279545">anulo zgjedhjen</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">buton</translation>
 <translation id="5693537480074347398">shkrim i sipërm</translation>
 <translation id="576709008726043716">hyrje</translation>
+<translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="591047860372322273">kutia e kërkimit</translation>
+<translation id="5916664084637901428">Aktiv</translation>
 <translation id="5987525920412732405">butoni i rrotullimit</translation>
 <translation id="6023896073578205740">kutia e listës</translation>
 <translation id="6119846243427417423">aktivizo</translation>
 <translation id="6150588977291308318">bibliografi</translation>
 <translation id="6164829606128959761">matës</translation>
 <translation id="6166809985690652833">pasthënie</translation>
+<translation id="6212595056017402527">faqja aktuale</translation>
 <translation id="6213469881011901533">fjalorth</translation>
+<translation id="6281588256137006900">Ndriçimi</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">falënderime</translation>
 <translation id="648732519525291180">zgjedhësi i orës</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">thonjëza mbyllëse</translation>
 <translation id="693476918119313863">koka e faqes</translation>
 <translation id="6981594929165378967">futje</translation>
+<translation id="698788488269350478">u zgjerua.</translation>
 <translation id="7034405885550056553">sugjerim</translation>
+<translation id="7102274145889307184">vendndodhja aktuale</translation>
 <translation id="7139483182332611405">parathënie</translation>
 <translation id="7198226213493847604">butoni kërcyes i menysë</translation>
 <translation id="7214187073215825913">informacione për përmbajtjen</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">indeks</translation>
 <translation id="7740050170769002709">përmbajtja HTML</translation>
 <translation id="7802800022689234070">trekëndëshi i zbulimit</translation>
+<translation id="7852167693871241274">Rrëshqitësi i nuancës</translation>
 <translation id="7891486169920085145">ndarësi</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> nuk është zgjedhur</translation>
 <translation id="8034303206267677282">e fortë</translation>
 <translation id="8053789581856978548">fusha për kërkim teksti</translation>
 <translation id="8057695513531652401">njoftim</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">kapitull</translation>
 <translation id="8851136666856101339">kryesor</translation>
 <translation id="8861621546968757188">butoni kërcyes i dialogut</translation>
+<translation id="8889402386540077796">Nuanca</translation>
+<translation id="894736920926684893">Ndryshuesi i formatit</translation>
 <translation id="9002566407876343676">hap</translation>
 <translation id="901834265349196618">mail</translation>
 <translation id="9048119486235211610">lundrimi</translation>

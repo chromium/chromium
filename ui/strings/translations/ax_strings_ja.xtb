@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">スライダ</translation>
 <translation id="1211441953136645838">巻末注</translation>
 <translation id="1281252709823657822">ダイアログ</translation>
+<translation id="1306460908038601864">オフ</translation>
 <translation id="1335095011850992622">クレジット</translation>
 <translation id="1342835525016946179">記事</translation>
 <translation id="1359897965706325498">バナー</translation>
+<translation id="1480676835519562650">複数の選択が可能です。<ph name="COUNT" /> 件中 <ph name="SELECTED" /> 件が選択されています。</translation>
 <translation id="1589122976691792535">セクション</translation>
 <translation id="1650423536718072820">引用</translation>
+<translation id="1681022320378710418">現在の時刻</translation>
+<translation id="1727839386348365796">スポイト</translation>
 <translation id="1821985195704844674">ツリーグリッド</translation>
 <translation id="1823704031293214298">ページフッター</translation>
 <translation id="1838681052457320736">アラート ダイアログ</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">削除</translation>
 <translation id="1907737156431278478">例</translation>
 <translation id="1930711995431081526">ステータス</translation>
+<translation id="2031987842108996681">赤チャネル</translation>
 <translation id="2158401438286456825">ページリスト</translation>
 <translation id="2291999235780842123">チェックボックス</translation>
 <translation id="2311842470354187719">改ページ</translation>
 <translation id="2335594187091864976">日時選択ツール</translation>
 <translation id="2508569020611168319">タブリスト</translation>
+<translation id="2530182415807757784">複数の選択が可能です。項目が選択されていません。</translation>
+<translation id="2634240155926812724">緑チャネル</translation>
 <translation id="2657045182931379222">図形オブジェクト</translation>
 <translation id="2674318244760992338">フッター</translation>
 <translation id="2723001399770238859">音声</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">注記</translation>
 <translation id="3175736971608411871">タイマー</translation>
 <translation id="3199563858620722075">コンボボックス</translation>
+<translation id="3220661731597678625">現在のステップ</translation>
+<translation id="3329013043687509092">彩度</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3557673793733683882">見出し <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">週選択ツール</translation>
 <translation id="3706100364254443312">切り替え</translation>
 <translation id="3808586225841795776">用語</translation>
+<translation id="3914173277599553213">必須</translation>
 <translation id="3920932319529768807">まとめ</translation>
 <translation id="3924558731517983934">アプリケーション</translation>
 <translation id="3944740393230681990">プロローグ</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">表紙</translation>
 <translation id="4757246831282535685">タブパネル</translation>
 <translation id="479989351350248267">検索</translation>
+<translation id="4912200001568447310">現在のアイテム</translation>
 <translation id="4912536737030637138">文献情報</translation>
 <translation id="492244087561876220">コメント</translation>
+<translation id="4924138096460353083">不確定</translation>
+<translation id="4971739861736909480">「<ph name="ACCNAME" />」は選択済みです</translation>
 <translation id="5022314756875057021">行グループ</translation>
 <translation id="5034860022980953847">プログレスバー</translation>
 <translation id="5093189678851173835">題辞</translation>
+<translation id="509897012892853729">青チャネル</translation>
 <translation id="512758898067543763">行見出し</translation>
 <translation id="5143125788380636750">エピローグ</translation>
 <translation id="5406322316791861025">図</translation>
+<translation id="5425179576310518467">現在の日付</translation>
 <translation id="5453733299334684579">ツリー項目</translation>
 <translation id="546643433018805598">下付き文字</translation>
 <translation id="5476505524087279545">チェックを外す</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">ボタン</translation>
 <translation id="5693537480074347398">上付き文字</translation>
 <translation id="576709008726043716">序論</translation>
+<translation id="5860033963881614850">OFF</translation>
 <translation id="591047860372322273">検索ボックス</translation>
+<translation id="5916664084637901428">ON</translation>
 <translation id="5987525920412732405">スピンボタン</translation>
 <translation id="6023896073578205740">リストボックス</translation>
 <translation id="6119846243427417423">アクティブにする</translation>
 <translation id="6150588977291308318">参考文献</translation>
 <translation id="6164829606128959761">メーター</translation>
 <translation id="6166809985690652833">後書き</translation>
+<translation id="6212595056017402527">現在のページ</translation>
 <translation id="6213469881011901533">用語集</translation>
+<translation id="6281588256137006900">明度</translation>
 <translation id="6281763101136022427">URL</translation>
 <translation id="6453774872122745852">謝辞</translation>
 <translation id="648732519525291180">時間選択ツール</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">引用</translation>
 <translation id="693476918119313863">ヘッダー</translation>
 <translation id="6981594929165378967">挿入</translation>
+<translation id="698788488269350478">展開表示されています。</translation>
 <translation id="7034405885550056553">提案</translation>
+<translation id="7102274145889307184">現在地</translation>
 <translation id="7139483182332611405">序文</translation>
 <translation id="7198226213493847604">メニュー表示ボタン</translation>
 <translation id="7214187073215825913">コンテンツの情報</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">索引</translation>
 <translation id="7740050170769002709">HTML コンテンツ</translation>
 <translation id="7802800022689234070">三角形の展開ボタン</translation>
+<translation id="7852167693871241274">色相スライダー</translation>
 <translation id="7891486169920085145">分割バー</translation>
+<translation id="7962328325860248200">「<ph name="ACCNAME" />」は選択されていません</translation>
 <translation id="8034303206267677282">重要</translation>
 <translation id="8053789581856978548">検索テキスト欄</translation>
 <translation id="8057695513531652401">注記</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">章</translation>
 <translation id="8851136666856101339">本文</translation>
 <translation id="8861621546968757188">ダイアログ表示ボタン</translation>
+<translation id="8889402386540077796">色調</translation>
+<translation id="894736920926684893">形式の切り替え</translation>
 <translation id="9002566407876343676">開く</translation>
 <translation id="901834265349196618">メール</translation>
 <translation id="9048119486235211610">ナビゲーション</translation>

@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">curseur</translation>
 <translation id="1211441953136645838">note de fin</translation>
 <translation id="1281252709823657822">boîte de dialogue</translation>
+<translation id="1306460908038601864">Désactivé</translation>
 <translation id="1335095011850992622">crédits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bannière</translation>
+<translation id="1480676835519562650">plusieurs éléments sélectionnables, <ph name="SELECTED" /> sur <ph name="COUNT" /> sélectionné.</translation>
 <translation id="1589122976691792535">région</translation>
 <translation id="1650423536718072820">accroche</translation>
+<translation id="1681022320378710418">Heure actuelle</translation>
+<translation id="1727839386348365796">Pipette</translation>
 <translation id="1821985195704844674">arborescence</translation>
 <translation id="1823704031293214298">note de bas de page</translation>
 <translation id="1838681052457320736">boîte de dialogue d'alerte</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">suppression</translation>
 <translation id="1907737156431278478">exemple</translation>
 <translation id="1930711995431081526">État</translation>
+<translation id="2031987842108996681">Canal rouge</translation>
 <translation id="2158401438286456825">liste des pages</translation>
 <translation id="2291999235780842123">case à cocher</translation>
 <translation id="2311842470354187719">saut de page</translation>
 <translation id="2335594187091864976">sélecteur de date et d'heure</translation>
 <translation id="2508569020611168319">liste d'onglets</translation>
+<translation id="2530182415807757784">plusieurs éléments sélectionnables, aucun n'a été sélectionné.</translation>
+<translation id="2634240155926812724">Canal vert</translation>
 <translation id="2657045182931379222">objet graphique</translation>
 <translation id="2674318244760992338">bas de page</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">Note</translation>
 <translation id="3175736971608411871">minuteur</translation>
 <translation id="3199563858620722075">zone de liste déroulante</translation>
+<translation id="3220661731597678625">Étape en cours</translation>
+<translation id="3329013043687509092">Saturation</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3557673793733683882">titre <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">sélecteur de semaine</translation>
 <translation id="3706100364254443312">switch</translation>
 <translation id="3808586225841795776">terme</translation>
+<translation id="3914173277599553213">Obligatoire</translation>
 <translation id="3920932319529768807">conclusion</translation>
 <translation id="3924558731517983934">application</translation>
 <translation id="3944740393230681990">prologue</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">couverture</translation>
 <translation id="4757246831282535685">panneau d'onglet</translation>
 <translation id="479989351350248267">chercher</translation>
+<translation id="4912200001568447310">Élément actuel</translation>
 <translation id="4912536737030637138">entrée de bibliographie</translation>
 <translation id="492244087561876220">commentaire</translation>
+<translation id="4924138096460353083">indéterminé</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> est sélectionné</translation>
 <translation id="5022314756875057021">groupe de rangées</translation>
 <translation id="5034860022980953847">indicateur de progression</translation>
 <translation id="5093189678851173835">épigraphe</translation>
+<translation id="509897012892853729">Canal bleu</translation>
 <translation id="512758898067543763">en-tête de ligne</translation>
 <translation id="5143125788380636750">épilogue</translation>
 <translation id="5406322316791861025">figure</translation>
+<translation id="5425179576310518467">Date actuelle</translation>
 <translation id="5453733299334684579">élément d'arborescence</translation>
 <translation id="546643433018805598">indice</translation>
 <translation id="5476505524087279545">décocher</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">bouton</translation>
 <translation id="5693537480074347398">exposant</translation>
 <translation id="576709008726043716">introduction</translation>
+<translation id="5860033963881614850">Désactivé</translation>
 <translation id="591047860372322273">champ de recherche</translation>
+<translation id="5916664084637901428">Activé</translation>
 <translation id="5987525920412732405">bouton fléché</translation>
 <translation id="6023896073578205740">zone de liste</translation>
 <translation id="6119846243427417423">Activer</translation>
 <translation id="6150588977291308318">bibliographie</translation>
 <translation id="6164829606128959761">outil de mesure</translation>
 <translation id="6166809985690652833">postface</translation>
+<translation id="6212595056017402527">Page actuelle</translation>
 <translation id="6213469881011901533">glossaire</translation>
+<translation id="6281588256137006900">Luminosité</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">remerciements</translation>
 <translation id="648732519525291180">sélecteur d'heure</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">citation</translation>
 <translation id="693476918119313863">en-tête</translation>
 <translation id="6981594929165378967">insertion</translation>
+<translation id="698788488269350478">développé.</translation>
 <translation id="7034405885550056553">suggestion</translation>
+<translation id="7102274145889307184">Position actuelle</translation>
 <translation id="7139483182332611405">préface</translation>
 <translation id="7198226213493847604">bouton contextuel du menu</translation>
 <translation id="7214187073215825913">renseignements relatifs au contenu</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">index</translation>
 <translation id="7740050170769002709">Contenu HTML</translation>
 <translation id="7802800022689234070">triangle d'affichage</translation>
+<translation id="7852167693871241274">Curseur des nuances de couleurs</translation>
 <translation id="7891486169920085145">séparateur</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> n'est pas sélectionné</translation>
 <translation id="8034303206267677282">important</translation>
 <translation id="8053789581856978548">champ de recherche textuelle</translation>
 <translation id="8057695513531652401">avis</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">chapitre</translation>
 <translation id="8851136666856101339">principal</translation>
 <translation id="8861621546968757188">bouton contextuel de la fenêtre de dialogue</translation>
+<translation id="8889402386540077796">Teinte</translation>
+<translation id="894736920926684893">Commutateur de format</translation>
 <translation id="9002566407876343676">ouvrir</translation>
 <translation id="901834265349196618">courriel</translation>
 <translation id="9048119486235211610">navigation</translation>

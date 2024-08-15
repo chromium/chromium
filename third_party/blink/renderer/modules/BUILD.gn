@@ -734,6 +734,7 @@ source_set("unit_tests") {
     "//third_party/googletest:gmock",
     "//third_party/opus",
     "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/strings:ax_strings_grit",
     "//v8",
   ]
 

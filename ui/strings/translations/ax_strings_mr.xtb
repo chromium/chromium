@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">स्लायडर</translation>
 <translation id="1211441953136645838">तळटीप</translation>
 <translation id="1281252709823657822">डायलॉग</translation>
+<translation id="1306460908038601864">बंद करा</translation>
 <translation id="1335095011850992622">श्रेय</translation>
 <translation id="1342835525016946179">लेख</translation>
 <translation id="1359897965706325498">बॅनर</translation>
+<translation id="1480676835519562650">एकाहून अधिक निवडण्यायोग्य, <ph name="COUNT" /> पैकी <ph name="SELECTED" /> निवडले.</translation>
 <translation id="1589122976691792535">प्रदेश</translation>
 <translation id="1650423536718072820">पुलकोट</translation>
+<translation id="1681022320378710418">सध्याची वेळ</translation>
+<translation id="1727839386348365796">आयड्रॉपर</translation>
 <translation id="1821985195704844674">ट्री ग्रीड</translation>
 <translation id="1823704031293214298">पेज फूटर</translation>
 <translation id="1838681052457320736">सूचना डायलॉग</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">हटवणे</translation>
 <translation id="1907737156431278478">उदाहरण</translation>
 <translation id="1930711995431081526">स्थिती</translation>
+<translation id="2031987842108996681">लाल चॅनल</translation>
 <translation id="2158401438286456825">पेज सूची</translation>
 <translation id="2291999235780842123">चेकबॉक्‍स</translation>
 <translation id="2311842470354187719">पेज ब्रेक</translation>
 <translation id="2335594187091864976">तारीख आणि वेळ निवडक</translation>
 <translation id="2508569020611168319">टॅब सूची</translation>
+<translation id="2530182415807757784">एकाहून अधिक निवडण्यायोग्य, काहीही निवडले नाही.</translation>
+<translation id="2634240155926812724">हिरवे चॅनल</translation>
 <translation id="2657045182931379222">ग्राफिक्स ऑब्जेक्ट</translation>
 <translation id="2674318244760992338">अधोलेख</translation>
 <translation id="2723001399770238859">ऑडिओ</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">टीप</translation>
 <translation id="3175736971608411871">टायमर</translation>
 <translation id="3199563858620722075">काँबो बॉक्स</translation>
+<translation id="3220661731597678625">सध्याची पायरी</translation>
+<translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3557673793733683882">शीर्षक <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">आठवडा पिकर</translation>
 <translation id="3706100364254443312">स्विच करा</translation>
 <translation id="3808586225841795776">संज्ञा</translation>
+<translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3920932319529768807">निष्कर्ष</translation>
 <translation id="3924558731517983934">ॲप्लिकेशन</translation>
 <translation id="3944740393230681990">उपोद्घात</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">कव्हर</translation>
 <translation id="4757246831282535685">टॅब पॅनल</translation>
 <translation id="479989351350248267">शोध</translation>
+<translation id="4912200001568447310">सध्याचा आयटम</translation>
 <translation id="4912536737030637138">ग्रंथसूची नोंद</translation>
 <translation id="492244087561876220">टिप्पणी</translation>
+<translation id="4924138096460353083">अनिश्चित</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> निवडले आहे</translation>
 <translation id="5022314756875057021">पंक्तींचा गट</translation>
 <translation id="5034860022980953847">प्रगती सूचक</translation>
 <translation id="5093189678851173835">बोधवाक्य</translation>
+<translation id="509897012892853729">निळे चॅनल</translation>
 <translation id="512758898067543763">पंक्ती शीर्षलेख</translation>
 <translation id="5143125788380636750">उपसंहार</translation>
 <translation id="5406322316791861025">आकृती</translation>
+<translation id="5425179576310518467">सध्याची तारीख</translation>
 <translation id="5453733299334684579">ट्री आयटम</translation>
 <translation id="546643433018805598">सबस्क्रिप्ट</translation>
 <translation id="5476505524087279545">चौकटीतली खूण काढा</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">बटण</translation>
 <translation id="5693537480074347398">सुपरस्क्रिप्ट</translation>
 <translation id="576709008726043716">परिचय</translation>
+<translation id="5860033963881614850">बंद</translation>
 <translation id="591047860372322273">सर्च बॉक्स</translation>
+<translation id="5916664084637901428">सुरू</translation>
 <translation id="5987525920412732405">स्पिन बटण</translation>
 <translation id="6023896073578205740">सूची बॉक्स</translation>
 <translation id="6119846243427417423">सक्रिय करा</translation>
 <translation id="6150588977291308318">ग्रंथसूची</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6166809985690652833">अंतिम शब्द</translation>
+<translation id="6212595056017402527">सध्याचे पेज</translation>
 <translation id="6213469881011901533">शब्दावली</translation>
+<translation id="6281588256137006900">फिकटपणा</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">श्रेयनिर्देश</translation>
 <translation id="648732519525291180">वेळ निवडक</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">ब्लॉककोट</translation>
 <translation id="693476918119313863">हेडर</translation>
 <translation id="6981594929165378967">घालणे</translation>
+<translation id="698788488269350478">विस्तार केला.</translation>
 <translation id="7034405885550056553">सूचना</translation>
+<translation id="7102274145889307184">सध्याचे स्थान</translation>
 <translation id="7139483182332611405">प्रस्तावना</translation>
 <translation id="7198226213493847604">मेनू पॉप अप बटण</translation>
 <translation id="7214187073215825913">आशयाची माहिती</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">अनुक्रमणिका</translation>
 <translation id="7740050170769002709">HTML सामुग्री</translation>
 <translation id="7802800022689234070">त्रिकोण प्रकटन</translation>
+<translation id="7852167693871241274">ह्यू स्लायडर</translation>
 <translation id="7891486169920085145">विभाजक</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> निवडलेले नाही</translation>
 <translation id="8034303206267677282">महत्त्वाचा</translation>
 <translation id="8053789581856978548">मजकूर फील्ड दर्शवा</translation>
 <translation id="8057695513531652401">सूचना</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">प्रकरण</translation>
 <translation id="8851136666856101339">मुख्य</translation>
 <translation id="8861621546968757188">डायलॉग पॉप अप बटण</translation>
+<translation id="8889402386540077796">रंगछटा</translation>
+<translation id="894736920926684893">फॉरमॅट टॉगलर</translation>
 <translation id="9002566407876343676">उघडा</translation>
 <translation id="901834265349196618">ईमेल</translation>
 <translation id="9048119486235211610">नेव्हिगेशन</translation>

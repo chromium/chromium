@@ -6,15 +6,11 @@
 <translation id="1142001580032786438">Vis ukevelger</translation>
 <translation id="1171774979989969504">Skriv inn en e-postadresse.</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
-<translation id="1306460908038601864">Av</translation>
 <translation id="1311894908970423688">Verdien må være <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="1480676835519562650">node med flere mulige valg – <ph name="SELECTED" /> av <ph name="COUNT" /> er valgt.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Denne måneden</translation>
 <translation id="1637811476055996098">Velg filer</translation>
 <translation id="1680090928918677457">Bruk kameraet</translation>
-<translation id="1681022320378710418">klokkeslettet nå</translation>
-<translation id="1727839386348365796">Pipette</translation>
 <translation id="1729654308190250600">Skriv inn en ikke-tom e-postadresse.</translation>
 <translation id="1758486001363313524">Andre</translation>
 <translation id="1787192514241997742">total tid: <ph name="REMAINING_TIME" /></translation>
@@ -24,7 +20,6 @@
 <translation id="1938124657309484470">Verdien må være <ph name="MAXIMUM_DATE_OR_TIME" /> eller før.</translation>
 <translation id="1946271899482435442">Vis datovelgeren</translation>
 <translation id="1993104285338243655">Byttet til speiling</translation>
-<translation id="2031987842108996681">Rød kanal</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />» er brukt på feil sted i «<ph name="INVALIDDOMAIN" />».</translation>
 <translation id="2068711044993563745">Minimumsverdien (<ph name="MINIMUM" />) må være lavere enn maksimumsverdien (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">I dag</translation>
@@ -37,11 +32,9 @@
 <translation id="245932805758469625">antall sekunder med video som gjenstår</translation>
 <translation id="248395913932153421">Dag</translation>
 <translation id="2507943997699731163">Vennligst fyll ut dette feltet.</translation>
-<translation id="2530182415807757784">node med flere mulige valg – ingen er valgt.</translation>
 <translation id="2561842179657104141">vis flere mediakontroller</translation>
 <translation id="2572483411312390101">spill av</translation>
 <translation id="2613802280814924224">Skriv inn en gyldig verdi. Den nærmeste, gyldige verdien er <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Grønn kanal</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2723001399770238859">lyd</translation>
 <translation id="2746543609216772311">Verdien må være <ph name="MINIMUM_DATE_OR_TIME" /> eller senere.</translation>
@@ -51,9 +44,7 @@
 <translation id="3053226512517284904">vis menyen for lydbeskrivelser</translation>
 <translation id="3075154866155599887">Skriv inn en gyldig verdi. Feltet er ufullstendig, eller har en ugyldig dato.</translation>
 <translation id="310520048233152454">Skriv inn en nettadresse.</translation>
-<translation id="3220661731597678625">gjeldende trinn</translation>
 <translation id="3321030238473337787">Avspillingshastighet</translation>
-<translation id="3329013043687509092">Metning</translation>
 <translation id="3450233048674729344">Verdien må være mindre enn eller lik <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Avslutt bilde-i-bilde</translation>
@@ -61,7 +52,6 @@
 <translation id="3822383571486410024">Du må forlenge denne teksten til <ph name="MIN_CHARACTERS" /> tegn eller mer (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="383465348367842624">En del etterfulgt av «<ph name="ATSIGN" />» kan ikke inneholde symbolet «<ph name="INVALIDCHARACTER" />».</translation>
 <translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
-<translation id="3914173277599553213">Påkrevd</translation>
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
 <translation id="4103419683916926126">Millisekunder</translation>
 <translation id="4201051445878709314">Se forrige måned</translation>
@@ -74,18 +64,14 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4792862212177489858">Del posisjon</translation>
 <translation id="4812940957355064477">Skriv inn et tall.</translation>
-<translation id="4912200001568447310">gjeldende element</translation>
 <translation id="4915360478455618802">Vis klokkeslettvelger</translation>
-<translation id="4924138096460353083">ukjent</translation>
 <translation id="49269513399674318">Bruk mikrofonen</translation>
 <translation id="4950364064308314478">Vis lokal dato- og klokkeslettvelger</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> er valgt</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
 <translation id="4992066212339426712">Slå på lyden</translation>
 <translation id="49969490063480558">Skriv inn en del etterfulgt av «<ph name="ATSIGN" />». «<ph name="INVALIDADDRESS" />» er ufullstendig.</translation>
 <translation id="5037575921016181960">Sterkt passord</translation>
 <translation id="5090250355906949916">videotidslinje</translation>
-<translation id="509897012892853729">Blå kanal</translation>
 <translation id="5117590920725113268">Se neste måned</translation>
 <translation id="5164977714490026579">Verdien må være større enn eller lik <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
@@ -96,7 +82,6 @@
 <translation id="5334352251556557839">Kunne ikke spille innholdet.</translation>
 <translation id="537648784377940524">Minimumsdatoen (<ph name="MIN_DATE_OR_TIME" />) må komme før maksimumsdatoen (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5378437566635403538">vises; en dialogboks er åpnet.</translation>
-<translation id="5425179576310518467">datoen i dag</translation>
 <translation id="5466621249238537318">Velg én eller flere filer.</translation>
 <translation id="5468998798572797635">avslutt fullskjerm</translation>
 <translation id="5514612371225420585">Fil på enheten</translation>
@@ -108,18 +93,14 @@
 <translation id="57838592816432529">Kutt lyden</translation>
 <translation id="5786442179789148008">vis meny for avspillingshastighet</translation>
 <translation id="5787939484346677755">vises; alternativer for autofullføring er tilgjengelig.</translation>
-<translation id="5860033963881614850">Av</translation>
 <translation id="588258955323874662">Fullskjerm</translation>
 <translation id="5888666972993069672">Caster nå til <ph name="DEVICE_FRIENDLY_NAME" /></translation>
-<translation id="5916664084637901428">På</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
 <translation id="5966707198760109579">Uke</translation>
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6011459053400940133">glidebryter for volum</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6165053282446038410">vises; <ph name="COUNT" /> alternativer for autofullføring er tilgjengelig.</translation>
-<translation id="6212595056017402527">gjeldende side</translation>
-<translation id="6281588256137006900">Lyshet</translation>
 <translation id="6310801910862476708">Avslutt bilde-i-bilde</translation>
 <translation id="6398862346408813489">Se panelet for valg av måned</translation>
 <translation id="6404546809543547843">lydtidslinje</translation>
@@ -139,11 +120,9 @@
 <translation id="6843725295806269523">kutt lyd</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">last ned medier</translation>
-<translation id="698788488269350478">vises.</translation>
 <translation id="6989848892321993519">Øk lengden på denne teksten med minst <ph name="MIN_CHARACTERS" /> tegn (du bruker for øyeblikket 1 tegn).</translation>
 <translation id="7080893216867146095">Deling av posisjon er tillatt</translation>
 <translation id="709897737746224366">Sørg for samsvar med det forespurte formatet.</translation>
-<translation id="7102274145889307184">nåværende posisjon</translation>
 <translation id="7134810312945846184">Bruk mikrofonen og kameraet</translation>
 <translation id="7263440858009898357">Velg en artikkel i listen.</translation>
 <translation id="7320576522385648310">bufring</translation>
@@ -157,10 +136,8 @@
 <translation id="775297008183122718">Ugyldig oppføring</translation>
 <translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">stans midlertidig</translation>
-<translation id="7852167693871241274">Glidebryter for fargetone</translation>
 <translation id="7888071071722539607">Inkluder en «<ph name="ATSIGN" />» i e-postadressen. «<ph name="INVALIDADDRESS" />» mangler en «<ph name="ATSIGN" />».</translation>
 <translation id="795667975304826397">Ingen fil valgt</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> er ikke valgt</translation>
 <translation id="8117451130807776954">Denne uken</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">åååå</translation>
@@ -180,9 +157,7 @@
 <translation id="8750798805984357768">Velg ett av følgende alternativer.</translation>
 <translation id="8845239796550121995">Caster til TV-en nå</translation>
 <translation id="8875657656876809964">Feil ved videoavspilling</translation>
-<translation id="8889402386540077796">Fargetone</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="894736920926684893">Formatvelger</translation>
 <translation id="8987927404178983737">Måned</translation>
 <translation id="901493112792887934">gjeldende tid i sekunder</translation>
 <translation id="9093215626363556771">avslutt bilde-i-bilde</translation>

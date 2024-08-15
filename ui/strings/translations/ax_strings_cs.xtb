@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">posuvník</translation>
 <translation id="1211441953136645838">koncová poznámka</translation>
 <translation id="1281252709823657822">dialogové okno</translation>
+<translation id="1306460908038601864">Vypnuto</translation>
 <translation id="1335095011850992622">poděkování</translation>
 <translation id="1342835525016946179">čl</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="1480676835519562650">možnost výběru více možností, vybráno <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">oblast</translation>
 <translation id="1650423536718072820">citace</translation>
+<translation id="1681022320378710418">aktuální čas</translation>
+<translation id="1727839386348365796">Kapátko</translation>
 <translation id="1821985195704844674">stromová mřížka</translation>
 <translation id="1823704031293214298">zápatí stránky</translation>
 <translation id="1838681052457320736">dialogové okno upozornění</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">smazání</translation>
 <translation id="1907737156431278478">příklad</translation>
 <translation id="1930711995431081526">stav</translation>
+<translation id="2031987842108996681">Kanál červené</translation>
 <translation id="2158401438286456825">seznam stránek</translation>
 <translation id="2291999235780842123">zaškrtávací políčko</translation>
 <translation id="2311842470354187719">konec stránky</translation>
 <translation id="2335594187091864976">výběr data a času</translation>
 <translation id="2508569020611168319">seznam karet</translation>
+<translation id="2530182415807757784">možnost výběru více možností, nic nevybráno.</translation>
+<translation id="2634240155926812724">Kanál zelené</translation>
 <translation id="2657045182931379222">grafický objekt</translation>
 <translation id="2674318244760992338">zápatí</translation>
 <translation id="2723001399770238859">zvuk</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">pozn</translation>
 <translation id="3175736971608411871">časovač</translation>
 <translation id="3199563858620722075">rozbalovací seznam</translation>
+<translation id="3220661731597678625">aktuální krok</translation>
+<translation id="3329013043687509092">Sytost</translation>
 <translation id="3486220673238053218">definice</translation>
 <translation id="3557673793733683882">nadpis <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">výběr týdne</translation>
 <translation id="3706100364254443312">přepínač</translation>
 <translation id="3808586225841795776">výraz</translation>
+<translation id="3914173277599553213">Vyžadováno</translation>
 <translation id="3920932319529768807">závěr</translation>
 <translation id="3924558731517983934">aplikace</translation>
 <translation id="3944740393230681990">prolog</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">titulní strana</translation>
 <translation id="4757246831282535685">panel karty</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4912200001568447310">aktuální položka</translation>
 <translation id="4912536737030637138">bibliografická položka</translation>
 <translation id="492244087561876220">komentář</translation>
+<translation id="4924138096460353083">neurčité</translation>
+<translation id="4971739861736909480">Vybráno: <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">skupina řádků</translation>
 <translation id="5034860022980953847">indikátor průběhu</translation>
 <translation id="5093189678851173835">nápis</translation>
+<translation id="509897012892853729">Kanál modré</translation>
 <translation id="512758898067543763">záhlaví řádku</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5406322316791861025">číslice</translation>
+<translation id="5425179576310518467">aktuální datum</translation>
 <translation id="5453733299334684579">položka stromu</translation>
 <translation id="546643433018805598">dolní index</translation>
 <translation id="5476505524087279545">odstranit zaškrtnutí</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">tlačítko</translation>
 <translation id="5693537480074347398">horní index</translation>
 <translation id="576709008726043716">úvod</translation>
+<translation id="5860033963881614850">Vypnuto</translation>
 <translation id="591047860372322273">vyhledávací pole</translation>
+<translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5987525920412732405">číselník</translation>
 <translation id="6023896073578205740">seznam</translation>
 <translation id="6119846243427417423">aktivovat</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">měřič</translation>
 <translation id="6166809985690652833">doslov</translation>
+<translation id="6212595056017402527">aktuální stránka</translation>
 <translation id="6213469881011901533">glosář</translation>
+<translation id="6281588256137006900">Světlost</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">poděkování</translation>
 <translation id="648732519525291180">výběr času</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">bloková citace</translation>
 <translation id="693476918119313863">záhlaví</translation>
 <translation id="6981594929165378967">vložení</translation>
+<translation id="698788488269350478">rozbaleno.</translation>
 <translation id="7034405885550056553">návrh</translation>
+<translation id="7102274145889307184">aktuální poloha</translation>
 <translation id="7139483182332611405">předmluva</translation>
 <translation id="7198226213493847604">vyskakovací tlačítko nabídky</translation>
 <translation id="7214187073215825913">informace o obsahu</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">rejstřík</translation>
 <translation id="7740050170769002709">Obsah ve formátu HTML</translation>
 <translation id="7802800022689234070">tlačítko k zobrazení skrytého obsahu</translation>
+<translation id="7852167693871241274">Posuvník odstínu</translation>
 <translation id="7891486169920085145">rozdělovač</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> – nevybráno</translation>
 <translation id="8034303206267677282">silné</translation>
 <translation id="8053789581856978548">pole pro vyhledání textu</translation>
 <translation id="8057695513531652401">oznámení</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">kapitola</translation>
 <translation id="8851136666856101339">hlavní</translation>
 <translation id="8861621546968757188">vyskakovací tlačítko dialogového okna</translation>
+<translation id="8889402386540077796">Odstín</translation>
+<translation id="894736920926684893">Přepínač formátu</translation>
 <translation id="9002566407876343676">otevřít</translation>
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9048119486235211610">navigace</translation>

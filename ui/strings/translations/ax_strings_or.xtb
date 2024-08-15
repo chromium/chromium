@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">ସ୍ଲାଇଡର୍</translation>
 <translation id="1211441953136645838">ଶେଷ ଟିପ୍ପଣୀ</translation>
 <translation id="1281252709823657822">ଡାୟଲଗ୍</translation>
+<translation id="1306460908038601864">ବନ୍ଦ ଅଛି</translation>
 <translation id="1335095011850992622">କ୍ରେଡିଟ୍</translation>
 <translation id="1342835525016946179">ଆର୍ଟିକଲ୍‍</translation>
 <translation id="1359897965706325498">ବ୍ୟାନର୍</translation>
+<translation id="1480676835519562650">ଏକାଧିକ ଚୟନ କରାଯାଇପାରୁଥିବା, <ph name="COUNT" />ଟିରୁ <ph name="SELECTED" />ଟି ଚୟନ କରାଯାଇଛି ।</translation>
 <translation id="1589122976691792535">ଅଞ୍ଚଳ</translation>
 <translation id="1650423536718072820">ପୁଲ୍‌କୋଟ୍</translation>
+<translation id="1681022320378710418">ବର୍ତ୍ତମାନର ସମୟ</translation>
+<translation id="1727839386348365796">ଆଇଡ୍ରପର୍</translation>
 <translation id="1821985195704844674">ଟ୍ରୀ ଗ୍ରିଡ୍</translation>
 <translation id="1823704031293214298">ପୃଷ୍ଠାର ଫୁଟର୍</translation>
 <translation id="1838681052457320736">ଆଲର୍ଟ ଡାଏଲଗ</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ଡିଲିଟ୍ କରିବା ପ୍ରକ୍ରିୟା</translation>
 <translation id="1907737156431278478">ଉଦାହରଣ</translation>
 <translation id="1930711995431081526">ସ୍ଥିତି</translation>
+<translation id="2031987842108996681">ଲାଲ୍ ଚ୍ୟାନେଲ୍</translation>
 <translation id="2158401438286456825">ପୃଷ୍ଠା ତାଲିକା</translation>
 <translation id="2291999235780842123">ଚେକ୍‌ବକ୍ସ</translation>
 <translation id="2311842470354187719">ପେଜ୍ ବ୍ରେକ୍</translation>
 <translation id="2335594187091864976">ତାରିଖ ଓ ସମୟ ପିକର୍</translation>
 <translation id="2508569020611168319">ଟାବ୍‍ ତାଲିକା</translation>
+<translation id="2530182415807757784">ଏକାଧିକ ଚୟନ କରାଯାଇପାରୁଥିବା, କିଛି ଚୟନ କରାଯାଇନାହିଁ।</translation>
+<translation id="2634240155926812724">ସବୁଜ ଚ୍ୟାନେଲ୍</translation>
 <translation id="2657045182931379222">ଗ୍ରାଫିକ୍ସ ଅବଜେକ୍ଟ</translation>
 <translation id="2674318244760992338">ଫୁଟର୍</translation>
 <translation id="2723001399770238859">ଅଡିଓ</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">ଟିପ୍ପଣୀ</translation>
 <translation id="3175736971608411871">ଟାଇମର୍‌</translation>
 <translation id="3199563858620722075">କମ୍ୱୋ ବକ୍ସ</translation>
+<translation id="3220661731597678625">ବର୍ତ୍ତମାନର ଷ୍ଟେପ୍</translation>
+<translation id="3329013043687509092">ସମ୍ପୃକ୍ତି</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3557673793733683882">ଶୀର୍ଷକ <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">ସପ୍ତାହ ପିକର୍</translation>
 <translation id="3706100364254443312">ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="3808586225841795776">ଶଦ୍ଦ</translation>
+<translation id="3914173277599553213">ଆବଶ୍ୟକ</translation>
 <translation id="3920932319529768807">ସମାପ୍ତି</translation>
 <translation id="3924558731517983934">ଆପ୍ଲିକେସନ୍</translation>
 <translation id="3944740393230681990">ଭୂମିକା</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">କଭର୍</translation>
 <translation id="4757246831282535685">ଟାବ୍ ପ୍ୟାନେଲ୍</translation>
 <translation id="479989351350248267">ଖୋଜନ୍ତୁ</translation>
+<translation id="4912200001568447310">ବର୍ତ୍ତମାନର ଆଇଟମ୍</translation>
 <translation id="4912536737030637138">ଗ୍ରନ୍ଥସୂଚୀ ଏଣ୍ଟ୍ରି</translation>
 <translation id="492244087561876220">ମନ୍ତବ୍ୟ</translation>
+<translation id="4924138096460353083">ଅନିର୍ଦ୍ଧାରିତ</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5022314756875057021">ଧାଡ଼ିର ଗୋଷ୍ଠୀ</translation>
 <translation id="5034860022980953847">ପ୍ରଗତି ସୂଚକ</translation>
 <translation id="5093189678851173835">ଖୋଦିତ ଲେଖା</translation>
+<translation id="509897012892853729">ନୀଳ ଚ୍ୟାନେଲ୍</translation>
 <translation id="512758898067543763">ଧାଡ଼ି ଶୀର୍ଷକ</translation>
 <translation id="5143125788380636750">ଉପସଂହାର</translation>
 <translation id="5406322316791861025">ଆକାର</translation>
+<translation id="5425179576310518467">ବର୍ତ୍ତମାନର ତାରିଖ</translation>
 <translation id="5453733299334684579">ଟ୍ରୀ ଆଇଟମ୍</translation>
 <translation id="546643433018805598">ସବସ୍କ୍ରିପ୍ଟ</translation>
 <translation id="5476505524087279545">ଯାଞ୍ଚ ରହିତ</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">ବଟନ୍‌</translation>
 <translation id="5693537480074347398">ସୁପରସ୍କ୍ରିପ୍ଟ</translation>
 <translation id="576709008726043716">ପରିଚୟ</translation>
+<translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="591047860372322273">ସର୍ଚ୍ଚ ବକ୍ସ</translation>
+<translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5987525920412732405">ସ୍ପିନ୍‌ ବଟନ୍‌</translation>
 <translation id="6023896073578205740">ତାଲିକା ବାକ୍ସ</translation>
 <translation id="6119846243427417423">କ୍ରିୟାଶୀଳ କରନ୍ତୁ</translation>
 <translation id="6150588977291308318">ଗ୍ରନ୍ଥସୂଚୀ</translation>
 <translation id="6164829606128959761">ମିଟର୍</translation>
 <translation id="6166809985690652833">ଉପସଂହାର</translation>
+<translation id="6212595056017402527">ବର୍ତ୍ତମାନର ପୃଷ୍ଠା</translation>
 <translation id="6213469881011901533">ଶଦ୍ଦକୋଷ</translation>
+<translation id="6281588256137006900">ହାଲୁକା ରଙ୍ଗ</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">ସ୍ୱୀକୃତିଗୁଡ଼ିକ</translation>
 <translation id="648732519525291180">ସମୟ ପିକର୍</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">ବ୍ଲକ୍‌କୋଟ୍</translation>
 <translation id="693476918119313863">ହେଡର୍</translation>
 <translation id="6981594929165378967">ଭର୍ତ୍ତି କରିବା</translation>
+<translation id="698788488269350478">ବିସ୍ତାରିତ ହୋଇଛି।</translation>
 <translation id="7034405885550056553">ପ୍ରସ୍ତାବ</translation>
+<translation id="7102274145889307184">ବର୍ତ୍ତମାନର ଲୋକେସନ୍</translation>
 <translation id="7139483182332611405">ଭୂମିକା</translation>
 <translation id="7198226213493847604">ମେନୁ ପପ୍ ଅପ୍ ବଟନ୍</translation>
 <translation id="7214187073215825913">ବିଷୟବସ୍ତୁର ସୂଚନା</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">ସୂଚୀ</translation>
 <translation id="7740050170769002709">HTML ବିଷୟବସ୍ତୁ</translation>
 <translation id="7802800022689234070">ପ୍ରକାଶ ତ୍ରିଭୁଜ</translation>
+<translation id="7852167693871241274">ହ୍ୟୁ ସ୍ଲାଇଡର୍</translation>
 <translation id="7891486169920085145">ସ୍ପ୍ଲିଟର୍</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> ଚୟନ କରାଯାଇନାହିଁ</translation>
 <translation id="8034303206267677282">ଦୃଢ଼</translation>
 <translation id="8053789581856978548">ଟେକ୍ସଟ୍‍ ଫିଲ୍ଡ ଖୋଜନ୍ତୁ</translation>
 <translation id="8057695513531652401">ବିଜ୍ଞପ୍ତି</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">ଅଧ୍ୟାୟ</translation>
 <translation id="8851136666856101339">ମୁଖ୍ୟ</translation>
 <translation id="8861621546968757188">ଡାଏଲଗ୍ ପପ୍ ଅପ୍ ବଟନ୍</translation>
+<translation id="8889402386540077796">ରଙ୍ଗ</translation>
+<translation id="894736920926684893">ଫର୍ମାଟ ଟୋଗଲର୍</translation>
 <translation id="9002566407876343676">ଖୋଲନ୍ତୁ</translation>
 <translation id="901834265349196618">ଇମେଲ୍</translation>
 <translation id="9048119486235211610">ନାଭିଗେସନ୍</translation>

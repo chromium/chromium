@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">شريط تمرير</translation>
 <translation id="1211441953136645838">تعليق ختامي</translation>
 <translation id="1281252709823657822">مربع حوار</translation>
+<translation id="1306460908038601864">غير مفعّل</translation>
 <translation id="1335095011850992622">إسهامات</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">إعلان بانر</translation>
+<translation id="1480676835519562650">اختيار متعدد، تم اختيار <ph name="SELECTED" /> من أصل <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">منطقة</translation>
 <translation id="1650423536718072820">اقتباس مستمد</translation>
+<translation id="1681022320378710418">الوقت الحالي</translation>
+<translation id="1727839386348365796">اختيار اللون</translation>
 <translation id="1821985195704844674">شبكة متفرعة</translation>
 <translation id="1823704031293214298">تذييل الصفحة</translation>
 <translation id="1838681052457320736">مربّع حوار لتنبيه</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">حذف</translation>
 <translation id="1907737156431278478">مثال</translation>
 <translation id="1930711995431081526">الحالة</translation>
+<translation id="2031987842108996681">درجات اللون الأحمر</translation>
 <translation id="2158401438286456825">قائمة صفحات</translation>
 <translation id="2291999235780842123">مربع اختيار</translation>
 <translation id="2311842470354187719">فاصل صفحة</translation>
 <translation id="2335594187091864976">منتقي التاريخ والوقت</translation>
 <translation id="2508569020611168319">قائمة علامات التبويب</translation>
+<translation id="2530182415807757784">اختيار متعدد، لم يتم الاختيار.</translation>
+<translation id="2634240155926812724">درجات اللون الأخضر</translation>
 <translation id="2657045182931379222">كائن رسومي</translation>
 <translation id="2674318244760992338">تذييل</translation>
 <translation id="2723001399770238859">الصوت</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">الموقّت</translation>
 <translation id="3199563858620722075">مربع تحرير وسرد</translation>
+<translation id="3220661731597678625">الخطوة الحالية</translation>
+<translation id="3329013043687509092">تشبع اللون</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3557673793733683882">عنوان <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">منتقي الأسبوع</translation>
 <translation id="3706100364254443312">تبديل</translation>
 <translation id="3808586225841795776">عبارة</translation>
+<translation id="3914173277599553213">مطلوبة</translation>
 <translation id="3920932319529768807">خاتمة</translation>
 <translation id="3924558731517983934">التطبيق</translation>
 <translation id="3944740393230681990">فاتحة</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">غلاف</translation>
 <translation id="4757246831282535685">لوحة علامة التبويب</translation>
 <translation id="479989351350248267">بحث</translation>
+<translation id="4912200001568447310">العنصر الحالي</translation>
 <translation id="4912536737030637138">إدخال قائمة مراجع</translation>
 <translation id="492244087561876220">تعليق</translation>
+<translation id="4924138096460353083">قيمة غير محدَّدة</translation>
+<translation id="4971739861736909480">تم اختيار <ph name="ACCNAME" />.</translation>
 <translation id="5022314756875057021">مجموعة من الصفوف</translation>
 <translation id="5034860022980953847">مؤشر التقدم</translation>
 <translation id="5093189678851173835">عبارة مقتبسة</translation>
+<translation id="509897012892853729">درجات اللون الأزرق</translation>
 <translation id="512758898067543763">عنوان الصف</translation>
 <translation id="5143125788380636750">تتِّمة</translation>
 <translation id="5406322316791861025">شكل</translation>
+<translation id="5425179576310518467">التاريخ الحالي</translation>
 <translation id="5453733299334684579">عنصر متفرع</translation>
 <translation id="546643433018805598">نص منخفض</translation>
 <translation id="5476505524087279545">إزالة علامة الاختيار</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">زر</translation>
 <translation id="5693537480074347398">نص مرتفع</translation>
 <translation id="576709008726043716">مقدمة</translation>
+<translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="591047860372322273">مربع البحث</translation>
+<translation id="5916664084637901428">مفعّل</translation>
 <translation id="5987525920412732405">زر الدوران</translation>
 <translation id="6023896073578205740">مربع القائمة</translation>
 <translation id="6119846243427417423">تفعيل</translation>
 <translation id="6150588977291308318">قائمة مراجع</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6166809985690652833">كلمة ختامية</translation>
+<translation id="6212595056017402527">الصفحة الحالية</translation>
 <translation id="6213469881011901533">مسرد مصطلحات</translation>
+<translation id="6281588256137006900">الإضاءة</translation>
 <translation id="6281763101136022427">‏عنوان URL</translation>
 <translation id="6453774872122745852">شكر وتقدير</translation>
 <translation id="648732519525291180">منتقي الوقت</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">علامة اقتباس فقرة</translation>
 <translation id="693476918119313863">عنوان</translation>
 <translation id="6981594929165378967">إدراج</translation>
+<translation id="698788488269350478">موسّع</translation>
 <translation id="7034405885550056553">اقتراح</translation>
+<translation id="7102274145889307184">الموقع الجغرافي الحالي</translation>
 <translation id="7139483182332611405">تمهيد</translation>
 <translation id="7198226213493847604">زر قائمة منبثقة</translation>
 <translation id="7214187073215825913">معلومات المحتوى</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">فهرس</translation>
 <translation id="7740050170769002709">‏محتوى HTML</translation>
 <translation id="7802800022689234070">مثلث الإفصاح</translation>
+<translation id="7852167693871241274">شريط تمرير تدرُّج الألوان</translation>
 <translation id="7891486169920085145">أداة التقسيم</translation>
+<translation id="7962328325860248200">لم يتم اختيار <ph name="ACCNAME" />.</translation>
 <translation id="8034303206267677282">قوية</translation>
 <translation id="8053789581856978548">الحقل النصي للبحث</translation>
 <translation id="8057695513531652401">ملاحظة</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">فصل</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">زر مربع حوار منبثق</translation>
+<translation id="8889402386540077796">تدرج اللون</translation>
+<translation id="894736920926684893">مُبدِّل التنسيق</translation>
 <translation id="9002566407876343676">الفتح</translation>
 <translation id="901834265349196618">بريد إلكتروني</translation>
 <translation id="9048119486235211610">تنقل</translation>

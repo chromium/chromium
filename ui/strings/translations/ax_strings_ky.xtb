@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">слайдер</translation>
 <translation id="1211441953136645838">түшүндүрмө</translation>
 <translation id="1281252709823657822">диалог</translation>
+<translation id="1306460908038601864">Өчүк</translation>
 <translation id="1335095011850992622">китептин чыгышы жөнүндөгү маалыматтар</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">баннер</translation>
+<translation id="1480676835519562650">бир нечесин тандаса болот, <ph name="COUNT" /> ичинен <ph name="SELECTED" /> тандалды.</translation>
 <translation id="1589122976691792535">аймак</translation>
 <translation id="1650423536718072820">үзүндү</translation>
+<translation id="1681022320378710418">учурдагы убакыт</translation>
+<translation id="1727839386348365796">Пипетка</translation>
 <translation id="1821985195704844674">дарак торчосу</translation>
 <translation id="1823704031293214298">беттин төмөнкү колонтитулу</translation>
 <translation id="1838681052457320736">эскертүү диалогу</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">жок кылуу</translation>
 <translation id="1907737156431278478">мисал</translation>
 <translation id="1930711995431081526">статус</translation>
+<translation id="2031987842108996681">Кызыл канал</translation>
 <translation id="2158401438286456825">барактардын тизмеси</translation>
 <translation id="2291999235780842123">белгилөө кутучасы</translation>
 <translation id="2311842470354187719">барактардын үзүлгөн жери</translation>
 <translation id="2335594187091864976">күн жана убакыт тандагыч</translation>
 <translation id="2508569020611168319">өтмөк тизмеси</translation>
+<translation id="2530182415807757784">бир нечесин тандаса болот, тандалган жок.</translation>
+<translation id="2634240155926812724">Жашыл канал</translation>
 <translation id="2657045182931379222">графикалык объект</translation>
 <translation id="2674318244760992338">төмөнкү колонтитул</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">таймер</translation>
 <translation id="3199563858620722075">айкалыштырылган кутуча</translation>
+<translation id="3220661731597678625">учурдагы кадам</translation>
+<translation id="3329013043687509092">Каныктыруу</translation>
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3557673793733683882"><ph name="HEADING_LEVEL" />-башкы аталыш</translation>
 <translation id="3670698553867754311">апта тандагыч</translation>
 <translation id="3706100364254443312">которуштуруу</translation>
 <translation id="3808586225841795776">термин</translation>
+<translation id="3914173277599553213">Талап кылынат</translation>
 <translation id="3920932319529768807">корутунду</translation>
 <translation id="3924558731517983934">колдонмо</translation>
 <translation id="3944740393230681990">пролог</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">мукаба</translation>
 <translation id="4757246831282535685">өтмөк тактасы</translation>
 <translation id="479989351350248267">издөө</translation>
+<translation id="4912200001568447310">учурдагы элемент</translation>
 <translation id="4912536737030637138">библиографиялык жазуу</translation>
 <translation id="492244087561876220">пикир</translation>
+<translation id="4924138096460353083">белгисиз</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> тандалды</translation>
 <translation id="5022314756875057021">катарлардын тобу</translation>
 <translation id="5034860022980953847">илгерилөөнү көрсөткүч</translation>
 <translation id="5093189678851173835">эпиграф</translation>
+<translation id="509897012892853729">Көк канал</translation>
 <translation id="512758898067543763">саптын башкы аталышы</translation>
 <translation id="5143125788380636750">эпилог</translation>
 <translation id="5406322316791861025">сөлөкөт</translation>
+<translation id="5425179576310518467">учурдагы күн</translation>
 <translation id="5453733299334684579">дарактагы нерсе</translation>
 <translation id="546643433018805598">төмөнкү индекс</translation>
 <translation id="5476505524087279545">белгилебөө</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">баскыч</translation>
 <translation id="5693537480074347398">жогорку индекс</translation>
 <translation id="576709008726043716">киришүү</translation>
+<translation id="5860033963881614850">Өчүк</translation>
 <translation id="591047860372322273">издөө кутучасы</translation>
+<translation id="5916664084637901428">Күйүк</translation>
 <translation id="5987525920412732405">тегеретүү баскычы</translation>
 <translation id="6023896073578205740">тизме кутусу</translation>
 <translation id="6119846243427417423">жандыруу</translation>
 <translation id="6150588977291308318">библиография</translation>
 <translation id="6164829606128959761">ченегич</translation>
 <translation id="6166809985690652833">соңку сөз</translation>
+<translation id="6212595056017402527">учурдагы бет</translation>
 <translation id="6213469881011901533">глоссарий</translation>
+<translation id="6281588256137006900">Жарыктык</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">ыраазычылыктар</translation>
 <translation id="648732519525291180">убакыт тандагыч</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">цитата</translation>
 <translation id="693476918119313863">аталышы</translation>
 <translation id="6981594929165378967">киргизүү</translation>
+<translation id="698788488269350478">жайылып көрсөтүлдү.</translation>
 <translation id="7034405885550056553">сунуш</translation>
+<translation id="7102274145889307184">учурдагы жер</translation>
 <translation id="7139483182332611405">кириш сөз</translation>
 <translation id="7198226213493847604">менюнун калкыма терезе баскычы</translation>
 <translation id="7214187073215825913">мазмун маалыматы</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">индекс</translation>
 <translation id="7740050170769002709">HTML мазмуну</translation>
 <translation id="7802800022689234070">ачып көрсөтүүчү үч бурчтук</translation>
+<translation id="7852167693871241274">Тандалган түстөрдүн сыдырмасы</translation>
 <translation id="7891486169920085145">бөлгүч</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> тандалган жок</translation>
 <translation id="8034303206267677282">күчтүү</translation>
 <translation id="8053789581856978548">издөө текстинин талаасы</translation>
 <translation id="8057695513531652401">эскертүү</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">бөлүм</translation>
 <translation id="8851136666856101339">башкы</translation>
 <translation id="8861621546968757188">диалогдун калкыма терезе баскычы</translation>
+<translation id="8889402386540077796">Түс</translation>
+<translation id="894736920926684893">Өчүрүп күйгүзүүчү баскычты форматтоо</translation>
 <translation id="9002566407876343676">ачуу</translation>
 <translation id="901834265349196618">электрондук почта</translation>
 <translation id="9048119486235211610">чабыттоо</translation>

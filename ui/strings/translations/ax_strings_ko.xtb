@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">슬라이더</translation>
 <translation id="1211441953136645838">미주</translation>
 <translation id="1281252709823657822">대화상자</translation>
+<translation id="1306460908038601864">꺼짐</translation>
 <translation id="1335095011850992622">저작권 표시</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">배너</translation>
+<translation id="1480676835519562650">여러 항목 선택 가능, <ph name="COUNT" />개 중 <ph name="SELECTED" />개 선택됨.</translation>
 <translation id="1589122976691792535">지역</translation>
 <translation id="1650423536718072820">인용문</translation>
+<translation id="1681022320378710418">현재 시간</translation>
+<translation id="1727839386348365796">스포이트</translation>
 <translation id="1821985195704844674">트리 격자</translation>
 <translation id="1823704031293214298">페이지 바닥글</translation>
 <translation id="1838681052457320736">알림 대화상자</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">삭제</translation>
 <translation id="1907737156431278478">예시</translation>
 <translation id="1930711995431081526">상태</translation>
+<translation id="2031987842108996681">빨간색 채널</translation>
 <translation id="2158401438286456825">페이지 목록</translation>
 <translation id="2291999235780842123">체크박스</translation>
 <translation id="2311842470354187719">페이지 나누기</translation>
 <translation id="2335594187091864976">날짜 및 시간 선택기</translation>
 <translation id="2508569020611168319">탭 목록</translation>
+<translation id="2530182415807757784">여러 항목 선택 가능, 선택된 항목 없음.</translation>
+<translation id="2634240155926812724">초록색 채널</translation>
 <translation id="2657045182931379222">그래픽 객체</translation>
 <translation id="2674318244760992338">바닥글</translation>
 <translation id="2723001399770238859">오디오</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">타이머</translation>
 <translation id="3199563858620722075">콤보 상자</translation>
+<translation id="3220661731597678625">현재 단계</translation>
+<translation id="3329013043687509092">채도</translation>
 <translation id="3486220673238053218">정의</translation>
 <translation id="3557673793733683882">제목 <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">주 선택도구</translation>
 <translation id="3706100364254443312">전환</translation>
 <translation id="3808586225841795776">용어</translation>
+<translation id="3914173277599553213">필수</translation>
 <translation id="3920932319529768807">결론</translation>
 <translation id="3924558731517983934">애플리케이션</translation>
 <translation id="3944740393230681990">프롤로그</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">표지</translation>
 <translation id="4757246831282535685">탭 패널</translation>
 <translation id="479989351350248267">검색</translation>
+<translation id="4912200001568447310">현재 항목</translation>
 <translation id="4912536737030637138">참고문헌 항목</translation>
 <translation id="492244087561876220">댓글</translation>
+<translation id="4924138096460353083">알 수 없음</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> 선택됨</translation>
 <translation id="5022314756875057021">행 그룹</translation>
 <translation id="5034860022980953847">진행률 표시기</translation>
 <translation id="5093189678851173835">제명</translation>
+<translation id="509897012892853729">파란색 채널</translation>
 <translation id="512758898067543763">행 헤더</translation>
 <translation id="5143125788380636750">에필로그</translation>
 <translation id="5406322316791861025">그림</translation>
+<translation id="5425179576310518467">현재 날짜</translation>
 <translation id="5453733299334684579">트리 항목</translation>
 <translation id="546643433018805598">아래 첨자</translation>
 <translation id="5476505524087279545">선택 해제</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">버튼</translation>
 <translation id="5693537480074347398">위 첨자</translation>
 <translation id="576709008726043716">소개</translation>
+<translation id="5860033963881614850">사용 안함</translation>
 <translation id="591047860372322273">검색창</translation>
+<translation id="5916664084637901428">사용</translation>
 <translation id="5987525920412732405">스핀 버튼</translation>
 <translation id="6023896073578205740">목록 상자</translation>
 <translation id="6119846243427417423">활성화</translation>
 <translation id="6150588977291308318">참고문헌</translation>
 <translation id="6164829606128959761">미터</translation>
 <translation id="6166809985690652833">후기</translation>
+<translation id="6212595056017402527">현재 페이지</translation>
 <translation id="6213469881011901533">용어설명</translation>
+<translation id="6281588256137006900">명암</translation>
 <translation id="6281763101136022427">URL</translation>
 <translation id="6453774872122745852">감사의 말</translation>
 <translation id="648732519525291180">시간 선택기</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">인용구</translation>
 <translation id="693476918119313863">머리글</translation>
 <translation id="6981594929165378967">삽입</translation>
+<translation id="698788488269350478">펼쳐졌습니다.</translation>
 <translation id="7034405885550056553">추천</translation>
+<translation id="7102274145889307184">현재 위치</translation>
 <translation id="7139483182332611405">머리말</translation>
 <translation id="7198226213493847604">메뉴 팝업 버튼</translation>
 <translation id="7214187073215825913">콘텐츠 정보</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">색인</translation>
 <translation id="7740050170769002709">HTML 콘텐츠</translation>
 <translation id="7802800022689234070">펼치기/접기 삼각형</translation>
+<translation id="7852167693871241274">색조 슬라이더</translation>
 <translation id="7891486169920085145">분할선</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> 선택되지 않음</translation>
 <translation id="8034303206267677282">굵게</translation>
 <translation id="8053789581856978548">검색어 입력란</translation>
 <translation id="8057695513531652401">안내문</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">장</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">대화상자 팝업 버튼</translation>
+<translation id="8889402386540077796">색조</translation>
+<translation id="894736920926684893">형식 전환 버튼</translation>
 <translation id="9002566407876343676">열기</translation>
 <translation id="901834265349196618">이메일</translation>
 <translation id="9048119486235211610">탐색</translation>

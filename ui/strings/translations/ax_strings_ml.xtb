@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">സ്ലൈഡർ</translation>
 <translation id="1211441953136645838">അന്തിമ കുറിപ്പ്</translation>
 <translation id="1281252709823657822">ഡയലോഗ്</translation>
+<translation id="1306460908038601864">ഓഫാണ്</translation>
 <translation id="1335095011850992622">ക്രെഡിറ്റുകൾ</translation>
 <translation id="1342835525016946179">ലേഖനം</translation>
 <translation id="1359897965706325498">ബാനർ</translation>
+<translation id="1480676835519562650">ഒന്നിലധികം തിരഞ്ഞെടുക്കാവുന്നത്, <ph name="COUNT" />-ൽ <ph name="SELECTED" /> എണ്ണം തിരഞ്ഞെടുത്തു.</translation>
 <translation id="1589122976691792535">പ്രദേശം</translation>
 <translation id="1650423536718072820">പുൾക്വോട്ട്</translation>
+<translation id="1681022320378710418">നിലവിലെ സമയം</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
 <translation id="1821985195704844674">ട്രീ ഗ്രിഡ്</translation>
 <translation id="1823704031293214298">പേജിന്റെ അടിക്കുറിപ്പ്</translation>
 <translation id="1838681052457320736">മുന്നറിയിപ്പ് ഡയലോഗ്</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ഇല്ലാതാക്കൽ</translation>
 <translation id="1907737156431278478">ഉദാഹരണം</translation>
 <translation id="1930711995431081526">നില</translation>
+<translation id="2031987842108996681">ചുവപ്പ് ചാനൽ</translation>
 <translation id="2158401438286456825">പേജ് ലിസ്റ്റ്</translation>
 <translation id="2291999235780842123">ചെക്ക്‌ ബോക്‌സ്</translation>
 <translation id="2311842470354187719">പേജ് ബ്രേക്ക്</translation>
 <translation id="2335594187091864976">തീയതിയും സമയ പിക്കറും</translation>
 <translation id="2508569020611168319">ടാബ് ലിസ്റ്റ്</translation>
+<translation id="2530182415807757784">ഒന്നിലധികം തിരഞ്ഞെടുക്കാവുന്നത്, ഒന്നും തിരഞ്ഞെടുത്തിട്ടില്ല.</translation>
+<translation id="2634240155926812724">പച്ച ചാനൽ</translation>
 <translation id="2657045182931379222">ഗ്രാഫിക്‌സ് ഒബ്‌ജക്‌റ്റ്</translation>
 <translation id="2674318244760992338">അടിക്കുറിപ്പ്</translation>
 <translation id="2723001399770238859">ഓഡിയോ</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">ടൈമർ</translation>
 <translation id="3199563858620722075">കോമ്പോ ബോക്‌സ്</translation>
+<translation id="3220661731597678625">നിലവിലെ ഘട്ടം</translation>
+<translation id="3329013043687509092">സാച്ചുറേഷൻ</translation>
 <translation id="3486220673238053218">നിർവചനം</translation>
 <translation id="3557673793733683882">തലക്കെട്ട് <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">ആഴ്‌ച പിക്കർ</translation>
 <translation id="3706100364254443312">സ്വിച്ച്</translation>
 <translation id="3808586225841795776">പദം</translation>
+<translation id="3914173277599553213">ആവശ്യമായത്</translation>
 <translation id="3920932319529768807">ഉപസംഹാരം</translation>
 <translation id="3924558731517983934">ആപ്പ്</translation>
 <translation id="3944740393230681990">ആമുഖം</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">കവർ</translation>
 <translation id="4757246831282535685">ടാബ് പാനൽ</translation>
 <translation id="479989351350248267">തിരയുക</translation>
+<translation id="4912200001568447310">നിലവിലെ ഇനം</translation>
 <translation id="4912536737030637138">ഗ്രന്ഥസൂചി എൻട്രി</translation>
 <translation id="492244087561876220">കമന്റ്</translation>
+<translation id="4924138096460353083">അനിശ്ചിതമായത്</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="5022314756875057021">വരി ഗ്രൂപ്പ്</translation>
 <translation id="5034860022980953847">'പ്രോഗ്രസ്' ഇൻഡിക്കേറ്റർ</translation>
 <translation id="5093189678851173835">ശിലാലേഖ</translation>
+<translation id="509897012892853729">നീല ചാനൽ</translation>
 <translation id="512758898067543763">വരി ശീർഷകം</translation>
 <translation id="5143125788380636750">ഉപസംഹാരം</translation>
 <translation id="5406322316791861025">ആകാരം</translation>
+<translation id="5425179576310518467">നിലവിലെ തീയതി</translation>
 <translation id="5453733299334684579">ട്രീ ഇനം</translation>
 <translation id="546643433018805598">സബ്‌സ്ക്രിപ്റ്റ്</translation>
 <translation id="5476505524087279545">അണ്‍ചെക്ക് ചെയ്യുക</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">ബട്ടൺ</translation>
 <translation id="5693537480074347398">സൂപ്പർസ്ക്രിപ്റ്റ്</translation>
 <translation id="576709008726043716">ആമുഖം</translation>
+<translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="591047860372322273">സെർച്ച് ബോക്‌സ്</translation>
+<translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5987525920412732405">സ്‌പിൻ ബട്ടൺ</translation>
 <translation id="6023896073578205740">ലിസ്റ്റ് ബോക്‌സ്</translation>
 <translation id="6119846243427417423">ആക്റ്റിവേറ്റ് ചെയ്യുക</translation>
 <translation id="6150588977291308318">ഗ്രന്ഥസൂചി</translation>
 <translation id="6164829606128959761">മീറ്റർ</translation>
 <translation id="6166809985690652833">പിൻ കുറിപ്പ്</translation>
+<translation id="6212595056017402527">നിലവിലെ പേജ്</translation>
 <translation id="6213469881011901533">പദസഞ്ചയം</translation>
+<translation id="6281588256137006900">ഇളം വർണത്തിലുള്ളത്</translation>
 <translation id="6281763101136022427">URL</translation>
 <translation id="6453774872122745852">കടപ്പാട്</translation>
 <translation id="648732519525291180">സമയ പിക്കർ</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">ബ്ലോക്ക്‌കോട്ട്</translation>
 <translation id="693476918119313863">തലക്കെട്ട്</translation>
 <translation id="6981594929165378967">ചേർക്കൽ</translation>
+<translation id="698788488269350478">വികസിപ്പിച്ചു.</translation>
 <translation id="7034405885550056553">നിർദ്ദേശം</translation>
+<translation id="7102274145889307184">നിലവിലെ ലൊക്കേഷൻ</translation>
 <translation id="7139483182332611405">പീഠിക</translation>
 <translation id="7198226213493847604">മെനു പോപ്പ് അപ്പ് ബട്ടൺ</translation>
 <translation id="7214187073215825913">ഉള്ളടക്ക വിവരങ്ങൾ</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">സൂചിക</translation>
 <translation id="7740050170769002709">HTML ഉള്ളടക്കം</translation>
 <translation id="7802800022689234070">ഡിസ്‌ക്ലോഷർ ത്രികോണം</translation>
+<translation id="7852167693871241274">ഹ്യൂ സ്ലൈഡർ</translation>
 <translation id="7891486169920085145">സ്‌പ്ലിറ്റർ</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
 <translation id="8034303206267677282">ശക്തം</translation>
 <translation id="8053789581856978548">തിരയൽ ടെക്‌സ്റ്റ് ഫീൽഡ്</translation>
 <translation id="8057695513531652401">അറിയിപ്പ്</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">അധ്യായം</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">ഡയലോഗ് പോപ്പ്-അപ്പ് ബട്ടൺ</translation>
+<translation id="8889402386540077796">ഹ്യൂ</translation>
+<translation id="894736920926684893">ഫോർമാറ്റ് ടോഗ്ലർ</translation>
 <translation id="9002566407876343676">തുറക്കുക</translation>
 <translation id="901834265349196618">ഇമെയില്‍</translation>
 <translation id="9048119486235211610">നാവിഗേഷൻ</translation>

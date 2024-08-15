@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">滑桿</translation>
 <translation id="1211441953136645838">章節附註</translation>
 <translation id="1281252709823657822">對話方塊</translation>
+<translation id="1306460908038601864">關閉</translation>
 <translation id="1335095011850992622">參與名單</translation>
 <translation id="1342835525016946179">文章</translation>
 <translation id="1359897965706325498">橫幅</translation>
+<translation id="1480676835519562650">可選取多個項目，已選取 <ph name="SELECTED" /> 個，總共 <ph name="COUNT" /> 個。</translation>
 <translation id="1589122976691792535">區域</translation>
 <translation id="1650423536718072820">重要引述</translation>
+<translation id="1681022320378710418">目前時間</translation>
+<translation id="1727839386348365796">滴管</translation>
 <translation id="1821985195704844674">樹狀目錄網格</translation>
 <translation id="1823704031293214298">頁尾</translation>
 <translation id="1838681052457320736">警示對話方塊</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">刪除</translation>
 <translation id="1907737156431278478">範例</translation>
 <translation id="1930711995431081526">狀態</translation>
+<translation id="2031987842108996681">紅色色版</translation>
 <translation id="2158401438286456825">頁面清單</translation>
 <translation id="2291999235780842123">核取方塊</translation>
 <translation id="2311842470354187719">分頁符號</translation>
 <translation id="2335594187091864976">日期和時間選擇器</translation>
 <translation id="2508569020611168319">分頁清單</translation>
+<translation id="2530182415807757784">可選取多個項目，未選取任何項目。</translation>
+<translation id="2634240155926812724">綠色色版</translation>
 <translation id="2657045182931379222">圖形物件</translation>
 <translation id="2674318244760992338">頁尾</translation>
 <translation id="2723001399770238859">音訊</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">附註</translation>
 <translation id="3175736971608411871">計時器</translation>
 <translation id="3199563858620722075">下拉式方塊</translation>
+<translation id="3220661731597678625">目前步驟</translation>
+<translation id="3329013043687509092">飽和度</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3557673793733683882">標題 <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">週挑選器</translation>
 <translation id="3706100364254443312">切換</translation>
 <translation id="3808586225841795776">字詞</translation>
+<translation id="3914173277599553213">必要</translation>
 <translation id="3920932319529768807">結論</translation>
 <translation id="3924558731517983934">應用程式</translation>
 <translation id="3944740393230681990">序言</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">封面</translation>
 <translation id="4757246831282535685">分頁面板</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4912200001568447310">目前項目</translation>
 <translation id="4912536737030637138">參考書目</translation>
 <translation id="492244087561876220">評論</translation>
+<translation id="4924138096460353083">不確定</translation>
+<translation id="4971739861736909480">已選取「<ph name="ACCNAME" />」</translation>
 <translation id="5022314756875057021">列群組</translation>
 <translation id="5034860022980953847">進度指標</translation>
 <translation id="5093189678851173835">題詞</translation>
+<translation id="509897012892853729">藍色色版</translation>
 <translation id="512758898067543763">列標題</translation>
 <translation id="5143125788380636750">結尾</translation>
 <translation id="5406322316791861025">圖表</translation>
+<translation id="5425179576310518467">目前日期</translation>
 <translation id="5453733299334684579">樹狀目錄項目</translation>
 <translation id="546643433018805598">下標</translation>
 <translation id="5476505524087279545">取消選取</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">按鈕</translation>
 <translation id="5693537480074347398">上標</translation>
 <translation id="576709008726043716">簡介</translation>
+<translation id="5860033963881614850">關閉</translation>
 <translation id="591047860372322273">搜尋框</translation>
+<translation id="5916664084637901428">開啟</translation>
 <translation id="5987525920412732405">微調按鈕</translation>
 <translation id="6023896073578205740">清單方塊</translation>
 <translation id="6119846243427417423">啟動</translation>
 <translation id="6150588977291308318">參考書目</translation>
 <translation id="6164829606128959761">計量器</translation>
 <translation id="6166809985690652833">後記</translation>
+<translation id="6212595056017402527">目前頁面</translation>
 <translation id="6213469881011901533">詞彙解釋</translation>
+<translation id="6281588256137006900">亮度</translation>
 <translation id="6281763101136022427">網址</translation>
 <translation id="6453774872122745852">鳴謝</translation>
 <translation id="648732519525291180">時間選擇器</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">引用標記</translation>
 <translation id="693476918119313863">頁首</translation>
 <translation id="6981594929165378967">插入</translation>
+<translation id="698788488269350478">已展開。</translation>
 <translation id="7034405885550056553">建議</translation>
+<translation id="7102274145889307184">目前位置</translation>
 <translation id="7139483182332611405">前言</translation>
 <translation id="7198226213493847604">選單彈出按鈕</translation>
 <translation id="7214187073215825913">內容資訊</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">索引</translation>
 <translation id="7740050170769002709">HTML 內容</translation>
 <translation id="7802800022689234070">顯示/隱藏三角標記</translation>
+<translation id="7852167693871241274">色調滑桿</translation>
 <translation id="7891486169920085145">分割器</translation>
+<translation id="7962328325860248200">未選取「<ph name="ACCNAME" />」</translation>
 <translation id="8034303206267677282">強</translation>
 <translation id="8053789581856978548">搜尋文字欄位</translation>
 <translation id="8057695513531652401">聲明</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">章節</translation>
 <translation id="8851136666856101339">主要元素</translation>
 <translation id="8861621546968757188">對話方塊彈出按鈕</translation>
+<translation id="8889402386540077796">色調</translation>
+<translation id="894736920926684893">格式切換工具</translation>
 <translation id="9002566407876343676">開啟</translation>
 <translation id="901834265349196618">電子郵件</translation>
 <translation id="9048119486235211610">導覽</translation>
