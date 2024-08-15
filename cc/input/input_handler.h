@@ -309,7 +309,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // taken into account when determining the duration of the animation if one
   // is created.
   virtual InputHandlerScrollResult ScrollUpdate(
-      ScrollState* scroll_state,
+      ScrollState scroll_state,
       base::TimeDelta delayed_by = base::TimeDelta());
 
   // Stop scrolling the selected layer. Must be called only if ScrollBegin()
@@ -580,7 +580,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   // Applies the scroll_state to the currently latched scroller. See comment in
   // InputHandler::ScrollUpdate declaration for the meaning of |delayed_by|.
-  void ScrollLatchedScroller(ScrollState* scroll_state,
+  void ScrollLatchedScroller(ScrollState& scroll_state,
                              base::TimeDelta delayed_by);
 
   enum class SnapReason { kGestureScrollEnd, kScrollOffsetAnimationFinished };
@@ -667,7 +667,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   gfx::Vector2dF UserScrollableDelta(const ScrollNode& node,
                                      const gfx::Vector2dF& delta) const;
 
-  void AdjustScrollDeltaForScrollbarSnap(ScrollState* scroll_state);
+  void AdjustScrollDeltaForScrollbarSnap(ScrollState& scroll_state);
 
   FrameSequenceTrackerType GetTrackerTypeForScroll(
       ui::ScrollInputType input_type) const;

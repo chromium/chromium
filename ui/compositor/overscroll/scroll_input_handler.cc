@@ -72,8 +72,8 @@ bool ScrollInputHandler::OnScrollEvent(const ScrollEvent& event,
   // ElementId is provided.
   DCHECK(!result.main_thread_hit_test_reasons);
 
-  cc::ScrollState scroll_state = CreateScrollState(event, false);
-  input_handler_weak_ptr_->ScrollUpdate(&scroll_state, base::TimeDelta());
+  input_handler_weak_ptr_->ScrollUpdate(CreateScrollState(event, false),
+                                        base::TimeDelta());
   input_handler_weak_ptr_->ScrollEnd(/*should_snap=*/false);
 
   return true;

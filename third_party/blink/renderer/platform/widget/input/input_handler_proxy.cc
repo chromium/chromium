@@ -54,7 +54,8 @@ using ScrollThread = cc::InputHandler::ScrollThread;
 namespace blink {
 namespace {
 
-cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
+cc::ScrollStateData CreateScrollStateDataForGesture(
+    const WebGestureEvent& event) {
   cc::ScrollStateData scroll_state_data;
   if (event.SourceDevice() == WebGestureDevice::kScrollbar) {
     scroll_state_data.is_scrollbar_interaction = true;
@@ -107,7 +108,7 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
   }
   scroll_state_data.is_direct_manipulation =
       event.SourceDevice() == WebGestureDevice::kTouchscreen;
-  return cc::ScrollState(scroll_state_data);
+  return scroll_state_data;
 }
 
 cc::ScrollState CreateScrollStateForInertialUpdate(
@@ -1018,7 +1019,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
     InputHandlerScrollEnd();
   }
 
-  cc::ScrollState scroll_state = CreateScrollStateForGesture(gesture_event);
+  cc::ScrollState scroll_state(CreateScrollStateDataForGesture(gesture_event));
   cc::InputHandler::ScrollStatus scroll_status;
   if (gesture_event.data.scroll_begin.target_viewport) {
     scroll_status = input_handler_->RootScrollBegin(
@@ -1106,8 +1107,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
     return DROP_EVENT;
   }
 
-  cc::ScrollState scroll_state = CreateScrollStateForGesture(gesture_event);
-  in_inertial_scrolling_ = scroll_state.is_in_inertial_phase();
+  const auto scroll_state_data = CreateScrollStateDataForGesture(gesture_event);
+  in_inertial_scrolling_ = scroll_state_data.is_in_inertial_phase;
 
   TRACE_EVENT_INSTANT1(
       "input", "DeltaUnits", TRACE_EVENT_SCOPE_THREAD, "unit",
@@ -1123,7 +1124,7 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   base::TimeDelta delay = base::TimeTicks::Now() - event_time;
 
   cc::InputHandlerScrollResult scroll_result =
-      input_handler_->ScrollUpdate(&scroll_state, delay);
+      input_handler_->ScrollUpdate(cc::ScrollState(scroll_state_data), delay);
 
   TRACE_EVENT(
       "input,input.scrolling",
@@ -1589,10 +1590,8 @@ bool InputHandlerProxy::GetSnapFlingInfoAndSetAnimatingSnapTarget(
 
 gfx::PointF InputHandlerProxy::ScrollByForSnapFling(
     const gfx::Vector2dF& delta) {
-  cc::ScrollState scroll_state = CreateScrollStateForInertialUpdate(delta);
-
-  cc::InputHandlerScrollResult scroll_result =
-      input_handler_->ScrollUpdate(&scroll_state, base::TimeDelta());
+  cc::InputHandlerScrollResult scroll_result = input_handler_->ScrollUpdate(
+      CreateScrollStateForInertialUpdate(delta), base::TimeDelta());
   return scroll_result.current_visual_offset;
 }
 

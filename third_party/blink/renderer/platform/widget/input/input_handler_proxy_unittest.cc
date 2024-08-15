@@ -165,7 +165,7 @@ class MockInputHandler : public cc::InputHandler {
   MOCK_METHOD2(RootScrollBegin,
                ScrollStatus(cc::ScrollState*, ui::ScrollInputType type));
   MOCK_METHOD2(ScrollUpdate,
-               cc::InputHandlerScrollResult(cc::ScrollState*, base::TimeDelta));
+               cc::InputHandlerScrollResult(cc::ScrollState, base::TimeDelta));
   MOCK_METHOD1(ScrollEnd, void(bool));
   MOCK_METHOD2(RecordScrollBegin,
                void(ui::ScrollInputType type,
