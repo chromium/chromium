@@ -108,7 +108,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
         -webkit-box-orient: vertical;
         color: var(--cros-sys-on_surface_variant);
         display: -webkit-box;
-        font: var(--cros-body-2-font);
+        font: var(--cros-body-1-font);
         -webkit-line-clamp: 2;
         margin-top: 4px;
         overflow: hidden;

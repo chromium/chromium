@@ -50,7 +50,7 @@ export class SummaryConsentCard extends ReactiveLitElement {
 
     #description {
       color: var(--cros-sys-on_surface_variant);
-      font: var(--cros-body-2-font);
+      font: var(--cros-body-1-font);
       margin-top: 8px;
     }
 

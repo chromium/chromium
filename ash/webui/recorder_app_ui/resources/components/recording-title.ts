@@ -62,7 +62,7 @@ export class RecordingTitle extends ReactiveLitElement {
       anchor-name: --title;
       border-radius: 12px;
       box-sizing: border-box;
-      font: var(--cros-button-1-font);
+      font: var(--cros-headline-1-font);
       overflow: hidden;
       padding: 8px 16px;
       text-overflow: ellipsis;

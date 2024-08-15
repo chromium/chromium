@@ -120,7 +120,7 @@ export class SummarizationView extends ReactiveLitElement {
     }
 
     #summary {
-      font: var(--cros-body-2-font);
+      font: var(--cros-body-1-font);
       padding: 12px 16px;
       white-space: pre-wrap;
     }

@@ -86,17 +86,18 @@ export class TranscriptionView extends ReactiveLitElement {
 
       .timestamp {
         /*
-       * Note that this need to be 0px instead of 0, since it's used in calc().
-       */
+         * Note that this need to be 0px instead of 0, since it's used in
+         * calc().
+         */
         --md-focus-ring-outward-offset: 0px;
         --md-focus-ring-shape: 4px;
 
-        font: var(--cros-body-2-font);
+        font: var(--cros-body-1-font);
 
         /*
-       * Note that compared to the spec, 2px of left/right margin is moved to
-       * padding so it's included in the hover / focus ring.
-       */
+         * Note that compared to the spec, 2px of left/right margin is moved to
+         * padding so it's included in the hover / focus ring.
+         */
         margin: 12px 8px 12px 10px;
         outline: none;
         padding: 0 2px;
@@ -109,7 +110,7 @@ export class TranscriptionView extends ReactiveLitElement {
       }
 
       .paragraph {
-        font: var(--cros-body-2-font);
+        font: var(--cros-body-1-font);
         padding: 12px;
       }
 
@@ -120,7 +121,7 @@ export class TranscriptionView extends ReactiveLitElement {
 
       .speaker-label {
         color: var(--speaker-label-shapes-color);
-        font: var(--cros-button-2-font);
+        font: var(--cros-button-1-font);
         margin: 0 0 4px;
 
         .speaker-single & {
@@ -137,10 +138,10 @@ export class TranscriptionView extends ReactiveLitElement {
         margin: 0 -2px;
 
         /*
-       * Note that while the font size is 13px, the background height without
-       * padding would be 16px. Make it full line height (20px) by adding a 2px
-       * vertical padding. (horizontal padding happens to also be 2px).
-       */
+         * Note that while the font size is 13px, the background height without
+         * padding would be 16px. Make it full line height (20px) by adding a
+         * 2px vertical padding. (horizontal padding happens to also be 2px).
+         */
         padding: 2px;
 
         .seekable & {
