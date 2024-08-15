@@ -55,11 +55,13 @@ class DriveSearchProvider : public SearchProvider {
   void OnSearchDriveByFileName(
       drive::FileError error,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
-  std::unique_ptr<FileResult> MakeResult(const base::FilePath& path,
-                                         double relevance,
-                                         FileResult::Type type,
-                                         const GURL& url,
-                                         const std::optional<std::string>& id);
+  std::unique_ptr<FileResult> MakeResult(
+      const base::FilePath& path,
+      double relevance,
+      FileResult::Type type,
+      const GURL& url,
+      const std::optional<std::string>& id,
+      const std::optional<std::string>& title);
 
   bool should_filter_shared_files_;
   bool should_filter_directories_;
