@@ -104,9 +104,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const IdentityProviderDisplayData& idp_display_data,
       const content::IdentityRequestAccount& account);
 
-  // Returns a View for multiple account chooser. It contains the info for each
-  // account in a button, so the user can pick an account.
-  std::unique_ptr<views::View> CreateMultipleAccountChooser(
+  // Adds a separator as well as a multiple account chooser. The chooser
+  // contains the info for each account in a button, so the user can pick an
+  // account. It also contains mismatch login URLs in the multiple IDP case.
+  void AddSeparatorAndMultipleAccountChooser(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
 
   // Adds the accounts matching the provided LoginState to the given view. This
