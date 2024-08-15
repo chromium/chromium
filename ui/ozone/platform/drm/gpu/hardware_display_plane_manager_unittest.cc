@@ -2074,6 +2074,73 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, ColorEncodingAndRange) {
   }
 }
 
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, OldPlaneInAnotherList) {
+  fake_drm_->ResetStateWithDefaultObjects(/*connector_and_crtc_count=*/2,
+                                          /*planes_per_crtc=*/1);
+  fake_drm_->InitializeState(/*use_atomic=*/true);
+
+  const uint32_t crtc_0_id = fake_drm_->crtc_property(0).id;
+  const uint32_t crtc_1_id = fake_drm_->crtc_property(1).id;
+
+  CommitRequest commit_request;
+  HardwareDisplayPlaneList plane_list_0;
+  HardwareDisplayPlaneList plane_list_1;
+  const auto& planes = fake_drm_->plane_manager()->planes();
+  ASSERT_THAT(planes, testing::SizeIs(4));
+  HardwareDisplayPlane *plane_0, *plane_1;
+  for (auto& plane : planes) {
+    // Skip non-primary planes.
+    if ((plane->type() & DRM_PLANE_TYPE_PRIMARY) == 0) {
+      continue;
+    }
+
+    // Primary planes created by FakeDrmDevice::ResetStateWithDefaultObjects()
+    // should only be compatible with one CRTC.
+    if (plane->CanUseForCrtcId(crtc_0_id)) {
+      plane_0 = plane.get();
+    } else if (plane->CanUseForCrtcId(crtc_1_id)) {
+      plane_1 = plane.get();
+    }
+  }
+
+  ASSERT_NE(plane_0, nullptr);
+  ASSERT_NE(plane_1, nullptr);
+  ASSERT_NE(plane_0, plane_1);
+
+  plane_list_0.plane_list.push_back(plane_0);
+  plane_list_0.old_plane_list.push_back(plane_1);
+
+  plane_list_1.plane_list.push_back(plane_1);
+  plane_list_1.old_plane_list.push_back(plane_0);
+  {
+    DrmOverlayPlaneList overlays;
+    overlays.push_back(DrmOverlayPlane::TestPlane(fake_buffer_));
+
+    CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
+        crtc_0_id, fake_drm_->connector_property(0).id, kDefaultMode,
+        gfx::Point(), &plane_list_0, std::move(overlays),
+        /*enable_vrr=*/false);
+    commit_request.push_back(std::move(request));
+  }
+  {
+    DrmOverlayPlaneList overlays;
+    overlays.push_back(DrmOverlayPlane::TestPlane(fake_buffer_));
+
+    CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
+        crtc_1_id, fake_drm_->connector_property(1).id, kDefaultMode,
+        gfx::Point(), &plane_list_1, std::move(overlays),
+        /*enable_vrr=*/false);
+    commit_request.push_back(std::move(request));
+  }
+
+  ASSERT_TRUE(fake_drm_->plane_manager()->Commit(
+      std::move(commit_request),
+      DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+  EXPECT_EQ(plane_0->owning_crtc(), crtc_0_id);
+  EXPECT_EQ(plane_1->owning_crtc(), crtc_1_id);
+}
+
 class HardwareDisplayPlaneAtomicMock : public HardwareDisplayPlaneAtomic {
  public:
   HardwareDisplayPlaneAtomicMock() : HardwareDisplayPlaneAtomic(1) {}

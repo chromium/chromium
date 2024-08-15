@@ -6,6 +6,7 @@
 
 #include <drm_fourcc.h>
 
+#include "base/files/platform_file.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
@@ -211,6 +212,14 @@ bool HardwareDisplayPlaneAtomic::SetPlaneProps(drmModeAtomicReq* property_set) {
   // Update properties_ if the setting the props succeeded.
   properties_ = assigned_props_;
   return true;
+}
+
+void HardwareDisplayPlaneAtomic::AssignDisableProps() {
+  set_in_use(false);
+  set_owning_crtc(0);
+  AssignPlaneProps(nullptr, 0, 0, gfx::Rect(), gfx::Rect(), gfx::Rect(),
+                   gfx::OVERLAY_TRANSFORM_NONE, gfx::ColorSpace(),
+                   base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
 }
 
 uint32_t HardwareDisplayPlaneAtomic::AssignedCrtcId() const {
