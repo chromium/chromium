@@ -105,13 +105,13 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
     }
 
     *headers = web::ResponseProvider::GetDefaultResponseHeaders();
-    std::string userAgent;
+    std::optional<std::string> userAgent =
+        request.headers.GetHeader("User-Agent");
     std::string desktop_product =
         "CriOS/" + version_info::GetMajorVersionNumber();
     std::string desktop_user_agent =
         web::BuildDesktopUserAgent(desktop_product);
-    if (request.headers.GetHeader("User-Agent", &userAgent) &&
-        userAgent == desktop_user_agent) {
+    if (userAgent == desktop_user_agent) {
       response_body->assign(std::string(kDesktopSiteLabel) + "\n" +
                             purge_additions);
     } else {

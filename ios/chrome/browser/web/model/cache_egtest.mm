@@ -55,10 +55,8 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
       scoped_refptr<net::HttpResponseHeaders>* headers,
       std::string* response_body) override {
     hit_counter_++;
-    std::string cache_control_header;
-    if (request.headers.HasHeader("Cache-Control")) {
-      request.headers.GetHeader("Cache-Control", &cache_control_header);
-    }
+    std::string cache_control_header =
+        request.headers.GetHeader("Cache-Control").value_or(std::string());
     *headers = web::ResponseProvider::GetDefaultResponseHeaders();
 
     if (request.url == first_page_url_) {
