@@ -479,7 +479,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1340527397989195812">Fazer backup de mídia do dispositivo usando o aplicativo Arquivos.</translation>
 <translation id="1341701348342335220">Bom trabalho!</translation>
 <translation id="1342886103232377846">Para verificar se há senhas comprometidas, acesse o Gerenciador de senhas do Google</translation>
-<translation id="1343865611738742294">Conceder aos apps Linux permissão para acessar dispositivos USB. O Linux não terá informações do dispositivo USB depois que ele for removido.</translation>
 <translation id="1343920184519992513">Continuar de onde parou e abrir um conjunto específico de páginas</translation>
 <translation id="1344141078024003905">Você está transmitindo a tela. É possível pausar ou interromper a transmissão a qualquer momento.</translation>
 <translation id="1346403631707626730">Envie dados de uso e diagnóstico. Ajude a melhorar a experiência da criança com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar a criança e vão melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também vão ajudar apps e parceiros do Google, por exemplo, os desenvolvedores Android. Se a opção "Atividade na Web e de apps adicional" estiver ativada para seu filho, esses dados poderão ser salvos na Conta do Google dele. <ph name="BEGIN_LINK1" />Saiba mais sobre as métricas<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
@@ -822,7 +821,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1588919647604819635">Card de clique com o botão direito do mouse</translation>
 <translation id="1589055389569595240">Mostrar ortografia e gramática</translation>
 <translation id="1590478605309955960">Seus grupos de guias são salvos e atualizados automaticamente em todos os dispositivos conectados.</translation>
-<translation id="1591679663873027990">Conceder permissão ao Parallels Desktop para acessar dispositivos USB. O Parallels Desktop não se lembrará de um dispositivo USB depois que ele for removido.</translation>
 <translation id="15916883652754430">Configurações de voz do sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> desativou a depuração do adb, o que redefinirá seu <ph name="DEVICE_TYPE" />. Faça backup dos seus arquivos antes de reiniciar.</translation>
 <translation id="1592126057537046434">Tradução das Respostas rápidas</translation>
@@ -2656,7 +2654,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2853121255651601031">Senha salva</translation>
 <translation id="2855243985454069333">Exclui o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Fazer login com <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modo restrito</translation>
 <translation id="2856776373509145513">Criar um novo contêiner</translation>
 <translation id="2856907950922663165">Desativar a criptografia de URL?</translation>
 <translation id="2859741939921354763">Importar senhas para o <ph name="BRAND" /></translation>
@@ -2796,7 +2793,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2960942820860729477">Taxa de atualização</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensão fornecida)</translation>
 <translation id="2961695502793809356">Clique para avançar, pressione para ver o histórico</translation>
-<translation id="29618148602069201">Assunto</translation>
+<translation id="29618148602069201">Tema</translation>
 <translation id="2963151496262057773">Este plug-in não responde: <ph name="PLUGIN_NAME" />. Quer interrompê-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilidade do Compartilhar por proximidade</translation>
@@ -2889,7 +2886,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3021066826692793094">Borboleta</translation>
 <translation id="3021678814754966447">&amp;Exibir código fonte do frame</translation>
 <translation id="3021902017511220299">Falha na verificação. O administrador bloqueou essa ação.</translation>
-<translation id="3022072018423103125">Highlands</translation>
+<translation id="3022072018423103125">Cordilheira</translation>
 <translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não será salvo em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendi.</translation>
 <translation id="3023464535986383522">Selecionar para ouvir</translation>
@@ -2938,7 +2935,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3053273573829329829">Ativar o PIN do usuário</translation>
 <translation id="3053274730492362225">Não piscar</translation>
 <translation id="3054766768827382232">A desativação pode melhorar o desempenho dos periféricos, mas também pode expor seus dados pessoais ao uso não autorizado.</translation>
-<translation id="3056438898277655057">Conceder ao <ph name="SPECIFIC_NAME" /> permissão para acessar dispositivos USB. O <ph name="SPECIFIC_NAME" /> não terá informações do dispositivo USB depois que ele for removido.</translation>
 <translation id="3058498974290601450">Ative a sincronização quando quiser nas configurações</translation>
 <translation id="3058517085907878899">Nomear dispositivo</translation>
 <translation id="3059195548603439580">Procurando componentes do sistema? Acesse</translation>
@@ -5770,7 +5766,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5153234146675181447">Esquecer o smartphone</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Configurações avançadas para <ph name="PRINTING_DESTINATION" /></translation>
-<translation id="5154702632169343078">Assunto</translation>
+<translation id="5154702632169343078">Tema</translation>
 <translation id="5154917547274118687">Memória</translation>
 <translation id="5155327081870541046">Na barra de endereço, digite o atalho do site em que você quer pesquisar, como "@favoritos". Depois, pressione o atalho de teclado que preferir e digite o termo de pesquisa.</translation>
 <translation id="5156638757840305347">O cursor é destacado quando aparece ou se move.</translation>
@@ -6582,7 +6578,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5756163054456765343">Central de ajuda</translation>
 <translation id="5757187557809630523">próxima faixa</translation>
 <translation id="5758631781033351321">Você encontrará sua lista de leituras aqui</translation>
-<translation id="5759397201362801675">Escolha um humor</translation>
+<translation id="5759397201362801675">Escolha um clima</translation>
 <translation id="5759728514498647443">Os documentos enviados para impressão pelo <ph name="APP_NAME" /> podem ser lidos pelo <ph name="APP_NAME" />.</translation>
 <translation id="5760318332127300368">Excluir também os dados de navegação (<ph name="URL" />). Sua conta poderá ser desconectada de google.com.br. <ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Inserir informações da Conta do Google</translation>
@@ -8557,7 +8553,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7222335051802562841">Concluir atualização</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Isso permite que os serviços do sistema utilizem a Precisão de local para determinar sua localização. Esse recurso usa informações sobre sensores e sinais sem fio para determinar o local do dispositivo.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 site no grupo de <ph name="FPS_OWNER" />}one{{MEMBERS} site no grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sites no grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar o Windows Hello ao preencher senhas</translation>
 <translation id="7225179976675429563">Tipo de rede ausente</translation>
 <translation id="7227235818314667565">Gerenciar compartilhamento</translation>
@@ -9935,7 +9930,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8207404892907560325">Escolha uma chave de acesso</translation>
 <translation id="8207794858944505786">A VM "<ph name="DEFAULT_VM_NAME" />" existe, mas não parece ser uma <ph name="VM_TYPE" /> válida. Entre em contato com o administrador.</translation>
 <translation id="8207901006380134182">Uma grande onda no oceano com uma floresta escura na costa.</translation>
-<translation id="8208188204689616705">Esses sites estão em um grupo definido por <ph name="FPS_OWNER" /> e podem ver sua atividade no grupo.</translation>
 <translation id="8208216423136871611">Não salvar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}one{# nova notificação}other{# novas notificações}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{O download está em andamento}one{O download está em andamento}other{Os downloads estão em andamento}}</translation>
@@ -11063,7 +11057,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9009707268312089299">Importado do Windows</translation>
 <translation id="9009708085379296446">Você quis modificar esta página?</translation>
 <translation id="9010845741772269259">Adicionar formas de pagamento</translation>
-<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Sempre mostrar ícone</translation>
 <translation id="9011262023858991985">Transmitindo esta guia</translation>
 <translation id="9011393886518328654">Notas da versão</translation>

@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">ลบข้อมูลออกจาก Chromium (<ph name="URL" />) ด้วย</translation>
 <translation id="1414495520565016063">คุณลงชื่อเข้าใช้ Chromium แล้ว!</translation>
-<translation id="1465171403179274511">Chromium จะถามคุณก่อนที่จะโหลดเว็บไซต์โดยใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="1478370723027452770">รับความช่วยเหลือเกี่ยวกับ Chrome สำหรับการทดสอบ</translation>
 <translation id="1497802159252041924">ข้อผิดพลาดในการติดตั้ง: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">แชร์แท็บ Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="2210682093923538346">เว็บไซต์อันตราย Chromium นำสิทธิ์เข้าถึงการแจ้งเตือนออกแล้ว</translation>
 <translation id="2240214816234246077">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chromium นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" />ออกแล้ว</translation>
 <translation id="2241627712206172106">ถ้าคุณให้ผู้อื่นใช้คอมพิวเตอร์ร่วมด้วย เพื่อนๆ และครอบครัวของคุณสามารถท่องเว็บแยกกันได้และตั้งค่า Chromium ได้ตามที่พวกเขาต้องการ</translation>
-<translation id="2265830994243640896">Chromium จะถามคุณก่อนโหลดเว็บไซต์สาธารณะโดยใช้การเชื่อมต่อที่ไม่ปลอดภัย แต่จะอนุญาตการเชื่อมต่อ HTTP สำหรับเครือข่ายส่วนตัว</translation>
 <translation id="2313870531055795960">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chromium อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="2329088755516916767">เมื่อเปิดอยู่ Chromium จะโหลดหน้าเว็บล่วงหน้าซึ่งทำให้ท่องเว็บและค้นหาได้เร็วขึ้น</translation>
 <translation id="2343156876103232566">หากต้องการส่งหมายเลขจากที่นี่ไปยังโทรศัพท์ Android ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์ทั้งสองเครื่อง</translation>
@@ -105,7 +103,6 @@
 <translation id="259935314519650377">การแคชโปรแกรมติดตั้งที่ดาวน์โหลดไว้ล้มเหลว ข้อผิดพลาด: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
 <translation id="264613044588233783">Chromium ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้ (แนะนำ)</translation>
 <translation id="2648074677641340862">เกิดข้อผิดพลาดของระบบปฏิบัติในระหว่างการติดตั้ง โปรดดาวน์โหลด Chromium อีกครั้ง</translation>
-<translation id="2649201087614586016">เมื่อเปิดไว้ Chromium จะถามคุณก่อนโหลดเว็บไซต์ที่ไม่รองรับ HTTPS</translation>
 <translation id="2661879430930417727">เพื่อนและครอบครัวสามารถท่องเว็บแยกกันและตั้งค่า Chromium ตามที่ตนต้องการในกรณีที่ใช้อุปกรณ์ร่วมกัน</translation>
 <translation id="268602741124540128">ยินดีต้อนรับสู่ Chromium <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">แท็บ Chromium</translation>

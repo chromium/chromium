@@ -56,7 +56,7 @@
 <translation id="2091887806945687916">Ljud</translation>
 <translation id="2096716221239095980">Radera all data</translation>
 <translation id="2117655453726830283">Nästa bild</translation>
-<translation id="2148716181193084225">Idag</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="216989819110952009">Trots de skyddande gröna glasögonen blev Dorothy och hennes vänner först bländade av</translation>
 <translation id="2176704795966505152">Visa zoomalternativ i huvudmenyn</translation>
 <translation id="2182457891543959921">Fråga innan webbplatser tillåts att skapa en 3D-karta över dina omgivningar eller registrera kamerans position (rekommenderas)</translation>
@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Tillåt ljud för en webbplats.</translation>
 <translation id="789180354981963912">Blockera cookies från tredje part i inkognitoläge:</translation>
 <translation id="7940722705963108451">Påminn mig</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="FPS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
 <translation id="7990211076305263060">När detta är aktiverat kan webbplatser be om att få använda mikrofonen. När detta är inaktiverat får webbplatser inte använda mikrofonen.</translation>
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Förhindra att webbplatser ansluter till enheter</translation>
 <translation id="8525306231823319788">Helskärm</translation>
 <translation id="8541410041357371550">Webbplatsen hämtar dina annonsämnen från Chrome för att visa mer relevanta annonser för dig</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies tillåts för webbplatsen <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-webbplats}other{Cookies tillåts för <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-webbplatser}}</translation>
 <translation id="857943718398505171">Tillåten (rekommenderas)</translation>
 <translation id="8609465669617005112">Flytta upp</translation>
 <translation id="8617611086246832542">När detta är aktiverat visas datorvyn för webbplatser. När detta är inaktiverat visas mobilvyn för webbplatser.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
 <translation id="9039697262778250930">Du kan loggas ut från de här webbplatserna</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Den här webbplatsen ingår i en grupp som kan se din aktivitet. Gruppen har definierats av <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vill du radera cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}}</translation>
 <translation id="913657688200966289">Aktivera behörigheter för <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>

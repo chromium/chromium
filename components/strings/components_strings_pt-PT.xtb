@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem da folha da tarefa</translation>
+<translation id="1044897699341250361">O que significa isto</translation>
 <translation id="1046350918013988591">Cupões e ofertas de desconto</translation>
 <translation id="1048785276086539861">Quando edita anotações, este documento volta à vista de página única.</translation>
 <translation id="1050038467049342496">Fechar outras aplicações</translation>
@@ -2659,6 +2660,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5999271311987646952">O Chrome tem funcionalidades de segurança incorporadas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente software malicioso<ph name="END_LINK" /> no site que está a tentar visitar.</translation>
 <translation id="6000528814684428358">Hard rock e música progressiva</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Vamos lá</translation>
 <translation id="6002122790816966947">Os seus dispositivos</translation>
 <translation id="6002968396561884726">Visualizados recentemente</translation>
 <translation id="6005659677094197001">Contínuo</translation>
@@ -3067,6 +3069,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6735783933931458444">Visita frequentemente a esta hora do dia</translation>
 <translation id="6737708609449480586">Produtos de pastelaria</translation>
 <translation id="6738516213925468394">Os seus dados foram encriptados com a sua <ph name="BEGIN_LINK" />frase de acesso de sincronização<ph name="END_LINK" /> à(s) <ph name="TIME" />. Introduza a mesma para iniciar a sincronização.</translation>
+<translation id="6739943577740687354">Esta funcionalidade usa IA e nem sempre está certa</translation>
 <translation id="6740851646645036700">Atingiu o limite de ajuda na escrita por agora. Tente mais tarde.</translation>
 <translation id="674375294223700098">Erro de certificado de servidor desconhecido.</translation>
 <translation id="6744009308914054259">Enquanto aguarda uma ligação, pode visitar a secção Transferências para ler artigos offline.</translation>
@@ -4457,5 +4460,6 @@ Detalhes adicionais:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Adicione o IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 </translationbundle>

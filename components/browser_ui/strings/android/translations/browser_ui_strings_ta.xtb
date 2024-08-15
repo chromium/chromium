@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">குறிப்பிட்ட தளத்திற்கு ஒலியை அனுமதி</translation>
 <translation id="789180354981963912">மறைநிலையில் மூன்றாம் தரப்புக் குக்கீகளைத் தடு:</translation>
 <translation id="7940722705963108451">எனக்கு நினைவூட்டு</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{குழுவில் உங்கள் செயல்பாடுகளைத் தெரிந்துகொள்ளக்கூடிய <ph name="FPS_MEMBERS_COUNT" /> தளம் <ph name="FPS_OWNER" /> தளங்களின் குழுவில் உள்ளது}other{குழுவில் உங்கள் செயல்பாடுகளைத் தெரிந்துகொள்ளக்கூடிய <ph name="FPS_MEMBERS_COUNT" /> தளங்கள் <ph name="FPS_OWNER" /> தளங்களின் குழுவில் உள்ளன}}</translation>
 <translation id="7986741934819883144">தொடர்பைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7990211076305263060">இயக்கப்பட்டிருக்கும்போது, உங்கள் மைக்ரோஃபோனைப் பயன்படுத்த தளங்கள் அனுமதி கேட்கலாம். முடக்கப்பட்டிருக்கும்போது, உங்கள் மைக்ரோஃபோனைத் தளங்களால் பயன்படுத்த முடியாது.</translation>
 <translation id="8007176423574883786">இந்தச் சாதனத்திற்கு முடக்கப்பட்டுள்ளது</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">சாதனங்களை இணைப்பதிலிருந்து தளங்களைத் தடுக்கும்</translation>
 <translation id="8525306231823319788">முழுத்திரை</translation>
 <translation id="8541410041357371550">மிகவும் தொடர்புடைய விளம்பரங்களைக் காட்ட உங்களின் விளம்பரத் தலைப்புகளை Chrome உலாவியில் இருந்து இந்தத் தளம் பெறுகிறது.</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> குழுவில் உள்ள <ph name="FPS_MEMBERS_COUNT" /> தளத்திற்கு குக்கீகள் அனுமதிக்கப்படுகின்றன}other{<ph name="FPS_OWNER" /> குழுவில் உள்ள <ph name="FPS_MEMBERS_COUNT" /> தளங்களுக்கு குக்கீகள் அனுமதிக்கப்படுகின்றன}}</translation>
 <translation id="857943718398505171">அனுமதிக்கப்பட்டது (பரிந்துரைத்தது)</translation>
 <translation id="8609465669617005112">மேலே நகர்த்து</translation>
 <translation id="8617611086246832542">இயக்கப்பட்டிருக்கும்போது, இணையதளங்களின் டெஸ்க்டாப் காட்சி காட்டப்படும். முடக்கப்பட்டிருக்கும்போது, இணையதளங்களின் மொபைல் காட்சி காட்டப்படும்.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">உங்கள் பெற்றோரால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="9039697262778250930">இந்தத் தளங்களில் இருந்து நீங்கள் வெளியேற்றப்படக்கூடும்</translation>
 <translation id="9074739597929991885">புளூடூத்</translation>
-<translation id="9090268041676521955">உங்கள் செயல்பாடுகளைத் தெரிந்துகொள்ளக்கூடிய குழுவில் இந்தத் தளம் உள்ளது. இந்தக் குழு <ph name="FPS_OWNER" /> மூலம் வரையறுக்கப்படுகிறது</translation>
 <translation id="9106233582039520022">குக்கீகளை நீக்கவா?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android அமைப்புகளில் <ph name="END_LINK" /> <ph name="APP_NAME" /> ஆப்ஸுக்கான அனுமதிகளை இயக்கவும்.</translation>

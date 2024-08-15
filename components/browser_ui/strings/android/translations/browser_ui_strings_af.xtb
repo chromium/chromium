@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
 <translation id="789180354981963912">Blokkeer derdepartywebkoekies in Incognito:</translation>
 <translation id="7940722705963108451">Herinner my</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> werf in <ph name="FPS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}other{<ph name="FPS_MEMBERS_COUNT" /> werwe in <ph name="FPS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}}</translation>
 <translation id="7986741934819883144">Kies 'n kontak</translation>
 <translation id="7990211076305263060">Wanneer dit aan is, kan werwe vra om jou mikrofoon te gebruik. Wanneer dit af is, kan werwe nie jou mikrofoon gebruik nie.</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Keer dat werwe aan toestelle koppel</translation>
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8541410041357371550">Hierdie werf kry jou advertensie-onderwerpe van Chrome af om vir jou relevanter advertensies te wys</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werf}other{Webkoekies word toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-werwe}}</translation>
 <translation id="857943718398505171">Toegelaat (aanbeveel)</translation>
 <translation id="8609465669617005112">Skuif op</translation>
 <translation id="8617611086246832542">Wanneer dit aan is, word die lessenaaraansig van webwerwe gewys. Wanneer dit af is, word die mobielaansig van webwerwe gewys.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Deur jou ouers bestuur</translation>
 <translation id="9039697262778250930">Jy sal dalk by hierdie werwe afgemeld word</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Hierdie werf is in ’n groep wat jou aktiwiteit kan sien. Die groep word gedefinieer deur <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vee webkoekies uit?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Skakel toestemmings vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>

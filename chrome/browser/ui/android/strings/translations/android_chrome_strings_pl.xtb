@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Udostępnianie za pomocą arkusza opinii na temat podsumowania zostało zamknięte</translation>
 <translation id="1089606299949659462">Sprawdzanie zakończone</translation>
 <translation id="1094555143448724771">Aby zobaczyć karty z innych urządzeń, zsynchronizuj karty i historię</translation>
-<translation id="1095142578254888918">Witryna <ph name="SITE_NAME" /> nie może wysyłać powiadomień</translation>
 <translation id="1095761715416917775">Zadbaj o to, by nigdy nie stracić dostępu do synchronizowanych danych</translation>
 <translation id="1100066534610197918">Otwórz w nowej karcie w grupie</translation>
 <translation id="1103142993930332957">Pomożesz w ulepszaniu Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1183189057400844278">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie Google</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{1 witryna nie może wysyłać powiadomień}few{# witryny nie mogą wysyłać powiadomień}many{# witryn nie może wysyłać powiadomień}other{# witryny nie może wysyłać powiadomień}}</translation>
 <translation id="1187810343066461819">Usuń też zakładki, historię i inne dane z tego samochodu</translation>
 <translation id="1193729455103054076">Użyć silnego hasła?</translation>
 <translation id="1197267115302279827">Przenieś zakładki</translation>
@@ -455,7 +453,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3080525922482950719">Możesz zapisać strony, by przeczytać je później lub offline</translation>
 <translation id="3087218211037573995">Niektóre hasła zapisane tylko na tym urządzeniu wkrótce przestaną działać. Możesz przenieść te hasła do Menedżera haseł Google.</translation>
 <translation id="3091010850649238832">Pokaż zawartość schowka</translation>
-<translation id="3093004810561729002">Ktoś</translation>
 <translation id="3098745985164956033">Niektóre obrazy są wysyłane do Google, żebyśmy mogli dostarczać Ci lepsze opisy</translation>
 <translation id="3114507951000454849">Przeczytaj dzisiejsze wiadomości <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Komunikaty</translation>
@@ -507,6 +504,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3407392651057365886">Wczytywanych jest więcej stron. Serwery Google mogą wstępnie wczytywać strony, gdy żądają tego inne witryny.</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
 <translation id="3421726884497337397">Zdecyduj, kiedy mają być blokowane pliki cookie innych firm</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# godz. temu}few{# godz. temu}many{# godz. temu}other{# godz. temu}}</translation>
 <translation id="3430670036890315772">Jeśli wyłączysz blokadę profilu, zostaną usunięte zapisane informacje</translation>
 <translation id="3435465986463792564">Masz sporo okien? Tutaj możesz nimi zarządzać</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
@@ -939,6 +937,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5517095782334947753">Masz zakładki, historię, hasła i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
 <translation id="5526281268548144413">Nie można zamknąć w kilku oknach</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# min temu}few{# min temu}many{# min temu}other{# min temu}}</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
 <translation id="5554520618550346933">Gdy użyjesz hasła, które zostało opublikowane online, Chrome wyświetli ostrzeżenie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
 <translation id="5555525474779371165">Wybierz poziom ochrony Bezpiecznego przeglądania</translation>

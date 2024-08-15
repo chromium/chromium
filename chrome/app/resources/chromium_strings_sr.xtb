@@ -27,7 +27,6 @@
  Bluetooth уређаје. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Избриши и податке из Chromium-а (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Пријављени сте на Chromium!</translation>
-<translation id="1465171403179274511">Chromium ће вас питати пре учитавања било ког сајта помоћу небезбедне везе</translation>
 <translation id="1478370723027452770">Потражите помоћ за верзију Chrome for Testing</translation>
 <translation id="1497802159252041924">Грешка при инсталацији: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Делите Chromium картицу</translation>
@@ -83,7 +82,6 @@
 <translation id="2210682093923538346">Опасан сајт. Chromium је уклонио обавештења.</translation>
 <translation id="2240214816234246077">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Ако делите рачунар, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе.</translation>
-<translation id="2265830994243640896">Chromium ће вас питати пре учитавања јавних сајтова помоћу небезбедне везе, али ће дозволити HTTP везе за приватне мреже</translation>
 <translation id="2313870531055795960">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chromium-у. Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетну датотеку, Chromium може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање.</translation>
 <translation id="2329088755516916767">Када је ово укључено, Chromium предучитава странице, што убрзава прегледање и претрагу.</translation>
 <translation id="2343156876103232566">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chromium на оба уређаја.</translation>
@@ -108,7 +106,6 @@
 <translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium ради брже и функције које користе JavaScript би требало да раде како је предвиђено (препоручено)</translation>
 <translation id="2648074677641340862">Током инсталације је дошло до грешке у оперативном систему. Преузмите Chromium поново.</translation>
-<translation id="2649201087614586016">Када је укључено, Chromium ће вас питати пре учитавања сајтова који не подржавају HTTPS</translation>
 <translation id="2661879430930417727">Ако делите уређај, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе</translation>
 <translation id="268602741124540128">Добро дошли у Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Картица Chromium</translation>

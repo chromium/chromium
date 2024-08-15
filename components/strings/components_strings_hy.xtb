@@ -24,6 +24,7 @@
 <translation id="1038106730571050514">Ցուցադրել առաջարկները</translation>
 <translation id="1038842779957582377">անհայտ անուն</translation>
 <translation id="1041998700806130099">Հաղորդագրություն առաջադրանքի թերթի վրա</translation>
+<translation id="1044897699341250361">Ինչ է սա նշանակում</translation>
 <translation id="1046350918013988591">Կուպոններ և զեղչեր</translation>
 <translation id="1048785276086539861">Երբ դուք խմբագրեք ծանոթագրությունները, փաստաթուղթը կցուցադրվի մեկ էջով</translation>
 <translation id="1050038467049342496">Փակեք մյուս հավելվածները</translation>
@@ -780,6 +781,7 @@
 <translation id="239429038616798445">Ուղարկման այս եղանակը հասանելի չէ: Փորձեք այլ եղանակ:</translation>
 <translation id="2395840535409704129">Ջրային մարզաձևեր</translation>
 <translation id="2396249848217231973">&amp;Հետարկել ջնջումը</translation>
+<translation id="2399344929880464793">Այս IBAN համարը պահված է ձեր Google հաշվում, ուստի կարող եք այն օգտագործել Google-ի ծառայություններում։</translation>
 <translation id="2399868464369312507">Google Chrome-ը փորձում է փոփոխել վճարման եղանակները։</translation>
 <translation id="2400600116338235695">Կարող է հայցել հաջորդական միացքներին միանալու թույլտվություն</translation>
 <translation id="2404884497378469141">Փորձեք նորից պատճենել ֆայլերը</translation>
@@ -1056,6 +1058,7 @@
 <translation id="2967098518029543669">պահեք այն ձեր Google հաշվում</translation>
 <translation id="297173220375858963">Համակարգչային շարվածք</translation>
 <translation id="2972581237482394796">&amp;Վերարկել</translation>
+<translation id="2974468223369775963">Չհաջողվեց պահել IBAN համարը ձեր Google հաշվում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։ Chrome-ը կառաջարկի կրկնել փորձը, երբ դուք նորից օգտագործեք այս IBAN համարը։</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ներկայումս ընտրված է: <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Կողպել և օգտագործել ձեր ստեղնաշարը</translation>
 <translation id="2978824962390592855">Օպերա</translation>
@@ -2658,6 +2661,7 @@
 <translation id="5999271311987646952">Chrome-ն ունի անվտանգության ներկառուցված գործառույթներ, որոնք պաշտպանում են ձեզ դիտարկման ժամանակ, օրինակ՝ Google Ապահով դիտարկումը, որը <ph name="BEGIN_LINK" />վերջերս վնասագիր է հայտնաբերել<ph name="END_LINK" /> կայքում, որը փորձում եք այցելել։</translation>
 <translation id="6000528814684428358">Հարդ ռոք և պրոգրեսիվ ռոք</translation>
 <translation id="6000758707621254961">«<ph name="SEARCH_TEXT" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
+<translation id="6001839398155993679">Եկեք սկսենք</translation>
 <translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6002968396561884726">Վերջին դիտումները</translation>
 <translation id="6005659677094197001">Շարունակական</translation>
@@ -3048,6 +3052,7 @@
 <translation id="6704458454638854812">Կարգավորված է «custom_size» հատկությունը։ Անվանումը պետք է լինի «custom»։</translation>
 <translation id="6706005862292023715">Վարագույրներ և պատուհանների ձևավորում</translation>
 <translation id="6706210727756204531">Ընդգրկույթ</translation>
+<translation id="6706678697074905703">Չհաջողվեց պահել IBAN համարը ձեր Google հաշվում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։</translation>
 <translation id="6709133671862442373">Նորություններ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6710594484020273272">&lt;Մուտքագրեք որոնման հարցումը&gt;</translation>
@@ -3065,6 +3070,7 @@
 <translation id="6735783933931458444">Օրվա այս ժամին դուք հաճախ այցելում եք</translation>
 <translation id="6737708609449480586">Թխվածքներ</translation>
 <translation id="6738516213925468394">Ձեր տվյալները գաղտնագրվել են <ph name="BEGIN_LINK" />համաժամացման ձեր անցաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք անցաբառը:</translation>
+<translation id="6739943577740687354">Այս գործառույթն օգտագործում է ԱԲ և երբեմն կարող է սխալներով աշխատել</translation>
 <translation id="6740851646645036700">Տեքստերի գեներացման սահմանաչափն այս պահին գերազանցվել է։ Փորձեք ավելի ուշ։</translation>
 <translation id="674375294223700098">Սերվերի վկայագրի անհայտ սխալ:</translation>
 <translation id="6744009308914054259">Քանի դեռ կապը չի վերականգնվել, դուք կարող եք անցնել «Ներբեռնումներ» բաժին և կարդալ առցանց հոդվածները:</translation>
@@ -3848,6 +3854,7 @@
 <translation id="8183800802493617952">Ընտանեկան խաղեր և զբաղմունքներ</translation>
 <translation id="8184538546369750125">Օգտագործել համընդհանուր կանխադրված արժեքը (Թույլատրել)</translation>
 <translation id="8186706823560132848">Ծրագրակազմ</translation>
+<translation id="8188830160449823068">IBAN համարը պահվեց միայն սարքում</translation>
 <translation id="8189557652711717875">Ձեր ընտրած որոնողական համակարգը կօգտագործվի, օրինակ, երբ դուք որոնում կատարեք հասցեագոտուց կամ վեբ էջերի պատկերների միջոցով։</translation>
 <translation id="8190193880870196235">Կառավարվում է ընդլայնման կողմից</translation>
 <translation id="8194412401381329820">Դուք չեք կարող այս էջն օգտագործել կառավարվող հաշվից այս չկառավարվող սարքում։ Եթե օգտագործեք այս էջը, բոլոր կառավարվող հաշիվները կկողպվեն՝ բացի հաշիվներից, որոնք կառավարվում են նույն կազմակերպության կողմից, ինչ այս սարքը (գործընկերոջ հաշիվներ)։</translation>
@@ -4450,5 +4457,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN-ի ավելացում</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay-ից</translation>
 </translationbundle>

@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Permite o son dun sitio específico.</translation>
 <translation id="789180354981963912">Bloquea as cookies de terceiros no modo de incógnito:</translation>
 <translation id="7940722705963108451">Lembrarmo</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="FPS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="FPS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
 <translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="7990211076305263060">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar o micrófono. Cando esta opción está desactivada, os sitios non poden utilizar o micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Non permitir que os sitios se conecten aos dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8541410041357371550">Este sitio obtén os teus temas de anuncios de Chrome para mostrarche anuncios máis relevantes</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitio de <ph name="FPS_OWNER" />}other{Cookies permitidas para <ph name="FPS_MEMBERS_COUNT" /> sitios de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8617611086246832542">Cando esta opción está activada, móstrase a vista para ordenadores dos sitios web. Cando esta opción está desactivada, móstrase a vista para dispositivos móbiles dos sitios web.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Xestionado por teus pais</translation>
 <translation id="9039697262778250930">A sesión pode pecharse neses sitios</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Este sitio está nun grupo que pode ver a túa actividade. O grupo definiuno <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Queres eliminar as cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> máis}}</translation>
 <translation id="913657688200966289">Activa os permisos para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>

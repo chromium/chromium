@@ -478,7 +478,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1340527397989195812">Seadme meediumi varundamine rakendusega Failid.</translation>
 <translation id="1341701348342335220">Hästi tehtud!</translation>
 <translation id="1342886103232377846">Ohustatud paroolide kontrollimiseks avage Google'i paroolihaldur</translation>
-<translation id="1343865611738742294">Andke Linuxi rakendustele luba USB-seadmetele juurde pääseda. Linux ei mäleta USB-seadet pärast selle eemaldamist.</translation>
 <translation id="1343920184519992513">Jätka sealt, kus pooleli jäin, ja ava konkreetne lehtede kogum</translation>
 <translation id="1344141078024003905">Olete oma ekraani üle kandmas. Saate ekraani ülekandmise igal ajal peatada või lõpetada.</translation>
 <translation id="1346403631707626730">Kasutus- ja diagnostikaandmete saatmine. Aidake täiustada oma lapse Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. <ph name="BEGIN_LINK1" />Lisateave mõõdikute kohta<ph name="BEGIN_LINK1_END" />Lisateave<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1588919647604819635">Paremklikiga seotud teabe saamine</translation>
 <translation id="1589055389569595240">Näita õigekirja ja grammatikat</translation>
 <translation id="1590478605309955960">Teie vahelehegrupid salvestuvad automaatselt ja neid värskendatakse kõikides teie sisselogitud seadmetes.</translation>
-<translation id="1591679663873027990">Andke üksusele Parallels Desktop luba USB-seadmetele juurde pääseda. Parallels Desktop ei jäta teie USB-seadet pärast eemaldamist meelde.</translation>
 <translation id="15916883652754430">Süsteemi hääleseaded</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> on ADB silumise keelanud, mis lähtestab teie seadme <ph name="DEVICE_TYPE" />. Enne taaskäivitamist varundage oma failid.</translation>
 <translation id="1592126057537046434">Tõlge kiirvastustes</translation>
@@ -1637,7 +1635,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2150139952286079145">Otsige sihtkohti</translation>
 <translation id="2150661552845026580">Kas lisada „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2151576029659734873">Sisestati vale vahelehe register.</translation>
-<translation id="2153809900849531051">Nebula</translation>
+<translation id="2153809900849531051">Udukogu</translation>
 <translation id="2154484045852737596">Kaardi muutmine</translation>
 <translation id="2155473371917268529">Praegune nähtavuse seade on Teie seadmed</translation>
 <translation id="2155772377859296191">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
@@ -2647,7 +2645,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2853121255651601031">Parool salvestati</translation>
 <translation id="2855243985454069333">Kustutab ajaloo kõigist sünkroonitud seadmetest</translation>
 <translation id="2855812646048059450">Logige sisse pakkujaga <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Range režiim</translation>
 <translation id="2856776373509145513">Uue konteineri loomine</translation>
 <translation id="2856907950922663165">Kas lülitada URL-i krüpteerimine välja?</translation>
 <translation id="2859741939921354763">Importige paroolid teenusesse <ph name="BRAND" /></translation>
@@ -2787,7 +2784,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2960942820860729477">Värskendussagedus</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (pikendatud)</translation>
 <translation id="2961695502793809356">Klõpsake edasi minemiseks, hoidke all ajaloo kuvamiseks</translation>
-<translation id="29618148602069201">Teema</translation>
+<translation id="29618148602069201">Motiiv</translation>
 <translation id="2963151496262057773">Järgmine pistikprogramm ei reageeri: <ph name="PLUGIN_NAME" />Kas soovite selle peatada?</translation>
 <translation id="2964193600955408481">Keela WiFi</translation>
 <translation id="2964245677645334031">Läheduses jagamine – nähtavus</translation>
@@ -2929,7 +2926,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3053273573829329829">Luba kasutaja PIN-kood</translation>
 <translation id="3053274730492362225">Ärge pilgutage silmi</translation>
 <translation id="3054766768827382232">Keelamine parandab teie välisseadmete jõudlust, kuid võib volitamata kasutamise käigus avalikustada teie isikuandmed.</translation>
-<translation id="3056438898277655057">Andke üksusele <ph name="SPECIFIC_NAME" /> luba USB-seadmetele juurde pääseda. <ph name="SPECIFIC_NAME" /> ei mäleta USB-seadet pärast selle eemaldamist.</translation>
 <translation id="3058498974290601450">Saate sünkroonimise seadetes alati sisse lülitada</translation>
 <translation id="3058517085907878899">Seadmele nime määramine</translation>
 <translation id="3059195548603439580">Kas otsite süsteemi komponente? Külastage saiti</translation>
@@ -3249,7 +3245,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3308134619352333507">Nupp Peida</translation>
 <translation id="3308604065765626613">{GROUP_COUNT,plural, =1{Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse jäädavalt.}other{Vahelehed jäävad selles seadmes avatuks, aga grupid kustutatakse jäädavalt.}}</translation>
 <translation id="3308852433423051161">Google'i assistendi laadimine …</translation>
-<translation id="3309124184713871355">Struktuurid</translation>
+<translation id="3309124184713871355">Ehitised</translation>
 <translation id="3309330461362844500">Sertifikaadi profiili ID</translation>
 <translation id="3311445899360743395">Selle rakendusega seostatud andmed võidakse seadmest eemaldada.</translation>
 <translation id="3312470654018965389">Seadistatakse Linuxi konteinerit</translation>
@@ -7784,7 +7780,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6662931079349804328">Ettevõtte reegel on muutunud. Tööriistaribalt on eemaldatud katsete nupp.</translation>
 <translation id="6663190258859265334">Rakendage seadmes <ph name="DEVICE_TYPE" /> funktsioon Powerwash ja naaske eelmisele versioonile.</translation>
 <translation id="6664774537677393800">Teie profiili avamisel läks midagi valesti. Logige välja ja seejärel uuesti sisse.</translation>
-<translation id="6665874326033183068">Wild</translation>
+<translation id="6665874326033183068">Metsik</translation>
 <translation id="6666559645296300656">Linuxi versiooniuuenduse tühistamine</translation>
 <translation id="6667086124612170548">Fail on selle seadme jaoks liiga suur</translation>
 <translation id="6667092961374478614">Funktsiooni <ph name="FEATURE_NAME" /> leitavus</translation>
@@ -8544,7 +8540,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7222335051802562841">Viige värskendamine lõpule</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">See lubab süsteemiteenustel kasutada teie asukoha tuvastamiseks asukohatäpsust. Asukohatäpsus kasutab seadme asukoha määramiseks teavet juhtmeta signaalide ja andurite kohta.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 sait omaniku <ph name="FPS_OWNER" /> grupis}other{{MEMBERS} saiti omaniku <ph name="FPS_OWNER" /> grupis}}</translation>
 <translation id="7225082563376899794">Kasuta paroolide sisestamisel teenust Windows Hello</translation>
 <translation id="7225179976675429563">Võrgu tüüp puudub</translation>
 <translation id="7227235818314667565">Jagamise haldamine</translation>
@@ -9922,7 +9917,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8207404892907560325">Valige pääsuvõti</translation>
 <translation id="8207794858944505786">Virtuaalmasin „<ph name="DEFAULT_VM_NAME" />“ on olemas, aga näib, et see pole sobivat tüüpi (<ph name="VM_TYPE" />) virtuaalmasin. Võtke ühendust administraatoriga.</translation>
 <translation id="8207901006380134182">Suur laine pühib üle ookeani, kaldal on tume mets.</translation>
-<translation id="8208188204689616705">Need saidid on omaniku <ph name="FPS_OWNER" /> määratletud grupis. Grupis olevad saidid saavad teie tegevusi grupis vaadata.</translation>
 <translation id="8208216423136871611">Ära salvesta</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uus märguanne}other{# uut märguannet}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Allalaadimine on pooleli}other{Allalaadimised on pooleli}}</translation>
@@ -11049,7 +11043,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9009707268312089299">Imporditud Windowsist</translation>
 <translation id="9009708085379296446">Kas muutsite seda lehte tahtlikult?</translation>
 <translation id="9010845741772269259">Makseviiside lisamine</translation>
-<translation id="901087299639956505">Tasakaalus režiim</translation>
 <translation id="9011163749350026987">Kuva alati ikoon</translation>
 <translation id="9011262023858991985">Seda vahelehte kantakse üle</translation>
 <translation id="9011393886518328654">Väljalaskemärkmed</translation>
@@ -11216,7 +11209,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9114663181201435112">Lihtne sisselogimine</translation>
 <translation id="9115675100829699941">&amp;Järjehoidjad</translation>
 <translation id="9115932142612197835">See seade ei muuda Google'i tõlke ega Lensi saadavust</translation>
-<translation id="9116366756388192417">Valige subjekt</translation>
+<translation id="9116366756388192417">Valige motiiv</translation>
 <translation id="9116799625073598554">Märkmete tegemise rakendus</translation>
 <translation id="9117030152748022724">Rakenduste haldamine</translation>
 <translation id="9119587891086680311">Nendes funktsioonides kasutatakse AI-d, need on varajases arengujärgus ega anna alati õigeid vastuseid.</translation>

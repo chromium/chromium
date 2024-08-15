@@ -26,7 +26,6 @@
 <translation id="1324107359134968521">Bluetooth құрылғыларын табу үшін Chromium-ге Bluetooth пайдалану рұқсаты қажет. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Деректерді Chromium-нен (<ph name="URL" />) де жою</translation>
 <translation id="1414495520565016063">Chromium жүйесіне кірдіңіз!</translation>
-<translation id="1465171403179274511">Chromium кез келген сайтты қауіпті байланыс арқылы жүктеу алдында сізден рұқсат сұрайды.</translation>
 <translation id="1478370723027452770">Chrome for Testing бойынша анықтама алу</translation>
 <translation id="1497802159252041924">Орнату қатесі: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium қойындысын бөлісу</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">Сайт қауіпті. Chromium хабарландыруларды өшірді.</translation>
 <translation id="2240214816234246077">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсаттарын өшірді.</translation>
 <translation id="2241627712206172106">Компьютерді бөлісетін болсаңыз, достарыңыз интернетке бөлек кіріп, Chromium жүйесін қалауынша орната алады.</translation>
-<translation id="2265830994243640896">Chromium баршаға ашық сайттарды қауіпті байланыс арқылы жүктеу алдында сізден рұқсат сұрайды, бірақ жеке желілер үшін HTTP байланыстарына рұқсат береді.</translation>
 <translation id="2313870531055795960">URL мекенжайларын Chromium браузерінде сақталған қауіпсіз емес сайттар тізімімен салыстырып тексереді. Егер сайт құпия сөзіңізді ұрлағысы келсе немесе зиянды файлды жүктеп алсаңыз, Chromium браузері URL мекенжайларын, сондай-ақ бет контенті бөліктерін Safe Browsing қызметіне жіберуі мүмкін.</translation>
 <translation id="2329088755516916767">Қосылса, Chromium беттерді алдын ала жүктейді, осылайша браузерді пайдалану және іздеу әрекеті тез жүреді.</translation>
 <translation id="2343156876103232566">Нөмірді осы жерден Android телефонына жіберу үшін екі құрылғыда да Chromium браузеріне кіріңіз.</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">Жүктеп алынған орнату құралы кэштелмеді. Қате: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium жылдам жұмыс істейді және JavaScript қолданатын функциялар тиісті түрде жұмыс істеуі керек (ұсынылады).</translation>
 <translation id="2648074677641340862">Орнату барысында операциялық жүйе қатесі орын алды. Chromium қайта жүктеңіз.</translation>
-<translation id="2649201087614586016">Қосулы болса, Chromium браузері HTTPS протоколына қолдау көрсетпейтін сайттарды жүктеу алдында сізден рұқсат сұрайды.</translation>
 <translation id="2661879430930417727">Құрылғыңызды басқа адамдар да пайдаланатын болса, достарыңыз және отбасыңыздың мүшелері интернетке бөлек кіріп, Chromium параметрлерін өздері қалағандай орната алады.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, Chromium браузеріне қош келдіңіз!</translation>
 <translation id="2711502716910134313">Chromium қойындысы</translation>

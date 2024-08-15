@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Prikažite predloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
+<translation id="1044897699341250361">Šta to znači</translation>
 <translation id="1046350918013988591">Kuponi i popusti</translation>
 <translation id="1048785276086539861">Kada izmenite komentare, ovaj dokument se vraća na prikaz pojedinačne stranice.</translation>
 <translation id="1050038467049342496">Zatvorite druge aplikacije</translation>
@@ -2659,6 +2660,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5999271311987646952">Chrome ima ugrađene bezbednosne funkcije koje vas štite tokom pregledanja – kao što je Google bezbedno pregledanje, koje je <ph name="BEGIN_LINK" />nedavno pronašlo malver<ph name="END_LINK" /> na sajtu koji pokušavate da posetite.</translation>
 <translation id="6000528814684428358">Hard rok i progresivni rok</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultata za „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Idemo</translation>
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6002968396561884726">Nedavno pregledano</translation>
 <translation id="6005659677094197001">Neprekidno</translation>
@@ -3066,6 +3068,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6735783933931458444">Često posećujete u ovo doba dana</translation>
 <translation id="6737708609449480586">Pekarski proizvodi</translation>
 <translation id="6738516213925468394">Podaci su šifrovani pomoću <ph name="BEGIN_LINK" />pristupne fraze<ph name="END_LINK" /> (<ph name="TIME" />). Unesite je da biste započeli sinhronizaciju.</translation>
+<translation id="6739943577740687354">Ova funkcija koristi veštačku inteligenciju i neće uvek raditi kako treba</translation>
 <translation id="6740851646645036700">Dostigli ste ograničenje pomoći za pisanje. Probajte ponovo kasnije.</translation>
 <translation id="674375294223700098">Nepoznata greška sertifikata servera.</translation>
 <translation id="6744009308914054259">Dok čekate na vezu, posetite Preuzimanja i čitajte oflajn članke.</translation>
@@ -4458,5 +4461,6 @@ Dodatni detalji:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Dodajte IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Sa Google Pay-a</translation>
 </translationbundle>

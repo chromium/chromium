@@ -479,7 +479,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
 <translation id="1341701348342335220">Sådan!</translation>
 <translation id="1342886103232377846">Gå til Google Adgangs­kode­admin­istrator for at tjekke, om der er kompromitterede adgangskoder</translation>
-<translation id="1343865611738742294">Giv Linux-apps adgang til USB-enheder. Linux husker ikke en USB-enhed, når den er fjernet.</translation>
 <translation id="1343920184519992513">Fortsæt, hvor du slap, og åbn en bestemt række sider</translation>
 <translation id="1344141078024003905">Du caster din skærm. Du kan til enhver tid sætte din casting af skærmen på pause eller stoppe den.</translation>
 <translation id="1346403631707626730">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Noget dataaggregering hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger om metrics<ph name="BEGIN_LINK1_END" />Få flere oplysninger<ph name="END_LINK1" /></translation>
@@ -822,7 +821,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1588919647604819635">Kort ved højreklik</translation>
 <translation id="1589055389569595240">Vis stavning og grammatik</translation>
 <translation id="1590478605309955960">Dine fanegrupper gemmes og opdateres automatisk på alle de enheder, hvor du er logget ind.</translation>
-<translation id="1591679663873027990">Giv Parallels Desktop adgang til USB-enheder. Parallels Desktop husker ikke en USB-enhed, efter den er blevet fjernet.</translation>
 <translation id="15916883652754430">Stemmeindstillinger for system</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> har deaktiveret ADB-fejlretning, hvilket nulstiller din <ph name="DEVICE_TYPE" />. Sikkerhedskopiér dine filer, før du genstarter.</translation>
 <translation id="1592126057537046434">Oversættelse i Hurtig info</translation>
@@ -2657,7 +2655,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2853121255651601031">Adgangskoden er blevet gemt</translation>
 <translation id="2855243985454069333">Sletter historikken fra alle synkroniserede enheder</translation>
 <translation id="2855812646048059450">Log ind med <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Striks tilstand</translation>
 <translation id="2856776373509145513">Opret en ny container</translation>
 <translation id="2856907950922663165">Vil du deaktivere webadressekryptering?</translation>
 <translation id="2859741939921354763">Importér adgangskoder til <ph name="BRAND" /></translation>
@@ -2939,7 +2936,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3053273573829329829">Aktivér brugerens pinkode</translation>
 <translation id="3053274730492362225">Blink ikke</translation>
 <translation id="3054766768827382232">Deaktivering af denne indstilling kan forbedre dine eksterne enheders ydeevne, men kan også kompromittere dine personoplysninger, hvis nogen får uautoriseret adgang til dem.</translation>
-<translation id="3056438898277655057">Giv <ph name="SPECIFIC_NAME" /> adgang til USB-enheder. <ph name="SPECIFIC_NAME" /> husker ikke en USB-enhed, når den er fjernet.</translation>
 <translation id="3058498974290601450">Du kan til enhver tid aktivere synkronisering i indstillingerne</translation>
 <translation id="3058517085907878899">Navngiv enheden</translation>
 <translation id="3059195548603439580">Leder du efter systemkomponenter? Gå til</translation>
@@ -8556,7 +8552,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7222335051802562841">Gennemfør opdatering</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Dette giver systemtjenester tilladelse til at anvende Lokationsnøjagtighed til at fastslå din lokation. Lokationsnøjagtighed anvender oplysninger om trådløse signaler og sensorer til at estimere enhedens lokation.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 website i gruppen tilhørende <ph name="FPS_OWNER" />}one{{MEMBERS} website i gruppen tilhørende <ph name="FPS_OWNER" />}other{{MEMBERS} websites i gruppen tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Brug Windows Hello til at udfylde adgangskoder</translation>
 <translation id="7225179976675429563">Netværkstype mangler</translation>
 <translation id="7227235818314667565">Administrer deling</translation>
@@ -9933,7 +9928,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8207404892907560325">Vælg en adgangsnøgle</translation>
 <translation id="8207794858944505786">Den virtuelle maskine "<ph name="DEFAULT_VM_NAME" />" findes, men ser ikke ud til at være en gyldig virtuel maskine af typen <ph name="VM_TYPE" />. Kontakt din administrator.</translation>
 <translation id="8207901006380134182">En stor bølge, der omslutter havet ved en mørk skov.</translation>
-<translation id="8208188204689616705">Disse websites er i en gruppe, der er defineret af <ph name="FPS_OWNER" />. Websites i en gruppe kan se din aktivitet i gruppen.</translation>
 <translation id="8208216423136871611">Gem ikke</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny notifikation}one{# ny notifikation}other{# nye notifikationer}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Downloaden er i gang}one{Downloaden er i gang}other{Downloadene er i gang}}</translation>
@@ -11062,7 +11056,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9009707268312089299">Importeret fra Windows</translation>
 <translation id="9009708085379296446">Ville du ændre denne side?</translation>
 <translation id="9010845741772269259">Tilføj betalingsmetoder</translation>
-<translation id="901087299639956505">Balanceret tilstand</translation>
 <translation id="9011163749350026987">Vis altid ikon</translation>
 <translation id="9011262023858991985">Caster denne fane</translation>
 <translation id="9011393886518328654">Produktbemærkninger</translation>

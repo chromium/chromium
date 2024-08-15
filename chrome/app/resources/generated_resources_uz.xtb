@@ -478,7 +478,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1340527397989195812">Fayllar ilovasi yordamida qurilmadagi mediani zaxiralang.</translation>
 <translation id="1341701348342335220">Barakalla!</translation>
 <translation id="1342886103232377846">Oshkor etilgan parollarni tekshirish uchun Google Parollar Menejerini oching</translation>
-<translation id="1343865611738742294">Linux ilovalar uchun USB qurilmalarga ruxsat berish. USB qurilma olinganidan keyin Linux uni eslab qolmaydi.</translation>
 <translation id="1343920184519992513">Qolgan joyingizdan davom eting va maxsus sahifalar jamlanmasini oching</translation>
 <translation id="1344141078024003905">Ekran translatsiya qilinmoqda. Ekran translatsiyasini instalgan vaqt pauza qilish yoki tugatish mumkin.</translation>
 <translation id="1346403631707626730">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim jamlangan axborotlar Google ilovalari va Android dasturchilar kabi hamkorlarga ham yordam beradi. Agar farzandingiz uchun Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi. <ph name="BEGIN_LINK1" />Koʻrsatkichlar haqida <ph name="BEGIN_LINK1_END" />batafsil<ph name="END_LINK1" /></translation>
@@ -818,7 +817,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1588919647604819635">Kartani oʻng klik bilan bosing</translation>
 <translation id="1589055389569595240">Imlo va grammatika tekshiruvini ko‘rsatish</translation>
 <translation id="1590478605309955960">Varaqlar guruhi hisobga kirilgan barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi</translation>
-<translation id="1591679663873027990">Parallels Desktopga USB qurilmalardagi fayllarni ochishga ruxsat bering. USB qurilma olinganidan keyin Parallels Desktop uni eslab qolmaydi.</translation>
 <translation id="15916883652754430">Tizim ovozi sozlamalari</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ADB tuzatish vositasini faolsizlantirdi, <ph name="DEVICE_TYPE" /> sozlamalari asliga qaytariladi. Qayta yoqishdan avval fayllaringiz zaxiralanmoqda.</translation>
 <translation id="1592126057537046434">Tezkor javoblar tarjimasi</translation>
@@ -2645,7 +2643,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2853121255651601031">Parol saqlandi</translation>
 <translation id="2855243985454069333">Sinxronlangan barcha qurilmalardagi brauzer tarixini oʻchirib tashlaydi</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> bilan kirish</translation>
-<translation id="28559674945112027">Qatʼiy rejim</translation>
 <translation id="2856776373509145513">Yangi konteyner yaratish</translation>
 <translation id="2856907950922663165">URL shifrlanishi faolsizlantirilsinmi?</translation>
 <translation id="2859741939921354763">Parollarni <ph name="BRAND" /> ga import qilish</translation>
@@ -2927,7 +2924,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3053273573829329829">PIN bilan qulflash mumkin</translation>
 <translation id="3053274730492362225">Miltillamasin</translation>
 <translation id="3054766768827382232">Bu harakat tashqi qurilmalarning ishlashini yaxshilashi mumkin, ammo shu bilan birga shaxsiy maʼlumotlaringizni oshkor etish xavfini oshiradi.</translation>
-<translation id="3056438898277655057"><ph name="SPECIFIC_NAME" /> uchun USB qurilmalarga ruxsat berish mumkin. USB qurilma olinganidan keyin <ph name="SPECIFIC_NAME" /> uni eslab qolmaydi.</translation>
 <translation id="3058498974290601450">Istalgan vaqt sozlamalar orqali sinxronizatsiyani yoqish mumkin</translation>
 <translation id="3058517085907878899">Qurilma nomi</translation>
 <translation id="3059195548603439580">Tizim komponentlarini qidiryapsizmi? Bu sahifaga kiring</translation>
@@ -8539,7 +8535,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7222335051802562841">Yangilashni tugatish</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Bunda joylashuvingizni aniqlash uchun tizim xizmatlari Joylashuv aniqligidan foydalanishga ruxsat oladi. Joylashuv aniqligi qurilma joylashuvini taxmin qilishida simsiz signallar va sensorlar haqidagi axborotlardan foydalanadi.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />ning guruhida 1 ta sayt bor}other{<ph name="FPS_OWNER" />ning guruhida {MEMBERS} ta sayt bor}}</translation>
 <translation id="7225082563376899794">Parollarni kiritishda Windows Hello ishlating</translation>
 <translation id="7225179976675429563">Tarmoq turi ko‘rsatilmagan</translation>
 <translation id="7227235818314667565">Ulashuvni boshqarish</translation>
@@ -9919,7 +9914,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8207404892907560325">Kodni tanlash</translation>
 <translation id="8207794858944505786"><ph name="DEFAULT_VM_NAME" /> virtual mashinasi mavjud, lekin yaroqli <ph name="VM_TYPE" /> VM emas, shekilli. Administratorga murojaat qiling.</translation>
 <translation id="8207901006380134182">Qorongʻi oʻrmon sohilidagi okeandan urayotgan yirik dengiz toʻlqini</translation>
-<translation id="8208188204689616705">Bu saytlar <ph name="FPS_OWNER" /> guruhiga kiradi. Guruhdagi saytlar guruhdagi faoliyatni koʻra oladi.</translation>
 <translation id="8208216423136871611">Saqlanmasin</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Yangi bildirishnoma}other{# ta yangi bildirishnoma}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Yuklab olinmoqda}other{Yuklab olinmoqda}}</translation>
@@ -11046,7 +11040,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9009707268312089299">Windowsdan import qilingan</translation>
 <translation id="9009708085379296446">Bu sahifa oʻzgartirilsinmi?</translation>
 <translation id="9010845741772269259">Toʻlov usullarini kiritish</translation>
-<translation id="901087299639956505">Muvozanatli rejim</translation>
 <translation id="9011163749350026987">Doim ikonka ko‘rsatilsin</translation>
 <translation id="9011262023858991985">Bu varaq uzatilmoqda</translation>
 <translation id="9011393886518328654">Reliz izohlari</translation>

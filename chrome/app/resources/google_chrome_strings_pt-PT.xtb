@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Esta extensão já não é suportada. O Chrome recomenda que a remova.</translation>
 <translation id="1812689907177901597">Ao desativar esta opção, pode iniciar sessão nos sites da Google como o Gmail sem iniciar sessão no Chrome.</translation>
 <translation id="1860536484129686729">O Chrome necessita de autorização de acesso à câmara para este site.</translation>
-<translation id="1861924772887221906">O Chrome pergunta-lhe antes de carregar sites públicos através de uma ligação insegura, mas permite ligações HTTP para redes privadas</translation>
 <translation id="1873233029667955273">O Google Chrome não é o seu navegador predefinido.</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">O Chrome está desatualizado</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chrome para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="3597003331831379823">Falha ao executar a configuração com privilégios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">O Chrome pergunta-lhe antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="3622797965165704966">Agora é mais fácil utilizar o Chrome com a sua Conta Google e em computadores partilhados.</translation>
 <translation id="3635073343384702370">O Chrome consegue verificar as suas palavras-passe quando as guarda</translation>
 <translation id="3667616615096815454">Não é possível instalar. O servidor não reconhece a aplicação.</translation>
@@ -450,7 +448,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
 <translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google. Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
-<translation id="7324120788743384890">Quando esta opção está ativada, o Chrome pergunta-lhe antes de carregar sites que não suportam HTTPS</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7352881504289275361">A Navegação segura melhorada oferece a proteção online mais avançada do Chrome para manter a sua segurança enquanto navega</translation>
 <translation id="7394745511930161845">Crie o seu tema com a IA para dar um aspeto único ao seu navegador</translation>

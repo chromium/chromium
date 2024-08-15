@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
 <translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">如果啟用，網站就可以要求使用麥克風。如果停用，網站將無法使用麥克風。</translation>
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8541410041357371550">這個網站會從 Chrome 中取得你的廣告主題，為你顯示更貼近需求的廣告</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">已允許 (建議)</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">如果啟用，系統將顯示網站的電腦檢視畫面。如果停用，系統將顯示網站的行動裝置檢視畫面。</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">你的家長已停用這項功能</translation>
 <translation id="9039697262778250930">系統可能已將你登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>
-<translation id="9090268041676521955">這個網站所屬的群組可以查看你的活動。這是 <ph name="FPS_OWNER" /> 定義的群組</translation>
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>

@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">સૂચનો બતાવો</translation>
 <translation id="1038842779957582377">અજ્ઞાત નામ</translation>
 <translation id="1041998700806130099">જોબ શીટ સંદેશ</translation>
+<translation id="1044897699341250361">આનો અર્થ શું છે</translation>
 <translation id="1046350918013988591">કૂપન અને ડિસ્કાઉન્ટ ઑફર</translation>
 <translation id="1048785276086539861">જ્યારે તમે ટીકાટિપ્પણીમાં ફેરફાર કરશો, ત્યારે આ દસ્તાવેજ 'એક પેજના વ્યૂ' પર પાછો ફરશે</translation>
 <translation id="1050038467049342496">અન્ય ઍપ્લિકેશનો બંધ કરો</translation>
@@ -65,6 +66,7 @@
 <translation id="1104860668737945357">'પાસવર્ડ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારા પાસવર્ડ જોવા અને તેમને મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> માટે પરવાનગી પસંદ કરો</translation>
+<translation id="1113000785583998331">IBAN સાચવીએ?</translation>
 <translation id="1113869188872983271">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
 <translation id="1118429183611783760">વેક્યૂમ ક્લિનર અને ફ્લોરની સંભાળ</translation>
 <translation id="1122714970786750095">ઇલેક્ટ્રોનિક અને ઇલેક્ટ્રિકલ</translation>
@@ -164,6 +166,7 @@
 <translation id="1282358575813748144">હોડીઓ અને નૌકા</translation>
 <translation id="1283977499362032052">રેઝ્યૂમે અને પોર્ટફોલિયો</translation>
 <translation id="1285320974508926690">આ સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="1288259082801959119">એકવાર તમે આની નીચેના ડ્રૉપડાઉન મેનૂમાંથી કંઈક પસંદ કરો તે પછી અહીં કંઈક દેખાશે</translation>
 <translation id="1292571435393770077">ટ્રે 16</translation>
 <translation id="1292701964462482250">"તમારા કમ્પ્યુટરમાંનું સૉફ્ટવેર Chromeને સુરક્ષિત રીતે વેબ સાથે કનેક્ટ થવાથી અટકાવે છે" (માત્ર Windows કમ્પ્યુટર)</translation>
 <translation id="1293797321964802402">એન્વલપ 9 x 11 ઇંચ</translation>
@@ -178,6 +181,7 @@
 <translation id="1308113895091915999">ઑફર ઉપલબ્ધ છે</translation>
 <translation id="1309375166585231290">તમારા માતાપિતાએ તે ઠીક હોવાનું હજુ જણાવ્યું નથી</translation>
 <translation id="1310677614877521969">વેબ હોસ્ટિંગ</translation>
+<translation id="1310938305420497484">પહેલા, ટૅબ ખોલો અને સાઇટની મુલાકાત લો</translation>
 <translation id="1314311879718644478">ઑગ્મેન્ટેડ રિયાલિટી કન્ટેન્ટ જુઓ</translation>
 <translation id="1314509827145471431">જમણી બાજુએ જોડો</translation>
 <translation id="1316805916535763484">ઓપન ઑનલાઇન અભ્યાસક્રમો</translation>
@@ -215,6 +219,7 @@
 <translation id="1363819917331173092">પેજનો <ph name="SOURCE_LANGUAGE" />માં અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
 <translation id="1364822246244961190">આ પૉલિસી બ્લૉક કરેલ છે, તેનું મૂલ્ય અવગણવામાં આવશે.</translation>
 <translation id="1368318639262510626">Dino ગેમ. પિક્સેલવાળો ડાઇનોસોર જે વેરાન પ્રદેશમાં કાંટાવાળા છોડ અને વિશાળકાય પક્ષીઓથી બચવા માટે કૂદકા મારીને આગળ ભાગતો જાય છે. જ્યારે તમને ઑડિયો સંકેત સંભળાય, ત્યારે કૂદકા મારીને અવરોધો પાર કરવા માટે સ્પેસ કી દબાવો.</translation>
+<translation id="1370751323199669551">તુલના કરવા વિશે વધુ જાણો.</translation>
 <translation id="1374468813861204354">સૂચનો</translation>
 <translation id="1375198122581997741">વર્ઝન વિશે</translation>
 <translation id="1375293861397106342">સામાન્ય રીતે તમામ વિકલ્પો <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /></translation>
@@ -334,6 +339,7 @@
 <translation id="1584492003828271317">જેમ-જેમ તમે બ્રાઉઝ કરો, તેમ-તેમ તમને દેખાતી જાહેરાત મનગમતી બનાવેલી છે કે નહીં અને તમે જોઈ રહ્યાં છો તે સાઇટ જાહેરાતોને મનગમતી બનાવે છે કે નહીં એ બાબત આ સેટિંગ, સાઇટે સૂચવેલી જાહેરાતો તથા તમારી કુકીનાં સેટિંગ પર આધારિત હોય છે</translation>
 <translation id="1586541204584340881">તમે કયા એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે</translation>
 <translation id="1588438908519853928">સામાન્ય</translation>
+<translation id="159103247796286390">ટેબલનું નામ બદલો</translation>
 <translation id="1592005682883173041">સ્થાનિક ડેટા ઍક્સેસ</translation>
 <translation id="159274626729231974">ફિલ્મ ફેસ્ટિવલ</translation>
 <translation id="1593359183944365958">270 ડિગ્રી</translation>
@@ -376,6 +382,7 @@
 <translation id="1662550410081243962">ચુકવણી પદ્ધતિઓ સાચવો અને ભરો</translation>
 <translation id="1663943134801823270">કાર્ડ અને સરનામા Chromeમાંથી છે. તમે તેને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં મેનેજ કરી શકો છો.</translation>
 <translation id="1664389769577564606">ફ્લેક્સો ફોટોપોલિમર</translation>
+<translation id="166624440456221306">તુલનાનું ટેબલ ડિલીટ કરો</translation>
 <translation id="1668071460721346172">ઇમેઇલ મેળવો</translation>
 <translation id="1671391448414634642">હવેથી <ph name="SOURCE_LANGUAGE" />માં છે તે પેજનો અનુવાદ <ph name="TARGET_LANGUAGE" />માં થશે.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />થી<ph name="TARGET_LANGUAGE" /></translation>
@@ -1379,6 +1386,8 @@
 <translation id="3567901620846335314">100 x 150 મિમી</translation>
 <translation id="3568886473829759308">વ્યવસાય દ્વારા પ્રદાન કરવામાં આવેલી માહિતી, સંસાધનો કે સેવાઓ જોવા માટે વેબસાઇટને ઍક્સેસ કરો.</translation>
 <translation id="3570079787344939099">સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
+<translation id="357244642999988503">કૉલમ કાઢી નાખો</translation>
+<translation id="3572827863357388784">આ એક પ્રાયોગિક સુવિધા છે અને તે હંમેશાં સાચી જ હોય, એવું જરૂરી નથી.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">આ સાઇટ માટે મંજૂરી આપો</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1815,6 +1824,7 @@
 <translation id="4340810192899866471">JSON પરથી આયાત કરો</translation>
 <translation id="4340982228985273705">આ કમ્પ્યુટર એન્ટરપ્રાઇઝ દ્વારા મેનેજ થતું હોય તેવું જણાયું નથી, તેથી પૉલિસી માત્ર Chrome Webstore પર હોસ્ટ થયેલા એક્સ્ટેન્શન ઑટોમૅટિક રીતે ઇન્સ્ટૉલ કરી શકશે. Chrome Webstore અપડેટનું URL "<ph name="CWS_UPDATE_URL" />" છે.</translation>
 <translation id="4342742994656318294">થીમ પાર્ક</translation>
+<translation id="4344072791302852930">ટૅબ ઉમેરો</translation>
 <translation id="4348834659292907206"><ph name="SITE" />નું કનેક્શન સુરક્ષિત નથી</translation>
 <translation id="4349365535725594680">ગોપનીય કન્ટેન્ટ શેર કરી શકાતું નથી</translation>
 <translation id="4349810866125026513">કોઈપણ રીતે અપલોડ કરો</translation>
@@ -2221,6 +2231,7 @@
 <translation id="5147633291963801297">બાજુની પૅનલમાં કિંમતમાં ઘટાડો જુઓ</translation>
 <translation id="5148809049217731050">ઉપર તરફ</translation>
 <translation id="5148889558173091794">તમારી સંસ્થાએ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ને બ્લૉક કર્યું છે, કારણ કે તે કોઈ પૉલિસીનું ઉલ્લંઘન કરે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5153578295462758702">અમુક માહિતી ખૂટે છે</translation>
 <translation id="5157504274688344097">થોક વેપારીઓ અને ડિપાર્ટમેન્ટ સ્ટોર</translation>
 <translation id="5158275234811857234">કવર</translation>
 <translation id="5159010409087891077">એક નવી છુપી વિંડોમાં પેજ ખોલો (⇧⌘N)</translation>
@@ -2649,6 +2660,7 @@
 <translation id="5999271311987646952">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing, જે સુવિધા દ્વારા તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો તે સાઇટ પર <ph name="BEGIN_LINK" />તાજેતરમાં માલવેર શોધવા<ph name="END_LINK" />માં આવ્યું હતું.</translation>
 <translation id="6000528814684428358">હાર્ડ રૉક અને પ્રોગ્રેસિવ મ્યુઝિક</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' માટે <ph name="RESULT_COUNT" /> પરિણામ</translation>
+<translation id="6001839398155993679">ચાલો જઈએ</translation>
 <translation id="6002122790816966947">તમારા ડિવાઇસ</translation>
 <translation id="6002968396561884726">તાજેતરમાં જોવાયેલી</translation>
 <translation id="6005659677094197001">સતત</translation>
@@ -3057,6 +3069,7 @@
 <translation id="6735783933931458444">તમે દિવસના આ સમયે વારંવાર મુલાકાત લો છો</translation>
 <translation id="6737708609449480586">બૅક કરેલી વસ્તુઓ</translation>
 <translation id="6738516213925468394">તમારો ડેટા <ph name="TIME" />ના રોજ તમારા <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
+<translation id="6739943577740687354">આ સુવિધા AIનો ઉપયોગ કરે છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી</translation>
 <translation id="6740851646645036700">તમે અત્યારે તમારી લેખન સંબંધી સહાયની મર્યાદા સુધી પહોંચી ગયા છો. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="674375294223700098">અજ્ઞાત સર્વર પ્રમાણપત્ર ભૂલ.</translation>
 <translation id="6744009308914054259">કનેક્શન માટે રાહ જોતી વખતે, ઑફલાઇન લેખ વાંચવા માટે તમે ડાઉનલોડની મુલાકાત લઈ શકો.</translation>
@@ -4178,6 +4191,7 @@
 <translation id="8811470563853401328">એકાઉન્ટમાં ઍડ્રેસ સાચવીએ?</translation>
 <translation id="8811725516933141693">Gemini સાથે ચૅટ કરવા માટે, @gemini ટાઇપ કરો</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
+<translation id="8814547618907885931">બધા તુલનાના ટેબલ જુઓ</translation>
 <translation id="8814707942599948500">એન્વલપ C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
@@ -4347,6 +4361,7 @@
 <translation id="9144951720726881238">સમાપ્તિ તારીખ:</translation>
 <translation id="9145910032514306808">ફરીથી <ph name="BEGIN_LINK" />સાઇન ઇન કરો<ph name="END_LINK" />
     અને ત્યારબાદ લેખન સંબંધિત સહાય મેળવવા માટે આ ટૅબ પર પાછા આવો</translation>
+<translation id="9145936855791010051">સરખામણી કરો</translation>
 <translation id="9148507642005240123">&amp;છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="9148599396704355100">કિંમત ઓછી છે</translation>
 <translation id="9150025764986957246">તમે આના જેવી વસ્તુઓ દાખલ કરી શકો છો:</translation>
@@ -4444,5 +4459,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ઉમેરો</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay માંથી</translation>
 </translationbundle>

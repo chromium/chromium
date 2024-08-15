@@ -359,6 +359,7 @@
 <translation id="2318576281648121272">ఈ రోజు <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , సెర్చ్ ఫలితం కేటగిరీ</translation>
 <translation id="2322173485024759474">ఒక అక్షరం వెనుకకు</translation>
+<translation id="2326112202058075478">మరిన్ని ఎమోజీలను చూడండి</translation>
 <translation id="2335091074961603075">మీ Chromebook లేదా బ్లూటూత్ పరికరం, బ్లూటూత్ పాత వెర్షన్‌ను ఉపయోగిస్తున్నాయి. మెరుగైన ఆడియో క్వాలిటీ కోసం అంతర్గత మైక్రోఫోన్‌ను ఉపయోగించండి.</translation>
 <translation id="2339073806695260576">గమనికను రాయడానికి, స్క్రీన్‌షాట్‌ను తీయడానికి, లేజర్ పాయింటర్ లేదా భూతద్దాన్ని ఉపయోగించడానికి అరలో స్టయిలస్ బటన్‌ను నొక్కండి.</translation>
 <translation id="2341729377289034582">నిలువు ప్రదర్శనకు లాక్ చేయబడింది</translation>
@@ -405,6 +406,7 @@
 <translation id="246052086404491029">యూజర్ సమాచారానికి వెళ్లండి</translation>
 <translation id="2465145153332031561">బ్యాటరీ స్థితి <ph name="BATTERY_HEALTH_PERCENTAGE" />%, సైకిల్ కౌంట్ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">రిజల్యూషన్‌ను ధృవీకరించండి</translation>
+<translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" />‌ను ఇన్సర్ట్ చేయండి</translation>
 <translation id="2475982808118771221">ఒక ఎర్రర్ ఏర్పడింది</translation>
 <translation id="2478076885740497414">యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
@@ -451,6 +453,7 @@
 <translation id="2620900772667816510">బ్లూటూత్ సూపర్ రిజల్యూషన్</translation>
 <translation id="2621713457727696555">సురక్షితమైంది</translation>
 <translation id="2624588537172718173">పరికర ఆడియో, మైక్రోఫోన్</translation>
+<translation id="2632041654177296509">మొత్తం <ph name="CATEGORY_NAME" />‌ను చూడండి</translation>
 <translation id="263399434338050016">"అన్నింటినీ ఎంచుకోండి"</translation>
 <translation id="2644422758626431000">విండోను ఎడమ వైపునకు పిన్ చేయండి</translation>
 <translation id="2645380101799517405">కంట్రోల్స్</translation>
@@ -540,6 +543,7 @@
 <translation id="2968761508099987738">ఈ సమయంలో మీ ప్రస్తుత లొకేషన్‌కు సపోర్ట్ లేదు.</translation>
 <translation id="2970920913501714344">యాప్‌లు, ఎక్స్‌టెన్షన్‌లు, థీమ్‌లను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2977598380246111477">తర్వాతి నంబర్</translation>
+<translation id="2980700224869191055"><ph name="EMOTICON_NAME" /> ఎమోటికాన్</translation>
 <translation id="2985148236010982088">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="2992272421330787632">అన్ని మీడియా సూచనలను దాచండి</translation>
 <translation id="2992327365391326550">పరికర మైక్రోఫోన్ బటన్ ఆఫ్ చేయబడింది.</translation>
@@ -727,6 +731,7 @@
 <translation id="3619536907358025872">స్క్రీన్ క్యాప్చర్ సెట్టింగ్‌లు</translation>
 <translation id="3621202678540785336">ఇన్‌పుట్</translation>
 <translation id="3621712662352432595">ఆడియో సెట్టింగ్‌‍లు</translation>
+<translation id="362253242168828226"><ph name="EMOJI_NAME" /> ఎమోజీ</translation>
 <translation id="3626281679859535460">ప్రకాశం</translation>
 <translation id="3628323833346754646">ముందు వైపు బటన్</translation>
 <translation id="3630697955794050612">ఆ‌ఫ్‌లో ఉంది</translation>
@@ -786,6 +791,7 @@
 <translation id="3799080171973636491">మీరు ఫుల్-స్క్రీన్‌‌ మాగ్నిఫైయర్‌ కోసం కీ‌బోర్డ్‌ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="380165613292957338">హాయ్, నేను ఎలా సహాయపడగలను?</translation>
 <translation id="3804737937830804242">కెమెరాను కుదించండి</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ఎమోజీ. ఇతర ఫలితాలేవీ లేవు.}other{# ఎమోజీలు. ఇతర ఫలితాలేవీ లేవు.}}</translation>
 <translation id="3824784079442479685">ఇది కెమెరా అనుమతితో <ph name="APP_NAME" />, అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
 <translation id="3826099427150913765">పాస్‌వర్డ్‌కు స్విచ్ చేయి</translation>
 <translation id="383058930331066723">బ్యాటరీ సేవర్ మోడ్ ఆన్‌లో ఉంది</translation>
@@ -1334,6 +1340,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5662075790140998213">డెస్క్ 10</translation>
 <translation id="5662709761327382534">మైక్రోఫోన్‌తో రికార్డ్ చేయడం <ph name="CURRENT_STATE" />లో ఉంది, మైక్రోఫోన్‌తో రికార్డ్ చేయడాన్ని <ph name="NEW_STATE" /> చేయడానికి enterను నొక్కండి</translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">సక్రియమవుతోంది</translation>
 <translation id="5672890847723042801">యుటిలిటీలు</translation>
 <translation id="5673434351075758678">మీ సెట్టింగులను సింక్ చేసిన తర్వాత "<ph name="FROM_LOCALE" />" నుండి "<ph name="TO_LOCALE" />"కి.</translation>
@@ -1761,6 +1768,7 @@
 <translation id="7108254681523785542">పేస్ట్ చేయడానికి ఒక ఐటెమ్‌ను ఎంచుకోండి. '<ph name="SHORTCUT_KEY_NAME" /> + v'ని నొక్కి, మీరు క్లిప్‌బోర్డ్‌ను చూడవచ్చు.</translation>
 <translation id="7116969082764510092">డెస్క్ 11</translation>
 <translation id="7118268675952955085">స్క్రీన్‌షాట్</translation>
+<translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" />‌ను తెరవండి</translation>
 <translation id="7119327711295338600">తర్వాతి పదాన్ని లేదా అక్షరాన్ని ఎంచుకోండి</translation>
 <translation id="7126996685418858413">గత వారంలో తెరిచారు</translation>
 <translation id="7130207228079676353">అత్యంత ఇష్టపడేవి</translation>
@@ -1857,7 +1865,6 @@
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">పేజీ కింది వైపు కీ</translation>
-<translation id="7518182783647693467">ఉష్ణోగ్రత యూనిట్‌లను (F వర్సెస్. C) టోగుల్ చేయండి</translation>
 <translation id="7519206258459640379">కెమెరా ఫ్రేమింగ్ ఆన్‌లో ఉంది.</translation>
 <translation id="7519649142417630956">షట్ డౌన్ అయిన తర్వాత, అడ్మినిస్ట్రేటర్ లాగ్ అవుట్ చేయబడతారు, ఇంకా మీ పరికరాన్ని కంట్రోల్ చేయలేరు.
 
@@ -1883,6 +1890,7 @@
 <translation id="7579778809502851308">స్క్రీన్‌ను క్యాప్చర్ చేయి</translation>
 <translation id="7593891976182323525">Search లేదా Shift</translation>
 <translation id="7598054670902114203">CPU వినియోగానికి సంబంధించిన స్నాప్‌షాట్, <ph name="CPU_USEAGE" />%. ఉష్ణోగ్రత <ph name="TEMPERATURE" /> డిగ్రీల సెల్సియస్, ప్రస్తుత వేగం: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
+<translation id="7599378375976398913">ఎంచుకున్న ఫలితాన్ని ఇన్సర్ట్ చేస్తోంది</translation>
 <translation id="7600875258240007829">అన్ని నోటిఫికేషన్‌లను చూడండి</translation>
 <translation id="7601417191446344542">మైక్ మ్యూట్ అలర్ట్‌ను ఆన్ చేయాలా?</translation>
 <translation id="7607002721634913082">పాజ్ చేయబడింది</translation>
@@ -2073,6 +2081,7 @@
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> మీరు కేవలం <ph name="FOCUSED_TIME" /> సమయం పాటు ఫోకస్ చేశారు. మళ్లీ ఫోకస్ చేయడానికి క్విక్ సెట్టింగ్‌లను తెరవండి.</translation>
+<translation id="8203224998425013577">మరిన్ని ఎమోజీలను, GIFలను చూడండి</translation>
 <translation id="8203795194971602413">కుడి క్లిక్</translation>
 <translation id="8214996719228530800">కెనరీ ఛానెల్</translation>
 <translation id="8219451629189078428">ఈ సమయంలో మీ Chromebook ఆన్‌లో ఉండాలి, పవర్‌కు కనెక్ట్ అయ్యి ఉండాలి. మీ Chromebook, పవర్ అవుట్‌లెట్ రెండింటికీ ఛార్జర్ లేదా అడాప్టర్ కేబుల్‌లు పూర్తిగా ప్లగ్-ఇన్ అయ్యాయని నిర్ధారించుకోండి. మీ Chromebookను ఆఫ్ చేయవద్దు.</translation>
@@ -2173,6 +2182,7 @@
 <translation id="8615778328722901791">టూల్‌బార్‌ను తెరవండి</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">వాల్యూమ్‌ను తగ్గించండి</translation>
+<translation id="862543346640737572">ఎమోజీలు, GIFలు</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />కి కనెక్ట్ చేయబడింది</translation>
 <translation id="8631727435199967028">యాక్సెసిబిలిటీ సెట్టింగ్‌లు</translation>
 <translation id="8634326941504371857">ఈ పరికరంలోని, Google Driveలోని మీ ఫైల్స్</translation>

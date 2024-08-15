@@ -478,7 +478,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1340527397989195812">Fazer cópia de segurança de multimédia a partir do dispositivo com a aplicação Ficheiros.</translation>
 <translation id="1341701348342335220">Bom trabalho!</translation>
 <translation id="1342886103232377846">Para verificar se existem palavras-passe comprometidas, aceda ao Gestor de Palavras-passe da Google</translation>
-<translation id="1343865611738742294">Conceda às aplicações Linux autorização de acesso a dispositivos USB. O Linux não memoriza um dispositivo USB após a sua remoção.</translation>
 <translation id="1343920184519992513">Continue onde parou e abra um conjunto específico de páginas</translation>
 <translation id="1344141078024003905">Está a transmitir o ecrã. Pode pausar ou parar a transmissão do ecrã em qualquer altura.</translation>
 <translation id="1346403631707626730">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android da criança enviando automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Estes dados não vão ser usados para identificar a criança e vão ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Se a Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. <ph name="BEGIN_LINK1" />Saiba mais sobre as métricas<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
@@ -820,7 +819,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1588919647604819635">Clique com o botão direito do rato no cartão</translation>
 <translation id="1589055389569595240">Mostrar ortografia e gramática</translation>
 <translation id="1590478605309955960">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os dispositivos com sessão iniciada.</translation>
-<translation id="1591679663873027990">Conceda autorização ao Parallels Desktop para aceder a dispositivos USB. O Parallels Desktop não memoriza um dispositivo USB após a sua remoção.</translation>
 <translation id="15916883652754430">Definições de voz do sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> desativou a depuração do ADB, o que irá repor o seu dispositivo <ph name="DEVICE_TYPE" />. Faça uma cópia de segurança dos ficheiros antes de reiniciar.</translation>
 <translation id="1592126057537046434">Tradução das Respostas rápidas</translation>
@@ -2643,7 +2641,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2853121255651601031">Palavra-passe guardada</translation>
 <translation id="2855243985454069333">Elimina o histórico de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Iniciar sessão com <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modo rigoroso</translation>
 <translation id="2856776373509145513">Crie um novo contentor</translation>
 <translation id="2856907950922663165">Desativar a encriptação de URLs?</translation>
 <translation id="2859741939921354763">Importe palavras-passe para o <ph name="BRAND" /></translation>
@@ -2926,7 +2923,6 @@ Quer pará-lo?</translation>
 <translation id="3053273573829329829">Ativar o PIN do utilizador</translation>
 <translation id="3053274730492362225">Sem intermitência</translation>
 <translation id="3054766768827382232">A desativação pode melhorar o desempenho dos periféricos, mas pode expor os seus dados pessoais através de uma utilização não autorizada.</translation>
-<translation id="3056438898277655057">Dê autorização ao <ph name="SPECIFIC_NAME" /> para aceder a dispositivos USB. O <ph name="SPECIFIC_NAME" /> não memoriza um dispositivo USB após a sua remoção.</translation>
 <translation id="3058498974290601450">Pode ativar a sincronização em qualquer altura nas definições.</translation>
 <translation id="3058517085907878899">Atribuir um nome ao dispositivo</translation>
 <translation id="3059195548603439580">Está à procura de componentes do sistema? Visite</translation>
@@ -8543,7 +8539,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7222335051802562841">Concluir atualização</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Isto permite que os serviços do sistema usem a Precisão da localização para determinar a sua localização. A Precisão da localização usa informações sobre sensores e sinais sem fios para estimar a localização do dispositivo.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 site no grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sites no grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar o Windows Hello ao preencher palavras-passe</translation>
 <translation id="7225179976675429563">Tipo de rede em falta</translation>
 <translation id="7227235818314667565">Gerir partilha</translation>
@@ -9925,7 +9920,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8207404892907560325">Escolha uma token de acesso</translation>
 <translation id="8207794858944505786">A VM (máquina virtual) "<ph name="DEFAULT_VM_NAME" />" existe, mas não parece ser uma VM <ph name="VM_TYPE" /> válida. Contacte o seu administrador.</translation>
 <translation id="8207901006380134182">Uma grande onda envolve o oceano, com uma floresta escura na costa.</translation>
-<translation id="8208188204689616705">Estes sites estão num grupo definido por <ph name="FPS_OWNER" />. Os sites num grupo podem ver a sua atividade no grupo.</translation>
 <translation id="8208216423136871611">Não guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nova notificação}other{# novas notificações}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Transferência em curso}other{Transferências em curso}}</translation>
@@ -11052,7 +11046,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9009707268312089299">Importados do Windows</translation>
 <translation id="9009708085379296446">Pretendia alterar esta página?</translation>
 <translation id="9010845741772269259">Adicionar métodos de pagamento</translation>
-<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Mostrar o ícone sempre</translation>
 <translation id="9011262023858991985">A transmitir este separador</translation>
 <translation id="9011393886518328654">Notas de lançamento</translation>

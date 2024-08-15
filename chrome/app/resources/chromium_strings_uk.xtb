@@ -25,7 +25,6 @@
 Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Також видалити дані з Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Ви ввійшли в Chromium.</translation>
-<translation id="1465171403179274511">Chromium запитуватиме вас, перш ніж завантажувати сайти через незахищене з’єднання</translation>
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
 <translation id="1497802159252041924">Помилка встановлення: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
@@ -81,7 +80,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2210682093923538346">Небезпечний сайт. Вебпереглядач Chromium скасував дозвіл показувати сповіщення.</translation>
 <translation id="2240214816234246077">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Якщо вашим комп’ютером користуєтесь не лише ви, а й ваші друзі чи сім’я, вони можуть налаштувати Chromium на свій смак.</translation>
-<translation id="2265830994243640896">Chromium запитуватиме вас, перш ніж завантажувати загальнодоступні сайти через незахищене з’єднання, і використовуватиме підключення HTTP в приватних мережах</translation>
 <translation id="2313870531055795960">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chromium. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки.</translation>
 <translation id="2329088755516916767">Коли цей параметр увімкнено, Chromium попередньо завантажує сторінки, щоб ви могли швидше переглядати й шукати контент.</translation>
 <translation id="2343156876103232566">Щоб надіслати номер на телефон Android, увійдіть у Chromium на обох пристроях.</translation>
@@ -106,7 +104,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium виконує завдання швидше, а функції, які використовують JavaScript, мають працювати належним чином (рекомендовано)</translation>
 <translation id="2648074677641340862">Під час встановлення сталася помилка операційної системи. Завантажте Chromium ще раз.</translation>
-<translation id="2649201087614586016">Якщо цей параметр увімкнено, Chromium запитуватиме вас, перш ніж завантажувати сайти, які не підтримують HTTPS</translation>
 <translation id="2661879430930417727">Якщо ви користуєтеся пристроєм спільно з друзями та рідними, вони зможуть переглядати веб-сторінки окремо та налаштовувати Chromium на свій смак</translation>
 <translation id="268602741124540128">Вітаємо в Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Вкладка Chromium</translation>

@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Tampilkan saran</translation>
 <translation id="1038842779957582377">nama tidak diketahui</translation>
 <translation id="1041998700806130099">Pesan lembar tugas</translation>
+<translation id="1044897699341250361">Apa artinya</translation>
 <translation id="1046350918013988591">Kupon &amp; Penawaran Diskon</translation>
 <translation id="1048785276086539861">Jika Anda mengedit anotasi, dokumen ini akan kembali ke tampilan satu halaman</translation>
 <translation id="1050038467049342496">Tutup aplikasi lain</translation>
@@ -2649,6 +2650,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5999271311987646952">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah — seperti Google Safe Browsing, yang <ph name="BEGIN_LINK" />baru-baru ini menemukan malware<ph name="END_LINK" /> di situs yang Anda coba kunjungi.</translation>
 <translation id="6000528814684428358">Musik Hard Rock &amp; Rock Progressive</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Ayo</translation>
 <translation id="6002122790816966947">Perangkat Anda</translation>
 <translation id="6002968396561884726">Dilihat Baru-Baru Ini</translation>
 <translation id="6005659677094197001">Berkelanjutan</translation>
@@ -3057,6 +3059,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6735783933931458444">Anda sering mengunjunginya pada waktu ini</translation>
 <translation id="6737708609449480586">Kue Panggang</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
+<translation id="6739943577740687354">Fitur ini menggunakan AI dan tidak akan selalu benar</translation>
 <translation id="6740851646645036700">Anda telah mencapai batas bantuan menulis untuk saat ini. Coba lagi nanti.</translation>
 <translation id="674375294223700098">Kesalahan sertifikat server tidak dikenal.</translation>
 <translation id="6744009308914054259">Sambil menunggu koneksi, Anda dapat mengunjungi Hasil Download untuk membaca artikel secara offline.</translation>
@@ -4442,5 +4445,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Tambahkan IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Dari Google Pay</translation>
 </translationbundle>

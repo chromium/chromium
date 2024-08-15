@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1038842779957582377">неизвестное имя</translation>
 <translation id="1041998700806130099">Сообщение на листе задания</translation>
+<translation id="1044897699341250361">Что это значит</translation>
 <translation id="1046350918013988591">Купоны и скидки</translation>
 <translation id="1048785276086539861">При редактировании заметок документ вернется в одностраничный режим просмотра.</translation>
 <translation id="1050038467049342496">Закройте другие приложения.</translation>
@@ -52,6 +53,7 @@
 <translation id="1089439967362294234">Сменить пароль</translation>
 <translation id="1089599132348386324">Вы можете в любое время изменить свое решение в настройках Chrome.</translation>
 <translation id="1090629319939036170">Меню VR</translation>
+<translation id="1091463901118115503">Читать дальше</translation>
 <translation id="1091779689406092804">скриншотов</translation>
 <translation id="1094777233105318927">Информация о вашем браузере, ОС, устройстве, установленном ПО и файлах.</translation>
 <translation id="1096545575934602868">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи не будут сохранены.</translation>
@@ -537,6 +539,7 @@
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1975457531113383421">Входной лоток</translation>
 <translation id="1975584088563498795">Почтовый ящик 10</translation>
+<translation id="1976610264358655503">Часто посещаете</translation>
 <translation id="1978555033938440688">Версия ПО</translation>
 <translation id="1979156660928743046">Мультимедийные данные</translation>
 <translation id="1988881251331415125">Если все правильно, <ph name="BEGIN_LINK" />воспользуйтесь инструментом "Диагностика соединений Chrome"<ph name="END_LINK" />.</translation>
@@ -888,6 +891,7 @@
 <translation id="2619052155095999743">Вставить</translation>
 <translation id="2625385379895617796">Часы спешат</translation>
 <translation id="262745152991669301">Разрешено отправлять запрос на подключение к USB-устройствам</translation>
+<translation id="2628224721443278970">Войти в Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Не удалось найти IP-адрес сервера <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Состояние:</translation>
 <translation id="2647086987482648627">Ткань (полуглянцевая)</translation>
@@ -1831,6 +1835,7 @@
 <translation id="4377125064752653719">Вы попытались перейти на сайт <ph name="DOMAIN" />, однако сертификат, предоставленный сервером, был отозван издателем. Это означает, что учетные данные безопасности, предоставленные сервером, не заслуживают доверия. Возможно, вы имеете дело со злоумышленниками.</translation>
 <translation id="4378154925671717803">Телефон</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Загрузка файлов в Microsoft OneDrive приостановлена</translation>
 <translation id="4390472908992056574">Поля</translation>
 <translation id="4397059608630092079">Всегда подтверждать личность при использовании автозаполнения</translation>
 <translation id="4397978002248035985">Откроется всплывающее окно со страницей банка, на которой можно подтвердить свою личность</translation>
@@ -1934,6 +1939,7 @@
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4640225694041297329">Показать результаты за последние 7 дней</translation>
 <translation id="464342062220857295">Функции поиска</translation>
+<translation id="4644567637638438744">Чтобы продолжить, войдите в Microsoft OneDrive.</translation>
 <translation id="4644670975240021822">В обратном порядке лицевой стороной вниз</translation>
 <translation id="4646534391647090355">Перейти сейчас</translation>
 <translation id="4648262692072505866">Хеш должен быть в формате SHA-256.</translation>
@@ -2643,6 +2649,7 @@
 <translation id="5999271311987646952">В Chrome есть функции, защищающие вас при работе в браузере. Например, к ним относится сервис "Google Безопасный просмотр". <ph name="BEGIN_LINK" />Недавно он обнаружил вредоносное ПО<ph name="END_LINK" /> на сайте, который вы хотите посетить.</translation>
 <translation id="6000528814684428358">Хард-рок и прогрессивный рок</translation>
 <translation id="6000758707621254961">Количество результатов поиска по запросу "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Поехали</translation>
 <translation id="6002122790816966947">Ваши устройства</translation>
 <translation id="6002968396561884726">Недавно просмотренные</translation>
 <translation id="6005659677094197001">Непрерывная печать</translation>
@@ -3048,8 +3055,10 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Игры-симуляторы</translation>
+<translation id="6735783933931458444">Часто посещаете в это время дня</translation>
 <translation id="6737708609449480586">Выпечка</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
+<translation id="6739943577740687354">Эта функция использует искусственный интеллект, а он может ошибаться.</translation>
 <translation id="6740851646645036700">Вы достигли лимита на генерацию текстов. Повторите попытку позже.</translation>
 <translation id="674375294223700098">Неизвестная ошибка сертификата сервера.</translation>
 <translation id="6744009308914054259">В ожидании подключения вы можете открыть скачанные файлы и почитать статьи офлайн.</translation>
@@ -3765,6 +3774,7 @@
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8041940743680923270">Использовать глобальный параметр по умолчанию (спрашивать)</translation>
 <translation id="8043255123207491407">Посмотреть установленные продавцом условия использования</translation>
+<translation id="8044986521421349135">Последняя вкладка, которую вы посещали</translation>
 <translation id="8046360364391076336">Промышленные материалы и оборудование</translation>
 <translation id="8052898407431791827">Скопировано в буфер обмена</translation>
 <translation id="8057023045886711556">Комедии</translation>
@@ -4436,5 +4446,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Добавление кода IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Из Google Pay</translation>
 </translationbundle>

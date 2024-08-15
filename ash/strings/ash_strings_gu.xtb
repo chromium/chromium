@@ -359,6 +359,7 @@
 <translation id="2318576281648121272">આજે <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , શોધ પરિણામની કૅટેગરી</translation>
 <translation id="2322173485024759474">એક અક્ષર પાછળ જાઓ</translation>
+<translation id="2326112202058075478">વધુ ઇમોજી બતાવો</translation>
 <translation id="2335091074961603075">તમારી Chromebook કે બ્લૂટૂથ ડિવાઇસ દ્વારા બ્લૂટૂથના કોઈ જૂના વર્ઝનનો ઉપયોગ કરવામાં આવી રહ્યો છે. બહેતર ઓડિયો ક્વૉલિટી માટે, આંતરિક માઇક્રોફોનનો ઉપયોગ કરો.</translation>
 <translation id="2339073806695260576">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, લેઝર પૉઇન્ટર અથવા મૅગ્નિફાયિંગ ગ્લાસનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટન પર ટૅપ કરો.</translation>
 <translation id="2341729377289034582">ઊભી સ્થિતિ પર લૉક કરેલું છે</translation>
@@ -405,6 +406,7 @@
 <translation id="246052086404491029">વધુ માહિતી મેળવો</translation>
 <translation id="2465145153332031561">બૅટરીની ક્ષમતા <ph name="BATTERY_HEALTH_PERCENTAGE" />%, ચક્રની સંખ્યા <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">રિઝોલ્યુશન કન્ફર્મ કરો</translation>
+<translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> શામેલ કરો</translation>
 <translation id="2475982808118771221">કોઈ ભૂલ આવી છે</translation>
 <translation id="2478076885740497414">ઍપ્લિકેશન ઇન્સ્ટોલ કરો</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
@@ -451,6 +453,7 @@
 <translation id="2620900772667816510">બ્લૂટૂથ સુપર રિઝોલ્યુશન</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="2624588537172718173">ડિવાઇસનો ઑડિયો અને માઇક્રોફોન</translation>
+<translation id="2632041654177296509">તમામ <ph name="CATEGORY_NAME" /> બતાવો</translation>
 <translation id="263399434338050016">"તમામ પસંદ કરો"</translation>
 <translation id="2644422758626431000">વિન્ડોને ડાબી બાજુ પિન કરો</translation>
 <translation id="2645380101799517405">નિયંત્રણો</translation>
@@ -540,6 +543,7 @@
 <translation id="2968761508099987738">અત્યારે તમારા હાલના લોકેશનને સપોર્ટ આપવામાં આવતો નથી.</translation>
 <translation id="2970920913501714344">ઍપ, એક્સ્ટેન્શન અને થીમ ઇન્સ્ટૉલ કરો</translation>
 <translation id="2977598380246111477">આગલો નંબર</translation>
+<translation id="2980700224869191055"><ph name="EMOTICON_NAME" /> ઇમૉટિકૉન</translation>
 <translation id="2985148236010982088">બધી ઍપ જુઓ</translation>
 <translation id="2992272421330787632">મીડિયાના બધા સૂચનો છુપાવો</translation>
 <translation id="2992327365391326550">ડિવાઇસનું માઇક્રોફોન બટન બંધ છે.</translation>
@@ -727,6 +731,7 @@
 <translation id="3619536907358025872">સ્ક્રીન કૅપ્ચરના સેટિંગ</translation>
 <translation id="3621202678540785336">ઇનપુટ</translation>
 <translation id="3621712662352432595">ઑડિયો સેટિંગ</translation>
+<translation id="362253242168828226"><ph name="EMOJI_NAME" /> ઇમોજી</translation>
 <translation id="3626281679859535460">તેજ</translation>
 <translation id="3628323833346754646">આગળનું બટન</translation>
 <translation id="3630697955794050612">બંધ</translation>
@@ -785,6 +790,7 @@
 <translation id="3799080171973636491">તમે પૂર્ણ-સ્ક્રીન મેગ્નિફાયર માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="380165613292957338">નમસ્કાર, હું કેવી રીતે સહાય કરી શકું?</translation>
 <translation id="3804737937830804242">કૅમેરાને નાનો કરો</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ઇમોજી. અન્ય કોઈ પરિણામ નથી.}one{# ઇમોજી. અન્ય કોઈ પરિણામ નથી.}other{# ઇમોજી. અન્ય કોઈ પરિણામ નથી.}}</translation>
 <translation id="3824784079442479685">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે. તમારે વેેબપેજ રિફ્રેશ કરવાની અથવા ઍપ ફરી શરૂ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="3826099427150913765">પાસવર્ડ પર સ્વિચ કરો</translation>
 <translation id="383058930331066723">બૅટરી સેવર મોડ ચાલુ છે</translation>
@@ -1333,6 +1339,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5662075790140998213">ડેસ્ક 10</translation>
 <translation id="5662709761327382534">માઇક્રોફોનથી રેકોર્ડ કરો <ph name="CURRENT_STATE" /> છે, માઇક્રોફોનથી રેકોર્ડિંગ <ph name="NEW_STATE" /> કરવા માટે enter દબાવો</translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5672890847723042801">યુટિલિટી</translation>
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
@@ -1760,6 +1767,7 @@
 <translation id="7108254681523785542">પેસ્ટ કરવા માટે કોઈ આઇટમ પસંદ કરો. તમે <ph name="SHORTCUT_KEY_NAME" /> + v દબાવીને ક્લિપબોર્ડ જોઈ શકો છો.</translation>
 <translation id="7116969082764510092">ડેસ્ક 11</translation>
 <translation id="7118268675952955085">સ્ક્રીનશૉટ</translation>
+<translation id="7118597077555700347"><ph name="SEARCH_RESULT_TEXT" /> ખોલો</translation>
 <translation id="7119327711295338600">આગલો શબ્દ અથવા અક્ષર પસંદ કરો</translation>
 <translation id="7126996685418858413">ગયા અઠવાડિયે ખોલેલી</translation>
 <translation id="7130207228079676353">સૌથી વધુ શક્ય</translation>
@@ -1856,7 +1864,6 @@
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
-<translation id="7518182783647693467">તાપમાનના એકમો ટૉગલ કરો (F વિ. C)</translation>
 <translation id="7519206258459640379">કૅમેરા ફ્રેમિંગ ચાલુ છે.</translation>
 <translation id="7519649142417630956">એકવાર શટ ડાઉન થઈ ગયા પછી, ઍડમિનિસ્ટ્રેટર લૉગ આઉટ થઈ જશે અને તમારા ડિવાઇસને નિયંત્રિત કરી શકશે નહીં.
 
@@ -1882,6 +1889,7 @@
 <translation id="7579778809502851308">સ્ક્રીન કૅપ્ચર</translation>
 <translation id="7593891976182323525">Search અથવા Shift</translation>
 <translation id="7598054670902114203">CPUના વપરાશનો સ્નૅપશૉટ, <ph name="CPU_USEAGE" />%. તાપમાન <ph name="TEMPERATURE" /> ડિગ્રી સેલ્સિયસ, હાલની સ્પીડ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
+<translation id="7599378375976398913">પસંદગીના પરિણામો શામેલ કરી રહ્યાં છીએ</translation>
 <translation id="7600875258240007829">બધા નોટિફિકેશન જુઓ</translation>
 <translation id="7601417191446344542">મ્યૂટ સંકેતની સુવિધા ચાલુ કરવી છે?</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
@@ -2072,6 +2080,7 @@
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> તમે હમણાં જ <ph name="FOCUSED_TIME" /> માટે ફોકસ કર્યું છે. ફરીથી ફોકસ કરવા માટે ઝડપી સેટિંગ ખોલો.</translation>
+<translation id="8203224998425013577">વધુ ઇમોજી અને GIFs બતાવો</translation>
 <translation id="8203795194971602413">રાઇટ ક્લિક કરો</translation>
 <translation id="8214996719228530800">Canary ચૅનલ</translation>
 <translation id="8219451629189078428">આ સમય દરમ્યાન, તમારું Chromebook ચાલુ રહેવું અને પાવરથી કનેક્ટ થયેલું હોવું આવશ્યક છે. ખાતરી કરો કે ચાર્જર અથવા અડૅપ્ટર કેબલ તમારા Chromebook અને પાવર આઉટલેટ, એમ બન્નેમાં યોગ્ય રીતે પ્લગ-ઇન કરવામાં આવ્યા હોય. તમારું Chromebook બંધ કરશો નહીં.</translation>
@@ -2172,6 +2181,7 @@
 <translation id="8615778328722901791">ટૂલબાર ખોલો</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">વૉલ્યૂમ ઘટાડો</translation>
+<translation id="862543346640737572">ઇમોજી અને GIFs</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> સાથે કનેક્ટ થયા</translation>
 <translation id="8631727435199967028">ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="8634326941504371857">આ ડિવાઇસ પરની અને Google Driveમાંની તમારી ફાઇલો</translation>

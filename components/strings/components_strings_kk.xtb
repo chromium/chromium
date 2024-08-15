@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
+<translation id="1044897699341250361">Бұл нені білдіреді?</translation>
 <translation id="1046350918013988591">Купондар мен жеңілдік ұсыныстары</translation>
 <translation id="1048785276086539861">Аннотацияларды өзгерткен кезде, бұл құжат бір беттік көрініске ауысады.</translation>
 <translation id="1050038467049342496">Басқа қолданбаларды жабу</translation>
@@ -2648,6 +2649,7 @@
 <translation id="5999271311987646952">Chrome-ның браузерді пайдалану кезінде қорғайтын ендірілген қауіпсіздік мүмкіндіктері бар. Солардың бірі — Google Safe Browsing. Ол сіз кіргелі жатқан сайтта <ph name="BEGIN_LINK" />жақында бір зиянды бағдарламаны анықтады<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Хард-рок және прогрессивтік музыка</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" сұрауы бойынша <ph name="RESULT_COUNT" /> нәтиже шықты</translation>
+<translation id="6001839398155993679">Бастау</translation>
 <translation id="6002122790816966947">Құрылғыларыңыз</translation>
 <translation id="6002968396561884726">Жақында көргендер</translation>
 <translation id="6005659677094197001">Үздіксіз</translation>
@@ -3056,6 +3058,7 @@
 <translation id="6735783933931458444">Күннің осы уақытында жиі кіресіз</translation>
 <translation id="6737708609449480586">Піскен нан өнімдері</translation>
 <translation id="6738516213925468394">Деректеріңіз <ph name="TIME" /> күні <ph name="BEGIN_LINK" />синхрондаудың құпия фразасымен<ph name="END_LINK" /> шифрланған. Синхрондау үшін оны енгізіңіз.</translation>
+<translation id="6739943577740687354">Бұл функция AI технологиясын пайдаланады. Ол кейде қателесуі мүмкін.</translation>
 <translation id="6740851646645036700">"Жазуға көмек керек" шегіне жеттіңіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="674375294223700098">Белгісіз сервер сертификатының қатесі.</translation>
 <translation id="6744009308914054259">Байланыстың орнауын күткен кезде, офлайн режимдегі мақалаларды оқу үшін "Жүктеп алынғандар" бөліміне кіруіңізге болады.</translation>
@@ -4442,5 +4445,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN нөмірін қосу</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay қызметінен алынды</translation>
 </translationbundle>

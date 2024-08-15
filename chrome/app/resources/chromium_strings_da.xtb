@@ -25,7 +25,6 @@
  Bluetooth-enheder. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Slet også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
-<translation id="1465171403179274511">Chromium spørger dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="1478370723027452770">Få hjælp til Chrome for Testing</translation>
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
@@ -81,7 +80,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2210682093923538346">Farligt website. Chromium har fjernet notifikationer.</translation>
 <translation id="2240214816234246077">Du har ikke besøgt websitet for nylig. Chromium har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chromium, som de ønsker hver især.</translation>
-<translation id="2265830994243640896">Chromium spørger dig, inden offentlige websites indlæses via en usikker forbindelse, men tillader HTTP-forbindelser til private netværk</translation>
 <translation id="2313870531055795960">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chromium. Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser og bl.a. mindre mængder sideindhold til Beskyttet browsing.</translation>
 <translation id="2329088755516916767">Når indstillingen er aktiveret, forudindlæser Chromium sider, hvilket gør det hurtigere at browse og søge.</translation>
 <translation id="2343156876103232566">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>
@@ -106,7 +104,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="259935314519650377">Det downloadede installationsprogram kunne ikke gemmes i cache. Fejl: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium kører hurtigere, og funktioner, der bruger JavaScript, bør fungere som forventet (anbefales)</translation>
 <translation id="2648074677641340862">Der opstod en fejl i operativsystemet under installationen. Download Chromium igen.</translation>
-<translation id="2649201087614586016">Når indstillingen er aktiveret, spørger Chromium dig, inden websites, der ikke understøtter HTTPS, indlæses</translation>
 <translation id="2661879430930417727">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chromium hver især</translation>
 <translation id="268602741124540128">Velkommen til Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Fanen Chromium</translation>

@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
 <translation id="789180354981963912">Chặn cookie của bên thứ ba ở Chế độ ẩn danh:</translation>
 <translation id="7940722705963108451">Nhắc tôi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="FPS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="FPS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7990211076305263060">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng micrô của bạn. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng micrô của bạn.</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="8541410041357371550">Trang web này thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Đã cho phép cookie với <ph name="FPS_MEMBERS_COUNT" /> trang web của <ph name="FPS_OWNER" />}other{Đã cho phép cookie với <ph name="FPS_MEMBERS_COUNT" /> trang web của <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8617611086246832542">Khi bạn bật tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên máy tính để bàn. Khi bạn tắt tuỳ chọn này, các trang web sẽ hiển thị ở chế độ xem trên thiết bị di động.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="9039697262778250930">Bạn có thể bị đăng xuất khỏi các trang web này</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Trang web này nằm trong nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="FPS_OWNER" /> xác định</translation>
 <translation id="9106233582039520022">Xoá cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="913657688200966289">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>

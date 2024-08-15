@@ -1856,7 +1856,6 @@ Uusi asennus</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sivu alas</translation>
-<translation id="7518182783647693467">Lämpötilayksiköt (F tai C) päälle/pois</translation>
 <translation id="7519206258459640379">Kameran kehystys on päällä.</translation>
 <translation id="7519649142417630956">Kun laite on sammutettu, järjestelmänvalvoja kirjataan ulos eikä hän voi ohjata laitetta.
 
@@ -2356,7 +2355,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="974545358917229949">Näytetään <ph name="RESULT_COUNT" /> tulosta haulla <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Ei määräpäivää</translation>
 <translation id="98120814841227350">Siirry dokumentin loppuun</translation>
-<translation id="98515147261107953">Vaakasuunta</translation>
+<translation id="98515147261107953">Maisema</translation>
 <translation id="987589956647469042">Mobiilidata on päällä</translation>
 <translation id="989374776391122812">Kamera- ja audiosäätimet</translation>
 <translation id="990277280839877440">Ikkuna <ph name="WINDOW_TITILE" /> suljettu.</translation>

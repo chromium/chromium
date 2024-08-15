@@ -60,7 +60,6 @@
 <translation id="178701303897325119">Bu kengaytma endi dastaklanmaydi. Chrome uni olib tashlashni tavsiya qiladi.</translation>
 <translation id="1812689907177901597">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
 <translation id="1860536484129686729">Bu sayt kamerangizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
-<translation id="1861924772887221906">Chrome himoyasiz ulanish orqali hammaga ochiq saytlarni yuklashdan oldin ruxsat soʻraydi, ammo maxfiy tarmoqlar orqali HTTP ulanishlarga ruxsat beradi</translation>
 <translation id="1873233029667955273">Google Chrome hozir birlamchi brauzeringiz emas</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
@@ -198,7 +197,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3597003331831379823">Kengaytirilgan ruxsatlar bilan sozlash ishga tushmadi. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Yaqinda ochmagansiz. Chrome olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome himoyasiz ulanish orqali har qanday saytni yuklashdan oldin ruxsat soʻraydi</translation>
 <translation id="3622797965165704966">Endi Google hisobida Chrome bilan ishlash yanada qulay bo‘ladi, jumladan umumiy kompyuterlarda ham.</translation>
 <translation id="3635073343384702370">Chrome faqat saqlangan parollaringizni tekshira oladi</translation>
 <translation id="3667616615096815454">Oʻrnatilmadi, ilova serverga nomaʼlum.</translation>
@@ -454,7 +452,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7302361266603927550">Ayrim Chrome maʼlumotlari Google hisobingizga hali saqlanmagan. Hisobdan chiqishga shoshilmang. Hozir chiqsangiz, bu maʼlumotlar oʻchib ketadi.</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>
-<translation id="7324120788743384890">Yoqilsa, Chrome HTTPS protokolisiz saytlarni yuklashdan oldin ruxsat soʻraydi</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="7352881504289275361">Chromedagi Saytlarni kuchaytirilgan rejimda xavfsiz kezish tizimi internetni kezish uchun eng kuchli himoyani taʼminlaydi</translation>
 <translation id="7394745511930161845">Brauzeringizni unikal bezatish uchun AI yordamida mavzu yarating</translation>

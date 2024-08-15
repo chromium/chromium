@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Muayyan saytga ovoz ijro etish uchun ruxsat berish.</translation>
 <translation id="789180354981963912">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash:</translation>
 <translation id="7940722705963108451">Menga eslatilsin</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> saytlar guruhidagi <ph name="FPS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}other{<ph name="FPS_OWNER" /> saytlar guruhidagi <ph name="FPS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}}</translation>
 <translation id="7986741934819883144">Kontaktni tanlang</translation>
 <translation id="7990211076305263060">Yoqilsa, saytlar mikrofondan foydalanishni soʻrashi mumkin. Oʻchirilsa, mikrofondan foydalana olmaydi.</translation>
 <translation id="8007176423574883786">Ushbu qurilma uchun o‘chirilgan</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Saytlarga qurilmalarga ulanishni taqiqlash</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="8541410041357371550">Bu sayt yanada mos reklama chiqishi uchun reklamadagi mavzular haqidagi Chrome maʼlumotlaridan foydalanadi</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> guruhidagi <ph name="FPS_MEMBERS_COUNT" /> ta sayt uchun cookie fayllarga ruxsat berilgan}other{<ph name="FPS_OWNER" /> guruhidagi <ph name="FPS_MEMBERS_COUNT" /> ta sayt uchun cookie fayllarga ruxsat berilgan}}</translation>
 <translation id="857943718398505171">Ruxsat berilgan (tavsiya etiladi)</translation>
 <translation id="8609465669617005112">Tepaga o‘tish</translation>
 <translation id="8617611086246832542">Yoqilsa, saytlarning desktop versiyasi koʻrinadi. Oʻchirilsa, saytlarning mobil versiyasi koʻrinadi.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="9039697262778250930">Bu saytlar sizdan hisobingizga qayta kirishingizni talab qilishi mumkin.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Bu sayt guruhga kiradi va u guruhdagi faoliyatni koʻra oladi. Guruh <ph name="FPS_OWNER" /> tomonidan belgilangan</translation>
 <translation id="9106233582039520022">Cookie fayllar oʻchirilsinmi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>

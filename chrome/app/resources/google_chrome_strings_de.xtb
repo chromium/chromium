@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Diese Erweiterung wird nicht mehr unterstützt. Chrome empfiehlt daher, sie zu entfernen.</translation>
 <translation id="1812689907177901597">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne auch in Chrome angemeldet zu werden</translation>
 <translation id="1860536484129686729">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen</translation>
-<translation id="1861924772887221906">Chrome fragt dich, bevor öffentliche Websites über eine unsichere Verbindung geladen werden, erlaubt aber HTTP-Verbindungen für private Netzwerke</translation>
 <translation id="1873233029667955273">Google Chrome ist nicht als dein Standardbrowser festgelegt</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3597003331831379823">Die Einrichtung konnte nicht mit erhöhten Berechtigungen ausgeführt werden. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
-<translation id="3614820178395775413">Chrome fragt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="3622797965165704966">Du kannst Chrome jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
 <translation id="3635073343384702370">Chrome kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="3667616615096815454">Installation nicht möglich. Die App ist dem Server nicht bekannt.</translation>
@@ -449,7 +447,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>
 <translation id="7302361266603927550">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
-<translation id="7324120788743384890">Wenn diese Option aktiviert ist, fragt dich Chrome, bevor Websites geladen werden, die HTTPS nicht unterstützen</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7352881504289275361">Das erweiterte Safe Browsing bietet den stärksten Onlineschutz von Chrome, damit du beim Surfen geschützt bist</translation>
 <translation id="7394745511930161845">Mithilfe von KI kannst du dein eigenes Design erstellen und deinem Browser einen individuellen Look verleihen</translation>

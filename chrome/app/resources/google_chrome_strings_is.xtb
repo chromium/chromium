@@ -63,7 +63,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="178701303897325119">Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana þess í stað.</translation>
 <translation id="1812689907177901597">Með því að slökkva á þessu geturðu skráð þig inn á Google vefsvæði eins og Gmail án þess að skrá þig inn í Chrome</translation>
 <translation id="1860536484129686729">Chrome þarf leyfi til að nota myndavélina á þessu vefsvæði</translation>
-<translation id="1861924772887221906">Chrome spyr þig áður en opinberum vefsvæðum með ótrygga tengingu er hlaðið en heimilar HTTP-tengingar fyrir einkanet</translation>
 <translation id="1873233029667955273">Google Chrome er ekki sjálfgefinn vafri</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-inn)</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
@@ -201,7 +200,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3596080736082218006">{COUNT,plural, =0{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu}=1{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. Huliðsglugginn enduropnast ekki.}one{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggi enduropnast ekki.}other{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="3597003331831379823">Ekki tókst að hefja uppsetningu með auknum heimildum. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome spyr þig áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="3622797965165704966">Nú er auðveldara að nota Chrome með Google reikningnum þínum og í samnýttum tölvum.</translation>
 <translation id="3635073343384702370">Chrome getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="3667616615096815454">Ekki tókst að setja upp, þjónninn þekkir ekki forritið.</translation>
@@ -458,7 +456,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7302361266603927550">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>
-<translation id="7324120788743384890">Þegar kveikt er á því spyr Chrome þig áður en vefsvæðum sem ekki styðja HTTPS er hlaðið</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7352881504289275361">Enn öruggari vefskoðun býður upp á sterkustu netvörn Chrome til að veita þér vernd þegar þú skoðar</translation>
 <translation id="7394745511930161845">Búðu til þitt eigið þema með gervigreind til að gefa vafranum þínum einstakt útlit</translation>

@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Denne utvidelsen støttes ikke lenger. Chrome anbefaler at du fjerner den i stedet.</translation>
 <translation id="1812689907177901597">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chrome</translation>
 <translation id="1860536484129686729">Chrome trenger tilgang til kameraet ditt for dette nettstedet</translation>
-<translation id="1861924772887221906">Chrome spør deg før innlasting av offentlige nettsteder via usikre tilkoblinger, men tillater HTTP-tilkoblinger for private nettverk</translation>
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS – inn)</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3597003331831379823">Kunne ikke kjøre konfigureringen med overordnede rettigheter. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Du har ikke vært her i det siste. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome spør deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3622797965165704966">Nå er det enklere å bruke Chrome med Google-kontoen din og på datamaskiner du deler med andre.</translation>
 <translation id="3635073343384702370">Chrome kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="3667616615096815454">Kan ikke installere programmet fordi det er ukjent for tjeneren.</translation>
@@ -450,7 +448,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7296210096911315575">Viktig informasjon om bruk og sikkerhet</translation>
 <translation id="7302361266603927550">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå. Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>
-<translation id="7324120788743384890">Når dette er på, spør Chrome deg før innlasting av nettsteder som ikke støtter HTTPS</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7352881504289275361">Med Safe Browsing med økt beskyttelse får du den sterkeste beskyttelsen i Chrome på nettet, slik at du er trygg når du surfer</translation>
 <translation id="7394745511930161845">Lag ditt eget tema med AI for å gi nettleseren et unikt utseende</translation>

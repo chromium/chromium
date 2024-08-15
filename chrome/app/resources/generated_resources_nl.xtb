@@ -478,7 +478,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1340527397989195812">Back-ups van media op het apparaat maken via de app Bestanden.</translation>
 <translation id="1341701348342335220">Goed bezig!</translation>
 <translation id="1342886103232377846">Ga naar Google Wachtwoordmanager om te checken op gehackte wachtwoorden</translation>
-<translation id="1343865611738742294">Geef Linux-apps rechten tot USB-apparaten. Linux onthoudt een USB-apparaat niet nadat dit is verwijderd.</translation>
 <translation id="1343920184519992513">Ga verder waar je gebleven was en open een specifieke set pagina's.</translation>
 <translation id="1344141078024003905">Je cast nu je scherm. Je kunt het casten van je scherm op elk moment onderbreken of stoppen.</translation>
 <translation id="1346403631707626730">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je Web- en app-activiteit aanstaat voor het account van je kind, kunnen deze gegevens worden opgeslagen in hun Google-account. <ph name="BEGIN_LINK1" />Meer informatie over statistieken<ph name="BEGIN_LINK1_END" />Meer informatie<ph name="END_LINK1" /></translation>
@@ -820,7 +819,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1588919647604819635">Op kaart klikken met rechtermuisknop</translation>
 <translation id="1589055389569595240">Toon spelling en grammatica</translation>
 <translation id="1590478605309955960">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je ingelogde apparaten.</translation>
-<translation id="1591679663873027990">Geef Parallels Desktop toegang tot USB-apparaten. Parallels Desktop herinnert zich een USB-apparaat niet nadat het is verwijderd.</translation>
 <translation id="15916883652754430">Spraakinstellingen van systeem</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Hierdoor wordt je <ph name="DEVICE_TYPE" /> gereset. Maak een back-up van je bestanden voordat je opnieuw opstart.</translation>
 <translation id="1592126057537046434">Vertaling van Snelle antwoorden</translation>
@@ -2643,7 +2641,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2853121255651601031">Wachtwoord opgeslagen</translation>
 <translation id="2855243985454069333">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten verwijderd</translation>
 <translation id="2855812646048059450">Inloggen met <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Strikte modus</translation>
 <translation id="2856776373509145513">Een nieuwe container maken</translation>
 <translation id="2856907950922663165">URL-versleuteling uitzetten?</translation>
 <translation id="2859741939921354763">Wachtwoorden importeren in <ph name="BRAND" /></translation>
@@ -2925,7 +2922,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3053273573829329829">Gebruikerspincode aanzetten</translation>
 <translation id="3053274730492362225">Niet knipperen</translation>
 <translation id="3054766768827382232">Als je beveiliging voor gegevenstoegang uitzet, werken je randapparaten misschien beter maar kunnen ze je persoonsgegevens openbaar maken als gevolg van ongeautoriseerd gebruik.</translation>
-<translation id="3056438898277655057">Geef <ph name="SPECIFIC_NAME" /> toegang tot USB-apparaten. <ph name="SPECIFIC_NAME" /> onthoudt een USB-apparaat niet nadat dit is verwijderd.</translation>
 <translation id="3058498974290601450">Je kunt synchronisatie op elk gewenst moment aanzetten via de instellingen</translation>
 <translation id="3058517085907878899">Apparaat naam geven</translation>
 <translation id="3059195548603439580">Zoek je systeemcomponenten? Ga naar</translation>
@@ -6524,7 +6520,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5723508132121499792">Geen actieve achtergrondapps</translation>
 <translation id="5723967018671998714">Cookies van derden worden geblokkeerd in de incognitomodus</translation>
-<translation id="5725112283692663422">Stuur feedback voor Thema maken met AI</translation>
+<translation id="5725112283692663422">Feedback sturen voor Thema maken met AI</translation>
 <translation id="5727728807527375859">Extensies, applicaties en thema's kunnen schade toebrengen aan je computer. Weet je zeker dat je wilt doorgaan?</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
 <translation id="5728290366864286776">Deze extensie kan sitegegevens lezen en wijzigen of op de achtergrond worden uitgevoerd</translation>
@@ -8532,7 +8528,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7222335051802562841">Update afronden</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Hiermee kunnen systeemservices Locatienauwkeurigheid gebruiken om je locatie te bepalen. Locatienauwkeurigheid gebruikt informatie over draadloze signalen en sensoren om de apparaatlocatie te schatten.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 site in de groep van <ph name="FPS_OWNER" />}other{{MEMBERS} sites in de groep van <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Windows Hello gebruiken bij het invullen van wachtwoorden</translation>
 <translation id="7225179976675429563">Type netwerk ontbreekt</translation>
 <translation id="7227235818314667565">Delen beheren</translation>
@@ -9908,7 +9903,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8207404892907560325">Toegangssleutel kiezen</translation>
 <translation id="8207794858944505786">VM '<ph name="DEFAULT_VM_NAME" />' bestaat, maar lijkt geen geldige <ph name="VM_TYPE" />-VM te zijn. Neem contact op met je beheerder.</translation>
 <translation id="8207901006380134182">Een grote golf overspoelt de oceaan, met een donker bos aan de kust.</translation>
-<translation id="8208188204689616705">Deze sites zitten in een groep die is gedefinieerd door <ph name="FPS_OWNER" />. Sites in een groep kunnen je activiteit in de groep zien.</translation>
 <translation id="8208216423136871611">Niet opslaan</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nieuwe melding}other{# nieuwe meldingen}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wordt uitgevoerd}other{Downloads worden uitgevoerd}}</translation>
@@ -11036,7 +11030,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9009707268312089299">Geïmporteerd vanuit Windows</translation>
 <translation id="9009708085379296446">Was het je bedoeling deze pagina te wijzigen?</translation>
 <translation id="9010845741772269259">Betaalmethoden toevoegen</translation>
-<translation id="901087299639956505">Gebalanceerde modus</translation>
 <translation id="9011163749350026987">Icoon altijd bekijken</translation>
 <translation id="9011262023858991985">Dit tabblad casten</translation>
 <translation id="9011393886518328654">Release-opmerkingen</translation>

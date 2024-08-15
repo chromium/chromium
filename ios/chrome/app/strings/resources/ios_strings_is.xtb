@@ -123,6 +123,7 @@
 <translation id="1605658421715042784">Afrita mynd</translation>
 <translation id="1608337082864370066">Leita að afritaðri mynd</translation>
 <translation id="1612730193129642006">Sýna flipanet</translation>
+<translation id="1612754831519568745">Slökkt er á öruggri vefnotkun. Fáðu vernd gagnvart hættulegum vefsvæðum, niðurhali og viðbótum.</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1622717322707146952">Veldu „Bæta við Google-dagatal“ eða „Bæta við Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> endurnýtt aðgangsorð</translation>
@@ -559,7 +560,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3745190878148784130">Fela „Stækka/minnka texta“</translation>
 <translation id="3762232513783804601">Sérhannað fyrir iPad</translation>
 <translation id="3768725474733206671">Opna aftur flipann sem síðast var lokað</translation>
-<translation id="3771033907050503522">Huliðsflipar</translation>
 <translation id="3775743491439407556">Samstilling virkar ekki</translation>
 <translation id="3779810277399252432">Engin internettenging.</translation>
 <translation id="3785672280731998727">Skjánafn</translation>
@@ -1341,6 +1341,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7470908168505178757">Flipahópur. Minnkaður.</translation>
 <translation id="7472734401283673885">Heiti fyrirtækis</translation>
 <translation id="7473891865547856676">Nei, takk</translation>
+<translation id="7477974514217962959">{count,plural, =1{Einn flipahópur vistaður og honum lokað}one{{count} flipahópur vistaður og þeim lokað}other{{count} flipahópur vistaður og þeim lokað}}</translation>
 <translation id="7488874549363591659">Afhent</translation>
 <translation id="7491131399623468277">Opna stillingar…</translation>
 <translation id="749854780843431406">Þú getur notað hnappinn <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> til að opna nýjan flipa.</translation>

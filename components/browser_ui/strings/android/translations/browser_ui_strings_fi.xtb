@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Salli tietyn sivuston äänet.</translation>
 <translation id="789180354981963912">Estä kolmannen osapuolen evästeet incognito-tilassa:</translation>
 <translation id="7940722705963108451">Muistuta minua</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sivusto osoitteen <ph name="FPS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}other{<ph name="FPS_MEMBERS_COUNT" /> sivustoa osoitteen <ph name="FPS_OWNER" /> sivustoryhmässä (toimintasi siellä näkyy sivustoille)}}</translation>
 <translation id="7986741934819883144">Valitse yhteystieto</translation>
 <translation id="7990211076305263060">Kun tämä on päällä, sivustot voivat pyytää lupaa mikrofonin käyttöön. Kun tämä on pois päältä, sivustot eivät voi käyttää mikrofonia.</translation>
 <translation id="8007176423574883786">Ei käytössä tällä laitteella</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="8541410041357371550">Tämä sivusto saa mainosaiheet Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}other{Evästeet sallittu <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-sivustolla}}</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8617611086246832542">Kun tämä on päällä, näet verkkosivustojen tietokonenäkymän. Kun tämä on pois päältä, näet sivustojen mobiilinäkymän.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Vanhempiesi hallinnoima</translation>
 <translation id="9039697262778250930">Sinut voidaan kirjata ulos näiltä sivustoilta</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Tämä sivusto kuuluu ryhmään, joka voi nähdä toimintasi. <ph name="FPS_OWNER" /> on määrittänyt ryhmän</translation>
 <translation id="9106233582039520022">Poistetaanko evästeet?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}}</translation>
 <translation id="913657688200966289">Laita luvat (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>

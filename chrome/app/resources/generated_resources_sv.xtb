@@ -478,7 +478,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1340527397989195812">Säkerhetskopiera media från enheten med appen Filer.</translation>
 <translation id="1341701348342335220">Bra jobbat!</translation>
 <translation id="1342886103232377846">Öppna Google Lösenordshantering för att kontrollera om det finns utsatta lösenord</translation>
-<translation id="1343865611738742294">Ge Linux-appar åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Linux.</translation>
 <translation id="1343920184519992513">Fortsätt där du slutade och öppna en viss uppsättning sidor</translation>
 <translation id="1344141078024003905">Du castar skärmen. Du kan pausa eller sluta casta skärmen när du vill.</translation>
 <translation id="1346403631707626730">Skicka användnings- och diagnostikdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används bland annat till att förbättra systemets och apparnas stabilitet, inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och Googles partners, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK1" />Läs mer om mätvärden<ph name="BEGIN_LINK1_END" />Läs mer<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1588919647604819635">Högerklickskort</translation>
 <translation id="1589055389569595240">Visa stavning och grammatik</translation>
 <translation id="1590478605309955960">Dina flikgrupper sparas och uppdateras automatiskt på alla enheter där du är inloggad.</translation>
-<translation id="1591679663873027990">Ge Parallels Desktop behörighet att komma åt USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Parallels Desktop.</translation>
 <translation id="15916883652754430">Röstinställningar för systemet</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> har inaktiverat felsökning med ADB. Din <ph name="DEVICE_TYPE" /> återställs. Säkerhetskopiera dina filer innan du startar om enheten.</translation>
 <translation id="1592126057537046434">Översättning i Snabbinfo</translation>
@@ -938,7 +936,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1650801028905250434">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning. Du kan när som helst ändra detta i Inställningar &gt; Filer.</translation>
 <translation id="1651008383952180276">Du måste ange samma lösenfras två gånger</translation>
 <translation id="1651609627703324721">På den här fliken visas VR-innehåll för en kikare</translation>
-<translation id="1652281434788353738">Omtänksamt</translation>
+<translation id="1652281434788353738">Tankeväckande</translation>
 <translation id="1652326691684645429">Aktivera Närdelning</translation>
 <translation id="1652862280638399816">Om du vill använda Lösenordshantering med en macOS-nyckelring ska du starta om Chromium och tillåta åtkomst till nyckelringen. Flikarna öppnas igen när du har startat om enheten.</translation>
 <translation id="1653958716132599769">Gruppera relaterade flikar</translation>
@@ -2541,7 +2539,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Stöd för äldre webbläsare</translation>
 <translation id="2773621783913034737">Inaktivera flikar</translation>
-<translation id="2774876860084746535">Intellektuellt</translation>
+<translation id="2774876860084746535">Intellektuell</translation>
 <translation id="2775104091073479743">Redigera fingeravtryck</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Tillägget <ph name="EXTENSION" /> hade åtkomst till enheter}=1{Tillägget <ph name="EXTENSION" /> har åtkomst till {0} enhet}other{Tillägget <ph name="EXTENSION" /> har åtkomst till {0} enheter}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Ta bort 1 app som inte stöds}other{Ta bort # appar som inte stöds}}</translation>
@@ -2656,7 +2654,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2853121255651601031">Lösenordet sparades</translation>
 <translation id="2855243985454069333">Raderar historiken från alla synkroniserade enheter</translation>
 <translation id="2855812646048059450">Logga in med <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Strikt läge</translation>
 <translation id="2856776373509145513">Skapa en ny behållare</translation>
 <translation id="2856907950922663165">Vill du inaktivera kryptering av webbadresser?</translation>
 <translation id="2859741939921354763">Importera lösenord till <ph name="BRAND" /></translation>
@@ -2938,7 +2935,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3053273573829329829">Aktivera användarpinkod</translation>
 <translation id="3053274730492362225">Blinka inte</translation>
 <translation id="3054766768827382232">Om du inaktiverar dataåtkomstskyddet kanske din kringutrustning fungerar bättre, men dina personuppgifter kan läcka genom obehörig användning.</translation>
-<translation id="3056438898277655057">Ge <ph name="SPECIFIC_NAME" /> åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3058498974290601450">Du kan när som helst inaktivera synkroniseringen i inställningarna</translation>
 <translation id="3058517085907878899">Namnge enheten</translation>
 <translation id="3059195548603439580">Letar du efter systemets komponenter? Besök</translation>
@@ -4718,7 +4714,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="436926121798828366">Du kan när som helst ändra detta i <ph name="SETTINGS_LINK" /></translation>
 <translation id="4370975561335139969">E-postadressen och lösenordet matchar inte</translation>
 <translation id="4373418556073552953">Logga in med Android-telefonen</translation>
-<translation id="4373973310429385827">Lighthouse</translation>
+<translation id="4373973310429385827">Fyr</translation>
 <translation id="4374805630006466253">Använd en annan telefon eller surfplatta</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
 <translation id="4375035964737468845">Öppna nedladdade filer</translation>
@@ -8553,7 +8549,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7222335051802562841">Slutför uppdatering</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Detta gör att systemtjänster kan använda Platsangivelsens exakthet för att fastställa din plats. Platsangivelsens exakthet använder information om trådlösa signaler och sensorer för att beräkna enhetens plats.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 webbplats i gruppen som tillhör <ph name="FPS_OWNER" />}other{{MEMBERS} webbplatser i gruppen som tillhör <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Fyll i lösenord med Windows Hello</translation>
 <translation id="7225179976675429563">Nätverkstyp saknas</translation>
 <translation id="7227235818314667565">Hantera delning</translation>
@@ -9931,7 +9926,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8207404892907560325">Välj en nyckel</translation>
 <translation id="8207794858944505786">Den virtuella maskinen <ph name="DEFAULT_VM_NAME" /> finns men verkar inte vara en giltig <ph name="VM_TYPE" />-VM. Kontakta administratören.</translation>
 <translation id="8207901006380134182">En stor våg uppslukar havet med en mörk skog på land.</translation>
-<translation id="8208188204689616705">Dessa webbplatser ingår i en grupp som definieras av <ph name="FPS_OWNER" />. Webbplatser i en grupp kan se din aktivitet i gruppen.</translation>
 <translation id="8208216423136871611">Spara inte</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ny avisering}other{# nya aviseringar}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedladdning pågår}other{Nedladdningar pågår}}</translation>
@@ -11058,7 +11052,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9009707268312089299">Importerade från Windows</translation>
 <translation id="9009708085379296446">Hade du tänkt ändra den här sidan?</translation>
 <translation id="9010845741772269259">Lägg till betalningsmetoder</translation>
-<translation id="901087299639956505">Balanserat läge</translation>
 <translation id="9011163749350026987">Visa alltid ikonen</translation>
 <translation id="9011262023858991985">Casta den här fliken</translation>
 <translation id="9011393886518328654">Viktig information</translation>
@@ -11437,7 +11430,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Kameran och mikrofonen spelar in</translation>
 <translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="984705303330760860">Lägg till språk för stavningskontroll</translation>
-<translation id="98515147261107953">Liggande</translation>
+<translation id="98515147261107953">Landskap</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allmänt</translation>
 <translation id="987475089238841621">Språkpaket används för Live Caption och lagras på enheten</translation>

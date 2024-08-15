@@ -26,7 +26,6 @@
 <translation id="1324107359134968521">බ්ලූටූත් උපාංග ගවේෂණය කිරීමට Chromium හට බ්ලූටූත් ප්‍රවේශය අවශ්‍යයි.<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium වෙතින් ද දත්ත මකන්න (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">ඔබ Chromium වෙත ප්‍රවිෂ්ට වී ඇත!</translation>
-<translation id="1465171403179274511">අනාරක්ෂිත සම්බන්ධතාවයක් භාවිතයෙන් ඕනෑම අඩවියක් පූරණය කිරීමට පෙර Chromium ඔබගෙන් අසනු ඇත</translation>
 <translation id="1478370723027452770">පරීක්ෂා කිරීම සඳහා Chrome සමග උදවු ලබා ගන්න</translation>
 <translation id="1497802159252041924">ස්ථාපනය කිරීමේ දෝෂයක්: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium පටිත්තක් බෙදා ගන්න</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">භයානක අඩවිය. Chromium දැනුම්දීම් ඉවත් කළා.</translation>
 <translation id="2240214816234246077">ඔබ මෑත පැමිණ නැත. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ඉවත් කළා</translation>
 <translation id="2241627712206172106">ඔබ පරිගණකයක් හුවමාරු කරන්නේ නම්, මිතුරන්ට සහ පවුලේ අයට වෙනමම බ්‍රව්ස් කළ හැකි අතර ඔවුනට අවශ්‍ය ආකාරයට Chromium සකසා ගත හැකිය.</translation>
-<translation id="2265830994243640896">අනාරක්ෂිත සම්බන්ධතාවයක් භාවිතයෙන් පොදු අඩවි පූරණය කිරීමට පෙර Chromium ඔබෙන් අසනු ඇත, නමුත් පෞද්ගලික ජාල සඳහා HTTP සම්බන්ධතා වලට ඉඩ දෙනු ඇත</translation>
 <translation id="2313870531055795960">Chromium තුළ ගබඩා කර ඇති අනාරක්ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්ෂා කරයි. අඩවියක් ඔබගේ මුරපදය සොරා ගැනීමට උත්සාහ කරන්නේ නම්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chromium පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL සුරක්ෂිත බ්‍රවුස් කිරීම වෙත යැවීමටද හැකිය.</translation>
 <translation id="2329088755516916767">ක්‍රියාත්මක වන විට, Chromium බ්‍රවුස් කිරීම සහ සෙවීම වේගවත් කරන පිටු පූර්ව පූරණය කරයි.</translation>
 <translation id="2343156876103232566">මෙහි සිට ඔබගේ Android දුරකථනයට අංකයක් යැවීමට, උපාංග දෙකෙහිම Chromium වෙත පුරන්න.</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">බාගත කළ ස්ථාපකය කෑෂ් කිරීමට අසමත් විය. දෝෂය: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium ඉතා වේගයෙන් සහ සැලසුම් කළ පරිදි ජාවාස්ක්‍රිප්ට් භාවිත කළ යුතු විශේෂාංග ධාවන කරයි (නිර්දේශිතයි)</translation>
 <translation id="2648074677641340862">ස්ථාපිත කරන අතරතුර මෙහෙයුම් පද්ධති දෝෂයක් හට ගැනුණි. කරුණාකර නැවත Chromium බාගන්න.</translation>
-<translation id="2649201087614586016">ක්‍රියාත්මක වූ විට, HTTPS සඳහා සහය නොදක්වන වෙබ් අඩවි පූරණය කිරීමට පෙර Chromium ඔබෙන් අසනු ඇත</translation>
 <translation id="2661879430930417727">ඔබ උපාංගයක් බෙදා ගන්නේ නම්, මිතුරන්ට සහ පවුලේ අයට වෙන්ව බ්‍රවුස් කළ හැකි අතර ඔවුනට අවශ්‍ය ආකාරයට Chromium පිහිටුවිය හැකිය.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, Chromium වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="2711502716910134313">Chromium පටිත්ත</translation>

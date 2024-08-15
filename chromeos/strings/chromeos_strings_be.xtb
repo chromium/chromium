@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Цяпер даступны эксклюзіўныя аб’екты <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Рух Зямлі</translation>
 <translation id="1026212596705997935">Спалучэнне клавіш выкарыстоўваецца для дзеяння "<ph name="CONFLICT_ACCEL_NAME" />". Націсніце новае спалучэнне. Каб замяніць існуючае, націсніце новае спалучэнне клавіш яшчэ раз.</translation>
+<translation id="1030856839388844477">Скінуць даныя выкарыстання трафіка</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (патокаў: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">З’явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
 <translation id="1049663189809099096">пастэльна-жоўты</translation>
@@ -1549,6 +1550,7 @@
 <translation id="9087578468327036362">Паскардзіцца на гэты запыт</translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Больш падрабязна пра дату скіду</translation>
 <translation id="9100765901046053179">Дадатковыя налады</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>

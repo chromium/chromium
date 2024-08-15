@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038842779957582377">ukjent navn</translation>
 <translation id="1041998700806130099">Jobbarkmelding</translation>
+<translation id="1044897699341250361">Hva betyr dette?</translation>
 <translation id="1046350918013988591">Rabattkuponger og tilbud</translation>
 <translation id="1048785276086539861">Når du redigerer annoteringer, går dette dokumentet tilbake til enkeltsidevisning</translation>
 <translation id="1050038467049342496">Lukk andre apper</translation>
@@ -2649,6 +2650,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5999271311987646952">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg når du surfer – for eksempel Google Safe Browsing, som <ph name="BEGIN_LINK" />nylig har funnet skadelig programvare<ph name="END_LINK" /> på nettstedet du prøver å besøke.</translation>
 <translation id="6000528814684428358">Hardrock og progressiv rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for «<ph name="SEARCH_TEXT" />»</translation>
+<translation id="6001839398155993679">Sett i gang</translation>
 <translation id="6002122790816966947">Enhetene dine</translation>
 <translation id="6002968396561884726">Nylig sett på</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
@@ -3057,6 +3059,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6735783933931458444">Du besøker ofte denne siden på denne tiden av døgnet</translation>
 <translation id="6737708609449480586">Bakst</translation>
 <translation id="6738516213925468394">Dataene dine ble kryptert med <ph name="BEGIN_LINK" />passordfrasen for synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
+<translation id="6739943577740687354">Denne funksjonen bruker AI og kan gjøre feil</translation>
 <translation id="6740851646645036700">Du har nådd grensen for skrivehjelp inntil videre. Prøv igjen senere.</translation>
 <translation id="674375294223700098">Ukjent feil med tjenersertifikat.</translation>
 <translation id="6744009308914054259">Mens du venter på å koble til, kan du gå til Nedlastinger for å lese artikler uten nett.</translation>
@@ -4443,5 +4446,6 @@ Mer informasjon:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Legg til IBAN-nummer</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Fra Google Pay</translation>
 </translationbundle>

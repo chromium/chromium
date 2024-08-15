@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Questa estensione non è più supportata. Chrome consiglia di rimuoverla.</translation>
 <translation id="1812689907177901597">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chrome</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
-<translation id="1861924772887221906">Chrome ti chiederà l'autorizzazione prima di caricare siti pubblici utilizzando una connessione non sicura, ma consentirà le connessioni HTTP per le reti private</translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3597003331831379823">Impossibile eseguire la configurazione con privilegi elevati. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome ti chiederà l'autorizzazione prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="3635073343384702370">Chrome può controllare le password quando le salvi</translation>
 <translation id="3667616615096815454">Impossibile installare l'applicazione. Applicazione sconosciuta al server.</translation>
@@ -449,7 +447,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7296210096911315575">Informazioni importanti sull'utilizzo e sulla sicurezza</translation>
 <translation id="7302361266603927550">Alcuni dati di Chrome non sono ancora stati salvati nel tuo Account Google. Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="7308322188646931570">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file</translation>
-<translation id="7324120788743384890">Se l'opzione è attiva, Chrome ti chiederà l'autorizzazione prima di caricare i siti che non supportano HTTPS</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7352881504289275361">La funzionalità Navigazione sicura avanzata offre la più efficace protezione online di Chrome per garantire la tua sicurezza mentre navighi</translation>
 <translation id="7394745511930161845">Crea il tuo tema con l'AI per dare al tuo browser un aspetto unico</translation>

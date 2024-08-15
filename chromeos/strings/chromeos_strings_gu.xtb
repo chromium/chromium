@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ અસેટ હવે ઉપલબ્ધ છે</translation>
 <translation id="1022628058306505708">અર્થ ફ્લો</translation>
 <translation id="1026212596705997935">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. કોઈ નવો શૉર્ટકટ દબાવો. હાલના શૉર્ટકટને બદલવા માટે, આ શૉર્ટકટને ફરી દબાવો.</translation>
+<translation id="1030856839388844477">ડેટા વપરાશ રીસેટ કરો</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">નવી સુવિધા ઉપલબ્ધ છે, વધુ જાણવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1049663189809099096">પૅસ્ટલ પીળો</translation>
@@ -1551,6 +1552,7 @@
 <translation id="9087578468327036362">આ ક્વેરીની જાણ કરો</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="909856219855259344">રીસેટ કરેલા ડેટા વિશે વધુ માહિતી</translation>
 <translation id="9100765901046053179">વિગતવાર સેટિંગ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>

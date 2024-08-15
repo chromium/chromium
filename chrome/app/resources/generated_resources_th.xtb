@@ -478,7 +478,6 @@
 <translation id="1340527397989195812">สำรองสื่อจากอุปกรณ์โดยใช้แอป Files</translation>
 <translation id="1341701348342335220">เยี่ยมมาก</translation>
 <translation id="1342886103232377846">หากต้องการตรวจสอบรหัสผ่านที่ถูกละเมิด ให้ไปที่เครื่องมือจัดการรหัสผ่านบน Google</translation>
-<translation id="1343865611738742294">ให้สิทธิ์แอป Linux เข้าถึงอุปกรณ์ USB Linux จะไม่จำอุปกรณ์ USB หลังจากที่นำอุปกรณ์ดังกล่าวออก</translation>
 <translation id="1343920184519992513">ดำเนินการต่อจากจุดที่คุณค้างไว้และเปิดกลุ่มหน้าเว็บที่ต้องการ</translation>
 <translation id="1344141078024003905">กำลังแคสต์หน้าจอ คุณหยุดชั่วคราวหรือหยุดการแคสต์หน้าจอได้ทุกเมื่อ</translation>
 <translation id="1346403631707626730">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของบุตรหลานให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ โดยจะไม่มีการใช้ข้อมูลนี้ในการระบุตัวตนบุตรหลานของคุณ และจะช่วยปรับปรุงความเสถียรของระบบและแอป และอื่นๆ ข้อมูลรวมบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับเมตริก<ph name="BEGIN_LINK1_END" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
@@ -820,7 +819,6 @@
 <translation id="1588919647604819635">การ์ดคลิกขวา</translation>
 <translation id="1589055389569595240">แสดงตัวสะกดและไวยากรณ์</translation>
 <translation id="1590478605309955960">กลุ่มแท็บจะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้</translation>
-<translation id="1591679663873027990">ให้สิทธิ์ Parallels Desktop เข้าถึงอุปกรณ์ USB Parallels Desktop จะไม่จดจำอุปกรณ์ USB หลังจากที่นำออก</translation>
 <translation id="15916883652754430">การตั้งค่าเสียงของระบบ</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ได้ปิดใช้การแก้ไขข้อบกพร่อง ADB ซึ่งจะเป็นการรีเซ็ต <ph name="DEVICE_TYPE" /> ของคุณ สำรองข้อมูลไฟล์ก่อนที่จะรีสตาร์ท</translation>
 <translation id="1592126057537046434">คำแปลของคำตอบด่วน</translation>
@@ -2528,7 +2526,7 @@
 <translation id="2772936498786524345">สนีกกี้</translation>
 <translation id="2773288106548584039">การรองรับเบราว์เซอร์เวอร์ชันเก่า</translation>
 <translation id="2773621783913034737">ทำให้แท็บไม่ทำงาน</translation>
-<translation id="2774876860084746535">ทรงความรู้</translation>
+<translation id="2774876860084746535">ชวนคิด</translation>
 <translation id="2775104091073479743">แก้ไขลายนิ้วมือ</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{ส่วนขยาย "<ph name="EXTENSION" />" ได้เข้าถึงอุปกรณ์}=1{ส่วนขยาย "<ph name="EXTENSION" />" ได้เข้าถึงอุปกรณ์ {0} เครื่อง}other{ส่วนขยาย "<ph name="EXTENSION" />" ได้เข้าถึงอุปกรณ์ {0} เครื่อง}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{นำแอปที่ไม่รองรับออก 1 แอป}other{นำแอปที่ไม่รองรับออก # แอป}}</translation>
@@ -2643,7 +2641,6 @@
 <translation id="2853121255651601031">บันทึกรหัสผ่านแล้ว</translation>
 <translation id="2855243985454069333">ลบประวัติการเข้าชมจากอุปกรณ์ที่ซิงค์ทั้งหมด</translation>
 <translation id="2855812646048059450">ลงชื่อเข้าใช้ด้วย <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">โหมดจำกัด</translation>
 <translation id="2856776373509145513">สร้างคอนเทนเนอร์ใหม่</translation>
 <translation id="2856907950922663165">ปิดการเข้ารหัส URL ใช่ไหม</translation>
 <translation id="2859741939921354763">นำเข้ารหัสผ่านไปยัง<ph name="BRAND" /></translation>
@@ -2925,7 +2922,6 @@
 <translation id="3053273573829329829">เปิดใช้ PIN ของผู้ใช้</translation>
 <translation id="3053274730492362225">ไม่ต้องกะพริบ</translation>
 <translation id="3054766768827382232">การปิดใช้จะทำให้อุปกรณ์ต่อพ่วงทำงานได้ดีขึ้น แต่อาจเปิดเผยข้อมูลส่วนตัวของคุณผ่านการใช้งานโดยไม่ได้รับอนุญาต</translation>
-<translation id="3056438898277655057">ให้สิทธิ์ <ph name="SPECIFIC_NAME" /> เข้าถึงอุปกรณ์ USB <ph name="SPECIFIC_NAME" /> จะไม่จดจำอุปกรณ์ USB หลังจากที่นำออก</translation>
 <translation id="3058498974290601450">คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="3058517085907878899">ตั้งชื่ออุปกรณ์</translation>
 <translation id="3059195548603439580">หากต้องการดูคอมโพเนนต์ของระบบ โปรดไปที่</translation>
@@ -6060,7 +6056,7 @@
 <translation id="5388436023007579456">แอปและเว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง ตลอดจนบริการของระบบจะใช้กล้องได้ หากต้องการใช้กล้อง คุณอาจต้องรีสตาร์ทแอปหรือรีเฟรชหน้า</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{พบ 1 เว็บไซต์ที่มีการแจ้งเตือนจำนวนมาก}other{พบ {NUM_SITES} เว็บไซต์ที่มีการแจ้งเตือนจำนวนมาก}}</translation>
 <translation id="5388885445722491159">จับคู่</translation>
-<translation id="5389224261615877010">สีรุ้ง</translation>
+<translation id="5389224261615877010">สายรุ้ง</translation>
 <translation id="5389626883706033615">เว็บไซต์ถูกบล็อกไม่ให้ขออนุญาตคุณในการใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
 <translation id="5389794555912875905">ดูคำเตือนก่อนไปยังเว็บไซต์ที่ไม่ปลอดภัย (แนะนำ)</translation>
 <translation id="5390112241331447203">รวมไฟล์ system_logs.txt ที่ส่งในรายงานความคิดเห็น</translation>
@@ -6753,7 +6749,7 @@
 <translation id="5894056653502215961">ยกเลิกการเลือกโฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5895335062901455404">ค่ากำหนดและกิจกรรมที่คุณบันทึกไว้จะพร้อมใช้งานในอุปกรณ์ Chrome OS Flex เมื่อลงชื่อเข้าใช้ด้วยบัญชี Google คุณเลือกสิ่งที่ต้องการซิงค์ได้ในการตั้งค่า</translation>
-<translation id="5895338131909306775">ห้องปฏิบัติการเคมี</translation>
+<translation id="5895338131909306775">ห้องแล็บ</translation>
 <translation id="589541317545606110">ค้นหาหน้าด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="5895758411979561724"><ph name="APP_ORIGIN" /> กําลังบันทึกหน้าจอ</translation>
 <translation id="5896436821193322561">ไม่อนุญาต</translation>
@@ -8533,7 +8529,6 @@
 <translation id="7222335051802562841">อัปเดตให้เสร็จสิ้น</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">การตั้งค่านี้จะช่วยให้บริการของระบบใช้ความแม่นยำของตำแหน่งเพื่อระบุตำแหน่งของคุณได้ ความแม่นยำของตำแหน่งจะใช้ข้อมูลเกี่ยวกับสัญญาณไร้สายและเซ็นเซอร์เพื่อประมาณตำแหน่งของอุปกรณ์</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 เว็บไซต์ในกลุ่มของ <ph name="FPS_OWNER" />}other{{MEMBERS} เว็บไซต์ในกลุ่มของ <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">ใช้ Windows Hello เมื่อป้อนรหัสผ่าน</translation>
 <translation id="7225179976675429563">ไม่มีประเภทเครือข่าย</translation>
 <translation id="7227235818314667565">จัดการการแชร์</translation>
@@ -9910,7 +9905,6 @@
 <translation id="8207404892907560325">เลือกพาสคีย์</translation>
 <translation id="8207794858944505786">มี VM "<ph name="DEFAULT_VM_NAME" />" อยู่แล้ว แต่ดูเหมือนจะไม่ใช่ VM <ph name="VM_TYPE" /> ที่ถูกต้อง โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="8207901006380134182">คลื่นขนาดใหญ่ซัดออกสู่มหาสมุทร ริมชายฝั่งมีผืนป่าที่ให้บรรยากาศมืดมิด</translation>
-<translation id="8208188204689616705">เว็บไซต์เหล่านี้อยู่ในกลุ่มที่ <ph name="FPS_OWNER" /> กำหนดไว้ เว็บไซต์ในกลุ่มจะดูกิจกรรมของคุณในกลุ่มได้</translation>
 <translation id="8208216423136871611">ไม่บันทึก</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{การแจ้งเตือนใหม่}other{การแจ้งเตือนใหม่ # รายการ}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{อยู่ระหว่างการดาวน์โหลด}other{อยู่ระหว่างการดาวน์โหลด}}</translation>
@@ -11037,7 +11031,6 @@
 <translation id="9009707268312089299">นำเข้าจาก Windows</translation>
 <translation id="9009708085379296446">คุณต้องการเปลี่ยนแปลงหน้านี้ใช่ไหม</translation>
 <translation id="9010845741772269259">เพิ่มวิธีการชำระเงิน</translation>
-<translation id="901087299639956505">โหมดสมดุล</translation>
 <translation id="9011163749350026987">แสดงไอคอนเสมอ</translation>
 <translation id="9011262023858991985">กำลังแคสต์แท็บนี้</translation>
 <translation id="9011393886518328654">บันทึกประจำรุ่น</translation>
@@ -11204,7 +11197,7 @@
 <translation id="9114663181201435112">ลงชื่อเข้าใช้ได้อย่างง่ายดาย</translation>
 <translation id="9115675100829699941">&amp;บุ๊กมาร์ก</translation>
 <translation id="9115932142612197835">การตั้งค่านี้จะไม่เปลี่ยนแปลงความพร้อมใช้งานของ Google แปลภาษาหรือ Lens</translation>
-<translation id="9116366756388192417">เลือกวัตถุ</translation>
+<translation id="9116366756388192417">เลือกเรื่อง</translation>
 <translation id="9116799625073598554">แอปสำหรับจดโน้ต</translation>
 <translation id="9117030152748022724">จัดการแอปของคุณ</translation>
 <translation id="9119587891086680311">ฟีเจอร์เหล่านี้ใช้ AI, กำลังพัฒนาอยู่ในขั้นต้น และอาจทำงานผิดพลาดได้</translation>

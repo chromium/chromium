@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> cihazlara özel öğeler artık kullanılabilir</translation>
 <translation id="1022628058306505708">Toprak Kayması</translation>
 <translation id="1026212596705997935">Kısayol, "<ph name="CONFLICT_ACCEL_NAME" />" için kullanılıyor. Yeni bir kısayola basın. Mevcut kısayolu değiştirmek için bu kısayola tekrar basın.</translation>
+<translation id="1030856839388844477">Veri kullanımını sıfırlayın</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için yukarı ok tuşunu kullanın.</translation>
 <translation id="1049663189809099096">pastel sarı</translation>
@@ -1551,6 +1552,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="9087578468327036362">Bu sorguyu bildirir</translation>
 <translation id="9088306295921699330">Mevcut kullanım</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Tarihi sıfırlamayla ilgili daha fazla bilgi</translation>
 <translation id="9100765901046053179">Gelişmiş ayarlar</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />. sayfa taranıyor</translation>

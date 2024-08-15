@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Näytä ehdotukset</translation>
 <translation id="1038842779957582377">tuntematon nimi</translation>
 <translation id="1041998700806130099">Työpaikkasivun viesti</translation>
+<translation id="1044897699341250361">Mitä tämä tarkoittaa</translation>
 <translation id="1046350918013988591">Kupongit ja alennusmyynnit</translation>
 <translation id="1048785276086539861">Kun muokkaat merkintöjä, tämä dokumentti palaa yhden sivun näkymään</translation>
 <translation id="1050038467049342496">Sulje muita sovelluksia.</translation>
@@ -2650,6 +2651,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5999271311987646952">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Se <ph name="BEGIN_LINK" />löysi äskettäin haittaohjelmia<ph name="END_LINK" /> sivustolta, jolle yrität siirtyä.</translation>
 <translation id="6000528814684428358">Hard rock ja progressiivinen rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulosta: <ph name="SEARCH_TEXT" /></translation>
+<translation id="6001839398155993679">Aloita</translation>
 <translation id="6002122790816966947">Omat laitteet</translation>
 <translation id="6002968396561884726">Viimeksi katsellut</translation>
 <translation id="6005659677094197001">Jatkuva</translation>
@@ -3058,6 +3060,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6735783933931458444">Käyt sivustolla usein tähän aikaan</translation>
 <translation id="6737708609449480586">Leivonnaiset</translation>
 <translation id="6738516213925468394">Datasi salattiin <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseella<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>
+<translation id="6739943577740687354">Ominaisuus hyödyntää tekoälyä, eikä se välttämättä osu aina oikeaan</translation>
 <translation id="6740851646645036700">Kirjoittamisen avustuksen raja on toistaiseksi saavutettu. Yritä myöhemmin uudelleen.</translation>
 <translation id="674375294223700098">Tuntematon palvelimen varmennevirhe.</translation>
 <translation id="6744009308914054259">Voit lukea artikkeleita offline-tilassa Lataukset-kohdassa, kun odotat yhteyden muodostamista.</translation>
@@ -4447,5 +4450,6 @@ Lisätietoja:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1 (728 mm x 1 030 mm)</translation>
 <translation id="995755448277384931">Lisää IBAN-numero</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Paysta</translation>
 </translationbundle>

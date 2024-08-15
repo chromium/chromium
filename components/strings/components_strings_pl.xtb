@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Pokaż sugestie</translation>
 <translation id="1038842779957582377">nieznana nazwa</translation>
 <translation id="1041998700806130099">Komunikat dotyczący arkusza zadań</translation>
+<translation id="1044897699341250361">Co to oznacza</translation>
 <translation id="1046350918013988591">Kupony i oferty promocyjne</translation>
 <translation id="1048785276086539861">Gdy zmodyfikujesz adnotacje, dokument wróci do widoku jednej strony</translation>
 <translation id="1050038467049342496">Zamknij inne aplikacje</translation>
@@ -2659,6 +2660,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5999271311987646952">Chrome ma wbudowane zabezpieczenia, które chronią Cię podczas korzystania z przeglądarki, takie jak Bezpieczne przeglądanie Google. Na stronie, którą chcesz otworzyć, <ph name="BEGIN_LINK" />niedawno wykryło ono złośliwe oprogramowanie<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Hard rock i rock progresywny</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Do dzieła</translation>
 <translation id="6002122790816966947">Twoje urządzenia</translation>
 <translation id="6002968396561884726">Ostatnio wyświetlane</translation>
 <translation id="6005659677094197001">Ciągły</translation>
@@ -3067,6 +3069,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6735783933931458444">Często odwiedzasz o tej porze dnia</translation>
 <translation id="6737708609449480586">Wypieki</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem wielowyrazowym do synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
+<translation id="6739943577740687354">Ta funkcja korzysta z AI i nie zawsze działa prawidłowo</translation>
 <translation id="6740851646645036700">Twój limit pomocy w pisaniu został osiągnięty. Spróbuj później.</translation>
 <translation id="674375294223700098">Nieznany błąd certyfikatu serwera.</translation>
 <translation id="6744009308914054259">Dopóki nie masz połączenia, możesz poczytać artykuły offline z Pobranych plików.</translation>
@@ -4455,5 +4458,6 @@ Dodatkowe informacje:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Dodaj numer IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Z Google Pay</translation>
 </translationbundle>

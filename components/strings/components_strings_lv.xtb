@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Rādīt ieteikumus</translation>
 <translation id="1038842779957582377">nezināms nosaukums</translation>
 <translation id="1041998700806130099">Uzdevuma lapas ziņojums</translation>
+<translation id="1044897699341250361">Ko tas nozīmē</translation>
 <translation id="1046350918013988591">Kuponi un atlaižu piedāvājumi</translation>
 <translation id="1048785276086539861">Ja rediģēsiet piezīmes, dokuments atkal pāries vienas lapas skatā.</translation>
 <translation id="1050038467049342496">Aizveriet citas lietotnes</translation>
@@ -2648,6 +2649,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5999271311987646952">Pārlūkā Chrome ir iebūvētas drošības funkcijas, lai jūs aizsargātu pārlūkošanas laikā, piemēram, Google droša pārlūkošana — šī funkcija <ph name="BEGIN_LINK" />nesen konstatēja ļaunprātīgu programmatūru<ph name="END_LINK" /> vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="6000528814684428358">Smagais roks un progresīvā mūzika</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
+<translation id="6001839398155993679">Aiziet!</translation>
 <translation id="6002122790816966947">Jūsu ierīces</translation>
 <translation id="6002968396561884726">Nesen skatīts</translation>
 <translation id="6005659677094197001">Vienlaidu</translation>
@@ -3056,6 +3058,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6735783933931458444">Jūs bieži apmeklējat šajā diennakts laikā</translation>
 <translation id="6737708609449480586">Konditorejas izstrādājumi</translation>
 <translation id="6738516213925468394">Jūsu dati tika šifrēti, izmantojot jūsu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />šādā datumā: <ph name="TIME" />. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
+<translation id="6739943577740687354">Šai funkcijai tiek izmantots MI, un dažkārt tā var nedarboties pareizi.</translation>
 <translation id="6740851646645036700">Patlaban esat sasniedzis rakstīšanas palīdzības ierobežojumu. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="674375294223700098">Nezināma servera sertifikāta kļūda.</translation>
 <translation id="6744009308914054259">Kamēr tiek gaidīts savienojums, varat apmeklēt Lejupielādes, lai lasītu rakstu bezsaistē.</translation>
@@ -4445,5 +4448,6 @@ Papildu informācija:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN pievienošana</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">No pakalpojuma Google Pay</translation>
 </translationbundle>

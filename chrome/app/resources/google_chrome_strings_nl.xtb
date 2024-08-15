@@ -63,7 +63,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="178701303897325119">Deze extensie wordt niet meer ondersteund. Chrome raadt je aan de extensie te verwijderen.</translation>
 <translation id="1812689907177901597">Als je dit uitzet, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chrome</translation>
 <translation id="1860536484129686729">Chrome heeft toegangsrechten voor je camera nodig voor deze site</translation>
-<translation id="1861924772887221906">Chrome vraagt je om toestemming voordat openbare sites worden geladen via een niet-beveiligde verbinding, maar staat HTTP-verbindingen toe voor privénetwerken</translation>
 <translation id="1873233029667955273">Google Chrome is niet je standaardbrowser</translation>
 <translation id="1874309113135274312">Google Chrome Bèta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
@@ -201,7 +200,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3596080736082218006">{COUNT,plural, =0{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren.}=1{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren. Je incognitovenster kan niet opnieuw worden geopend.}other{Je beheerder vereist dat je Chrome opnieuw start om een update uit te voeren. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Je bent hier niet recent geweest. Chrome heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en <ph name="PERMISSION_3" /> verwijderd</translation>
-<translation id="3614820178395775413">Chrome vraagt je om toestemming voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="3622797965165704966">Het is nu gemakkelijker om Chrome met je Google-account en op gedeelde computers te gebruiken.</translation>
 <translation id="3635073343384702370">Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen</translation>
 <translation id="3667616615096815454">Kan niet installeren. De app is niet bekend bij de server.</translation>
@@ -455,7 +453,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7296210096911315575">Belangrijke informatie over gebruik en veiligheid</translation>
 <translation id="7302361266603927550">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account. Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="7308322188646931570">Chrome heeft toegang tot de opslag nodig om bestanden te kunnen downloaden</translation>
-<translation id="7324120788743384890">Als dit aanstaat, vraagt Chrome je om toestemming voordat sites worden geladen die HTTPS niet ondersteunen</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7352881504289275361">De uitgebreide versie van Safe Browsing biedt de sterkste online bescherming van Chrome, om je te beschermen terwijl je browst</translation>
 <translation id="7394745511930161845">Maak je eigen thema met AI en geef je browser een unieke uitstraling</translation>

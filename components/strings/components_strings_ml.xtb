@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="1038842779957582377">അജ്ഞാത നാമം</translation>
 <translation id="1041998700806130099">ജോബ് ഷീറ്റ് സന്ദേശം</translation>
+<translation id="1044897699341250361">എന്താണ് ഇതിനർത്ഥം</translation>
 <translation id="1046350918013988591">കൂപ്പണുകളും ഡിസ്‌കൗണ്ട് ഓഫറുകളും</translation>
 <translation id="1048785276086539861">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് ഒറ്റ പേജ് കാഴ്ചയിലേക്ക് മടങ്ങുന്നു</translation>
 <translation id="1050038467049342496">മറ്റ് ആപ്പുകൾ അടയ്‌ക്കുക</translation>
@@ -2648,6 +2649,7 @@
 <translation id="5999271311987646952">ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങളെ പരിരക്ഷിക്കുന്നതിന് Chrome-ന് ബിൽറ്റ്-ഇൻ സുരക്ഷാ ഫീച്ചറുകൾ ഉണ്ട് — നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിക്കുന്ന സൈറ്റിൽ <ph name="BEGIN_LINK" />അടുത്തിടെ മാൽവെയർ കണ്ടെത്തിയ<ph name="END_LINK" /> Google സുരക്ഷിത ബ്രൗസിംഗ് പോലുള്ളവ ഉദാഹരണം.</translation>
 <translation id="6000528814684428358">ഹാർഡ് റോക്കും പ്രോഗ്രസീവും</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' എന്നതിനായി <ph name="RESULT_COUNT" /> ഫലങ്ങള്‍</translation>
+<translation id="6001839398155993679">തുടങ്ങാം</translation>
 <translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
 <translation id="6002968396561884726">അടുത്തിടെ കണ്ടത്</translation>
 <translation id="6005659677094197001">തുടർച്ചയായ</translation>
@@ -3056,6 +3058,7 @@
 <translation id="6735783933931458444">നിങ്ങൾ എല്ലാ ദിവസവും ഈ സമയത്ത് പതിവായി സന്ദർശിക്കുന്ന ടാബ്</translation>
 <translation id="6737708609449480586">ബേക്ക് ചെയ്ത ഭക്ഷണസാധനങ്ങൾ</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-ന് നിങ്ങളുടെ <ph name="BEGIN_LINK" />സമന്വയ പാസ്‌ഫ്രെയ്‌സ്<ph name="END_LINK" /> ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
+<translation id="6739943577740687354">ഈ ഫീച്ചർ AI ഉപയോഗിക്കും, ഇത് എപ്പോഴും ശരിയാകണമെന്നില്ല</translation>
 <translation id="6740851646645036700">നിങ്ങൾ ഇപ്പോൾ എഴുതുന്നതുമായി ബന്ധപ്പെട്ട സഹായ പരിധിയിലെത്തി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="674375294223700098">അറിയപ്പെടാത്ത സെര്‍വര്‍ സര്‍ട്ടിഫിക്കറ്റ് പിശക്.</translation>
 <translation id="6744009308914054259">കണക്‌ഷനായി കാത്തിരിക്കുമ്പോൾ, ഓഫ്‌ലൈൻ ലേഖനങ്ങൾ വായിക്കാനായി നിങ്ങൾക്ക് ഡൗൺലോഡുകൾ സന്ദർശിക്കാം.</translation>
@@ -4441,5 +4444,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ചേർക്കുക</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay-യിൽ നിന്ന്</translation>
 </translationbundle>

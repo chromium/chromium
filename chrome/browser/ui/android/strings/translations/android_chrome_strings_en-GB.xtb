@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Share with summary feedback sheet closed</translation>
 <translation id="1089606299949659462">Review complete!</translation>
 <translation id="1094555143448724771">To see tabs from your other devices, sync your tabs and history</translation>
-<translation id="1095142578254888918">Notifications not allowed for <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
 <translation id="1100066534610197918">Open in new tab in group</translation>
 <translation id="1103142993930332957">Help improve Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Customised</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1183189057400844278">To make sure that you can always use the passwords in your Google Account, verify that it's you</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Notifications not allowed for 1 site}other{Notifications not allowed for # sites}}</translation>
 <translation id="1187810343066461819">Also delete bookmarks, history and more from this car</translation>
 <translation id="1193729455103054076">Use strong password?</translation>
 <translation id="1197267115302279827">Move bookmarks</translation>
@@ -454,7 +452,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3087218211037573995">Some passwords saved only on this device will stop working soon. You can move these passwords to Google Password Manager.</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
-<translation id="3093004810561729002">Someone</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Announcements</translation>
@@ -506,6 +503,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3407392651057365886">More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3421726884497337397">Choose when to block third-party cookies</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# hr ago}other{# hrs ago}}</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3435738964857648380">Security</translation>
@@ -938,6 +936,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5517095782334947753">You have bookmarks, history, passwords and other settings from <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Redirect blocked.</translation>
 <translation id="5526281268548144413">Can't be closed across multiple windows</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# min ago}other{# mins ago}}</translation>
 <translation id="5548606607480005320">Safety check</translation>
 <translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>

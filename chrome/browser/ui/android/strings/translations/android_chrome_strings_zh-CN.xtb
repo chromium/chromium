@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">已关闭分享摘要反馈工作表</translation>
 <translation id="1089606299949659462">查看完毕！</translation>
 <translation id="1094555143448724771">如需查看您在其他设备中打开的标签页，请同步您的标签页和历史记录</translation>
-<translation id="1095142578254888918">不允许 <ph name="SITE_NAME" /> 发送通知</translation>
 <translation id="1095761715416917775">确保您可以随时访问自己的同步数据</translation>
 <translation id="1100066534610197918">在群组内的新标签页中打开</translation>
 <translation id="1103142993930332957">帮助改进 Chrome？</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{1 个网站不得发送通知}other{# 个网站不得发送通知}}</translation>
 <translation id="1187810343066461819">同时从此车载系统中删除书签、历史记录等信息</translation>
 <translation id="1193729455103054076">使用安全系数高的密码？</translation>
 <translation id="1197267115302279827">移动书签</translation>
@@ -454,7 +452,6 @@
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3087218211037573995">一些仅保存在此设备上的密码即将失效。您可以将这些密码移至 Google 密码管理工具。</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
-<translation id="3093004810561729002">某位用户</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
@@ -506,6 +503,7 @@
 <translation id="3407392651057365886">预加载更多网页。被其他网站请求的网页可能会通过 Google 服务器预加载。</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3421726884497337397">选择何时屏蔽第三方 Cookie</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# 小时前}other{# 小时前}}</translation>
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435465986463792564">打开了许多窗口？您可在此处管理它们</translation>
 <translation id="3435738964857648380">安全</translation>
@@ -938,6 +936,7 @@
 <translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="5524843473235508879">已禁止重定向。</translation>
 <translation id="5526281268548144413">无法在多个窗口中关闭</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="5548606607480005320">安全检查</translation>
 <translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>

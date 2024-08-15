@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">Dabar pasiekiami išskirtiniai „<ph name="PRODUCT_NAME" />“ ištekliai</translation>
 <translation id="1022628058306505708">Žemės srautas</translation>
 <translation id="1026212596705997935">Naudojamas „<ph name="CONFLICT_ACCEL_NAME" />“ spartusis klavišas. Paspauskite naują spartųjį klavišą. Jei norite pakeisti esamą spartųjį klavišą, dar kartą paspauskite šį spartųjį klavišą.</translation>
+<translation id="1030856839388844477">Nustatyti duomenų naudojimą iš naujo</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
 <translation id="1049663189809099096">pastelinės geltonos spalvos</translation>
@@ -1551,6 +1552,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9087578468327036362">Pranešti apie šią užklausą</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">Daugiau informacijos apie nustatymo iš naujo datą</translation>
 <translation id="9100765901046053179">Išplėstiniai nustatymai</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>

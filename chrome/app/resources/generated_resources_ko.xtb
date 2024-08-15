@@ -478,7 +478,6 @@
 <translation id="1340527397989195812">파일 앱을 사용하여 기기의 미디어를 백업합니다.</translation>
 <translation id="1341701348342335220">수고하셨습니다</translation>
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
-<translation id="1343865611738742294">Linux 앱에 USB 기기 액세스 권한을 부여합니다. Linux는 삭제된 USB 기기를 기억하지 않습니다.</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
 <translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="1346403631707626730">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK1_END" />자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@
 <translation id="1588919647604819635">마우스 오른쪽 버튼으로 클릭 카드</translation>
 <translation id="1589055389569595240">영문 철자 및 문법 보기</translation>
 <translation id="1590478605309955960">탭 그룹은 로그인된 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
-<translation id="1591679663873027990">Parallels Desktop에 USB 기기 액세스 권한을 부여하세요. 삭제된 USB 기기는 Parallels Desktop에 저장되지 않습니다.</translation>
 <translation id="15916883652754430">시스템 음성 설정</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" />에서 ADB 디버깅이 사용 중지되었으며 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 다시 시작하기 전에 파일을 백업하세요.</translation>
 <translation id="1592126057537046434">빠른 답변 번역</translation>
@@ -2658,7 +2656,6 @@
 <translation id="2853121255651601031">비밀번호 저장됨</translation>
 <translation id="2855243985454069333">동기화된 모든 기기에서 방문 기록 삭제</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" />로 로그인</translation>
-<translation id="28559674945112027">엄격 모드</translation>
 <translation id="2856776373509145513">새 컨테이너 만들기</translation>
 <translation id="2856907950922663165">URL 암호화를 사용 중지하시겠습니까?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />로 비밀번호 가져오기</translation>
@@ -2940,7 +2937,6 @@
 <translation id="3053273573829329829">사용자 PIN 사용</translation>
 <translation id="3053274730492362225">깜박이지 않음</translation>
 <translation id="3054766768827382232">방화벽을 사용 중지하면 주변기기 성능이 향상될 수 있으나 개인 정보가 노출되어 무단 사용될 수 있습니다.</translation>
-<translation id="3056438898277655057"><ph name="SPECIFIC_NAME" />에 USB 기기 액세스 권한을 부여합니다. <ph name="SPECIFIC_NAME" />은 삭제된 USB 기기를 기억하지 않습니다.</translation>
 <translation id="3058498974290601450">언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="3058517085907878899">기기 이름 지정</translation>
 <translation id="3059195548603439580">시스템 구성요소를 찾는다면 다음으로 이동하세요.</translation>
@@ -8554,7 +8550,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7222335051802562841">업데이트 완료</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">이렇게 하면 시스템 서비스에서 위치 정확도를 사용하여 내 위치를 파악할 수 있습니다. 위치 정확도는 무선 신호 및 센서에 관한 정보를 사용하여 기기 위치를 추정합니다.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />의 그룹에 사이트 1개 있음}other{<ph name="FPS_OWNER" />의 그룹에 사이트 {MEMBERS}개 있음}}</translation>
 <translation id="7225082563376899794">Windows Hello를 사용하여 비밀번호 입력</translation>
 <translation id="7225179976675429563">네트워크 유형이 없습니다.</translation>
 <translation id="7227235818314667565">공유 관리</translation>
@@ -9932,7 +9927,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8207404892907560325">패스키 선택</translation>
 <translation id="8207794858944505786">'<ph name="DEFAULT_VM_NAME" />' VM이 존재하지만 유효한 <ph name="VM_TYPE" /> VM이 아닌 것으로 보입니다. 관리자에게 문의하세요.</translation>
 <translation id="8207901006380134182">어두운 숲이 있는 해안으로 거대한 파도가 밀려옵니다.</translation>
-<translation id="8208188204689616705"><ph name="FPS_OWNER" />에서 정의한 그룹에 속하는 사이트입니다. 그룹의 사이트에서 내 그룹 활동을 볼 수 있습니다.</translation>
 <translation id="8208216423136871611">저장하지 않음</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{새 알림}other{새 알림 #개}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
@@ -11059,7 +11053,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9009707268312089299">Windows에서 가져옴</translation>
 <translation id="9009708085379296446">이 페이지를 변경하려고 하셨나요?</translation>
 <translation id="9010845741772269259">결제 수단 추가</translation>
-<translation id="901087299639956505">균형 모드</translation>
 <translation id="9011163749350026987">항상 아이콘 표시</translation>
 <translation id="9011262023858991985">이 탭 전송 중</translation>
 <translation id="9011393886518328654">출시 노트</translation>

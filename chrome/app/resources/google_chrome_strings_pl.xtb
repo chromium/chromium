@@ -59,7 +59,6 @@
 <translation id="178701303897325119">To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.</translation>
 <translation id="1812689907177901597">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chrome</translation>
 <translation id="1860536484129686729">Chrome potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
-<translation id="1861924772887221906">Chrome będzie Cię pytać o zgodę przed wczytaniem stron publicznych, które korzystają z niezabezpieczonego połączenia, ale będzie zezwalać na połączenia HTTP w sieciach prywatnych</translation>
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację}=1{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. Okno incognito nie otworzy się ponownie.}few{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okna incognito nie otworzą się ponownie.}many{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okien incognito nie otworzy się ponownie.}other{Administrator wymaga ponownego uruchomienia Chrome, by przeglądarka mogła zainstalować aktualizację. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="3597003331831379823">Nie udało się uruchomić konfiguracji z podwyższonymi uprawnieniami. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
-<translation id="3614820178395775413">Chrome będzie Cię pytać o zgodę przed wczytaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="3622797965165704966">Korzystanie z Chrome na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
 <translation id="3635073343384702370">Chrome może sprawdzać Twoje hasła, gdy je zapiszesz</translation>
 <translation id="3667616615096815454">Nie można zainstalować aplikacji. Serwer jej nie rozpoznaje.</translation>
@@ -449,7 +447,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7296210096911315575">Ważne informacje dotyczące użytkowania i bezpieczeństwa</translation>
 <translation id="7302361266603927550">Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
 <translation id="7308322188646931570">Chrome musi mieć dostęp do pamięci, by pobierać pliki</translation>
-<translation id="7324120788743384890">Gdy ta opcja jest włączona, Chrome pyta o zgodę przed wczytaniem stron, które nie obsługują protokołu HTTPS</translation>
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7352881504289275361">Ulepszone Bezpieczne przeglądanie zapewnia najlepszą ochronę online w Chrome</translation>
 <translation id="7394745511930161845">Stwórz własny motyw za pomocą AI, aby nadać przeglądarce wyjątkowy wygląd</translation>

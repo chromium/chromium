@@ -25,7 +25,6 @@
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="1342274909142618978">Izbriši i podatke s Chromiuma (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
-<translation id="1465171403179274511">Chromium će vas pitati prije učitavanja bilo koje web-lokacije putem nesigurne veze</translation>
 <translation id="1478370723027452770">Zatražite pomoć za Chrome for Testing</translation>
 <translation id="1497802159252041924">Instalacijska pogreška: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Dijeljenje kartice Chromium</translation>
@@ -81,7 +80,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="2210682093923538346">Opasna web-lokacija. Chromium je uklonio obavijesti.</translation>
 <translation id="2240214816234246077">U posljednje vrijeme niste posjećivali web-lokaciju. Chromium je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Ako dijelite računalo, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama.</translation>
-<translation id="2265830994243640896">Chromium će vas pitati prije učitavanja javnih web-lokacija putem nesigurne veze, ali će dopustiti HTTP veze za privatne mreže</translation>
 <translation id="2313870531055795960">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromiumu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="2329088755516916767">Kad je to uključeno, Chromium predučitava stranice, što ubrzava pregledavanje i pretraživanje.</translation>
 <translation id="2343156876103232566">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chromium na oba uređaja.</translation>
@@ -106,7 +104,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="259935314519650377">Spremanje preuzetog alata za instalaciju u predmemoriju nije uspjelo. Pogreška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno (preporučeno)</translation>
 <translation id="2648074677641340862">Došlo je do pogreške operativnog sustava tijekom instalacije. Ponovo preuzmite Chromium.</translation>
-<translation id="2649201087614586016">Kad je ta opcija uključena, Chromium će vas pitati prije učitavanja web-lokacija koje ne podržavaju HTTPS</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama</translation>
 <translation id="268602741124540128">Dobro došli u Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromiumova kartica</translation>

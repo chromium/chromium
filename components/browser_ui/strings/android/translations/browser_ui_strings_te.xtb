@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">నిర్దిష్ట సైట్ కోసం ధ్వనిని అనుమతించండి.</translation>
 <translation id="789180354981963912">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి:</translation>
 <translation id="7940722705963108451">నాకు గుర్తు చేయి</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{గ్రూప్‌లో మీ యాక్టివిటీని చూడగలిగే <ph name="FPS_OWNER" /> సైట్‌ల గ్రూప్‌లో <ph name="FPS_MEMBERS_COUNT" /> సైట్}other{గ్రూప్‌లో మీ యాక్టివిటీని చూడగలిగే <ph name="FPS_OWNER" /> సైట్‌ల గ్రూప్‌లో <ph name="FPS_MEMBERS_COUNT" /> సైట్‌లు}}</translation>
 <translation id="7986741934819883144">పరిచయాన్ని ఎంచుకోండి</translation>
 <translation id="7990211076305263060">ఆన్‌లో ఉన్నప్పుడు, సైట్‌లు మీ మైక్రోఫోన్‌ను ఉపయోగించమని అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, సైట్‌లు మీ మైక్రోఫోన్‌ను ఉపయోగించడం సాధ్యం కాదు.</translation>
 <translation id="8007176423574883786">ఈ పరికరం కోసం ఆఫ్ చేయబడింది</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">పరికరాలకు కనెక్ట్ కాకుండా సైట్‌లను బ్లాక్ చేస్తుంది</translation>
 <translation id="8525306231823319788">ఫుల్-స్క్రీన్‌</translation>
 <translation id="8541410041357371550">మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ యాడ్ టాపిక్‌లను Chrome నుండి పొందుతుంది</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> సైట్‌కు కుక్కీలు అనుమతించబడ్డాయి}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> సైట్‌లకు కుక్కీలు అనుమతించబడ్డాయి}}</translation>
 <translation id="857943718398505171">అనుమతించబడింది (సిఫార్సు చేయబడింది)</translation>
 <translation id="8609465669617005112">పైకి తరలించు</translation>
 <translation id="8617611086246832542">ఆన్‌లో ఉన్నప్పుడు, వెబ్‌సైట్‌ల డెస్క్‌టాప్ వీక్షణ చూపబడుతుంది. ఆఫ్‌లో ఉన్నప్పుడు, వెబ్‌సైట్‌ల మొబైల్ వీక్షణ చూపబడుతుంది.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">మీ తల్లిదండ్రుల ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="9039697262778250930">మీరు ఈ సైట్‌ల నుండి సైన్ అవుట్ చేయబడవచ్చు</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>
-<translation id="9090268041676521955">మీ యాక్టివిటీని చూడగలిగే గ్రూప్‌లో ఈ సైట్ ఉంది. ఈ గ్రూప్ <ph name="FPS_OWNER" /> ద్వారా నిర్వచించబడింది.</translation>
 <translation id="9106233582039520022">కుక్కీలను తొలగించాలా?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ఇంకా మరో <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో <ph name="APP_NAME" /> కోసం అనుమతులను ఆన్ చేయండి.</translation>

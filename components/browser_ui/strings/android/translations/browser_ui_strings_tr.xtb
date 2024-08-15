@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
 <translation id="789180354981963912">Gizli modda üçüncü taraf çerezlerini engelle:</translation>
 <translation id="7940722705963108451">Bana hatırlat</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}other{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}}</translation>
 <translation id="7986741934819883144">Kişi seçin</translation>
 <translation id="7990211076305263060">Bu düğme açıkken siteler mikrofonunuzu kullanmak isteyebilir. Düğme kapalıyken siteler mikrofonunuzu kullanamaz.</translation>
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Sitelerin cihazlara bağlanmasını engelle</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8541410041357371550">Bu site, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı öğrenir</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sitesi için çerezlere izin veriliyor}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sitesi için çerezlere izin veriliyor}}</translation>
 <translation id="857943718398505171">İzin verildi (önerilir)</translation>
 <translation id="8609465669617005112">Yukarı taşı</translation>
 <translation id="8617611086246832542">Bu düğme açıkken web sitelerinin masaüstü görünümü gösterilir. Düğme kapalıyken web sitelerinin mobil cihaz görünümü gösterilir.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Ebeveynleriniz tarafından yönetiliyor</translation>
 <translation id="9039697262778250930">Bu sitelerdeki oturumunuz kapatılabilir</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Bu site, etkinliğinizi görebilen bir grupta bulunuyor. Grup, <ph name="FPS_OWNER" /> tarafından tanımlanmıştır.</translation>
 <translation id="9106233582039520022">Çerezler silinsin mi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>

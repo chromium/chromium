@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
 <translation id="789180354981963912">V anonymním režimu blokovat soubory cookie třetích stran:</translation>
 <translation id="7940722705963108451">Připomenout</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="FPS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="FPS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="FPS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
 <translation id="7990211076305263060">Když je tato možnost zapnutá, weby mohou žádat o použití mikrofonu. Když je vypnutá, weby mikrofon používat nemohou.</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8541410041357371550">Tento web získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> web <ph name="FPS_OWNER" />}few{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> weby <ph name="FPS_OWNER" />}many{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webu <ph name="FPS_OWNER" />}other{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webů <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8617611086246832542">Když je tato možnost zapnutá, zobrazuje se verze webů pro počítače. Když je vypnutá, zobrazuje se verze webů pro mobilní zařízení.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Spravováno vašimi rodiči</translation>
 <translation id="9039697262778250930">Z těchto webů můžete být odhlášeni</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Tento web je ve skupině, která může sledovat vaši aktivitu. Skupinu definoval vlastník <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Smazat soubory cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="913657688200966289">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>

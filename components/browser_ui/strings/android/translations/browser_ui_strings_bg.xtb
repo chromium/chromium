@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Разрешаване на звука за конкретен сайт.</translation>
 <translation id="789180354981963912">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“:</translation>
 <translation id="7940722705963108451">Напомняне</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт в групата сайтове на <ph name="FPS_OWNER" /> може да вижда активността ви в нея}other{<ph name="FPS_MEMBERS_COUNT" /> сайта в групата сайтове на <ph name="FPS_OWNER" /> могат да виждат активността ви в нея}}</translation>
 <translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7990211076305263060">Когато настройката е включена, сайтовете могат да извеждат запитвания за достъп до микрофона ви. Когато е изключена, сайтовете не могат да използват микрофона ви.</translation>
 <translation id="8007176423574883786">Изключено за това устройство</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Блокиране на сайтовете, така че да не се свързват с устройства</translation>
 <translation id="8525306231823319788">На цял екран</translation>
 <translation id="8541410041357371550">Този сайт получава информация за рекламните ви теми от Chrome, за да ви показва по-подходящи реклами</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайт на <ph name="FPS_OWNER" />}other{„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайта на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (препоръчително)</translation>
 <translation id="8609465669617005112">Придвижване нагоре</translation>
 <translation id="8617611086246832542">Когато настройката е включена, се показва изгледът за настолни компютри на уебсайтовете. Когато е изключена, се показва изгледът им за мобилни устройства.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Управлява се от родителите ви</translation>
 <translation id="9039697262778250930">Възможно е да излезете от профила си в тези сайтове</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Този сайт е в група, която може да вижда активността ви. Групата е дефинирана от <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Искате ли да изтриете „бисквитките“?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Включете разрешенията за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>

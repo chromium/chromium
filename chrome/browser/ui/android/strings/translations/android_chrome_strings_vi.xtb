@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Trang Chia sẻ kèm theo phản hồi về bảng tóm tắt đã đóng</translation>
 <translation id="1089606299949659462">Đã hoàn tất quá trình xem xét!</translation>
 <translation id="1094555143448724771">Để xem thẻ từ các thiết bị khác của bạn, hãy đồng bộ hoá các thẻ và nhật ký</translation>
-<translation id="1095142578254888918">Không cho phép <ph name="SITE_NAME" /> gửi thông báo</translation>
 <translation id="1095761715416917775">Đảm bảo bạn luôn có thể truy cập vào dữ liệu đồng bộ hóa</translation>
 <translation id="1100066534610197918">Mở trong thẻ mới trong nhóm</translation>
 <translation id="1103142993930332957">Giúp cải thiện Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Không cho phép 1 trang web gửi thông báo}other{Không cho phép # trang web gửi thông báo}}</translation>
 <translation id="1187810343066461819">Xoá cả dấu trang, nhật ký và các dữ liệu khác khỏi ô tô này</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
@@ -455,7 +453,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3080525922482950719">Bạn có thể lưu các trang để đọc vào lúc khác hoặc khi không có kết nối mạng</translation>
 <translation id="3087218211037573995">Một số mật khẩu chỉ được lưu trên thiết bị này sắp ngừng hoạt động. Bạn có thể di chuyển các mật khẩu này sang Trình quản lý mật khẩu của Google.</translation>
 <translation id="3091010850649238832">Hiện các nội dung của bảng nhớ tạm</translation>
-<translation id="3093004810561729002">Một người dùng</translation>
 <translation id="3098745985164956033">Một số hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn</translation>
 <translation id="3114507951000454849">Đọc tin tức hôm nay <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Thông báo</translation>
@@ -507,6 +504,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3407392651057365886">Sẽ có nhiều trang được tải trước hơn. Những trang này có thể được tải trước thông qua các máy chủ của Google khi được các trang web khác yêu cầu.</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
 <translation id="3421726884497337397">Chọn thời điểm chặn cookie của bên thứ ba</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# giờ trước}other{# giờ trước}}</translation>
 <translation id="3430670036890315772">Nếu bạn tắt khoá hồ sơ, thông tin đã lưu sẽ bị xoá</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
@@ -909,6 +907,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
 <translation id="5364112109233799727">URL của trang mà bạn đưa ra ý kiến phản hồi sẽ được gửi cho Google và có thể được nhân viên xem xét nhằm cải thiện tính năng này</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
+<translation id="5394331612381306435">Tắt chế độ Ẩn danh</translation>
 <translation id="5395376160638294582">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chrome trong Tài khoản Google của mình</translation>
 <translation id="539881862970320163">Đề xuất sử dụng mật khẩu mạnh. Bàn phím đang ẩn.</translation>
 <translation id="5401851137404501592">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này.</translation>
@@ -938,6 +937,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5517095782334947753">Bạn có dữ liệu về dấu trang, nhật ký hoạt động, mật khẩu và các chế độ cài đặt khác từ tài khoản <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Đã chặn chuyển hướng.</translation>
 <translation id="5526281268548144413">Không đóng được trên nhiều cửa sổ</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# phút trước}other{# phút trước}}</translation>
 <translation id="5548606607480005320">Kiểm tra an toàn</translation>
 <translation id="5554520618550346933">Khi bạn dùng một mật khẩu đã bị công khai trên mạng, Chrome sẽ cảnh báo cho bạn. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="5555525474779371165">Chọn chế độ bảo vệ bằng tính năng Duyệt web an toàn của bạn</translation>
@@ -1069,6 +1069,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6138832295072039549">Thay đổi các chế độ cài đặt trang web tại đây</translation>
 <translation id="6140912465461743537">Quốc gia/Vùng</translation>
 <translation id="6142183503755612900">Bạn có thể thay đổi công cụ tìm kiếm mặc định bất cứ lúc nào trong phần cài đặt</translation>
+<translation id="6143892791267458416">\u0020và sẽ đóng sau <ph name="DAYS_ARCHIVED" /> ngày</translation>
 <translation id="614890671148262506">Luôn cho phép trang web này gửi thông báo</translation>
 <translation id="6150320133806434356">Đã lưu dấu trang</translation>
 <translation id="6150706324143004339">Cập nhật Chrome để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
@@ -1100,6 +1101,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6284472661216707937">Bảng "Mật khẩu trên tất cả thiết bị của bạn" đã đóng</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
+<translation id="6296366034485697675">Xuất và xoá</translation>
 <translation id="6303969859164067831">Đăng xuất và tắt đồng bộ hóa</translation>
 <translation id="6312687380483398334">Ứng dụng web (im lặng)</translation>
 <translation id="6315386555979018699">Xoá và tiếp tục</translation>
@@ -1277,6 +1279,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6978717888677691380">Các trang web bạn đã chặn</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
 <translation id="6987047470128880212">Không dùng được chế độ Ẩn danh trên thiết bị này</translation>
+<translation id="6991701761229081516">Mật khẩu của bạn sẽ được tải xuống dưới dạng tệp CSV. Mật khẩu sẽ hiển thị với bất cứ ai có quyền truy cập vào tệp, kể cả các ứng dụng. Mật khẩu đã xuất sẽ bị xoá khỏi Chrome.</translation>
 <translation id="6996145122199359148">Tải trang này xuống</translation>
 <translation id="7013762323294215682">Khoá truy cập này sẽ được lưu vào trình quản lý mật khẩu của bạn. Bất cứ ai có quyền truy cập vào trình quản lý mật khẩu đó đều có thể sử dụng khoá truy cập này.</translation>
 <translation id="7020741890149022655">Thêm vào danh sách đọc <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
@@ -1330,6 +1333,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7221869452894271364">Tải lại trang này</translation>
 <translation id="7224097611345298931">Chúng tôi đã hợp nhất tất cả mật khẩu chỉ được lưu vào thiết bị này cho Chrome và <ph name="CHROME_CHANNEL" />. Bạn có thể chọn tự động điền tất cả mật khẩu đã lưu trên cả hai ứng dụng.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
+<translation id="7230064152164845085">Chuyển sang chế độ Ẩn danh</translation>
 <translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
 <translation id="7252076891734325316">Để điện thoại của bạn gần máy tính</translation>
 <translation id="7260367682327802201">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật tính năng Đo lường quảng cáo trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
@@ -1412,6 +1416,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7583262514280211622">Bạn sẽ thấy danh sách đọc ở đây</translation>
 <translation id="758603037873046260">Đăng nhập để lưu trang này</translation>
 <translation id="7588219262685291874">Bật giao diện tối khi Trình tiết kiệm pin trên thiết bị đang bật</translation>
+<translation id="7592322927044331376">Trước tiên, hãy xuất và xoá các mật khẩu khỏi Chrome</translation>
 <translation id="7594687499944811403">Cho phép <ph name="EMBEDDED_ORIGIN" /> xác minh danh tính của bạn trên <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Hệ điều hành</translation>
 <translation id="7603168929588204083">Ngày không hợp lệ</translation>
@@ -1691,6 +1696,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8856931513242997049">Quy trình cấp quyền gửi thông báo đã đóng</translation>
 <translation id="8863714995118816041">Đã cấp lại quyền cho <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Dữ liệu Chrome trong tài khoản của bạn</translation>
+<translation id="8888527824584402177">Các thẻ mà bạn không dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="8898822736010347272">Gửi URL của một số trang bạn truy cập, thông tin về hệ thống (có giới hạn) và một số nội dung trang cho Google, nhằm phát hiện các mối đe dọa mới và bảo vệ mọi người khi dùng web.</translation>
 <translation id="8909135823018751308">Chia sẻ...</translation>
 <translation id="8921980840204105660">Đồng bộ hoá để lấy dấu trang từ thiết bị khác</translation>

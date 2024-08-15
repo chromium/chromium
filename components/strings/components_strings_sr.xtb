@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Прикажите предлоге</translation>
 <translation id="1038842779957582377">непознато име</translation>
 <translation id="1041998700806130099">Порука о радном листу</translation>
+<translation id="1044897699341250361">Шта то значи</translation>
 <translation id="1046350918013988591">Купони и попусти</translation>
 <translation id="1048785276086539861">Када измените коментаре, овај документ се враћа на приказ појединачне странице.</translation>
 <translation id="1050038467049342496">Затворите друге апликације</translation>
@@ -2659,6 +2660,7 @@
 <translation id="5999271311987646952">Chrome има уграђене безбедносне функције које вас штите током прегледања – као што је Google безбедно прегледање, које је <ph name="BEGIN_LINK" />недавно пронашло малвер<ph name="END_LINK" /> на сајту који покушавате да посетите.</translation>
 <translation id="6000528814684428358">Хард рок и прогресивни рок</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултата за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Идемо</translation>
 <translation id="6002122790816966947">Уређаји</translation>
 <translation id="6002968396561884726">Недавно прегледано</translation>
 <translation id="6005659677094197001">Непрекидно</translation>
@@ -3066,6 +3068,7 @@
 <translation id="6735783933931458444">Често посећујете у ово доба дана</translation>
 <translation id="6737708609449480586">Пекарски производи</translation>
 <translation id="6738516213925468394">Подаци су шифровани помоћу <ph name="BEGIN_LINK" />приступне фразе<ph name="END_LINK" /> (<ph name="TIME" />). Унесите је да бисте започели синхронизацију.</translation>
+<translation id="6739943577740687354">Ова функција користи вештачку интелигенцију и неће увек радити како треба</translation>
 <translation id="6740851646645036700">Достигли сте ограничење помоћи за писање. Пробајте поново касније.</translation>
 <translation id="674375294223700098">Непозната грешка сертификата сервера.</translation>
 <translation id="6744009308914054259">Док чекате на везу, посетите Преузимања и читајте офлајн чланке.</translation>
@@ -4458,5 +4461,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Додајте IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Са Google Pay-а</translation>
 </translationbundle>

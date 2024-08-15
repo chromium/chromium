@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">အကြံပြုချက်များ ပြရန်</translation>
 <translation id="1038842779957582377">မသိရ အမည်</translation>
 <translation id="1041998700806130099">အလုပ် စာမျက်နှာ မက်ဆေ့ဂျ်</translation>
+<translation id="1044897699341250361">ဆိုလိုသည်မှာ</translation>
 <translation id="1046350918013988591">ကူပွန်၊ လျှော့ဈေးကမ်းလှမ်းချက်</translation>
 <translation id="1048785276086539861">မှတ်ချက်များတည်းဖြတ်ပါက ဤမှတ်တမ်းသည် စာမျက်နှာတစ်ခုတည်းသို့ ပြန်ပြောင်းသွားမည်</translation>
 <translation id="1050038467049342496">အခြား အက်ပ်များကို ပိတ်ပါ</translation>
@@ -52,6 +53,7 @@
 <translation id="1089439967362294234">စကားဝှက်ပြောင်းရန်</translation>
 <translation id="1089599132348386324">Chrome ဆက်တင်များတွင် အချိန်မရွေး စိတ်ကြိုက်ပြောင်းလဲနိုင်သည်။</translation>
 <translation id="1090629319939036170">VR မီနူး</translation>
+<translation id="1091463901118115503">ဆက်လက်ဖတ်ရှုရန်</translation>
 <translation id="1091779689406092804">ဖန်သားပြင်ဓာတ်ပုံများ</translation>
 <translation id="1094777233105318927">သင့်ဘရောင်ဇာ၊ OS၊ စက်၊ ထည့်သွင်းထားသောဆော့ဖ်ဝဲနှင့် ဖိုင်များအကြောင်း အချက်အလက်</translation>
 <translation id="1096545575934602868">ဤအကွက်တွင် ထည့်သွင်းမှု <ph name="MAX_ITEMS_LIMIT" /> ခုထက်မပိုရ။ နောက်ထပ် ထည့်သွင်းမှုများကို ဖယ်ပစ်ပါမည်။</translation>
@@ -538,6 +540,7 @@
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
 <translation id="1975457531113383421">ထည့်ရန် ဗန်း</translation>
 <translation id="1975584088563498795">စာတိုက်ပုံး ၁၀</translation>
+<translation id="1976610264358655503">မကြာခဏ ဝင်ကြည့်သည်</translation>
 <translation id="1978555033938440688">Firmware ဗားရှင်း</translation>
 <translation id="1979156660928743046">မီဒီယာအချက်အလက်</translation>
 <translation id="1988881251331415125">စာလုံးပေါင်း မှန်ကန်ပါက <ph name="BEGIN_LINK" />ချိတ်ဆက်မှု အမှားရှာဖွေမှုများပြုလုပ်ရန် ကြိုးစားကြည့်ပါ<ph name="END_LINK" />။</translation>
@@ -893,6 +896,7 @@
 <translation id="2619052155095999743">ထည့်သွင်းရန်</translation>
 <translation id="2625385379895617796">သင်၏ နာရီမှာ စောနေ</translation>
 <translation id="262745152991669301">USB ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="2628224721443278970">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ၏ ဆာဗာ IP လိပ်စာကို မတွေ့ပါ။</translation>
 <translation id="2639739919103226564">အခြေအနေ:</translation>
 <translation id="2647086987482648627">အထည် (အနည်းငယ် တောက်ပြောင်)</translation>
@@ -1833,6 +1837,7 @@
 <translation id="4377125064752653719"><ph name="DOMAIN" /> သို့ရောက်ရှိရန် သင်ချဉ်းကပ်ခဲ့သည်၊ သို့သော် ဆာဗာမှပြသသည့် အသိမှတ်ပြုလက်မှတ်အား ၎င်း၏လျှောက်တင်သူမှ ရုတ်သိမ်းလိုက်သည်။ ဆိုလိုသည်မှာ ဆာဗာမှ ပြသသည့် လုံခြုံရေးလျှို့ဝက် အချက်များမှာ လုံးဝမယုံကြည်သင့်ပါ။ သင်သည် တိုက်ခိုက်သူနှင့်သာ ဆက်သွယ်ပါလိမ့်မည်။</translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Microsoft OneDrive သို့ ဖိုင်အပ်လုဒ်လုပ်ခြင်းကို ခဏရပ်ထားသည်</translation>
 <translation id="4390472908992056574">အစွန်အနား</translation>
 <translation id="4397059608630092079">အော်တိုဖြည့်သုံးသောအခါ အမြဲတမ်း အတည်ပြုရန်</translation>
 <translation id="4397978002248035985">သင့်ဘဏ်၏ဝဘ်ဆိုက်တွင် အတည်ပြုရန်ပေါ့ပ်အပ်ကို ဖွင့်သည်</translation>
@@ -1936,6 +1941,7 @@
 <translation id="4636930964841734540">အချက်အလက်</translation>
 <translation id="4640225694041297329">ပြီးခဲ့သော ၇ ရက်မှ ရလဒ်များပြပါ</translation>
 <translation id="464342062220857295">ရှာဖွေရေး ဝန်ဆောင်မှုများ</translation>
+<translation id="4644567637638438744">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်မှသာ ဖိုင်များကို အပ်လုဒ်လုပ်နိုင်သည်</translation>
 <translation id="4644670975240021822">ပြောင်းပြန်အစဉ်ဖြင့် မှောက်ထားရန်</translation>
 <translation id="4646534391647090355">ထိုနေရာသို့ ယခုသွားရန်</translation>
 <translation id="4648262692072505866">ဟက်ရှ်ကုဒ်က SHA-256 ဖော်မက်ဖြစ်ရမည်။</translation>
@@ -2645,6 +2651,7 @@
 <translation id="5999271311987646952">သင်ဘရောက်စ်လုပ်နေစဉ် ကာကွယ်ရန်အတွက် Chrome တွင် ‘Google လုံခြုံစွာ ကြည့်ရှုခြင်း’ ကဲ့သို့ လုံခြုံရေးတူးလ်များ အသင့်ထည့်သွင်းထားပြီး ၎င်းက သင်ဝင်ကြည့်ရန် ကြိုးစားနေသည့် ဝဘ်ဆိုက်တွင် <ph name="BEGIN_LINK" />မဲလ်ဝဲကို မကြာသေးမီက တွေ့ရှိထားသည်<ph name="END_LINK" />။</translation>
 <translation id="6000528814684428358">ဟာ့ဒ်ရော့ခ်၊ ဆန်းသစ်ဂီတ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခု</translation>
+<translation id="6001839398155993679">စကြစို့</translation>
 <translation id="6002122790816966947">သင်၏စက်များ</translation>
 <translation id="6002968396561884726">လတ်တလော ကြည့်ထားသည်</translation>
 <translation id="6005659677094197001">ဆက်တိုက်</translation>
@@ -3049,8 +3056,10 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">ကင်မရာ</translation>
 <translation id="6734506549556896534">အသွင်တူဂိမ်း</translation>
+<translation id="6735783933931458444">ယခုအချိန်မျိုးတွင် မကြာခဏ ဝင်ကြည့်သည်</translation>
 <translation id="6737708609449480586">မီးဖုတ်ထားသည့် စားစရာ</translation>
 <translation id="6738516213925468394">သင့်ဒေတာများကို သင်၏ <ph name="BEGIN_LINK" />စင့်ခ်စကားဝှက်စာ<ph name="END_LINK" />ဖြင့် <ph name="TIME" /> တွင် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်စလုပ်ရန် ၎င်းကိုထည့်ပါ။</translation>
+<translation id="6739943577740687354">ဤဝန်ဆောင်မှုသည် AI ကိုသုံးပြီး အမြဲတမ်း မှန်ကန်မည်မဟုတ်ပါ</translation>
 <translation id="6740851646645036700">ကူရေးပေးနိုင်သောအကြိမ်ရေ ကန့်သတ်ချက်သို့ ရောက်သွားပါပြီ။ နောက်မှထပ်စမ်းပါ။</translation>
 <translation id="674375294223700098">အမည်မသိ ဆာဗာ အသိမှတ်ပြုလက်မှတ် မှားယွင်းမှု</translation>
 <translation id="6744009308914054259">ချိတ်ဆက်မှုကို စောင့်နေစဉ် အော့ဖ်လိုင်းဆောင်းပါးများကို ဖတ်ရန် 'ဒေါင်းလုဒ်များ' သို့ သွားနိုင်သည်။</translation>
@@ -3768,6 +3777,7 @@
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="8041940743680923270">အထွေထွေ ပုံသေကို သုံးပါ(မေးရန်)</translation>
 <translation id="8043255123207491407">ရောင်းသူ၏ ဝန်ဆောင်မှုစည်းမျဉ်းများကို ကြည့်ပါ</translation>
+<translation id="8044986521421349135">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="8046360364391076336">လုပ်ငန်းခွင်သုံး ပစ္စည်းနှင့် ကိရိယာ</translation>
 <translation id="8052898407431791827">ကလစ်ဘုတ်သို့ မိတ္တူကူးပြီးပြီ</translation>
 <translation id="8057023045886711556">ဟာသ ရုပ်ရှင်</translation>
@@ -4439,5 +4449,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ထည့်ခြင်း</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay မှ</translation>
 </translationbundle>

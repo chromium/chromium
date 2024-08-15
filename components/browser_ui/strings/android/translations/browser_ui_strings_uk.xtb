@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Увімкнути звук для певного сайту.</translation>
 <translation id="789180354981963912">Блокувати сторонні файли cookie в анонімному режимі:</translation>
 <translation id="7940722705963108451">Нагадати мені</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сайт у групі сайту-власника <ph name="FPS_OWNER" />, який може переглядати ваші дії в групі}one{<ph name="FPS_MEMBERS_COUNT" /> сайт у групі сайту-власника <ph name="FPS_OWNER" />, який може переглядати ваші дії в групі}few{<ph name="FPS_MEMBERS_COUNT" /> сайти в групі сайту-власника <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі}many{<ph name="FPS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі}other{<ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі}}</translation>
 <translation id="7986741934819883144">Виберіть контакт</translation>
 <translation id="7990211076305263060">Якщо цей параметр увімкнено, сайти можуть просити доступ до мікрофона. Якщо його вимкнено, сайти не можуть використовувати мікрофон.</translation>
 <translation id="8007176423574883786">Вимкнено для цього пристрою</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Заборонити сайтам підключатися до пристроїв</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8541410041357371550">Цей сайт використовує ваші теми оголошень із Chrome, щоб показувати вам релевантнішу рекламу</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />}one{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />}few{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="FPS_OWNER" />}many{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайтів у групі сайту-власника <ph name="FPS_OWNER" />}other{Файли cookie дозволено для <ph name="FPS_MEMBERS_COUNT" /> сайту в групі сайту-власника <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>
 <translation id="8609465669617005112">Угору</translation>
 <translation id="8617611086246832542">Якщо цей параметр увімкнено, відображаються версії веб-сайтів для комп’ютера. Якщо його вимкнено, показуються мобільні версії сайтів.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Керується батьками</translation>
 <translation id="9039697262778250930">Імовірно, ви вийдете з облікового запису на цих сайтах</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Цей сайт належить до групи, учасники якої можуть бачити ваші дії. Групу визначив сайт-власник <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Видалити файли cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Увімкніть дозволи для додатка <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>

@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Baimendu webgune jakin baten audioa.</translation>
 <translation id="789180354981963912">Blokeatu hirugarrenen cookieak ezkutuko moduan:</translation>
 <translation id="7940722705963108451">Gogorarazi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzake}other{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzakete}}</translation>
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
 <translation id="7990211076305263060">Aktibatuta dagoenean, webguneek mikrofonoa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mikrofonoa.</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="8541410041357371550">Webgunea Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
 <translation id="8617611086246832542">Aktibatuta dagoenean, webguneen ordenagailuetarako ikuspegia erakusten da. Desaktibatuta dagoenean, webguneen mugikorretarako ikuspegia erakusten da.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Gurasoek kudeatuta</translation>
 <translation id="9039697262778250930">Baliteke webgune horietako saioa amaitzea</translation>
 <translation id="9074739597929991885">Bluetootha</translation>
-<translation id="9090268041676521955">Egiten dituzun jarduerak ikus ditzakeen talde batean dago webgunea. <ph name="FPS_OWNER" /> domeinuak definitu du taldea.</translation>
 <translation id="9106233582039520022">Cookieak ezabatu nahi dituzu?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimenak <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>

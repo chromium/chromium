@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Denne udvidelse understøttes ikke længere. Chrome anbefaler, at du fjerner den.</translation>
 <translation id="1812689907177901597">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chrome</translation>
 <translation id="1860536484129686729">Chrome skal have tilladelse til at bruge dit kamera på dette website</translation>
-<translation id="1861924772887221906">Chrome spørger dig, inden offentlige websites indlæses via en usikker forbindelse, men tillader HTTP-forbindelser til private netværk</translation>
 <translation id="1873233029667955273">Google Chrome er ikke din standardbrowser</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3597003331831379823">Konfigurationen med udvidede adgangsrettigheder kunne ikke køres. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome spørger dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="3622797965165704966">Nu er det blevet nemmere at bruge Chrome med din Google-konto og på delte computere.</translation>
 <translation id="3635073343384702370">Chrome kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="3667616615096815454">Appen kan ikke installeres. Serveren kender ikke appen.</translation>
@@ -450,7 +448,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
 <translation id="7302361266603927550">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7308322188646931570">Chrome skal have lageradgang for at downloade filer</translation>
-<translation id="7324120788743384890">Når indstillingen er aktiveret, spørger Chrome dig, inden websites, der ikke understøtter HTTPS, indlæses</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7352881504289275361">Udvidet beskyttet browsing tilbyder Chromes stærkeste onlinebeskyttelse, som beskytter dig, når du er på nettet</translation>
 <translation id="7394745511930161845">Opret dit eget tema med AI for at give din browser et unikt udseende</translation>

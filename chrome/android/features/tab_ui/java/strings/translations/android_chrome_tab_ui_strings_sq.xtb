@@ -38,8 +38,10 @@
 <translation id="2662028055331606429">Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Vizito sajtin</translation>
 <translation id="2677748264148917807">Largohu</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CHANGED" /> u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Krijuar <ph name="NUM_HOURS_ONE" /> orë më parë}other{Krijuar <ph name="NUM_HOURS_MANY" /> orë më parë}}</translation>
 <translation id="2801787514987684416">Të shikohen informacionet e dyqanit?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> skedë u mbyll}other{<ph name="MANY_CLOSED" /> skeda u mbyllën}}</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
 <translation id="2928243913527329289">Google | Rreth këtij dyqani</translation>
 <translation id="2977480621796371840">Hiq nga grupi</translation>
@@ -50,6 +52,7 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ikona e ngjyrës së grupit të skedave: <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">vlerësimi</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan}other{<ph name="MANY_ADDED" /> skedë u shtua, <ph name="ANY_CHANGED" /> u ndryshuan}}</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>
 <translation id="3322827343001922122">Hap menynë e veprimeve të grupit të skedave për grupin e skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
@@ -71,6 +74,7 @@
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="427987768447457592">Grupi i ri i skedave</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> skedë u ndryshua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_CHANGED" /> skeda u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="4590027107044272416">Tani mund të hapësh një skedë të re këtu.</translation>
@@ -92,6 +96,7 @@
 <translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
 <translation id="5082793167783849073">Krahaso me shpejtësi faqet duke krijuar një grup. Për të filluar, prek dhe mbaj të shtypur një lidhje.</translation>
 <translation id="5094423602314093681">Të hiqen skedat dhe të fshihet grupi?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua}other{<ph name="MANY_ADDED" /> skeda u shtuan}}</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
@@ -100,6 +105,7 @@
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
+<translation id="5627941783489838464">Nuk ka përditësime për skedat</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restauro skedën}other{Restauro skedat}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lidhje nga Chrome}other{<ph name="TABS_COUNT_MANY" /> lidhje nga Chrome}}</translation>
 <translation id="575494663145460764">Dëshiron të marrësh alarme sinjalizuese për rënien e çmimeve?</translation>
@@ -124,6 +130,7 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Lëviz skedën majtas</translation>
 <translation id="6615455863669487791">Ma trego</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> skedë u ndryshua}other{<ph name="MANY_CHANGED" /> skeda u ndryshuan}}</translation>
 <translation id="6694634756612002311">Menaxho ndarjen</translation>
 <translation id="6744956528665271406">Modifiko ngjyrën e grupit</translation>
 <translation id="6856809498882026482">Fshih modalitetin e zgjedhjes së shumëfishtë</translation>
@@ -165,6 +172,7 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="8398929769197326728">Dosje e re - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_ADDED" /> skeda u shtuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="8631711675211020168">Të gjithë do të humbasin menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet</translation>
 <translation id="8633025649649592204">Aktiviteti i fundit</translation>
 <translation id="870736955561925754">Të mbyllet skeda dhe të fshihet grupi?</translation>

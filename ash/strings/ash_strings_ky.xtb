@@ -34,6 +34,7 @@
 <translation id="1104621072296271835">Түзмөктөрүңүз бирге мындан да жакшы иштейт</translation>
 <translation id="1111021433905331574">Баскычтоптун жарыгынын түсүн жөндөөлөрдөн өзгөртө аласыз &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Мобилдик трафикти өчүрүү/күйгүзүү. <ph name="STATE" />.</translation>
+<translation id="1122849163460178706">Суроо мисалдары</translation>
 <translation id="112308213915226829">Текчени авто-жашыруу</translation>
 <translation id="1129383337808748948">Төмөнкүнү жаңыртыңыз: <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Соңку сүрөттөр</translation>
@@ -902,6 +903,7 @@
 <translation id="4217571870635786043">Үн менен жазуу</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Орнотулган колдонмо, Тындырылды</translation>
 <translation id="4228078597006700451">Башкаруу элементтери туураланган жок</translation>
+<translation id="4230560241506423345">Жаңы</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Сереп салуу режими</translation>
 <translation id="4242533952199664413">Параметрлерди ачуу</translation>
@@ -1854,7 +1856,6 @@
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">page down</translation>
-<translation id="7518182783647693467">Температура бирдигин өчүрүү/күйгүзүү (F - C)</translation>
 <translation id="7519206258459640379">Камеранын алкагы күйүк.</translation>
 <translation id="7519649142417630956">Өчүрүлгөндөн кийин администратор чыгарылып, түзмөгүңүздү көзөмөлдөй албай калат.
 

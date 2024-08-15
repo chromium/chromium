@@ -479,7 +479,6 @@
 <translation id="1340527397989195812">ගොනු යෙදුම භාවිතයෙන් උපාංගයේ මාධ්‍යය උපස්ථ කරන්න.</translation>
 <translation id="1341701348342335220">හොඳින් නිම කළා!</translation>
 <translation id="1342886103232377846">සමථයට පත් වූ මුරපද පරීක්ෂා කිරීමට, Google මුරපද කළමනාකරු වෙත යන්න</translation>
-<translation id="1343865611738742294">USB උපාංගවලට ප්‍රවේශ වීමට ලිනක්ස් යෙදුම්වලට අවසර දෙන්න. USB උපාංගයක් ඉවත් කළ පසු ලිනක්ස් එය මතක තබා ගන්නේ නැත.</translation>
 <translation id="1343920184519992513">ඔබ නතර කළ තැනින් ඉදිරියට ගොස් නිශ්චිත පිටු කට්ටලයක් විවෘත කරන්න</translation>
 <translation id="1344141078024003905">ඔබ ඔබේ තිරය විකාශය කරමින් සිටී. ඔබට ඕනෑම වේලාවක ඔබේ තිරය විකාශය කිරීම විරාම කිරීමට හෝ නැවැත්වීමට හැකිය.</translation>
 <translation id="1346403631707626730">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබේ දරුවාගේ Android අත්දැකීම දියුණු කර ගැනීමට උදවු කරන්න. මෙය ඔබේ දරුවා හඳුනා ගැනීමට භාවිත නොකෙරෙන අතර, පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් දියුණු කිරීම්වලට උදවු කරයි. සමහර සමස්ත දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරයි. ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකේවි. <ph name="BEGIN_LINK1" />මාත්‍රික ගැන තව දැන ගන්න<ph name="BEGIN_LINK1_END" />තව දැන ගන්න<ph name="END_LINK1" /></translation>
@@ -818,7 +817,6 @@
 <translation id="1588919647604819635">කාඩ්පත දකුණ ක්ලික් කරන්න</translation>
 <translation id="1589055389569595240">අක්ෂර වින්‍යාස පෙන්වන්න</translation>
 <translation id="1590478605309955960">ඔබේ පටිති සමූහ ඔබේ පුරනය වී ඇති සියලු උපාංග හරහා ස්වයංක්‍රීයව සුරැකීම සහ යාවත්කාලීන කිරීම.</translation>
-<translation id="1591679663873027990">Parallels Desktop හට USB උපාංග වෙත ප්‍රවේශ වීමට අවසර දෙන්න. Parallels Desktop USB උපාංගයක් ඉවත් කිරීමෙන් පසුව මතක තබා නොගනු ඇත.</translation>
 <translation id="15916883652754430">පද්ධති හඬ සැකසීම්</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ඔබගේ <ph name="DEVICE_TYPE" /> යළි සකසනු ඇති ADB නිදොස් කිරීම අබල කර ඇත. යළි ඇරඹීමට පෙර ඔබේ ගොනු උපස්ථ කරන්න</translation>
 <translation id="1592126057537046434">ඉක්මන් පිළිතුරු පරිවර්තනය</translation>
@@ -2645,7 +2643,6 @@
 <translation id="2853121255651601031">මුරපදය සුරැකිණි</translation>
 <translation id="2855243985454069333">සියලුම සමමුහූර්ත උපාංගවලින් ඉතිහාසය මකයි</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> සමඟ පුරන්න</translation>
-<translation id="28559674945112027">දැඩි ප්‍රකාරය</translation>
 <translation id="2856776373509145513">නව බහාලුමක් තනන්න</translation>
 <translation id="2856907950922663165">URL සංකේතනය ක්‍රියාවිරහිත කරන්න ද?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" /> වෙත මුරපද ආයාත කරන්න</translation>
@@ -2927,7 +2924,6 @@
 <translation id="3053273573829329829">පරිශීලක රහස් අංකය සබල කරන්න</translation>
 <translation id="3053274730492362225">ඉවත නොබලන්න</translation>
 <translation id="3054766768827382232">අබල කිරීම ඔබගේ උපාංග වඩා හොඳින් ක්‍රියා කරවිය හැකිය, නමුත් අනවසර භාවිතය ඔබේ පුද්ගලික දත්ත හෙළිදරව් කළ හැකිය.</translation>
-<translation id="3056438898277655057">USB උපාංගවලට ප්‍රවේශ වීමට <ph name="SPECIFIC_NAME" /> හට අවසර දෙන්න. USB උපාංගයක් ඉවත් කළ පසු <ph name="SPECIFIC_NAME" /> එය මතක තබා ගන්නේ නැත.</translation>
 <translation id="3058498974290601450">ඔබට ඕනෑම වේලාවක සැකසීම් තුළ සමමුහූර්තය සක්‍රීය කළ හැක</translation>
 <translation id="3058517085907878899">උපාංගය නම් කරන්න</translation>
 <translation id="3059195548603439580">පද්ධති සංරචක සඳහා සොයන්නේද? පිවිසෙන්න</translation>
@@ -8540,7 +8536,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7222335051802562841">යාවත්කාලීනය අවසන් කරන්න</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">මෙය පද්ධති සේවාවලට ඔබේ ස්ථානය තීරණ කිරීමට ස්ථාන නිරවද්‍යතාව භාවිත කිරීමට ඉඩ දෙයි. ස්ථාන නිරවද්‍යතාවය තක්සේරු කිරීම සඳහා ස්ථාන නිරවද්‍යතාවය රැහැන් රහිත සංඥා සහ සංවේදක පිළිබඳ තොරතුරු භාවිත කරයි.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />ගේ සමූහයේ 1 වෙබ් අඩවියක්}one{<ph name="FPS_OWNER" />ගේ සමූහයේ වෙබ් අඩවි {MEMBERS}ක්}other{<ph name="FPS_OWNER" />ගේ සමූහයේ වෙබ් අඩවි {MEMBERS}ක්}}</translation>
 <translation id="7225082563376899794">මුරපද පුරවන විට Windows Hello භාවිතා කරන්න</translation>
 <translation id="7225179976675429563">ජාල වර්ගය නොමැත</translation>
 <translation id="7227235818314667565">බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
@@ -9916,7 +9911,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8207404892907560325">මුරයතුරක් තෝරා ගන්න</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" පවතින නමුත්, වලංගු <ph name="VM_TYPE" /> VM එකක් ලෙස නොපෙනේ. ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="8207901006380134182">අඳුරු වනාන්තරයක් සමග විශාල රැල්ලක් සාගරය ගිල ගනී.</translation>
-<translation id="8208188204689616705">මෙම වෙබ් අඩවි <ph name="FPS_OWNER" /> විසින් නිර්වචනය කරන ලද සමූහයක පවතී. සමූහයක් තුළ ඇති වෙබ් අඩවිවලට සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැක.</translation>
 <translation id="8208216423136871611">සුරකින්න එපා</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{නව දැනුම්දීම}one{නව දැනුම්දීම් #}other{නව දැනුම්දීම් #}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{බාගැනීම ක්‍රියාවේ පවතියි}one{බාගැනීම් ක්‍රියාවේ පවතියි}other{බාගැනීම් ක්‍රියාවේ පවතියි}}</translation>
@@ -11044,7 +11038,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9009707268312089299">Windows වෙතින් ආයාත කරන ලදි</translation>
 <translation id="9009708085379296446">ඔබ අදහස් කළේ මෙම පිටුව වෙනස් කිරීමටද?</translation>
 <translation id="9010845741772269259">ගෙවීමේ ක්‍රම එක් කරන්න</translation>
-<translation id="901087299639956505">සමබර ප්‍රකාරය</translation>
 <translation id="9011163749350026987">සෑම විටම නිරූපකය පෙන්වන්න</translation>
 <translation id="9011262023858991985">මෙම පටිත්ත විකාශනය කිරීම</translation>
 <translation id="9011393886518328654">නිකුත් කිරීමේ සටහන්</translation>

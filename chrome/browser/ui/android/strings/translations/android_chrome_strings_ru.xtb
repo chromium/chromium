@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Лист для отправки отзыва о сводке закрыт</translation>
 <translation id="1089606299949659462">Проверка выполнена</translation>
 <translation id="1094555143448724771">Синхронизируйте вкладки и историю. Тогда вам станут доступны вкладки, открытые на других ваших устройствах.</translation>
-<translation id="1095142578254888918">Сайту <ph name="SITE_NAME" /> запрещено отправлять уведомления.</translation>
 <translation id="1095761715416917775">Не теряйте доступ к синхронизированным данным</translation>
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1103142993930332957">Помогите улучшить Chrome</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1183189057400844278">Чтобы всегда иметь доступ к паролям, сохраненным в аккаунте Google, подтвердите свою личность.</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Уведомления запрещены для 1 сайта.}one{Уведомления запрещены для # сайта.}few{Уведомления запрещены для # сайтов.}many{Уведомления запрещены для # сайтов.}other{Уведомления запрещены для # сайта.}}</translation>
 <translation id="1187810343066461819">Удалить закладки, историю и другие данные с автомобиля</translation>
 <translation id="1193729455103054076">Использовать надежный пароль?</translation>
 <translation id="1197267115302279827">Переместить закладки</translation>
@@ -454,7 +452,6 @@
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3087218211037573995">Некоторые пароли, сохраненные только на этом устройстве, скоро перестанут работать. Вы можете перенести их в Google Менеджер паролей.</translation>
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
-<translation id="3093004810561729002">Неизвестный пользователь</translation>
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Оповещения</translation>
@@ -506,6 +503,7 @@
 <translation id="3407392651057365886">Заранее загружается больше страниц. По запросу сайтов этот процесс может выполняться через серверы Google.</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="3421726884497337397">Настройте параметры блокировки сторонних файлов cookie</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# ч. назад}one{# ч. назад}few{# ч. назад}many{# ч. назад}other{# ч. назад}}</translation>
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
 <translation id="3435738964857648380">Безопасность</translation>
@@ -762,6 +760,7 @@
 <translation id="4687718960473379118">Реклама, предлагаемая сайтами</translation>
 <translation id="469286762610133730">Более интересный контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
+<translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4710167854527459075">Сначала новые</translation>
 <translation id="4719927025381752090">Предлагать перевести</translation>
@@ -937,6 +936,7 @@
 <translation id="5517095782334947753">Вам доступны закладки, история, пароли и другие настройки из аккаунта <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Попытка переадресации заблокирована.</translation>
 <translation id="5526281268548144413">Невозможно закрыть вкладки, открытые в нескольких окнах</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# мин. назад}one{# мин. назад}few{# мин. назад}many{# мин. назад}other{# мин. назад}}</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
 <translation id="5554520618550346933">Chrome предупреждает, если используемый вами пароль был опубликован в интернете. При этом ваши имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="5555525474779371165">Выберите режим работы Безопасного просмотра</translation>

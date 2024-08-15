@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Aquesta extensió ja no s'admet. Chrome et recomana que la suprimeixis.</translation>
 <translation id="1812689907177901597">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chrome</translation>
 <translation id="1860536484129686729">Per visitar aquest lloc web, Chrome necessita permís per accedir a la càmera</translation>
-<translation id="1861924772887221906">Chrome et preguntarà abans de carregar llocs web públics amb una connexió no segura, però permetrà les connexions HTTP per a xarxes privades</translation>
 <translation id="1873233029667955273">Google Chrome no és el navegador predeterminat</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{L'administrador necessita que reiniciïs Chrome per aplicar una actualització}=1{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="3597003331831379823">No s'ha pogut executar la configuració amb privilegis elevats. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
-<translation id="3614820178395775413">Chrome et preguntarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="3622797965165704966">Ara resulta més fàcil utilitzar Chrome amb el vostre compte de Google i en ordinadors compartits.</translation>
 <translation id="3635073343384702370">Chrome pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="3667616615096815454">No es pot instal·lar; el servidor no coneix l'aplicació.</translation>
@@ -450,7 +448,6 @@
 <translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
 <translation id="7302361266603927550">Algunes dades de Chrome encara no s'han desat al teu Compte de Google. Prova d'esperar uns quants minuts abans de tancar la sessió. Si tanques la sessió ara, aquestes dades se suprimiran.</translation>
 <translation id="7308322188646931570">Chrome necessita accedir a l'emmagatzematge per baixar fitxers</translation>
-<translation id="7324120788743384890">Si aquesta opció està activada, Chrome et preguntarà abans de carregar llocs web que no admeten HTTPS</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7352881504289275361">Navegació segura millorada ofereix la protecció en línia més eficaç de Chrome per protegir-te mentre navegues</translation>
 <translation id="7394745511930161845">Crea el teu propi tema amb IA per donar un aspecte únic al teu navegador</translation>

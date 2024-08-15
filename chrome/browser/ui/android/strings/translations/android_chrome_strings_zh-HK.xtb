@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">閂咗「透過摘要意見反映表分享」功能</translation>
 <translation id="1089606299949659462">審核已完成！</translation>
 <translation id="1094555143448724771">如要查看其他裝置上的分頁，請同步處理分頁和記錄</translation>
-<translation id="1095142578254888918">已禁止 <ph name="SITE_NAME" /> 傳送通知</translation>
 <translation id="1095761715416917775">請確保您可隨時存取同步處理的資料</translation>
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">為確保你可隨時使用 Google 帳戶中的密碼，請驗證身分</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{已禁止 1 個網站傳送通知}other{已禁止 # 個網站傳送通知}}</translation>
 <translation id="1187810343066461819">同時刪除此汽車上的書籤、記錄和其他資料</translation>
 <translation id="1193729455103054076">要使用安全性強的密碼嗎？</translation>
 <translation id="1197267115302279827">移動書籤</translation>
@@ -454,7 +452,6 @@
 <translation id="3080525922482950719">您可儲存網頁，以便稍後或離線閱讀</translation>
 <translation id="3087218211037573995">部分只儲存在此裝置的密碼即將停止運作。你可將這些密碼移至「Google 密碼管理工具」。</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
-<translation id="3093004810561729002">某位使用者</translation>
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告</translation>
@@ -506,6 +503,7 @@
 <translation id="3407392651057365886">預先載入更多網頁。當其他網站要求連結網頁時，系統可能會透過 Google 伺服器預先載入這些網頁。</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3421726884497337397">選擇何時封鎖第三方 Cookie</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -938,6 +936,7 @@
 <translation id="5517095782334947753">您有來自 <ph name="FROM_ACCOUNT" /> 的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5524843473235508879">已禁止重新導向。</translation>
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
 <translation id="5554520618550346933">使用密碼時，如果密碼已在網上發佈，Chrome 將會提醒你。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5555525474779371165">選取您的「安全瀏覽」功能</translation>

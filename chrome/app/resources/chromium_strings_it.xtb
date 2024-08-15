@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Chromium richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
-<translation id="1465171403179274511">Chromium ti chiederà l'autorizzazione prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
 <translation id="1497802159252041924">Errore di installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
@@ -80,7 +79,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2210682093923538346">Sito pericoloso. Chromium ha rimosso le notifiche.</translation>
 <translation id="2240214816234246077">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chromium in base alle proprie esigenze.</translation>
-<translation id="2265830994243640896">Chromium ti chiederà l'autorizzazione prima di caricare siti pubblici utilizzando una connessione non sicura, ma consentirà le connessioni HTTP per le reti private</translation>
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="2329088755516916767">Quando questa impostazione è attiva, Chromium precarica le pagine per velocizzare la navigazione e la ricerca.</translation>
 <translation id="2343156876103232566">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chromium su entrambi i dispositivi.</translation>
@@ -105,7 +103,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="259935314519650377">Impossibile memorizzare nella cache il programma di installazione scaricato. Errore: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium esegue ogni operazione con la massima rapidità e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto (consigliato)</translation>
 <translation id="2648074677641340862">Durante l'installazione si è verificato un errore del sistema operativo. Scarica di nuovo Chromium.</translation>
-<translation id="2649201087614586016">Se l'opzione è attiva, Chromium ti chiederà l'autorizzazione prima di caricare i siti che non supportano HTTPS</translation>
 <translation id="2661879430930417727">Se condividi un dispositivo, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chromium in base alle proprie esigenze</translation>
 <translation id="268602741124540128">Ti diamo il benvenuto in Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Scheda Chromium</translation>

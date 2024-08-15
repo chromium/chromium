@@ -359,6 +359,7 @@
 <translation id="2318576281648121272">​ມື້​ນີ້ <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , ໝວດໝູ່ຜົນ​ການຊອກຫາ</translation>
 <translation id="2322173485024759474">ຖອຍກັບເທື່ອລະຕົວໜັງສື</translation>
+<translation id="2326112202058075478">ສະແດງອີໂມຈິເພີ່ມເຕີມ</translation>
 <translation id="2335091074961603075">Chromebook ຫຼື ອຸປະກອນ Bluetooth ຂອງທ່ານກຳລັງໃຊ້ Bluetooth ເວີຊັນເກົ່າ. ກະລຸນາໃຊ້ໄມໂຄຣໂຟນໃນເຄື່ອງເພື່ອຄຸນນະພາບສຽງທີ່ດີຂຶ້ນ.</translation>
 <translation id="2339073806695260576">ແຕະປຸ່ມປາກກາຢູ່ໃນຖ້ານເພື່ອຈົດບັນທຶກ, ຖ່າຍຮູບໜ້າຈໍ, ໃຊ້ຕົວຊີ້ເລເຊີ ຫຼື ແວ່ນຂະຫຍາຍ.</translation>
 <translation id="2341729377289034582">ລັອກເປັນລວງຕັ້ງ</translation>
@@ -405,6 +406,7 @@
 <translation id="246052086404491029">ເຈາະເລິກ</translation>
 <translation id="2465145153332031561">ສຸຂະພາບແບັດເຕີຣີ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | ນັບຮອບ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ຢືນຢັນຄວາມລະອຽດ</translation>
+<translation id="2475783092753560388">ແຊກ <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">ເກີດຄວາມຜິດພາດຂຶ້ນ.</translation>
 <translation id="2478076885740497414">ຕິດຕັ້ງແອັບ</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
@@ -451,6 +453,7 @@
 <translation id="2620900772667816510">Bluetooth ຄວາມລະອຽດສູງສຸດ</translation>
 <translation id="2621713457727696555">ຮັກສາຄວາມປອດໄພແລ້ວ</translation>
 <translation id="2624588537172718173">ສຽງຈາກອຸປະກອນ ແລະ ໄມໂຄຣໂຟນ</translation>
+<translation id="2632041654177296509">ສະແດງທັງໝົດ <ph name="CATEGORY_NAME" /> ຂໍ້ສະເໜີ</translation>
 <translation id="263399434338050016">"ເລືອກທັງໝົດ"</translation>
 <translation id="2644422758626431000">ປັກໝຸດໜ້າຈໍໄວ້ທາງຊ້າຍ</translation>
 <translation id="2645380101799517405">ການຄວບຄຸມ</translation>
@@ -540,6 +543,7 @@
 <translation id="2968761508099987738">ປັດຈຸບັນຍັງບໍ່ຮອງຮັບໃນປະເທດຂອງທ່ານ.</translation>
 <translation id="2970920913501714344">ຕິດຕັ້ງແອັບ, ສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນ</translation>
 <translation id="2977598380246111477">ຕົວເລກຕໍ່ໄປ</translation>
+<translation id="2980700224869191055">ອີໂມຕິຄອນ <ph name="EMOTICON_NAME" /></translation>
 <translation id="2985148236010982088">ເບິ່ງແອັບທັງໝົດ</translation>
 <translation id="2992272421330787632">ເຊື່ອງການແນະນຳທັງໝົດຂອງສື່</translation>
 <translation id="2992327365391326550">ປຸ່ມໄມໂຄຣໂຟນຂອງອຸປະກອນຖືກປິດໄວ້ຢູ່.</translation>
@@ -727,6 +731,7 @@
 <translation id="3619536907358025872">ການຕັ້ງຄ່າການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3621202678540785336">ການປ້ອນເຂົ້າ</translation>
 <translation id="3621712662352432595">ການຕັ້ງ​ຄ່າສຽງ</translation>
+<translation id="362253242168828226">ອີໂມຈິ <ph name="EMOJI_NAME" /></translation>
 <translation id="3626281679859535460">ຄວາມແຈ້ງ</translation>
 <translation id="3628323833346754646">ປຸ່ມດ້ານໜ້າ</translation>
 <translation id="3630697955794050612">ປິດ</translation>
@@ -785,6 +790,7 @@
 <translation id="3799080171973636491">ທ່ານໄດ້ກົດປຸ່ມລັດແປ້ນພິມສຳລັບແວ່ນຂະຫຍາຍເຕັມຈໍແລ້ວ. ທ່ານຕ້ອງການເປີດມັນບໍ?</translation>
 <translation id="380165613292957338">ສະບາຍດີ, ຂ້ອຍຊ່ວຍຫຍັງໄດ້ແດ່?</translation>
 <translation id="3804737937830804242">ຫຍໍ້ກ້ອງຖ່າຍຮູບລົງ</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 ອີໂມຈິ. ບໍ່ມີຜົນຮັບອື່ນ.}other{# ອີໂມຈິ. ບໍ່ມີຜົນຮັບອື່ນ.}}</translation>
 <translation id="3824784079442479685">ການດຳເນີນການນີ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ຮວມທັງແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດສາມາດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບໄດ້. ທ່ານອາດຕ້ອງໂຫຼດຂໍ້ມູນໜ້າເວັບຄືນໃໝ່ ຫຼື ຣີສະຕາດແອັບ.</translation>
 <translation id="3826099427150913765">ປ່ຽນໄປໃຊ້ລະຫັດຜ່ານ</translation>
 <translation id="383058930331066723">ໂໝດປະຢັດແບັດເຕີຣີເປີດຢູ່</translation>
@@ -1333,6 +1339,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ຂໍໃຫ້ທ່ານດຳເນີນການ.</translation>
 <translation id="5662075790140998213">ໂຕະ 10</translation>
 <translation id="5662709761327382534">ບັນທຶກໄມໂຄຣໂຟນ <ph name="CURRENT_STATE" />. ກົດ Enter ເພື່ອ<ph name="NEW_STATE" />ການບັນທຶກສຽງຈາກໄມໂຄຣໂຟນ</translation>
+<translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5672890847723042801">ສາທາລະນຸປະໂພກ</translation>
 <translation id="5673434351075758678">ຈາກ "<ph name="FROM_LOCALE" />" ເປັນ "<ph name="TO_LOCALE" />" ຫຼັງຈາກຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ.</translation>
@@ -1760,6 +1767,7 @@
 <translation id="7108254681523785542">ເລືອກລາຍການເພື່ອວາງມັນ. ທ່ານສາມາດເບິ່ງຄລິບບອດໄດ້ໂດຍການກົດ <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
 <translation id="7116969082764510092">ໂຕະ 11</translation>
 <translation id="7118268675952955085">ຮູບໜ້າຈໍ</translation>
+<translation id="7118597077555700347">ເປີດ <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">ເລືອກຄຳ ຫຼື ຕົວອັກສອນຖັດໄປ</translation>
 <translation id="7126996685418858413">ເປີດອາທິດແລ້ວ</translation>
 <translation id="7130207228079676353">ເປັນໄປໄດ້ທີ່ສຸດ</translation>
@@ -1856,7 +1864,6 @@
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">ເລື່ອນໜ້າລົງ</translation>
-<translation id="7518182783647693467">ສະຫຼັບຫົວໜ່ວຍອຸນຫະພູມ (F ທຽບກັບ C)</translation>
 <translation id="7519206258459640379">ເປີດໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບແລ້ວ.</translation>
 <translation id="7519649142417630956">ເມືອປິດເຄື່ອງ, ຜູ້ເບິ່ງແຍງລະບົບຈະຖືກອອກຈາກລະບົບ ແລະ ຈະບໍ່ສາມາດຄວບຄຸມອຸປະກອນຂອງທ່ານໄດ້.
 
@@ -1882,6 +1889,7 @@
 <translation id="7579778809502851308">ການຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="7593891976182323525">ຄົ້ນ​ຫາ ຫຼື Shift</translation>
 <translation id="7598054670902114203">ພາບຮວມການໃຊ້ CPU, <ph name="CPU_USEAGE" />%. ອຸນຫະພູມ <ph name="TEMPERATURE" /> ອົງສາເຊວຊຽສ, ຄວາມໄວປັດຈຸບັນ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
+<translation id="7599378375976398913">ການແຊກຜົນໄດ້ຮັບທີ່ເລືອກ</translation>
 <translation id="7600875258240007829">ເບິ່ງການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="7601417191446344542">ເປີດແຈ້ງເຕືອນໄມຖືກປິດບໍ?</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
@@ -2072,6 +2080,7 @@
 <translation id="8198456017687137612">ແຖບການສົ່ງສັນຍານ</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> ທ່ານຫາກໍໂຟກັສໄປ <ph name="FOCUSED_TIME" />. ເປີດການຕັ້ງຄ່າດ່ວນເພື່ອໂຟກັສອີກຄັ້ງ.</translation>
+<translation id="8203224998425013577">ສະແດງອີໂມຈິ ແລະ GIF ເພີ່ມເຕີມ</translation>
 <translation id="8203795194971602413">ຄລິກຂວາ</translation>
 <translation id="8214996719228530800">ຊ່ອງ Canary</translation>
 <translation id="8219451629189078428">ທ່ານຈຳເປັນຕ້ອງເປີດ Chromebook ຂອງທ່ານ ແລະ ສຽບປລັກໄວ້ຕະຫຼອດເວລາໃນລະຫວ່າງນີ້. ກວດໃຫ້ແນ່ໃຈວ່າໄດ້ສຽບສາຍສາກ ຫຼື ສາຍອະແດັບເຕີຄົບຖ້ວນແລ້ວ, ໃສ່ທັງ Chromebook ແລະ ເຕົ້າສຽບໄຟ. ຢ່າປິດ Chromebook ຂອງທ່ານ.</translation>
@@ -2172,6 +2181,7 @@
 <translation id="8615778328722901791">ເປີດແຖບ​ເຄື່ອງ​ມື</translation>
 <translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ຫຼຸດສຽງລົງ</translation>
+<translation id="862543346640737572">ອີໂມຈິ ແລະ GIF</translation>
 <translation id="8627191004499078455">ເຊື່ອມຕໍ່ກັບ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="8631727435199967028">ການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ</translation>
 <translation id="8634326941504371857">ໄຟລ໌ຂອງທ່ານຢູ່ອຸປະກອນນີ້ ແລະ Google Drive</translation>

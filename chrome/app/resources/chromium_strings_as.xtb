@@ -27,7 +27,6 @@
  ব্লুটুথ এক্সেছৰ আৱশ্যক। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">লগতে Chromium (<ph name="URL" />)ৰ পৰা ডেটা মচক</translation>
 <translation id="1414495520565016063">আপুনি Chromiumত ছাইন ইন হৈ আছে!</translation>
-<translation id="1465171403179274511">Chromiumএ কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি যিকোনো ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সুধিব</translation>
 <translation id="1478370723027452770">Chrome for Testingৰ জৰিয়তে সহায় লাভ কৰক</translation>
 <translation id="1497802159252041924">ইনষ্টল কৰোঁতে হোৱা আসোঁৱাহ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium টেব এটা শ্বেয়াৰ কৰক</translation>
@@ -83,7 +82,6 @@
 <translation id="2210682093923538346">বিপজ্জনক ছাইট। Chromiumএ জাননী আঁতৰাইছে।</translation>
 <translation id="2240214816234246077">আপুনি শেহতীয়াকৈ চোৱা নাই। Chromiumএ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আঁতৰাইছে</translation>
 <translation id="2241627712206172106">আপুনি যদি কোনো কম্পিউটাৰ শ্বেয়াৰ কৰে, আপোনাৰ বন্ধুবৰ্গ আৰু পৰিয়ালে পৃথককৈ ব্ৰাউজ কৰিব পাৰে আৰু তেওঁলোকে বিচৰা ধৰণে Chromium ছেট আপ কৰিব পাৰে।</translation>
-<translation id="2265830994243640896">Chromiumএ কোনো অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি ৰাজহুৱা ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সুধিব, কিন্তু ব্যক্তিগত নেটৱৰ্কৰ বাবে HTTP সংযোগৰ অনুমতি দিব</translation>
 <translation id="2313870531055795960">Chromiumত ষ্ট’ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত Chromiumএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহো সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
 <translation id="2329088755516916767">অন হৈ থাকিলে, Chromiumএ পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰে যিয়ে ব্ৰাউজিং আৰু সন্ধান দ্ৰুত কৰে।</translation>
 <translation id="2343156876103232566">ইয়াৰ পৰা আপোনাৰ Android ফ’নলৈ নম্বৰ পঠিয়াবলৈ দুয়োটা ডিভাইচত Chromiumত ছাইন ইন কৰক।</translation>
@@ -108,7 +106,6 @@
 <translation id="259935314519650377">ডাউনল’ড কৰা ইনষ্টলাৰটো কেশ্ব কৰাত বিফল হৈছে। আসোঁৱাহ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="264613044588233783">Chromium অধিক ক্ষিপ্ৰভাৱে চলে আৰু JavaScript ব্যৱহাৰ কৰা সুবিধাসমূহে ডিজাইন কৰা অনুসৰি কাম কৰিব লাগে (চুপাৰিছ কৰা হৈছে)</translation>
 <translation id="2648074677641340862">ইনষ্টলেশ্বনৰ সময়ত এটা অপাৰেটিং ছিষ্টেম সম্পর্কীয় আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ Chromium ডাউনল’ড কৰক।</translation>
-<translation id="2649201087614586016">অন কৰা থাকিলে, Chromiumএ HTTPS সমৰ্থন নকৰা ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সুধিব</translation>
 <translation id="2661879430930417727">আপুনি যদি এটা ডিভাইচ শ্বেয়াৰ কৰে, আপোনাৰ বন্ধুবৰ্গ আৰু পৰিয়ালে পৃথককৈ ব্ৰাউজ কৰিব পাৰে আৰু তেওঁলোকে বিচৰা ধৰণে Chromium ছেট আপ কৰিব পাৰে</translation>
 <translation id="268602741124540128">Chromiumলৈ স্বাগতম, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium টেব</translation>

@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Показване на предложения</translation>
 <translation id="1038842779957582377">неизвестно име</translation>
 <translation id="1041998700806130099">Съобщение за листа за заданието</translation>
+<translation id="1044897699341250361">Какво означава това</translation>
 <translation id="1046350918013988591">Талони и оферти за отстъпка</translation>
 <translation id="1048785276086539861">Когато редактирате поясненията, изгледът на документа ще бъде на една страница</translation>
 <translation id="1050038467049342496">Затворете другите приложения.</translation>
@@ -2649,6 +2650,7 @@
 <translation id="5999271311987646952">Chrome има вградени функции за безопасност, които да ви защитават, докато сърфирате. Такава функция е Google Безопасно сърфиране, която <ph name="BEGIN_LINK" />наскоро откри злонамерен софтуер<ph name="END_LINK" /> на сайта, който се опитвате да посетите.</translation>
 <translation id="6000528814684428358">Хардрок и прогресивен рок</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултата за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6001839398155993679">Начало</translation>
 <translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6002968396561884726">Наскоро прегледано</translation>
 <translation id="6005659677094197001">Непрекъснат носител</translation>
@@ -3057,6 +3059,7 @@
 <translation id="6735783933931458444">Посещавате често по това време на деня</translation>
 <translation id="6737708609449480586">Печива</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
+<translation id="6739943577740687354">Тази функция използва AI и понякога греши.</translation>
 <translation id="6740851646645036700">Достигнахте моментното ограничение за помощ при писане. Опитайте отново по-късно.</translation>
 <translation id="674375294223700098">Неизвестна грешка в сертификата на сървъра.</translation>
 <translation id="6744009308914054259">Докато чакате да се установи връзка, можете да посетите страницата „Изтегляния“, за да четете офлайн статии.</translation>
@@ -4445,5 +4448,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Добавяне на IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">От Google Pay</translation>
 </translationbundle>

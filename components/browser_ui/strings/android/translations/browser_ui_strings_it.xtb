@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
 <translation id="789180354981963912">Blocca cookie di terze parti nella modalità di navigazione in incognito:</translation>
 <translation id="7940722705963108451">Ricordami</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sito del gruppo di siti di <ph name="FPS_OWNER" /> può vedere le tue attività nel gruppo}other{<ph name="FPS_MEMBERS_COUNT" /> siti del gruppo di siti di <ph name="FPS_OWNER" /> possono vedere le tue attività nel gruppo}}</translation>
 <translation id="7986741934819883144">Seleziona un contatto</translation>
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
 <translation id="8007176423574883786">Disattivata per questo dispositivo</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Impedisci ai siti di connettersi ai dispositivi</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8541410041357371550">Questo sito riceve gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> sito <ph name="FPS_OWNER" />}other{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> siti <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Consentita (opzione consigliata)</translation>
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8617611086246832542">Quando l'opzione è attiva, viene mostrata la visualizzazione dei siti web da computer. Quando l'opzione è disattivata, viene mostrata la visualizzazione mobile dei siti web.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Gestito dai genitori</translation>
 <translation id="9039697262778250930">Il tuo account potrebbe essere disconnesso da questi siti</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vuoi eliminare i cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Attiva le autorizzazioni per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>

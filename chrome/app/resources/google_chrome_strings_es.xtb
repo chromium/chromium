@@ -63,7 +63,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="178701303897325119">Esta extensión ya no se admite. Chrome te recomienda que la elimines.</translation>
 <translation id="1812689907177901597">Si esta opción está desactivada, puedes iniciar sesión en sitios de Google, como Gmail, sin hacerlo en Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder a la cámara en este sitio web</translation>
-<translation id="1861924772887221906">Chrome te preguntará antes de cargar sitios públicos usando una conexión no segura, pero permitirá las conexiones HTTP en redes privadas</translation>
 <translation id="1873233029667955273">Google Chrome no es tu navegador predeterminado</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome no está actualizado</translation>
@@ -201,7 +200,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3596080736082218006">{COUNT,plural, =0{Tu administrador pide que reinicies Chrome para aplicar una actualización}=1{Tu administrador pide que reinicies Chrome para aplicar una actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chrome para aplicar una actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>
 <translation id="3597003331831379823">No se ha podido ejecutar la configuración con privilegios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
-<translation id="3614820178395775413">Chrome te preguntará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
@@ -458,7 +456,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7302361266603927550">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google. Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="7308322188646931570">Chrome necesita acceso de almacenamiento para descargar archivos</translation>
-<translation id="7324120788743384890">Si se activa, Chrome te preguntará antes de cargar sitios que no sean compatibles con HTTPS</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7352881504289275361">Navegación segura mejorada ofrece la protección online más potente de Chrome para mantenerte a salvo mientras navegas</translation>
 <translation id="7394745511930161845">Crea tu propio tema con IA para darle a tu navegador un aspecto único</translation>

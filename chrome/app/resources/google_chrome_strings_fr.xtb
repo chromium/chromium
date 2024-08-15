@@ -62,7 +62,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="178701303897325119">Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.</translation>
 <translation id="1812689907177901597">Désactiver cette option vous permet de vous connecter à des sites Google tels que Gmail sans vous connecter à Chrome</translation>
 <translation id="1860536484129686729">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
-<translation id="1861924772887221906">Chrome vous demande votre autorisation avant de charger des sites publics à l'aide d'une connexion non sécurisée, mais autorise les connexions HTTP pour les réseaux privés</translation>
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
 <translation id="1874309113135274312">Version bêta de Google Chrome (mDNS-In)</translation>
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
@@ -200,7 +199,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3596080736082218006">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3597003331831379823">Échec de l'exécution de la configuration avec des droits élevés. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Vous n'avez pas consulté le site récemment. Chrome a supprimé l'autorisation de <ph name="PERMISSION_2" /> ainsi que les autorisations d'accéder à la <ph name="PERMISSION_1" /> et à l'<ph name="PERMISSION_3" />.</translation>
-<translation id="3614820178395775413">Chrome vous demande votre autorisation avant de charger un site à l'aide d'une connexion non sécurisée</translation>
 <translation id="3622797965165704966">Il est désormais plus facile d'utiliser Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
 <translation id="3635073343384702370">Chrome ne peut vérifier vos mots de passe que si vous les enregistrez</translation>
 <translation id="3667616615096815454">Installation impossible. Le serveur ne reconnaît pas l'appli.</translation>
@@ -457,7 +455,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7302361266603927550">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google. Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="7308322188646931570">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
-<translation id="7324120788743384890">Lorsque cette option est activée, Chrome vous demande votre autorisation avant de charger des sites qui ne prennent pas en charge HTTPS</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7352881504289275361">La navigation sécurisée avec protection renforcée offre la protection en ligne la plus avancée de Chrome pour vous protéger lorsque vous naviguez</translation>
 <translation id="7394745511930161845">Créez votre propre thème avec l'IA pour donner un aspect unique à votre navigateur</translation>

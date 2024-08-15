@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
 <translation id="789180354981963912">Blokuoti trečiųjų šalių slapukus inkognito režimu:</translation>
 <translation id="7940722705963108451">Priminti</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="FPS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}one{<ph name="FPS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="FPS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}few{<ph name="FPS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="FPS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}many{<ph name="FPS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="FPS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}other{<ph name="FPS_MEMBERS_COUNT" /> svetainių, priklausančių <ph name="FPS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}}</translation>
 <translation id="7986741934819883144">Pasirinkite kontaktą</translation>
 <translation id="7990211076305263060">Įjungus svetainėse gali būti prašoma naudoti mikrofoną. Išjungus svetainės negali naudoti mikrofono.</translation>
 <translation id="8007176423574883786">Išjungta šiame įrenginyje</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Blokuoti svetaines, kad nebūtų galima prisijungti prie įrenginių</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="8541410041357371550">Ši svetainė gauna informaciją apie skelbimų temas iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėje}one{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėje}few{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėse}many{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainės}other{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainių}}</translation>
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
 <translation id="8617611086246832542">Įjungus rodoma svetainių rodinio versija staliniams kompiuteriams. Išjungus rodoma svetainių rodinio versija mobiliesiems.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Tvarko jūsų tėvai</translation>
 <translation id="9039697262778250930">Galite būti atjungti nuo šių svetainių</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ši svetainė yra grupėje, kuri gali peržiūrėti jūsų veiklą. Grupę nustato <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Ištrinti slapukus?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Įjunkite „<ph name="APP_NAME" />“ leidimus <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>

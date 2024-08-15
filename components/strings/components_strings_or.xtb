@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">ପରାମର୍ଶଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1038842779957582377">ଅଜ୍ଞାତ ନାମ</translation>
 <translation id="1041998700806130099">ଜବ୍ ସିଟ୍ ମେସେଜ୍</translation>
+<translation id="1044897699341250361">ଏହାର ଅର୍ଥ କ’ଣ</translation>
 <translation id="1046350918013988591">କୁପନ ଏବଂ ରିହାତି ଅଫରଗୁଡ଼ିକ</translation>
 <translation id="1048785276086539861">ଯେତେବେଳେ ଆପଣ ଏନୋଟେସନଗୁଡ଼ିକୁ ଏଡିଟ୍ କରନ୍ତି, ଏହି ଡକ୍ୟୁମେଣ୍ଟ ସିଙ୍ଗଲ୍ ପେଜ୍ ଭ୍ୟୁକୁ ଫେରି ଆସିବ</translation>
 <translation id="1050038467049342496">ଅନ୍ୟ ଆପ୍‍ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -52,6 +53,7 @@
 <translation id="1089439967362294234">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="1089599132348386324">Chrome ସେଟିଂସରେ ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କ ମନ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="1090629319939036170">VR ମେନୁ</translation>
+<translation id="1091463901118115503">ପଢ଼ିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="1091779689406092804">ସ୍କ୍ରିନସଟଗୁଡ଼ିକ</translation>
 <translation id="1094777233105318927">ଆପଣଙ୍କ ବ୍ରାଉଜର, OS, ଡିଭାଇସ, ଇନଷ୍ଟଲ କରାଯାଇଥିବା ସଫ୍ଟୱେର ଏବଂ ଫାଇଲଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା</translation>
 <translation id="1096545575934602868">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିଗୁଡ଼ିକୁ ଖାରଜ କରାଯିବ।</translation>
@@ -537,6 +539,7 @@
 <translation id="1974060860693918893">ବିକଶିତ</translation>
 <translation id="1975457531113383421">ଇନପୁଟ୍ ଟ୍ରେ</translation>
 <translation id="1975584088563498795">ମେଲବକ୍ସ 10</translation>
+<translation id="1976610264358655503">ଆପଣ ବାରମ୍ବାର ଭିଜିଟ କରୁଛନ୍ତି</translation>
 <translation id="1978555033938440688">ଫାର୍ମୱେର୍‌ ସଂସ୍କରଣ</translation>
 <translation id="1979156660928743046">ମିଡିଆ ସୂଚନା</translation>
 <translation id="1988881251331415125">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />କନେକ୍ଟିଭିଟୀ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -774,6 +777,7 @@
 <translation id="239429038616798445">ପଠାଇବାର ଏହି ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ। ଅନ୍ୟ ଏକ ପଦ୍ଧତି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2395840535409704129">ୱାଟର ସ୍ପୋର୍ଟ୍ସ</translation>
 <translation id="2396249848217231973">&amp;ଡିଲିଟ୍‌କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
+<translation id="2399344929880464793">ଏହି IBANକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଛି ଯାହା ଫଳରେ ଆପଣ ଏହାକୁ ସମଗ୍ର Google ସେବାରେ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="2399868464369312507">Google Chrome ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ଏଡିଟ କରିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="2400600116338235695">ସିରିଅଲ୍ ପୋର୍ଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="2404884497378469141">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି କପି କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -887,6 +891,7 @@
 <translation id="2619052155095999743">ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2625385379895617796">ଆପଣଙ୍କର ଘଣ୍ଟା ଆଗୁଆ ଅଛି</translation>
 <translation id="262745152991669301">USB ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
+<translation id="2628224721443278970">Microsoft OneDriveରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />ର ସର୍ଭର୍ IP ଠିକଣା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="2639739919103226564">ସ୍ଥିତି:</translation>
 <translation id="2647086987482648627">ଫେବ୍ରିକ (ସେମି-ଗ୍ଲସ)</translation>
@@ -1047,6 +1052,7 @@
 <translation id="2967098518029543669">ଏହାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="297173220375858963">ଡେସ୍କଟପ ପବ୍ଲିସିଂ</translation>
 <translation id="2972581237482394796">&amp;ପୁନଃବତ୍</translation>
+<translation id="2974468223369775963">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହି IBANକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି। ଆଗାମୀ ଥର ଆପଣ ଏହି IBAN ବ୍ୟବହାର କଲେ Chrome ଆପଣଙ୍କୁ ପୁଣି ପଚାରିବ।</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ସାମ୍ପ୍ରତିକ ଭାବେ ଚୟନ କରାଯାଇଛି । <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">ଆପଣଙ୍କ କୀବୋର୍ଡ ଲକ କରି ଏହାକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2978824962390592855">ଅପେରା</translation>
@@ -1827,6 +1833,7 @@
 <translation id="4377125064752653719">ଆପଣ <ph name="DOMAIN" />ରେ ପହଞ୍ଚିବାକୁ ଚେଷ୍ଟା କରିଥିଲେ, କିନ୍ତୁ ସର୍ଭର୍ ଉପସ୍ଥାପନା କରିଥିବା ସାର୍ଟିଫିକେଟ୍, ତାହାର ଜାରିକର୍ତ୍ତାଙ୍କ ଦ୍ୱାରା ପ୍ରତ୍ୟାଖ୍ୟାନ କରିଦିଆଯାଇଛି। ଏହାର ଅର୍ଥ ହେଉଛି, ସର୍ଭର୍ ଉପସ୍ଥାପନା କରୁଥିବା ସୁରକ୍ଷା କ୍ରେଡେନ୍‍ସିଆଲ୍ ଉପରେ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ବିଶ୍ଵାସ କରିବା ଉଚିତ ନୁହେଁ। ଆପଣ ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ସହ କଥା କରୁଥାଇପାରନ୍ତି।</translation>
 <translation id="4378154925671717803">ଫୋନ୍</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Microsoft OneDriveକୁ ଫାଇଲ ଅପଲୋଡ ବିରତ ହୋଇଛି</translation>
 <translation id="4390472908992056574">ବ୍ରିମ୍</translation>
 <translation id="4397059608630092079">ଅଟୋଫିଲ ବ୍ୟବହାର କରିବା ସମୟରେ ସର୍ବଦା ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4397978002248035985">ଆପଣଙ୍କ ବେଙ୍କର ୱେବସାଇଟରେ ଯାଞ୍ଚ କରିବାକୁ ଏକ ପପ-ଅପ ଖୋଲେ</translation>
@@ -1930,6 +1937,7 @@
 <translation id="4636930964841734540">ସୂଚନା</translation>
 <translation id="4640225694041297329">ଗତ 7 ଦିନର ଫଳାଫଳ ଦେଖାନ୍ତୁ</translation>
 <translation id="464342062220857295">ଫିଚରଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="4644567637638438744">ଆପଣ Microsoft OneDriveରେ ସାଇନ ଇନ ଥିଲେ କେବଳ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରାଯାଇପାରିବ</translation>
 <translation id="4644670975240021822">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="4646534391647090355">ମୋତେ ବର୍ତ୍ତମାନ ସେଠାକୁ ନେଇଚାଲନ୍ତୁ</translation>
 <translation id="4648262692072505866">ହାସ SHA-256 ଫର୍ମାଟର ହେବା ଆବଶ୍ୟକ।</translation>
@@ -2639,6 +2647,7 @@
 <translation id="5999271311987646952">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପରି — ବିଲ୍ଟ-ଇନ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ଅଛି, ଯାହା ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିବା ସାଇଟରେ <ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ମାଲୱେର ପାଇଛି<ph name="END_LINK" />।</translation>
 <translation id="6000528814684428358">ହାର୍ଡ ରକ ଏବଂ ପ୍ରୋଗ୍ରେସିଭ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' ପାଇଁ <ph name="RESULT_COUNT" />ଟି ପରିଣାମ</translation>
+<translation id="6001839398155993679">ଚାଲନ୍ତୁ ଆରମ୍ଭ କରିବା</translation>
 <translation id="6002122790816966947">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="6002968396561884726">ଏବେ ଦେଖାଯାଇଥିବା ଉତ୍ପାଦଗୁଡ଼ିକ</translation>
 <translation id="6005659677094197001">ଅବିରତ</translation>
@@ -3028,6 +3037,7 @@
 <translation id="6704458454638854812">"custom_size" ପ୍ରପର୍ଟି ସେଟ ହୋଇଛି, ଆଶା କରାଯାଉଥିବା ନାମ "କଷ୍ଟମ" ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="6706005862292023715">ପରଦା ଏବଂ ଝରକା ପାଇଁ ସାଜସଜ୍ଜା ସାମଗ୍ରୀ</translation>
 <translation id="6706210727756204531">ସ୍କୋପ୍</translation>
+<translation id="6706678697074905703">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହି IBANକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି।</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6710594484020273272">&lt;ସର୍ଚ୍ଚ ଶବ୍ଦ ଟାଇପ କରନ୍ତୁ&gt;</translation>
@@ -3042,8 +3052,10 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">କ୍ୟାମେରା</translation>
 <translation id="6734506549556896534">ସିମୁଲେସନ ଗେମଗୁଡ଼ିକ</translation>
+<translation id="6735783933931458444">ଦିନର ଏହି ସମୟରେ ଆପଣ ପ୍ରାୟ ଭିଜିଟ କରନ୍ତି</translation>
 <translation id="6737708609449480586">ବେକ ହୋଇଥିବା ଖାଦ୍ୟ ସାମଗ୍ରୀ</translation>
 <translation id="6738516213925468394">ଆପଣଙ୍କର ଡାଟା <ph name="TIME" />ଟାରେ ଆପଣଙ୍କ <ph name="BEGIN_LINK" />ସିଙ୍କ୍ ପାସ୍‌ଫ୍ରେଜ୍<ph name="END_LINK" /> ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଥିଲା। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହାକୁ ଲେଖନ୍ତୁ।</translation>
+<translation id="6739943577740687354">ଏହି ଫିଚର AI ବ୍ୟବହାର କରେ ଏବଂ ଏହା ସର୍ବଦା ସଠିକ ଭାବେ କାମ କରିବ ନାହିଁ</translation>
 <translation id="6740851646645036700">ବର୍ତ୍ତମାନ ପାଇଁ ଆପଣ ଆପଣଙ୍କ ଲେଖିବାରେ ସହାୟତା ସୀମାରେ ପହଞ୍ଚିଯାଇଛନ୍ତି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="674375294223700098">ଅଜଣା ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ତ୍ରୁଟି।</translation>
 <translation id="6744009308914054259">ଗୋଟିଏ ସଂଯୋଗ ପାଇଁ ଅପେକ୍ଷା କରୁଥିବା ସମୟରେ, ଅଫ୍‌ଲାଇନ୍ ଆର୍ଟିକଲ୍‍ଗୁଡିକୁ ପଢ଼ିବାକୁ ଆପଣ ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକୁ ଯାଇପାରିବେ।</translation>
@@ -3759,6 +3771,7 @@
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="8041940743680923270">ବିଶ୍ୱବ୍ୟାପୀ ଡିଫଲ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ (ପଚାରନ୍ତୁ)</translation>
 <translation id="8043255123207491407">ବିକ୍ରେତାଙ୍କ ଚୁକ୍ତି ଓ ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ</translation>
+<translation id="8044986521421349135">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଟାବ</translation>
 <translation id="8046360364391076336">ଇଣ୍ଡଷ୍ଟ୍ରିଆଲ ଉପାଦାନ ଏବଂ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="8052898407431791827">କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
 <translation id="8057023045886711556">କମେଡି ମୁଭିଗୁଡ଼ିକ</translation>
@@ -3826,6 +3839,7 @@
 <translation id="8183800802493617952">ପରିବାର-ଭିତ୍ତିକ ଗେମ ଏବଂ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="8184538546369750125">ବିଶ୍ୱାବ୍ୟାପୀ ଡିଫଳ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ (ଅନୁମତି ଦ)</translation>
 <translation id="8186706823560132848">ସଫ୍ଟୱେର</translation>
+<translation id="8188830160449823068">IBAN କେବଳ ଡିଭାଇସରେ ସେଭ ହୋଇଛି</translation>
 <translation id="8189557652711717875">ଆପଣ ବାଛିଥିବା ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ଠିକଣା ବାରରୁ ଏବଂ ୱେବ ପୃଷ୍ଠାରେ ଥିବା ଇମେଜଗୁଡ଼ିକରୁ ସର୍ଚ୍ଚ କରିବା ପରି ଫିଚରଗୁଡ଼ିକ ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରିବ।</translation>
 <translation id="8190193880870196235">ଏକ ଏକ୍ସଟେନସନ୍ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8194412401381329820">ଆପଣ ଏହି ଅଣପରିଚାଳିତ ଡିଭାଇସରେ ଏକ ପରିଚାଳିତ ଆକାଉଣ୍ଟରୁ ଏହି ପୃଷ୍ଠା ବ୍ୟବହାର କରିପାରିବେ ନାହିଁ। ଯଦି ଆପଣ ଏହି ପୃଷ୍ଠା ବ୍ୟବହାର କରନ୍ତି, ତେବେ ଏହି ଡିଭାଇସ (ଆଫିଲିଏଟ ହୋଇଥିବା ଆକାଉଣ୍ଟ) ପରି ସମାନ ଏଣ୍ଟିଟି ଦ୍ୱାରା ପରିଚାଳିତ ଆକାଉଣ୍ଟଗୁଡ଼ିକ ବ୍ୟତୀତ ସମସ୍ତ ପରିଚାଳିତ ଆକାଉଣ୍ଟ ଲକ ହୋଇଯିବ।</translation>
@@ -4427,5 +4441,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ଯୋଗ କରନ୍ତୁ</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Payରୁ</translation>
 </translationbundle>

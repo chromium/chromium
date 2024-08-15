@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Ez a bővítmény már nem támogatott. A Chrome az eltávolítását javasolja.</translation>
 <translation id="1812689907177901597">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Chrome-ba is bejelentkezne</translation>
 <translation id="1860536484129686729">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához ennél a webhelynél</translation>
-<translation id="1861924772887221906">A Chrome rákérdez a szándékára a nem biztonságos kapcsolatot használó nyilvános webhelyek betöltése előtt, de privát hálózatok esetén engedélyezi a HTTP-kapcsolatokat</translation>
 <translation id="1873233029667955273">Nem a Google Chrome az alapértelmezett böngésző</translation>
 <translation id="1874309113135274312">Google Chrome Béta (mDNS-In)</translation>
 <translation id="1877026089748256423">A Chrome elavult</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="3597003331831379823">Nem sikerült futtatni a beállítást emelt szintű jogosultságokkal. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
-<translation id="3614820178395775413">A Chrome rákérdez a szándékára a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="3622797965165704966">Google-fiókjával most még egyszerűbben használhatja a Chrome-ot közösen használt számítógépeken.</translation>
 <translation id="3635073343384702370">A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
@@ -450,7 +448,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7296210096911315575">Fontos használati és biztonsági információk</translation>
 <translation id="7302361266603927550">Az Ön egyes Chrome-adatait még nem mentette a rendszer a Google-fiókjába. A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="7308322188646931570">A Chrome-nak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
-<translation id="7324120788743384890">Ha be van kapcsolva, a Chrome rákérdez a szándékára a HTTPS-t nem támogató webhelyek betöltése előtt</translation>
 <translation id="7339898014177206373">Új ablak</translation>
 <translation id="7352881504289275361">A Biztonságos Böngészés fokozott védelemmel funkció a Chrome legerősebb online védelmi megoldását kínálja, hogy megvédje Önt böngészés közben</translation>
 <translation id="7394745511930161845">Hozza létre saját témáját az AI segítségével, hogy egyedi megjelenést kölcsönözzön böngészőjének</translation>

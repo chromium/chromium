@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ ਧੁਨੀ ਵਜਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="789180354981963912">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ:</translation>
 <translation id="7940722705963108451">ਮੈਨੂੰ ਯਾਦ ਕਰਵਾਓ</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}one{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀ ਹੈ}other{<ph name="FPS_OWNER" /> ਦੇ ਸਾਈਟਾਂ ਦੇ ਗਰੁੱਪ ਵਿਚਲੀਆਂ <ph name="FPS_MEMBERS_COUNT" /> ਸਾਈਟਾਂ, ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="7990211076305263060">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ।</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">ਸਾਈਟਾਂ ਨੂੰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
 <translation id="8525306231823319788">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="8541410041357371550">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ}}</translation>
 <translation id="857943718398505171">ਇਜਾਜ਼ਤ ਹੈ ( ਸਿਫ਼ਾਰਸ਼  ਕੀਤੇ)</translation>
 <translation id="8609465669617005112">ਉੱਪਰ ਜਾਓ</translation>
 <translation id="8617611086246832542">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਦਾ ਡੈਸਕਟਾਪ ਦ੍ਰਿਸ਼ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ। ਬੰਦ ਹੋਣ 'ਤੇ, ਵੈੱਬਸਾਈਟਾਂ ਦਾ ਮੋਬਾਈਲ ਦ੍ਰਿਸ਼ ਦਿਖਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">ਤੁਹਾਡੇ ਮਾਪਿਆਂ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="9039697262778250930">ਸ਼ਾਇਦ ਤੁਹਾਨੂੰ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਵਿੱਚੋਂ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
-<translation id="9090268041676521955">ਇਹ ਸਾਈਟ ਕਿਸੇ ਅਜਿਹੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਣਯੋਗ ਹੈ। ਇਹ ਗਰੁੱਪ <ph name="FPS_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="9106233582039520022">ਕੀ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ <ph name="APP_NAME" /> ਲਈ ਇਜਾਜ਼ਤਾਂ ਚਾਲੂ ਕਰੋ।</translation>

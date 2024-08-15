@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Hiển thị các đề xuất</translation>
 <translation id="1038842779957582377">tên không biết</translation>
 <translation id="1041998700806130099">Thông báo tờ công việc</translation>
+<translation id="1044897699341250361">Điều này có nghĩa gì</translation>
 <translation id="1046350918013988591">Phiếu giảm giá và ưu đãi khuyến mãi</translation>
 <translation id="1048785276086539861">Khi bạn chỉnh sửa chú thích, tài liệu này sẽ trở về chế độ xem một trang</translation>
 <translation id="1050038467049342496">Đóng các ứng dụng khác</translation>
@@ -782,6 +783,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="239429038616798445">Phương thức giao hàng này không có sẵn. Hãy thử một phương thức khác.</translation>
 <translation id="2395840535409704129">Thể thao dưới nước</translation>
 <translation id="2396249848217231973">&amp;Hoàn tác xóa</translation>
+<translation id="2399344929880464793">IBAN này được lưu trong Tài khoản Google của bạn để bạn có thể sử dụng trên các dịch vụ của Google.</translation>
 <translation id="2399868464369312507">Google Chrome đang cố gắng chỉnh sửa phương thức thanh toán.</translation>
 <translation id="2400600116338235695">Trang web có thể yêu cầu kết nối với cổng nối tiếp</translation>
 <translation id="2404884497378469141">Hãy thử sao chép các tệp lần nữa</translation>
@@ -1056,6 +1058,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2967098518029543669">lưu mật khẩu vào Tài khoản Google của bạn</translation>
 <translation id="297173220375858963">Chế bản điện tử</translation>
 <translation id="2972581237482394796">&amp;Làm lại</translation>
+<translation id="2974468223369775963">Không thể lưu IBAN này vào Tài khoản Google của bạn. Thay vào đó, IBAN sẽ được lưu vào Chrome trên thiết bị này. Chrome sẽ hỏi lại bạn vào lần tiếp theo bạn sử dụng IBAN này.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, hiện đã chọn. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Khoá và sử dụng bàn phím của bạn</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2657,6 +2660,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5999271311987646952">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google – tính năng <ph name="BEGIN_LINK" />vừa phát hiện thấy phần mềm độc hại<ph name="END_LINK" /> trên trang web bạn đang cố gắng truy cập.</translation>
 <translation id="6000528814684428358">Nhạc hard rock và progressive rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Bắt đầu</translation>
 <translation id="6002122790816966947">Các thiết bị của bạn</translation>
 <translation id="6002968396561884726">Đã xem gần đây</translation>
 <translation id="6005659677094197001">Liên tục</translation>
@@ -3047,6 +3051,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6704458454638854812">Thuộc tính "custom_size" đã được đặt, tên dự kiến là "custom".</translation>
 <translation id="6706005862292023715">Vật dụng phụ trợ cho cửa sổ và rèm</translation>
 <translation id="6706210727756204531">Phạm vi</translation>
+<translation id="6706678697074905703">Không thể lưu IBAN này vào Tài khoản Google của bạn. Thay vào đó, IBAN sẽ được lưu vào Chrome trên thiết bị này.</translation>
 <translation id="6709133671862442373">Tin tức</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6710594484020273272">&lt;Nhập cụm từ tìm kiếm&gt;</translation>
@@ -3064,6 +3069,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6735783933931458444">Bạn thường xuyên truy cập vào thời điểm này trong ngày</translation>
 <translation id="6737708609449480586">Bánh nướng</translation>
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
+<translation id="6739943577740687354">Tính năng này sử dụng AI và không phải lúc nào cũng chính xác</translation>
 <translation id="6740851646645036700">Số lần bạn sử dụng tính năng trợ giúp khi viết hiện đã đạt mức tối đa. Hãy thử lại sau.</translation>
 <translation id="674375294223700098">Lỗi chứng chỉ máy chủ không xác định.</translation>
 <translation id="6744009308914054259">Trong khi chờ kết nối, bạn có thể chuyển đến phần Tệp đã tải xuống để đọc các tin bài khi không có mạng.</translation>
@@ -3847,6 +3853,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8183800802493617952">Trò chơi và hoạt động dành cho gia đình</translation>
 <translation id="8184538546369750125">Sử dụng giá trị mặc định chung (Cho phép)</translation>
 <translation id="8186706823560132848">Phần mềm</translation>
+<translation id="8188830160449823068">IBAN chỉ được lưu vào thiết bị</translation>
 <translation id="8189557652711717875">Công cụ tìm kiếm mà bạn chọn sẽ được dùng cho những tính năng như tìm kiếm từ thanh địa chỉ và từ hình ảnh trên trang web.</translation>
 <translation id="8190193880870196235">Do một tiện ích quản lý</translation>
 <translation id="8194412401381329820">Bạn không thể sử dụng trang này từ tài khoản được quản lý trên thiết bị không được quản lý này. Tất cả các tài khoản được quản lý sẽ bị khoá nếu bạn sử dụng trang này, ngoại trừ các tài khoản do cùng một thực thể (như thiết bị này) quản lý (tài khoản được liên kết).</translation>
@@ -4453,5 +4460,6 @@ Thông tin chi tiết bổ sung:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Thêm số IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Từ Google Pay</translation>
 </translationbundle>

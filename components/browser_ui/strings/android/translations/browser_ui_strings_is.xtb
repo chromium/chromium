@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Leyfa hljóð á tilteknu vefsvæði.</translation>
 <translation id="789180354981963912">Loka á fótspor þriðju aðila í huliðsstillingu:</translation>
 <translation id="7940722705963108451">Minna mig á</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}one{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}other{<ph name="FPS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða sem <ph name="FPS_OWNER" /> á sem geta séð virkni þína í hópnum}}</translation>
 <translation id="7986741934819883144">Velja tengilið</translation>
 <translation id="7990211076305263060">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota hljóðnemann þinn. Þegar slökkt er á þessu geta vefsvæði ekki notað hljóðnemann þinn.</translation>
 <translation id="8007176423574883786">Slökkt fyrir þetta tæki</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Ekki leyfa vefsvæðum að tengjast tækjum</translation>
 <translation id="8525306231823319788">Allur skjárinn</translation>
 <translation id="8541410041357371550">Þetta vefsvæði fær upplýsingar um umfjöllunarefni auglýsinga frá Chrome til að birta þér viðeigandi auglýsingar</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Fótspor leyfð fyrir <ph name="FPS_MEMBERS_COUNT" /> vefsvæði sem <ph name="FPS_OWNER" /> á}one{Fótspor leyfð fyrir <ph name="FPS_MEMBERS_COUNT" /> vefsvæði sem <ph name="FPS_OWNER" /> á}other{Fótspor leyfð fyrir <ph name="FPS_MEMBERS_COUNT" /> vefsvæði sem <ph name="FPS_OWNER" /> á}}</translation>
 <translation id="857943718398505171">Leyft (ráðlagt)</translation>
 <translation id="8609465669617005112">Færa upp</translation>
 <translation id="8617611086246832542">Þegar kveikt er á þessu er tölvuútgáfa vefsvæða sýnd. Þegar slökkt er á þessu er símaútgáfa vefsvæða sýnd.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Stjórnað af foreldrum þínum</translation>
 <translation id="9039697262778250930">Þú skráist hugsanlega út af þessum vefsvæðum</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Þetta vefsvæði er í hóp sem getur séð virkni þína. <ph name="FPS_OWNER" /> skilgreindi hópinn</translation>
 <translation id="9106233582039520022">Eyða fótsporum?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>

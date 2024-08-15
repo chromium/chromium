@@ -26,7 +26,6 @@
 <translation id="1324107359134968521">블루투스 기기를 탐색하려면 Chromium에 블루투스 액세스 권한이 필요합니다. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium(<ph name="URL" />)에서도 데이터 삭제</translation>
 <translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
-<translation id="1465171403179274511">Chromium에서 비보안 연결을 사용해 사이트를 로드하기 전에 사용자에게 확인을 요청합니다.</translation>
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">위험한 사이트입니다. Chromium에서 알림을 삭제했습니다.</translation>
 <translation id="2240214816234246077">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
 <translation id="2241627712206172106">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
-<translation id="2265830994243640896">Chromium에서 비보안 연결을 사용하여 공개 사이트를 로드하기 전에 사용자에게 확인을 요청하지만 비공개 네트워크의 경우 HTTP 연결을 허용합니다.</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2329088755516916767">사용 설정하면 Chromium에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다.</translation>
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
 <translation id="264613044588233783">Chromium이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함(권장)</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
-<translation id="2649201087614586016">사용 설정하면 Chromium에서 HTTPS를 지원하지 않는 사이트를 로드하기 전에 사용자에게 확인을 요청합니다.</translation>
 <translation id="2661879430930417727">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />님, Chromium에 오신 것을 환영합니다</translation>
 <translation id="2711502716910134313">Chromium 탭</translation>

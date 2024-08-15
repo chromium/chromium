@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Kuva soovitused</translation>
 <translation id="1038842779957582377">tundmatu nimi</translation>
 <translation id="1041998700806130099">Töölehe sõnum</translation>
+<translation id="1044897699341250361">Mida see tähendab?</translation>
 <translation id="1046350918013988591">Kupongid ja allahindluspakkumised</translation>
 <translation id="1048785276086539861">Märkuste muutmisel naaseb see dokument ühe lehe vaatele</translation>
 <translation id="1050038467049342496">Sulgege muud rakendused</translation>
@@ -2649,6 +2650,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5999271311987646952">Chrome'il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google'i ohutu sirvimine, mis <ph name="BEGIN_LINK" />leidis hiljuti pahavara<ph name="END_LINK" /> saidilt, mida proovite külastada.</translation>
 <translation id="6000528814684428358">Raske ja progressiivne rokk</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
+<translation id="6001839398155993679">Alustagem</translation>
 <translation id="6002122790816966947">Teie seadmed</translation>
 <translation id="6002968396561884726">Viimati vaadatud</translation>
 <translation id="6005659677094197001">Pidev</translation>
@@ -3057,6 +3059,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6735783933931458444">Sellel kellaajal sageli külastatud</translation>
 <translation id="6737708609449480586">Küpsetised</translation>
 <translation id="6738516213925468394">Teie andmed krüpteeriti teie <ph name="BEGIN_LINK" />sünkroonimisparooliga<ph name="END_LINK" /> kuupäeval <ph name="TIME" />. Sisestage see sünkroonimise alustamiseks.</translation>
+<translation id="6739943577740687354">See funktsioon kasutab AI-d ja ei paku alati õigeid tulemusi</translation>
 <translation id="6740851646645036700">Teie abitaotluste limiit on praeguseks täis. Proovige hiljem uuesti.</translation>
 <translation id="674375294223700098">Serveri sertifikaadi tundmatu viga.</translation>
 <translation id="6744009308914054259">Ühenduse loomise ajal võite avada jaotise Allalaadimised ja lugeda võrguühenduseta artikleid.</translation>
@@ -4444,5 +4447,6 @@ Lisateave:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN-i lisamine</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Teenusest Google Pay</translation>
 </translationbundle>

@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Bu uzantı artık desteklenmiyor. Chrome, bu dosyayı kaldırmanızı önerir.</translation>
 <translation id="1812689907177901597">Bu özelliği kapatarak Chrome'da oturum açmadan Gmail gibi Google sitelerinde oturum açabilirsiniz.</translation>
 <translation id="1860536484129686729">Chrome'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>
-<translation id="1861924772887221906">Chrome, güvensiz bağlantı kullanarak herkese açık siteleri yüklemeden önce sizden onay ister ancak özel ağlar için HTTP bağlantılarına izin verir</translation>
 <translation id="1873233029667955273">Google Chrome varsayılan tarayıcınız değil</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="3597003331831379823">Kurulum, üst düzey ayrıcalıklarla çalıştırılamadı. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
-<translation id="3614820178395775413">Chrome, güvensiz bağlantı kullanan siteleri yüklemeden önce sizi uyarır</translation>
 <translation id="3622797965165704966">Chrome'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
 <translation id="3635073343384702370">Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir.</translation>
 <translation id="3667616615096815454">Uygulama, sunucu tarafından bilinmediği için yüklenemedi.</translation>
@@ -451,7 +449,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
 <translation id="7302361266603927550">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="7308322188646931570">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
-<translation id="7324120788743384890">Bu ayar etkinleştirildiğinde Chrome, HTTPS'yi desteklemeyen siteleri yüklemeden önce sizden onay ister</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7352881504289275361">Gelişmiş Güvenli Tarama, internette gezinirken güvenliğinizi sağlamak için Chrome'un en güçlü online korumasını sunar.</translation>
 <translation id="7394745511930161845">Yapay zeka ile kendi temanızı oluşturarak tarayıcınıza benzersiz bir görünüm kazandırın.</translation>

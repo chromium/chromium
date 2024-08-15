@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
 <translation id="789180354981963912">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}one{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}other{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}}</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
 <translation id="7990211076305263060">চালু থাকলে, সাইট আপনার মাইক্রোফোন ব্যবহার করার জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট আপনার মাইক্রোফোন ব্যবহার করার করতে পারে না।</translation>
 <translation id="8007176423574883786">এই ডিভাইসের জন্য বন্ধ করা আছে</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">সাইটকে ডিভাইসের সাথে কানেক্ট করা থেকে ব্লক করুন</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
 <translation id="8541410041357371550">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার বিজ্ঞাপনের বিষয় নেয়</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}}</translation>
 <translation id="857943718398505171">অনুমোদিত (প্রস্তাবিত)</translation>
 <translation id="8609465669617005112">উপরে যান</translation>
 <translation id="8617611086246832542">চালু থাকলে, ওয়েবসাইটের ডেস্কটপ ভিউ দেখানো হয়। বন্ধ থাকলে, ওয়েবসাইটের মোবাইল ভিউ দেখানো হয়।</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
 <translation id="9039697262778250930">এই সাইটগুলি থেকে আপনি হয়ত সাইন-আউট হয়ে যাবেন</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
-<translation id="9090268041676521955">এই সাইটটি একটি গ্রুপে রয়েছে যা আপনার অ্যাক্টিভিটি দেখতে পাবে। <ph name="FPS_OWNER" /> দ্বারা গ্রুপ সংজ্ঞায়িত করা হয়</translation>
 <translation id="9106233582039520022">কুকি মুছবেন?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>

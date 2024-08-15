@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Përdor mikrofonin dhe kamerën</translation>
 <translation id="1005333234656240382">Të aktivizohet korrigjimi i ADB-së?</translation>
 <translation id="1005671386794704751">Trëndafil</translation>
+<translation id="1005919400326853998">Shiko detajet e certifikatës për <ph name="CERT_NAME" /> në një dialog të ri</translation>
 <translation id="1006033052970139968">Qasja te mikrofoni lejohet për aplikacionet, uebsajtet me lejen për mikrofonin, si dhe shërbimet e sistemit</translation>
 <translation id="1006873397406093306">Kjo shtesë mund të lexojë dhe të ndryshojë të dhënat në sajte. Mund të kontrollosh se në cilat sajte mund të qaset shtesa.</translation>
 <translation id="1007057452468855774">Aktivizo "Dyqanin e Google Play"</translation>
@@ -477,7 +478,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="1341701348342335220">Shumë mirë!</translation>
 <translation id="1342886103232377846">Për të kontrolluar për fjalëkalimet e komprometuara, shko te "Menaxheri i fjalëkalimeve i Google"</translation>
-<translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
 <translation id="1344141078024003905">Po transmeton ekranin tënd. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin e ekranit tënd në çdo kohë.</translation>
 <translation id="1346403631707626730">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse "Aktiviteti shtesë i uebit dhe i aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK1" />Mëso më shumë rreth metrikës<ph name="BEGIN_LINK1_END" />Mëso më shumë<ph name="END_LINK1" /></translation>
@@ -816,7 +816,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1588919647604819635">Kliko me të djathtin te karta</translation>
 <translation id="1589055389569595240">Shfaq drejtshkrimin dhe gramatikën</translation>
 <translation id="1590478605309955960">Grupet e tua të skedave ruhen dhe përditësohen automatikisht nëpër të gjitha pajisjet ku je identifikuar.</translation>
-<translation id="1591679663873027990">Jepi leje Parallels Desktop që të ketë qasje në pajisjet USB. Parallels Desktop nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="15916883652754430">Cilësimet e zërit të sistemit</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së, gjë që do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" />. Rezervo skedarët përpara se të fillosh.</translation>
 <translation id="1592126057537046434">Përkthimi i "Përgjigjeve të shpejta"</translation>
@@ -2640,7 +2639,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2853121255651601031">Fjalëkalimi u ruajt</translation>
 <translation id="2855243985454069333">Fshin historikun nga të gjitha pajisjet e sinkronizuara</translation>
 <translation id="2855812646048059450">Identifikohu me <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modaliteti i rreptë</translation>
 <translation id="2856776373509145513">Krijo një kontejner të ri</translation>
 <translation id="2856907950922663165">Të çaktivizohet enkriptimi i URL-ve?</translation>
 <translation id="2859741939921354763">Importo fjalëkalimet te "<ph name="BRAND" />"</translation>
@@ -2737,6 +2735,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2926708162326352948">Tema u përditësua me imazhin e ngarkuar</translation>
 <translation id="2927017729816812676">Hapësira ruajtëse e memories së përkohshme</translation>
 <translation id="2928795416630981206">Lejohen të monitorojnë pozicionin e kamerës</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome hoqi lejet nga 1 sajt}other{Chrome hoqi lejet nga {NUM_SITES} sajte}}</translation>
 <translation id="2931157624143513983">Përshtate me sipërfaqen e printueshme</translation>
 <translation id="2931342457001070961">Nuk ka një mikrofon të lidhur</translation>
 <translation id="2932085390869194046">Sugjero një fjalëkalim...</translation>
@@ -2921,7 +2920,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3053273573829329829">Aktivizo kodin PIN të përdoruesit</translation>
 <translation id="3053274730492362225">Mos pulso</translation>
 <translation id="3054766768827382232">Çaktivizimi mund t'i bëjë pajisjet tuaja periferike të kenë cilësi funksionimi më të mirë, por mund të ekspozojë të dhënat e tua personale përmes përdorimit të paautorizuar.</translation>
-<translation id="3056438898277655057">Jep lejen për <ph name="SPECIFIC_NAME" /> që të qaset te pajisjet USB. <ph name="SPECIFIC_NAME" /> nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="3058498974290601450">Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet</translation>
 <translation id="3058517085907878899">Emërto pajisjen</translation>
 <translation id="3059195548603439580">Po kërkon për komponentët e sistemit? Vizito</translation>
@@ -3183,6 +3181,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3269093882174072735">Ngarko imazhin</translation>
 <translation id="326911502853238749">Mos shfaq: <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Aktivizo sinkronizimin për të rezervuar gjërat e tua dhe për t'i përdorur ato në çdo pajisje</translation>
+<translation id="3269209112443570745">E re! Një mënyrë e lehtë për të kërkuar për ato që janë në ekranin tënd</translation>
 <translation id="3269612321104318480">Gurkali e çelur dhe e bardhë</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Skedar}other{# skedarë}}</translation>
 <translation id="326999365752735949">Diferenca e shkarkimit</translation>
@@ -3652,6 +3651,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3621202678540785336">Hyrje</translation>
 <translation id="3621807901162200696">Ndihmo në përmirësimin e veçorive dhe performancës së ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{një aplikacion}other{# aplikacione}}</translation>
+<translation id="3622716124581627104">Identifiko gjërat ose vendet dhe kopjo ose përkthe tekstin. Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Ekrani i blicit të ekranit</translation>
 <translation id="362333465072914957">Në pritje të lëshimit të certifikatës nga autoriteti i certifikatave</translation>
 <translation id="3623598555687153298">Kjo do të fshijë <ph name="TOTAL_USAGE" /> të dhëna të ruajtura nga sajtet e shfaqura</translation>
@@ -4063,6 +4063,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="3894983081771074056">Sjellja e tastierës dhe miut, preferencat për gjuhën etj.</translation>
 <translation id="3895076768659607631">&amp;Menaxho motorët e kërkimit...</translation>
 <translation id="3895090224522145010">Emri i përdoruesit i Kerberos</translation>
+<translation id="3895097816015686240">Hap dritaret dhe skedat e tua të mëparshme për të vazhduar me lehtësi aty ku e ke lënë</translation>
 <translation id="389521680295183045">Sajtet mund të kërkojnë të dinë kur e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{një imazh}other{# imazhe}}</translation>
 <translation id="3897746662269329507">Pajisja jote <ph name="DEVICE_TYPE" /> është ndërtuar për lojëra. Më pas do të hapet aplikacioni "Eksploro", ku mund të qasesh në qindra prej lojërave më të fundit, mund të shikosh oferta për lojërat dhe të zbulosh veçoritë e lojërave që janë të përfshira në pajisjen tënde.</translation>
@@ -5296,6 +5297,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4823484602432206655">Lexo dhe ndrysho cilësimet e përdoruesit dhe të pajisjes</translation>
 <translation id="4824037980212326045">Rezervimi dhe restaurimi i Linux</translation>
 <translation id="4824958205181053313">Të anulohet sinkronizimi?</translation>
+<translation id="4825462365587146530">Mëso më shumë rreth Chrome Root Store në një skedë të re.</translation>
 <translation id="4825532258163983651">Çelësi i kalimit nuk mund të fshihet</translation>
 <translation id="4827134188176577524">Chrome Root Store përmban certifikatat nga autoritetet e certifikatave që janë të besuara nga Chrome Root Program dhe rishikohet në mënyrë të vazhdueshme.</translation>
 <translation id="4827283332383516812">Fshi kartën</translation>
@@ -8527,7 +8529,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7222335051802562841">Përfundo përditësimin</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Kjo i lejon shërbimet e sistemit që të përdorin "Saktësinë e vendndodhjes" për të përcaktuar vendndodhjen tënde. "Saktësia e vendndodhjes" përdor informacionet për sinjalet wireless dhe sensorët për të përllogaritur vendndodhjen e pajisjes.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 sajt në grupin e <ph name="FPS_OWNER" />}other{{MEMBERS} sajte në grupin e <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Përdor Windows Hello kur plotëson fjalëkalimet</translation>
 <translation id="7225179976675429563">Mungon lloji i rrjetit</translation>
 <translation id="7227235818314667565">Menaxho ndarjen</translation>
@@ -9903,7 +9904,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8207404892907560325">Zgjidh një çelës kalimi</translation>
 <translation id="8207794858944505786">Pajisja virtuale "<ph name="DEFAULT_VM_NAME" />" ekziston, por me sa duket nuk është një pajisje virtuale e vlefshme <ph name="VM_TYPE" />. Kontakto me administratorin tënd.</translation>
 <translation id="8207901006380134182">Një dallgë e madhe gllabëron oqeanin, me një pyll të errët në breg.</translation>
-<translation id="8208188204689616705">Këto sajte janë në një grup të përcaktuar nga <ph name="FPS_OWNER" />. Sajtet në një grup mund ta shikojnë aktivitetin tënd te grupi.</translation>
 <translation id="8208216423136871611">Mos e ruaj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Njoftim i ri}other{# ‏njoftime të reja}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Shkarkimi është në vazhdim}other{Shkarkimet janë në vazhdim}}</translation>
@@ -11006,6 +11006,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8991766915726096402">Rikuperimi i të dhënave lokale</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Përdorimi i memories - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Nëse e harron fjalëkalimin e <ph name="DEVICE_TYPE" />, mund t'i restaurosh përsëri të dhënat e tua lokale. Do të duhet të identifikohesh në "Llogarinë tënde të Google" ose të përdorësh rikuperimin e llogarisë.</translation>
+<translation id="8993198843374358393">Kopjo hash-in e certifikatës për <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Ofron kontrollet për të shpejtuar, ngadalësuar dhe vendosur në pauzë zërin e leximit</translation>
 <translation id="899384117894244799">Hiq përdoruesin e kufizuar</translation>
 <translation id="8993853206419610596">Zgjero të gjitha kërkesat</translation>
@@ -11029,7 +11030,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9009707268312089299">Importuar nga Windows</translation>
 <translation id="9009708085379296446">Dëshiroje ta ndryshoje këtë faqe?</translation>
 <translation id="9010845741772269259">Shto mënyrat e pagesës</translation>
-<translation id="901087299639956505">Modaliteti i balancuar</translation>
 <translation id="9011163749350026987">Shfaq gjithmonë ikonën</translation>
 <translation id="9011262023858991985">Kjo skedë po transmetohet</translation>
 <translation id="9011393886518328654">Shënimet e versionit</translation>
@@ -11213,6 +11213,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9128317794749765148">Konfigurimi nuk mund të përfundonte</translation>
 <translation id="9128335130883257666">Hap faqen e cilësimeve për <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
+<translation id="9129562557082598582">Eksporto të gjitha (<ph name="CERT_GROUP" />)</translation>
 <translation id="9130015405878219958">U fut modalitet i pavlefshëm.</translation>
 <translation id="9130208109420587135">Redakto emrin e grupit "<ph name="NAME" />"</translation>
 <translation id="9130364135697530260">Përmbajtjet e integruara në këtë sajt mund të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>

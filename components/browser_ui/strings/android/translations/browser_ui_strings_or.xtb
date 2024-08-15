@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ସାଇଟ୍‌ରେ ଧ୍ୱନୀ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="789180354981963912">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ:</translation>
 <translation id="7940722705963108451">ମୋତେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="FPS_MEMBERS_COUNT" />ଟି ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}other{<ph name="FPS_OWNER" />ର ସାଇଟଗୁଡ଼ିକର ଗୋଷ୍ଠୀରେ ଥିବା <ph name="FPS_MEMBERS_COUNT" />ଟି ସାଇଟ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଗୋଷ୍ଠୀରେ ଦେଖିପାରିବ}}</translation>
 <translation id="7986741934819883144">ଗୋଟିଏ ଯୋଗାଯୋଗ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7990211076305263060">ଚାଲୁ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପଚାରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
 <translation id="8007176423574883786">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ ହେବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
 <translation id="8541410041357371550">ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ପାଇଥାଏ</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" />ଟି <ph name="FPS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="FPS_MEMBERS_COUNT" />ଟି <ph name="FPS_OWNER" /> ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="857943718398505171">ଅନୁମୋଦିତ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="8609465669617005112">ଉପରକୁ ଚଳନ କରନ୍ତୁ</translation>
 <translation id="8617611086246832542">ଚାଲୁ ଥିବା ସମୟରେ, ୱେବସାଇଟଗୁଡ଼ିକର ଡେସ୍କଟପ ଭ୍ୟୁ ଦେଖାଯାଏ। ବନ୍ଦ ଥିବା ସମୟରେ, ୱେବସାଇଟଗୁଡ଼ିକର ମୋବାଇଲ ଭ୍ୟୁ ଦେଖାଯାଏ।</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">ଆପଣଙ୍କ ମାତା-ପିତାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ କରାଯାଉଛି</translation>
 <translation id="9039697262778250930">ଆପଣଙ୍କୁ ଏହି ସାଇଟଗୁଡ଼ିକରୁ ସାଇନ ଆଉଟ କରାଯାଇପାରେ</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
-<translation id="9090268041676521955">ଏହି ସାଇଟ ଏକ ଗୋଷ୍ଠୀରେ ଅଛି, ଯାହା ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିପାରିବ। ଗୋଷ୍ଠୀଟି <ph name="FPS_OWNER" /> ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥାଏ</translation>
 <translation id="9106233582039520022">କୁକୀଗୁଡ଼ିକ ଡିଲିଟ କରିବେ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଓ ଅଧିକ <ph name="NUM_MORE" />ଟି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଓ ଅଧିକ <ph name="NUM_MORE" />ଟି}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ <ph name="APP_NAME" /> ପାଇଁ ଅନୁମତି ଚାଲୁ କରନ୍ତୁ।</translation>

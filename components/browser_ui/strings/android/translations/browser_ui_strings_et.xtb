@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Konkreetse saidi heli lubamine.</translation>
 <translation id="789180354981963912">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="7940722705963108451">Tuleta mulle meelde</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sait domeeni <ph name="FPS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="FPS_MEMBERS_COUNT" /> saiti domeeni <ph name="FPS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>
 <translation id="7986741934819883144">Kontakti valimine</translation>
 <translation id="7990211076305263060">Kui see on sisse lülitatud, võivad saidid küsida luba teie mikrofoni kasutamiseks. Kui see on välja lülitatud, ei saa saidid teie mikrofoni kasutada.</translation>
 <translation id="8007176423574883786">Selle seadme puhul on välja lülitatud</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="8541410041357371550">See sait hangib Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
 <translation id="8609465669617005112">Liiguta üles</translation>
 <translation id="8617611086246832542">Kui see on sisse lülitatud, kuvatakse veebisaitide arvutivaade. Kui see on välja lülitatud, kuvatakse veebisaitide mobiilivaade.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Vanemate hallatud</translation>
 <translation id="9039697262778250930">Võite olla nendelt saitidelt välja logitud</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Kas kustutada küpsisefailid?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse load rakendusele <ph name="APP_NAME" />.</translation>

@@ -2649,6 +2649,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5999271311987646952">Mae gan Chrome nodweddion diogelwch integredig i'ch amddiffyn tra rydych yn pori — megis Pori'n Ddiogel gyda Google, a <ph name="BEGIN_LINK" />ddaeth o hyd i faleiswedd yn ddiweddar<ph name="END_LINK" /> ar wefan rydych yn ceisio ymweld â hi.</translation>
 <translation id="6000528814684428358">Roc Caled a Blaengar</translation>
 <translation id="6000758707621254961">Mae <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">I ffwrdd â ni</translation>
 <translation id="6002122790816966947">Eich dyfeisiau</translation>
 <translation id="6002968396561884726">Gwelwyd yn Ddiweddar</translation>
 <translation id="6005659677094197001">Parhaus</translation>
@@ -3057,6 +3058,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6735783933931458444">Rydych yn ymweld yn aml ar yr adeg hon o'r dydd</translation>
 <translation id="6737708609449480586">Nwyddau wedi'u Pobi</translation>
 <translation id="6738516213925468394">Amgryptiwyd eich data â'ch <ph name="BEGIN_LINK" />cyfrinymadrodd cysoni<ph name="END_LINK" /> ar <ph name="TIME" />. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
+<translation id="6739943577740687354">Mae'r nodwedd hon yn defnyddio AI ac ni fydd bob amser yn ei chael yn iawn</translation>
 <translation id="6740851646645036700">Rydych wedi cyrraedd eich terfyn cymorth ysgrifennu am y tro. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="674375294223700098">Gwall tystysgrif gweinydd anhysbys.</translation>
 <translation id="6744009308914054259">Wrth aros am gysylltiad, gallwch fynd i Lawrlwythiadau i ddarllen erthyglau all-lein.</translation>
@@ -4443,5 +4445,6 @@ Manylion ychwanegol:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Ychwanegu'r IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">O Google Pay</translation>
 </translationbundle>

@@ -479,7 +479,6 @@
 <translation id="1340527397989195812">Files ઍપનો ઉપયોગ કરીને ડિવાઇસથી મીડિયાનો બૅકઅપ લો.</translation>
 <translation id="1341701348342335220">સરસ રીતે પૂર્ણ કર્યું!</translation>
 <translation id="1342886103232377846">ચેડાં કરાયેલા પાસવર્ડ ચેક કરવા માટે, Google Password Manager પર જાઓ</translation>
-<translation id="1343865611738742294">Linux ઍપ પરવાનગીને USB ડિવાઇસ ઍક્સેસ કરવાની પરવાનગી આપો. USB ડિવાઇસ કાઢી નાખવામાં આવે પછી Linux તેને યાદ રાખશે નહીં.</translation>
 <translation id="1343920184519992513">તમે જ્યાંથી છોડ્યું હોય, ત્યાંથી ફરી શરૂ કરો અને કોઈ ચોક્કસ પેજ ખોલો</translation>
 <translation id="1344141078024003905">તમે તમારી સ્ક્રીન કાસ્ટ કરી રહ્યા છો. તમે તમારી સ્ક્રીન કાસ્ટ કરવાનું કોઈપણ સમયે થોભાવી કે રોકી શકો છો.</translation>
 <translation id="1346403631707626730">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપના વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા બાળકના Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં તેમજ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓ માટે આ સહાય કરશે. કેટલોક કુલ ડેટા Googleની ઍપ અને પાર્ટનર, જેમ કે Android ડેવલપરને પણ સહાય કરશે. જો તમારા બાળક માટે 'વધારાની વેબ અને ઍપ ઍક્ટિવિટી' સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK1" />મેટ્રિક વિશે વધુ જાણો<ph name="BEGIN_LINK1_END" />વધુ જાણો<ph name="END_LINK1" /></translation>
@@ -817,7 +816,6 @@
 <translation id="1588919647604819635">કાર્ડને રાઇટ ક્લિક કરો</translation>
 <translation id="1589055389569595240">જોડણી અને વ્યાકરણ બતાવો</translation>
 <translation id="1590478605309955960">તમારા ટૅબના ગ્રૂપ તમારા સાઇન ઇન કરેલા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે.</translation>
-<translation id="1591679663873027990">USB ડિવાઇસને ઍક્સેસ કરવાની પરવાનગી Parallels Desktopને આપો. કોઈપણ USB ડિવાઇસને એકવાર કાઢી નાખવામાં આવે, પછી Parallels Desktop તેને યાદ રાખી શકતું નથી.</translation>
 <translation id="15916883652754430">સિસ્ટમ વૉઇસના સેટિંગ</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> દ્વારા ADB ડિબગીંગ બંધ કરાયું છે, જેને કારણે તમારું <ph name="DEVICE_TYPE" /> રીસેટ થશે. ફરી શરૂ કરતા પહેલાં તમારી ફાઇલોનું બૅકઅપ લો.</translation>
 <translation id="1592126057537046434">ઝડપી જવાબોનો અનુવાદ</translation>
@@ -2641,7 +2639,6 @@
 <translation id="2853121255651601031">પાસવર્ડ સાચવ્યો</translation>
 <translation id="2855243985454069333">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ ડિલીટ કરે છે</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> વડે સાઇન ઇન કરો</translation>
-<translation id="28559674945112027">સ્ટ્રિક્ટ મોડ</translation>
 <translation id="2856776373509145513">નવું કન્ટેનર બનાવો</translation>
 <translation id="2856907950922663165">URLને એન્ક્રિપ્ટ કરવાની સુવિધા બંધ કરીએ?</translation>
 <translation id="2859741939921354763"><ph name="BRAND" />માં પાસવર્ડ આયાત કરો</translation>
@@ -2923,7 +2920,6 @@
 <translation id="3053273573829329829">વપરાશકર્તા પિન ચાલુ કરો</translation>
 <translation id="3053274730492362225">બ્લિંક ન કરો</translation>
 <translation id="3054766768827382232">આને બંધ કરવાથી તમારા પેરિફેરલનું કાર્યપ્રદર્શન બહેતર બની શકે છે, પણ અનઅધિકૃત વપરાશ મારફતે તમારો વ્યક્તિગત ડેટા જોખમમાં મૂકાઈ શકે છે.</translation>
-<translation id="3056438898277655057"><ph name="SPECIFIC_NAME" />ને USB ડિવાઇસ ઍક્સેસ કરવાની પરવાનગી આપો. USB ડિવાઇસ કાઢી નાખવામાં આવે તે પછી <ph name="SPECIFIC_NAME" /> તેને યાદ રાખશે નહીં.</translation>
 <translation id="3058498974290601450">તમે કોઈ પણ સમયે સેટિંગમાં 'સિંક કરો' ચાલુ કરી શકો છો</translation>
 <translation id="3058517085907878899">ડિવાઇસને નામ આપો</translation>
 <translation id="3059195548603439580">સિસ્ટમના ઘટકો શોધી રહ્યાં છો? મુલાકાત લો</translation>
@@ -5675,6 +5671,7 @@
 <translation id="5097649414558628673">સાધન: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">કર્સર રોકાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરવાનાં સેટિંગ</translation>
 <translation id="5098954716528935136">કૃપા કરીને અમને જણાવો કે તમે કોઈપણ રીતે ફાઇલ શ માટે ડાઉનલોડ કરી રહ્યાં છો</translation>
+<translation id="5098963855433723436">અલગ ઍપ્લિકેશનમાં ખૂલે છે</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પિન કરેલ છે</translation>
 <translation id="5101398513835324081">કોઈ ઍક્શન ઉમેરો</translation>
 <translation id="5101839224773798795">કર્સર રોકાઈ જાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરો</translation>
@@ -8542,7 +8539,6 @@ USB ડિવાઇસ</translation>
 <translation id="7222335051802562841">અપડેટ સમાપ્ત કરો</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">આમ કરવાથી, સિસ્ટમ સર્વિસને તમારું લોકેશન નક્કી કરવા માટે લોકેશનની સચોટતાની સુવિધાનો ઉપયોગ કરવાની મંજૂરી મળે છે. લોકેશનની સચોટતાની સુવિધા, ડિવાઇસનું લોકેશન નક્કી કરવા માટે, વાયરલેસ સિગ્નલ વિશેની માહિતી અને સેન્સરનો ઉપયોગ કરે છે.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" />ના ગ્રૂપમાં 1 સાઇટ}one{<ph name="FPS_OWNER" />ના ગ્રૂપમાં {MEMBERS} સાઇટ}other{<ph name="FPS_OWNER" />ના ગ્રૂપમાં {MEMBERS} સાઇટ}}</translation>
 <translation id="7225082563376899794">પાસવર્ડ ભરતી વખતે Windows Helloનો ઉપયોગ કરો</translation>
 <translation id="7225179976675429563">નેટવર્ક પ્રકાર ખૂટે છે</translation>
 <translation id="7227235818314667565">શેરિંગ સુવિધા મેનેજ કરો</translation>
@@ -8721,6 +8717,7 @@ USB ડિવાઇસ</translation>
 <translation id="735994578317267253">કોઈપણ ChromeOS ડિવાઇસ પર તમારી ઍપ, સેટિંગ અને બીજું ઘણું મેળવો</translation>
 <translation id="7360257054721917104">સાચવેલા ડેસ્ક અને નમૂના જોઈ રહ્યાં છીએ. નૅવિગેટ કરવા ટૅબ દબાવો.</translation>
 <translation id="7360333718677093875">ઇમોજી પિકર</translation>
+<translation id="7360460316021916328">વિન્ડો પસંદ કરો</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> ચલાવવા માટે રાઇટ-ક્લિક કરો</translation>
 <translation id="7361914392989692067">તમારી આંગળી વડે પાવર બટનને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="7362387053578559123">સાઇટ બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
@@ -8945,6 +8942,7 @@ USB ડિવાઇસ</translation>
 <translation id="7514239104543605883">તમારા ડિવાઇસ પર કૉપિ કરો</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514417110442087199">સોંપણી ઉમેરો</translation>
+<translation id="7515139121338932179">તમારી વિન્ડો શેર કરવા માટે, તમારી સિસ્ટમના વિન્ડો પિકરનો ઉપયોગ કરો</translation>
 <translation id="7515191208480168435">તમે સરળ ઍક્સેસ માટે Google Lensને પિન કરી શકો છો</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> વ્યવસ્થાપક દ્વારા બ્લૉક કરેલી છે. આ ઍપનો ઉપયોગ કરવા માટે વ્યવસ્થાપક પાસેથી પરવાનગી મેળવો.</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -9531,6 +9529,7 @@ USB ડિવાઇસ</translation>
 <translation id="793474285422359265">જો તમે "રદ કરો" પર ક્લિક કરશો, તો તે તમારા બ્રાઉઝિંગ ડેટાને અસર કરે એમ બને અને તમારે ફેક્ટરી રીસેટ કરવાની જરૂર પડી શકે છે.</translation>
 <translation id="793531125873261495">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% પૂર્ણ થયું</translation>
+<translation id="7936195481975600746">તમારી સ્ક્રીન શેર કરવા માટે, તમારી સિસ્ટમના સ્ક્રીન પિકરનો ઉપયોગ કરો</translation>
 <translation id="7937809006412909895">ડાયગ્નોસ્ટિક્સ ડેટા એકત્રિત કરી રહ્યાં છીએ</translation>
 <translation id="7938881824185772026">લેબ્સ</translation>
 <translation id="7939062555109487992">વિગતવાર વિકલ્પો</translation>
@@ -9908,13 +9907,13 @@ USB ડિવાઇસ</translation>
 <translation id="8205478243727418828">લૉન્ચર + નીચેની ઍરો કી</translation>
 <translation id="820568752112382238">સૌથી વધુ મુલાકાત લેવાયેલી સાઇટ</translation>
 <translation id="8206267832882844324">નોધમાં ફેરફાર કરો</translation>
+<translation id="8206713788440472560">સ્ક્રીન પસંદ કરો</translation>
 <translation id="8206745257863499010">બ્લુસી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8207204763121565309">આ ટૅબના ગ્રૂપનું સૂચન તમને ગમ્યું નથી એ થમ્બ્સ ડાઉનના પ્રતિસાદ વડે સબમિટ કરી શકાય છે</translation>
 <translation id="8207404892907560325">કોઈ પાસકી પસંદ કરો</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" અસ્તિત્વમાં છે, પણ એવું નથી લાગતું કે તે કોઈ માન્ય <ph name="VM_TYPE" /> VM છે. કૃપા કરીને તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
 <translation id="8207901006380134182">અંધકારમાં સમુદ્ર કિનારે મોટા ઉછળતા મોજા સાથેનું જંગલ.</translation>
-<translation id="8208188204689616705">આ સાઇટ <ph name="FPS_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે. ગ્રૂપમાં શામેલ સાઇટ, ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોઈ શકે છે.</translation>
 <translation id="8208216423136871611">સાચવશો નહીં</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{નવું નોટિફિકેશન}one{# નવું નોટિફિકેશન}other{# નવા નોટિફિકેશન}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ડાઉનલોડ ચાલુ છે}one{ડાઉનલોડ ચાલુ છે}other{ડાઉનલોડ ચાલુ છે}}</translation>
@@ -11042,7 +11041,6 @@ USB ડિવાઇસ</translation>
 <translation id="9009707268312089299">Windowsમાંથી આયાત કરેલા</translation>
 <translation id="9009708085379296446">શું તમે આ પેજ બદલવા માગતા હતા?</translation>
 <translation id="9010845741772269259">ચુકવણી પદ્ધતિઓ ઉમેરો</translation>
-<translation id="901087299639956505">બૅલેન્સ મોડ</translation>
 <translation id="9011163749350026987">હંમેશાં આઇકન બતાવો</translation>
 <translation id="9011262023858991985">આ ટૅબને કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="9011393886518328654">રિલીઝ નોટ</translation>

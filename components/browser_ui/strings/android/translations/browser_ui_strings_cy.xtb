@@ -425,7 +425,6 @@
 <translation id="7882806643839505685">Caniatáu sain ar gyfer gwefan benodol.</translation>
 <translation id="789180354981963912">Rhwystro cwcis trydydd parti yn y Modd Anhysbys:</translation>
 <translation id="7940722705963108451">Atgoffwch fi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="FPS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}zero{<ph name="FPS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="FPS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}two{<ph name="FPS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="FPS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}few{<ph name="FPS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="FPS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}many{<ph name="FPS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="FPS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}other{<ph name="FPS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="FPS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}}</translation>
 <translation id="7986741934819883144">Dewis cyswllt</translation>
 <translation id="7990211076305263060">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio'ch meicroffon. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio'ch meicroffon.</translation>
 <translation id="8007176423574883786">Wedi'i ddiffodd ar gyfer y ddyfais hon</translation>
@@ -472,7 +471,6 @@
 <translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
 <translation id="8525306231823319788">Sgrîn lawn</translation>
 <translation id="8541410041357371550">Mae'r wefan hon yn cael eich pynciau hysbysebion gan Chrome er mwyn dangos hysbysebion mwy perthnasol i chi</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> wefan <ph name="FPS_OWNER" />}zero{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}two{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> wefan <ph name="FPS_OWNER" />}few{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}many{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}other{Caniateir cwcis ar gyfer <ph name="FPS_MEMBERS_COUNT" /> gwefan <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Caniateir (argymhellir)</translation>
 <translation id="8609465669617005112">Symud i fyny</translation>
 <translation id="8617611086246832542">Pan fydd wedi'i droi ymlaen, dangosir gwedd bwrdd gwaith gwefannau. Pan fydd wedi'i ddiffodd, dangosir gwedd symudol gwefannau.</translation>
@@ -510,7 +508,6 @@
 <translation id="9019902583201351841">Rheolir gan eich rhieni</translation>
 <translation id="9039697262778250930">Mae'n bosib eich bod wedi'ch allgofnodi o'r gwefannau hyn</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Mae'r wefan hon mewn grŵp sy'n gallu gweld eich gweithgarwch. Diffinnir y grŵp gan <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Dileu cwcis?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}two{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}}</translation>
 <translation id="913657688200966289">Trowch ganiatadau ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>

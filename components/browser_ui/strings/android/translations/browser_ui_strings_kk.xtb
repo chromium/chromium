@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Белгілі бір сайтта дыбыстың шығуына рұқсат ету.</translation>
 <translation id="789180354981963912">Инкогнито режимінде үшінші тараптың cookie файлдарын бөгеу:</translation>
 <translation id="7940722705963108451">Еске салу</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{Топтағы әрекетіңізді көре алатын <ph name="FPS_OWNER" /> сайттар тобындағы <ph name="FPS_MEMBERS_COUNT" /> сайт}other{Топтағы әрекетіңізді көре алатын <ph name="FPS_OWNER" /> сайттар тобындағы <ph name="FPS_MEMBERS_COUNT" /> сайт}}</translation>
 <translation id="7986741934819883144">Контактіні таңдау</translation>
 <translation id="7990211076305263060">Қосылса, сайттар микрофонды пайдалануға рұқсат сұрай алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="8007176423574883786">Осы құрылғы үшін өшірілді</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Сайттардың құрылғыға жалғануына тыйым салу</translation>
 <translation id="8525306231823319788">Толық экран</translation>
 <translation id="8541410041357371550">Бұл сайт сәйкес жарнамаларды көбірек көрсету үшін Chrome браузерінен сізге қажетті жарнама тақырыптарын алады.</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookie файлдары мына сайтта рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}other{Cookie файлдары мына сайттарда рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Рұқсат етілген (ең дұрысы)</translation>
 <translation id="8609465669617005112">Жоғары қарай жылжыту</translation>
 <translation id="8617611086246832542">Қосылса, веб-сайттардың компьютерлік нұсқасы көрсетіледі. Өшірілсе, веб-сайттардың мобильдік нұсқасы көрсетіледі.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Ата-аналар басқарады</translation>
 <translation id="9039697262778250930">Сіз осы сайттардан шығып кетуіңіз мүмкін</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Бұл сайт әрекетіңізді көре алатын топқа кіреді. Топты <ph name="FPS_OWNER" /> белгілеген.</translation>
 <translation id="9106233582039520022">Cookie файлдарын жою керек пе?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> браузері үшін рұқсаттарды <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> қосыңыз.</translation>

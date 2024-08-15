@@ -478,7 +478,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1340527397989195812">Sandarkan media dari peranti menggunakan apl Fail.</translation>
 <translation id="1341701348342335220">Bagus!</translation>
 <translation id="1342886103232377846">Untuk menyemak kata laluan yang terjejas, akses Google Password Manager</translation>
-<translation id="1343865611738742294">Beri Linux kebenaran apl untuk mengakses peranti USB. Linux tidak akan mengingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1343920184519992513">Teruskan dari tempat anda berhenti dan buka set halaman tertentu</translation>
 <translation id="1344141078024003905">Anda menghantar skrin. Anda boleh menjeda atau menghentikan penghantaran skrin anda pada bila-bila masa.</translation>
 <translation id="1346403631707626730">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anak anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account miliknya. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK1_END" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1588919647604819635">Klik kanan kad</translation>
 <translation id="1589055389569595240">Tunjukkan Ejaan dan Tatabahasa</translation>
 <translation id="1590478605309955960">Kumpulan tab anda disimpan dan dikemaskinikan secara automatik merentas semua peranti log masuk anda.</translation>
-<translation id="1591679663873027990">Berikan Parallels Desktop kebenaran untuk mengakses peranti USB. Parallels Desktop tidak akan ingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="15916883652754430">Tetapan suara sistem</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB, yang akan menetapkan semula <ph name="DEVICE_TYPE" /> anda. Sandarkan fail anda sebelum memulakan semula peranti.</translation>
 <translation id="1592126057537046434">Jawapan Segera terjemahan</translation>
@@ -2656,7 +2654,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2853121255651601031">Kata Laluan Disimpan</translation>
 <translation id="2855243985454069333">Memadamkan sejarah daripada semua peranti yang disegerakkan</translation>
 <translation id="2855812646048059450">Log masuk dengan <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Mod ketat</translation>
 <translation id="2856776373509145513">Buat bekas baharu</translation>
 <translation id="2856907950922663165">Matikan penyulitan URL?</translation>
 <translation id="2859741939921354763">Import kata laluan kepada <ph name="BRAND" /></translation>
@@ -2938,7 +2935,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3053273573829329829">Dayakan PIN pengguna</translation>
 <translation id="3053274730492362225">Jangan berkelip</translation>
 <translation id="3054766768827382232">Tindakan melumpuhkan perlindungan akses data boleh menjadikan peranti persisian anda berfungsi dengan lebih baik, tetapi mungkin mendedahkan data peribadi anda melalui penggunaan yang tidak dibenarkan.</translation>
-<translation id="3056438898277655057">Beri <ph name="SPECIFIC_NAME" /> kebenaran untuk mengakses peranti USB. <ph name="SPECIFIC_NAME" /> tidak akan mengingat peranti USB selepas peranti tersebut dialih keluar.</translation>
 <translation id="3058498974290601450">Anda boleh mematikan penyegerakan pada bila-bila masa dalam tetapan</translation>
 <translation id="3058517085907878899">Namakan peranti</translation>
 <translation id="3059195548603439580">Mencari komponen sistem? Lawati</translation>
@@ -5690,6 +5686,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5097649414558628673">Alat: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik secara automatik apabila kursor berhenti</translation>
 <translation id="5098954716528935136">Beritahu kami sebab anda memuat turun fail ini</translation>
+<translation id="5098963855433723436">Dibuka dalam aplikasi berasingan</translation>
 <translation id="5100775515702043594"><ph name="EXTENSION_NAME" /> disematkan oleh pentadbir anda</translation>
 <translation id="5101398513835324081">Tambahkan tindakan</translation>
 <translation id="5101839224773798795">Klik secara automatik apabila kursor berhenti</translation>
@@ -6797,7 +6794,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5911497236110691522">Untuk bertukar kepada kaedah input yang seterusnya, tekan <ph name="KEY_CODES" /></translation>
 <translation id="5911533659001334206">Paparan pintasan</translation>
 <translation id="5911545422157959623">Penanda halaman tidak tersedia dalam mod tetamu</translation>
-<translation id="5914016309240354769">Alam Semula Jadi</translation>
+<translation id="5914016309240354769">Alam semula jadi</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -7793,7 +7790,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6662931079349804328">Dasar perusahaan berubah. Butang percubaan dialih keluar daripada bar alat.</translation>
 <translation id="6663190258859265334">Lakukan Powerwash pada <ph name="DEVICE_TYPE" /> anda dan kembali kepada versi sebelumnya.</translation>
 <translation id="6664774537677393800">Kesilapan telah berlaku semasa membuka profil anda. Sila log keluar dan log masuk sekali lagi.</translation>
-<translation id="6665874326033183068">Wild</translation>
+<translation id="6665874326033183068">Liar</translation>
 <translation id="6666559645296300656">Membatalkan peningkatan Linux</translation>
 <translation id="6667086124612170548">Fail terlalu besar untuk peranti ini</translation>
 <translation id="6667092961374478614">Kebolehtemuan <ph name="FEATURE_NAME" /></translation>
@@ -8553,7 +8550,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7222335051802562841">Selesaikan pengemaskinian</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Tindakan ini membolehkan perkhidmatan sistem menggunakan Ketepatan Lokasi untuk menentukan lokasi anda. Ketepatan Lokasi menggunakan maklumat tentang isyarat dan penderia wayarles untuk menganggar lokasi peranti.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 laman dalam kumpulan <ph name="FPS_OWNER" />}other{{MEMBERS} laman dalam kumpulan <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Gunakan Windows Hello apabila mengisi kata laluan</translation>
 <translation id="7225179976675429563">Jenis rangkaian tiada</translation>
 <translation id="7227235818314667565">Urus Perkongsian</translation>
@@ -8732,6 +8728,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="735994578317267253">Dapatkan apl, tetapan anda dan pelbagai lagi pada mana-mana peranti ChromeOS</translation>
 <translation id="7360257054721917104">Melihat meja dan templat yang disimpan. Tekan tab untuk menavigasi.</translation>
 <translation id="7360333718677093875">pemilih emoji</translation>
+<translation id="7360460316021916328">Pilih tetingkap</translation>
 <translation id="7361297102842600584">Klik kanan untuk menjalankan <ph name="PLUGIN_NAME" /></translation>
 <translation id="7361914392989692067">Sentuh butang kuasa dengan jari anda. Data cap jari anda disimpan dengan selamat dan tidak sekali-kali dihantar keluar daripada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="7362387053578559123">Laman boleh meminta untuk menyambung kepada peranti Bluetooth</translation>
@@ -8956,6 +8953,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7514239104543605883">Salin ke peranti anda</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7514417110442087199">Tambah penguntukan</translation>
+<translation id="7515139121338932179">Untuk berkongsi tetingkap anda, gunakan pemilih tetingkap sistem anda</translation>
 <translation id="7515191208480168435">Anda boleh menyematkan Google Lens untuk akses yang mudah</translation>
 <translation id="751523031290522286"><ph name="APP_NAME" /> disekat oleh pentadbir. Minta kebenaran untuk menggunakan apl ini daripada pentadbir.</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -9543,6 +9541,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="793474285422359265">Jika anda klik “Batal”, tindakan ini boleh menjejaskan data penyemak imbas anda dan anda perlu melakukan tetapan semula kilang.</translation>
 <translation id="793531125873261495">Ralat memuat turun mesin maya. Sila cuba lagi.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% selesai</translation>
+<translation id="7936195481975600746">Untuk berkongsi skrin anda, gunakan pemilih skrin sistem anda</translation>
 <translation id="7937809006412909895">Mengumpulkan data diagnostik</translation>
 <translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Pilihan lanjutan</translation>
@@ -9925,13 +9924,13 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8205478243727418828">pelancar + anak panah ke bawah</translation>
 <translation id="820568752112382238">Tapak yang paling kerap dilawati</translation>
 <translation id="8206267832882844324">Edit nota</translation>
+<translation id="8206713788440472560">Pilih skrin</translation>
 <translation id="8206745257863499010">Sayu</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8207204763121565309">Isyarat tidak menyukai menyerahkan maklum balas bahawa anda tidak menyukai cadangan kumpulan tab ini</translation>
 <translation id="8207404892907560325">Pilih kunci laluan</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" wujud tetapi tidak kelihatan seperti VM <ph name="VM_TYPE" /> yang sah. Sila hubungi pentadbir anda.</translation>
 <translation id="8207901006380134182">Ombak besar di lautan, dengan hutan belantara gelap di tepi pantai.</translation>
-<translation id="8208188204689616705">Laman ini berada dalam kumpulan yang ditakrifkan oleh <ph name="FPS_OWNER" />. Laman dalam sesebuah kumpulan boleh melihat aktiviti anda dalam kumpulan itu.</translation>
 <translation id="8208216423136871611">Jangan simpan</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Pemberitahuan baharu}other{# pemberitahuan baharu}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Muat turun sedang berlangsung}other{Muat turun sedang berlangsung}}</translation>
@@ -11059,7 +11058,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9009707268312089299">Diimport daripada Windows</translation>
 <translation id="9009708085379296446">Adakah anda bermaksud untuk menukar halaman ini?</translation>
 <translation id="9010845741772269259">Tambah kaedah pembayaran</translation>
-<translation id="901087299639956505">Mod seimbang</translation>
 <translation id="9011163749350026987">Sentiasa tunjukkan ikon</translation>
 <translation id="9011262023858991985">Menghantar tab ini</translation>
 <translation id="9011393886518328654">Nota keluaran</translation>

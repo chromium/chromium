@@ -480,7 +480,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1340527397989195812">Dublējiet multividi no savas ierīces, izmantojot lietotni “Faili”.</translation>
 <translation id="1341701348342335220">Lieliski!</translation>
 <translation id="1342886103232377846">Lai pārbaudītu, vai neviena parole nav uzlauzta, pārejiet uz Google paroļu pārvaldnieku.</translation>
-<translation id="1343865611738742294">Piešķiriet Linux lietotnēm atļauju piekļūt USB ierīcēm. Pēc USB ierīces noņemšanas operētājsistēmā Linux netiks saglabāti šīs ierīces dati.</translation>
 <translation id="1343920184519992513">Atsākt darbu no vietas, kur to beidzāt, un atvērt konkrētu lapu kopu</translation>
 <translation id="1344141078024003905">Jūs apraidāt ekrānu. Jebkurā brīdī varat apturēt vai pārtraukt ekrāna apraidi.</translation>
 <translation id="1346403631707626730">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot bērna Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotos datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja jūsu bērnam ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā. <ph name="BEGIN_LINK1" />Uzzināt vairāk par rādītājiem<ph name="BEGIN_LINK1_END" />Uzzināt vairāk<ph name="END_LINK1" /></translation>
@@ -822,7 +821,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1588919647604819635">Labās pogas klikšķis uz kartītes</translation>
 <translation id="1589055389569595240">Rādīt pareizrakstības un gramatikas ieteikumus</translation>
 <translation id="1590478605309955960">Ciļņu grupas tiek automātiski saglabātas un atjauninātas visās ierīcēs, kurās esat pierakstījies.</translation>
-<translation id="1591679663873027990">Parallels Desktop saņems atļauju piekļūt USB ierīcēm. Parallels Desktop neiegaumēs USB ierīci, kad tā būs noņemta.</translation>
 <translation id="15916883652754430">Sistēmas balss iestatījumi</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> atspējoja ADB atkļūdošanu, tādēļ jūsu <ph name="DEVICE_TYPE" /> ierīce tiks atiestatīta. Pirms ierīces restartēšanas dublējiet failus.</translation>
 <translation id="1592126057537046434">Tulkojums no funkcijas Ātrās atbildes</translation>
@@ -2645,7 +2643,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2853121255651601031">Parole saglabāta</translation>
 <translation id="2855243985454069333">Tiks dzēsta vēsture no visām sinhronizētajām ierīcēm</translation>
 <translation id="2855812646048059450">Pierakstīties, izmantojot <ph name="CREDENTIAL_PROVIDER" /> kontu</translation>
-<translation id="28559674945112027">Stingrais režīms</translation>
 <translation id="2856776373509145513">Jauna konteinera izveide</translation>
 <translation id="2856907950922663165">Vai izslēgt URL šifrēšanu?</translation>
 <translation id="2859741939921354763">Importējiet paroles pakalpojumā <ph name="BRAND" />.</translation>
@@ -2927,7 +2924,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3053273573829329829">Iespējot lietotāja PIN</translation>
 <translation id="3053274730492362225">Nemirgot</translation>
 <translation id="3054766768827382232">Atspējojot datu piekļuves aizsardzību, var uzlabot perifēro ierīču veiktspēju, taču jūsu personas dati var tikt pakļauti neatļautai lietošanai.</translation>
-<translation id="3056438898277655057">Piešķiriet virtuālajai mašīnai <ph name="SPECIFIC_NAME" /> atļauju piekļūt USB ierīcēm. Pēc USB ierīces noņemšanas virtuālajā mašīnā <ph name="SPECIFIC_NAME" /> netiks saglabāti šīs ierīces dati.</translation>
 <translation id="3058498974290601450">Jebkurā brīdī varat ieslēgt sinhronizāciju iestatījumos.</translation>
 <translation id="3058517085907878899">Ierīces nosaukuma piešķiršana</translation>
 <translation id="3059195548603439580">Vai meklējat sistēmas komponentus? Apmeklējiet vietni</translation>
@@ -8540,7 +8536,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7222335051802562841">Pabeigt atjaunināšanu</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Tādējādi atļausiet sistēmas pakalpojumiem izmantot atrašanās vietas precizitāti, lai noteiktu jūsu atrašanās vietu. Iestatījums “Atrašanās vietas precizitāte” izmanto informāciju par bezvadu signāliem un sensoriem, lai noteiktu ierīces atrašanās vietu.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{Viena vietne <ph name="FPS_OWNER" /> grupā}zero{{MEMBERS} vietņu <ph name="FPS_OWNER" /> grupā}one{{MEMBERS} vietne <ph name="FPS_OWNER" /> grupā}other{{MEMBERS} vietnes <ph name="FPS_OWNER" /> grupā}}</translation>
 <translation id="7225082563376899794">Aizpildot paroles, izmantot Windows Hello</translation>
 <translation id="7225179976675429563">Nav norādīts tīkla veids</translation>
 <translation id="7227235818314667565">Pārvaldīt kopīgošanu</translation>
@@ -9917,7 +9912,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8207404892907560325">Izvēlieties piekļuves atslēgu</translation>
 <translation id="8207794858944505786">Pastāv virtuālā mašīna “<ph name="DEFAULT_VM_NAME" />”, taču šķiet, ka tā nav derīga veida <ph name="VM_TYPE" /> virtuālā mašīna. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="8207901006380134182">Okeānu pārņem liels vilnis, un krastā ir tumšs mežs.</translation>
-<translation id="8208188204689616705">Šīs vietnes ir uzņēmuma <ph name="FPS_OWNER" /> definētā grupā. Grupā iekļauto vietņu īpašnieki var skatīt darbības, ko veicat jebkurā grupas vietnē.</translation>
 <translation id="8208216423136871611">Nesaglabāt</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Jauns paziņojums}zero{# jaunu paziņojumu}one{# jauns paziņojums}other{# jauni paziņojumi}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Notiek lejupielāde}zero{Notiek lejupielāde}one{Notiek lejupielāde}other{Notiek lejupielāde}}</translation>
@@ -11046,7 +11040,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9009707268312089299">Importēts no operētājsistēmas Windows</translation>
 <translation id="9009708085379296446">Vai vēlējāties mainīt šo lapu?</translation>
 <translation id="9010845741772269259">Pievienot maksājuma veidus</translation>
-<translation id="901087299639956505">Līdzsvarotais režīms</translation>
 <translation id="9011163749350026987">Vienmēr rādīt ikonu</translation>
 <translation id="9011262023858991985">Notiek šīs cilnes apraide</translation>
 <translation id="9011393886518328654">Piezīmes par izdevumu</translation>

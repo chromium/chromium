@@ -478,7 +478,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1340527397989195812">Hifadhi nakala rudufu ya maudhui kutoka kwenye kifaa ukitumia programu ya Faili.</translation>
 <translation id="1341701348342335220">Vizuri sana!</translation>
 <translation id="1342886103232377846">Ili ukague manenosiri yaliyoathiriwa, nenda kwenye Kidhibiti cha Manenosiri cha Google</translation>
-<translation id="1343865611738742294">Zipe programu za Linux ruhusa ya kufikia vifaa vya USB. Linux haitakumbuka kifaa cha USB baada ya kukiondoa.</translation>
 <translation id="1343920184519992513">Endelea pale ulipoishia na ufungue kurasa kadhaa mahususi.</translation>
 <translation id="1344141078024003905">Unatuma maudhui kwenye skrini yako. Unaweza kusimamisha au kuacha kutuma maudhui yaliyo kwenye skrini yako wakati wowote.</translation>
 <translation id="1346403631707626730">Tuma data ya matumizi na uchunguzi. Saidia kuboresha hali ya utumiaji wa Android ya mtoto wako kwa kutuma kiotomatiki data ya uchunguzi, kifaa na ya matumizi ya programu kwa Google. Hatutatumia data hii kumtambulisha mtoto wako na itasaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya data inayojumlishwa pia itasaidia programu na washirika wa Google kama vile wasanidi programu wa Android. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu ya mtoto wako, data hii inaweza kuhifadhiwa kwenye akaunti yake ya Google. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu vipimo<ph name="BEGIN_LINK1_END" />Pata Maelezo Zaidi<ph name="END_LINK1" /></translation>
@@ -818,7 +817,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1588919647604819635">Kadi ya kubofya kulia</translation>
 <translation id="1589055389569595240">Onyesha Tahajia na Sarufi</translation>
 <translation id="1590478605309955960">Vikundi vya vichupo vyako huhifadhiwa na kusasishwa kiotomatiki kwenye vifaa vyako vyote ulivyotumia kuingia katika akaunti.</translation>
-<translation id="1591679663873027990">Ruhusu Parallels Desktop ifikie vifaa vya USB. Parallels Desktop haitakumbuka kifaa cha USB kikishaondolewa.</translation>
 <translation id="15916883652754430">Mipangilio ya sauti ya mfumo</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> imezima utatuzi wa ADB, hatua ambayo itarejesha mipangilio ambayo <ph name="DEVICE_TYPE" /> yako ilitoka nayo kiwandani. Hifadhi nakala za faili zako kabla ya kuzima kifaa kisha ukiwashe.</translation>
 <translation id="1592126057537046434">Kipengele cha tafsiri cha Majibu ya Haraka</translation>
@@ -2653,7 +2651,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2853121255651601031">Nenosiri Limehifadhiwa</translation>
 <translation id="2855243985454069333">Hufuta historia kwenye vifaa vyote vilivyosawazishwa</translation>
 <translation id="2855812646048059450">Ingia katika akaunti ukitumia <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Hali yenye vizuizi</translation>
 <translation id="2856776373509145513">Unda metadata mpya</translation>
 <translation id="2856907950922663165">Je, ungependa kuzima usimbaji fiche wa URL?</translation>
 <translation id="2859741939921354763">Pakia manenosiri kwenye <ph name="BRAND" /></translation>
@@ -2935,7 +2932,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3053273573829329829">Ruhusu PIN ya mtumiaji</translation>
 <translation id="3053274730492362225">Isiwe na mweko</translation>
 <translation id="3054766768827382232">Hatua ya kuzima inaweza kusaidia vifaa unavyounganisha kwenye kompyuta yako kufanya kazi vizuri zaidi, lakini inaweza kufichua data yako na itumiwe bila idhini yako.</translation>
-<translation id="3056438898277655057">Ipe <ph name="SPECIFIC_NAME" /> ruhusa ya kufikia vifaa vya USB. <ph name="SPECIFIC_NAME" /> haitakumbuka kifaa cha USB baada ya kukiondoa.</translation>
 <translation id="3058498974290601450">Unaweza kuwasha kipengele cha kusawazisha wakati wowote katika mipangilio</translation>
 <translation id="3058517085907878899">Kipe kifaa jina</translation>
 <translation id="3059195548603439580">Je, unatafuta vipengele vya mfumo? Tembelea</translation>
@@ -8548,7 +8544,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7222335051802562841">Kamilisha kusasisha</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Hatua hii huruhusu huduma za mfumo zitumie mipangilio ya Usahihi wa Mahali ili zitambue mahali ulipo. Mipangilio ya Usahihi wa Mahali hutumia maelezo kuhusu mawimbi ya simu za mkononi na vitambuzi ili kukadiria mahali kifaa kilipo.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{Tovuti 1 ipo katika kikundi cha <ph name="FPS_OWNER" />}other{Tovuti {MEMBERS} zipo katika kikundi cha <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Tumia Windows Hello unapojaza manenosiri</translation>
 <translation id="7225179976675429563">Aina ya mtandao inakosekana</translation>
 <translation id="7227235818314667565">Dhibiti Ufikiaji</translation>
@@ -9927,7 +9922,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8207404892907560325">Chagua ufunguo wa siri</translation>
 <translation id="8207794858944505786">Tayari kuna Mashine Pepe ya "<ph name="DEFAULT_VM_NAME" />", lakini haionekani kuwa aina sahihi ya Mashine Pepe <ph name="VM_TYPE" />. Tafadhali wasiliana na msimamizi wako.</translation>
 <translation id="8207901006380134182">Wimbi kubwa linafunika bahari, pamoja na msitu wenye giza ufukweni.</translation>
-<translation id="8208188204689616705">Tovuti hizi zipo kwenye kikundi kilichobainishwa na <ph name="FPS_OWNER" /> Tovuti zilizo kwenye kikundi zinaweza kuona shughuli zako katika kikundi.</translation>
 <translation id="8208216423136871611">Usihifadhi</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # mpya}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Inaendelea kupakua}other{Inaendelea kupakua}}</translation>
@@ -11054,7 +11048,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9009707268312089299">Ulivyopakia kutoka Windows</translation>
 <translation id="9009708085379296446">Je, ulitaka kubadilisha ukurasa huu?</translation>
 <translation id="9010845741772269259">Weka njia za kulipa</translation>
-<translation id="901087299639956505">Hali iliyosawazishwa</translation>
 <translation id="9011163749350026987">Onyesha aikoni kila wakati</translation>
 <translation id="9011262023858991985">Inatuma kichupo hiki</translation>
 <translation id="9011393886518328654">Maelezo kuhusu toleo</translation>

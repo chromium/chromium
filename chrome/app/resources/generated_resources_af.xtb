@@ -478,7 +478,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1340527397989195812">Rugsteun media van die toestel af met die lêerprogram.</translation>
 <translation id="1341701348342335220">Mooi so!</translation>
 <translation id="1342886103232377846">Gaan na Google Wagwoordbestuurder om gekompromitteerde wagwoorde na te gaan</translation>
-<translation id="1343865611738742294">Gee Linux-programme toestemming om toegang tot USB-toestelle te kry. Linux sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="1343920184519992513">Gaan voort waar jy opgehou het en maak 'n spesifieke stel bladsye oop</translation>
 <translation id="1344141078024003905">Jy saai tans jou skerm uit. Jy kan enige tyd die uitsending van jou skerm onderbeek of ophou uitsaai.</translation>
 <translation id="1346403631707626730">Stuur gebruik- en diagnostiese data. Help om jou kind se Android-ervaring beter te maak deur diagnostiese, toestel- en appgebruikdata outomaties na Google toe te stuur. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en appstabiliteit en ander verbeteringe help. Sekere aggregaatdata sal ook Google-apps en -vennote, soos Android-ontwikkelaars, help. As die bykomende Web- en Appaktiwiteit vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK1" />Meer inligting oor maatstawwe<ph name="BEGIN_LINK1_END" />Meer inligting<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1588919647604819635">Regsklik kaart</translation>
 <translation id="1589055389569595240">Wys spelling en grammatika</translation>
 <translation id="1590478605309955960">Jou oortjiegroepe stoor en dateer outomaties op al jou aangemelde toestelle op.</translation>
-<translation id="1591679663873027990">Gee Parallels Desktop toegang tot USB-toestelle. Parallels Desktop sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="15916883652754430">Stelselsteminstellings</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer, wat jou <ph name="DEVICE_TYPE" /> sal terugstel. Rugsteun jou lêers voordat jy herbegin.</translation>
 <translation id="1592126057537046434">Vertaling van Vinnige Antwoorde</translation>
@@ -2656,7 +2654,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2853121255651601031">Wagwoord gestoor</translation>
 <translation id="2855243985454069333">Vee geskiedenis op alle gesinkroniseerde toestelle uit</translation>
 <translation id="2855812646048059450">Meld aan met <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Strengmodus</translation>
 <translation id="2856776373509145513">Skep 'n nuwe houer</translation>
 <translation id="2856907950922663165">Skakel URL-enkripsie af?</translation>
 <translation id="2859741939921354763">Voer wagwoorde in na <ph name="BRAND" /></translation>
@@ -2938,7 +2935,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3053273573829329829">Aktiveer gebruiker-PIN</translation>
 <translation id="3053274730492362225">Moenie flits nie</translation>
 <translation id="3054766768827382232">As jy datatoegangbeskerming deaktiveer, kan dit randtoestelle se werkverrigting verbeter. Dit kan egter jou persoonlike data deur ongemagtigde gebruik blootstel.</translation>
-<translation id="3056438898277655057">Gee <ph name="SPECIFIC_NAME" /> toegang tot USB-toestelle. <ph name="SPECIFIC_NAME" /> sal nie ’n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="3058498974290601450">Jy kan sinkronisering enige tyd in Instellings aanskakel</translation>
 <translation id="3058517085907878899">Gee toestel 'n naam</translation>
 <translation id="3059195548603439580">Soek jy na stelselkomponente? Besoek</translation>
@@ -8553,7 +8549,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7222335051802562841">Voltooi opdatering</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Dit laat stelseldienste toe om Liggingakkuraatheid te gebruik om jou ligging te bepaal. Liggingakkuraatheid gebruik inligting oor draadlose seine en sensors om toestelligging te skat.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 werf in <ph name="FPS_OWNER" /> se groep}other{{MEMBERS} werwe in <ph name="FPS_OWNER" /> se groep}}</translation>
 <translation id="7225082563376899794">Gebruik Windows Hello wanneer wagwoorde ingevul word</translation>
 <translation id="7225179976675429563">Netwerktipe ontbreek</translation>
 <translation id="7227235818314667565">Bestuur deling</translation>
@@ -9930,7 +9925,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8207404892907560325">Kies ’n toegangsleutel</translation>
 <translation id="8207794858944505786">VM “<ph name="DEFAULT_VM_NAME" />” bestaan, maar is blykbaar nie ’n geldige <ph name="VM_TYPE" />-VM nie. Kontak jou admin.</translation>
 <translation id="8207901006380134182">’n Groot golf verswelg die oseaan, en ’n donker woud staan langs die kus.</translation>
-<translation id="8208188204689616705">Hierdie werwe is in ’n groep wat deur <ph name="FPS_OWNER" /> gedefinieer is. Werwe in ’n groep kan jou aktiwiteit in die groep sien.</translation>
 <translation id="8208216423136871611">Moenie stoor nie</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuwe kennisgewing}other{# nuwe kennisgewings}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Aflaai is aan die gang}other{Aflaaie is aan die gang}}</translation>
@@ -11057,7 +11051,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9009707268312089299">Van Windows af ingevoer</translation>
 <translation id="9009708085379296446">Het jy bedoel om hierdie bladsy te verander?</translation>
 <translation id="9010845741772269259">Voeg betaalmetodes by</translation>
-<translation id="901087299639956505">Gebalanseermodus</translation>
 <translation id="9011163749350026987">Wys ikoon altyd</translation>
 <translation id="9011262023858991985">Saai tans hierdie oortjie uit</translation>
 <translation id="9011393886518328654">Vrystellingsnotas</translation>

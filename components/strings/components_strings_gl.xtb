@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
+<translation id="1044897699341250361">Que significa</translation>
 <translation id="1046350918013988591">Cupóns e descontos</translation>
 <translation id="1048785276086539861">Ao editar as anotacións, este documento volverá á vista dunha soa páxina</translation>
 <translation id="1050038467049342496">Pecha outras aplicacións</translation>
@@ -2649,6 +2650,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5999271311987646952">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google, que <ph name="BEGIN_LINK" />detectou hai pouco software malicioso<ph name="END_LINK" /> no sitio ao que tentas acceder.</translation>
 <translation id="6000528814684428358">Rock duro e progresivo</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Vamos aló</translation>
 <translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6002968396561884726">Viuse recentemente</translation>
 <translation id="6005659677094197001">Continuo</translation>
@@ -3057,6 +3059,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6735783933931458444">Acceso frecuente a esta hora do día</translation>
 <translation id="6737708609449480586">Produtos de pastelaría</translation>
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
+<translation id="6739943577740687354">Esta función utiliza IA e non acertará sempre</translation>
 <translation id="6740851646645036700">Por agora alcanzaches o límite máximo de axuda para escribir. Téntao de novo máis tarde.</translation>
 <translation id="674375294223700098">Erro de certificado de servidor descoñecido.</translation>
 <translation id="6744009308914054259">Mentres esperas a que se recupere a conexión, podes ler artigos sen conexión en Descargas.</translation>
@@ -4444,5 +4447,6 @@ Detalles adicionais:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Engadir IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

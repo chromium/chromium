@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Ruhusu sauti katika tovuti mahususi.</translation>
 <translation id="789180354981963912">Kuzuia vidakuzi vya washirika wengine katika hali fiche:</translation>
 <translation id="7940722705963108451">Nikumbushe</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{Tovuti <ph name="FPS_MEMBERS_COUNT" /> iliyo katika kikundi cha tovuti cha <ph name="FPS_OWNER" /> inaweza kuona shughuli zako kwenye kikundi}other{Tovuti <ph name="FPS_MEMBERS_COUNT" /> zilizo katika kikundi cha tovuti cha <ph name="FPS_OWNER" /> zinaweza kuona shughuli zako kwenye kikundi}}</translation>
 <translation id="7986741934819883144">Chagua anwani</translation>
 <translation id="7990211076305263060">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia maikrofoni. Kikizimwa, tovuti haziwezi kutumia maikrofoni yako.</translation>
 <translation id="8007176423574883786">Imezimwa kwa kifaa hiki</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Zuia tovuti zisiunganishe kwenye vifaa</translation>
 <translation id="8525306231823319788">Skrini nzima</translation>
 <translation id="8541410041357371550">Tovuti hii hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Umeruhusu vidakuzi katika tovuti <ph name="FPS_MEMBERS_COUNT" /> ya <ph name="FPS_OWNER" />}other{Umeruhusu vidakuzi katika tovuti <ph name="FPS_MEMBERS_COUNT" /> za <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Imeruhusiwa (inapendekezwa)</translation>
 <translation id="8609465669617005112">Songa juu</translation>
 <translation id="8617611086246832542">Kikiwashwa, mwonekano wa kompyuta wa tovuti utaonyeshwa. Kikizimwa, mwonekano wa kifaa cha mkononi wa tovuti utaonyeshwa.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Inadhibitiwa na wazazi wako</translation>
 <translation id="9039697262778250930">Huenda ukaondolewa kwenye akaunti katika tovuti hizi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Tovuti hii ipo katika kikundi kinachoweza kuona shughuli zako. Kikundi hiki kinabainishwa na <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Ungependa kufuta vidakuzi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Washa ruhusa za <ph name="APP_NAME" /> katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>

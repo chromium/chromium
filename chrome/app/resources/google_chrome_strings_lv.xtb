@@ -61,7 +61,6 @@
 <translation id="178701303897325119">Šis paplašinājums vairs netiek atbalstīts. Chrome iesaka to noņemt.</translation>
 <translation id="1812689907177901597">Ja izslēgsiet šo iestatījumu, varēsiet pierakstīties Google vietnēs, piemēram, pakalpojumā Gmail, nepierakstoties pārlūkā Chrome.</translation>
 <translation id="1860536484129686729">Pārlūkam Chrome ir nepieciešama atļauja piekļūt jūsu kamerai šajā vietnē.</translation>
-<translation id="1861924772887221906">Pārlūkā Chrome tiks parādīts brīdinājums pirms publisku vietņu ielādes, izmantojot nedrošu savienojumu, taču tiks atļauti HTTP savienojumi privātiem tīkliem.</translation>
 <translation id="1873233029667955273">Google Chrome nav jūsu noklusējuma pārlūks.</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome versija ir novecojusi.</translation>
@@ -199,7 +198,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome.}=1{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu atjauninājumu, administrators pieprasa restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="3597003331831379823">Neizdevās izpildīt iestatīšanu ar augstām privilēģijām. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Pēdējā laikā neesat apmeklējis šo vietni. Pārlūkā Chrome tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Pārlūkā Chrome tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="3622797965165704966">Tagad pārlūkā Chrome ir vieglāk izmantot Google kontu, kā arī ir atvieglota lietošana datoros, ko izmanto vairākas personas.</translation>
 <translation id="3635073343384702370">Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="3667616615096815454">Nevar instalēt. Lietojumprogramma serverim nav zināma.</translation>
@@ -453,7 +451,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
 <translation id="7302361266603927550">Noteikti jūsu Chrome dati vēl nav saglabāti jūsu Google kontā. Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="7308322188646931570">Pārlūkam Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
-<translation id="7324120788743384890">Ja šis iestatījums ir ieslēgts, pārlūkā Chrome tiks parādīts brīdinājums pirms tādu vietņu ielādes, kurās netiek atbalstīts HTTPS.</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7352881504289275361">Droša pārlūkošana ar papildu aizsardzību piedāvā visefektīvākos Chrome aizsardzības līdzekļus tiešsaistē, kas gādā par jūsu drošību pārlūkošanas laikā.</translation>
 <translation id="7394745511930161845">Izveidojiet savu motīvu, izmantojot MI, lai piešķirtu pārlūkam unikālu izskatu.</translation>

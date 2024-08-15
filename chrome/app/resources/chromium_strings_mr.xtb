@@ -26,7 +26,6 @@
  ब्लूटूथ चा ॲक्सेस हवा आहे. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">तसेच Chromium मधून डेटा हटवा (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">तुम्ही Chromium मध्ये साइन इन केले आहे!</translation>
-<translation id="1465171403179274511">असुरक्षित कनेक्शन वापरून कोणतीही साइट लोड करण्यापूर्वी Chromium तुम्हाला विचारेल</translation>
 <translation id="1478370723027452770">Chrome for Testing शी संबंधित मदत मिळवा</translation>
 <translation id="1497802159252041924">इंस्टॉलसंबंधित एरर: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium टॅब शेअर करा</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">धोकादायक साइट. Chromium ने नोटिफिकेशन काढून टाकली.</translation>
 <translation id="2240214816234246077">तुम्ही अलीकडे भेट दिलेली नाही. Chromium ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या</translation>
 <translation id="2241627712206172106">तुम्ही कॉंप्युटर शेअर केल्यास, मित्र आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना पाहिजे तसे Chromium सेट अप करू शकतात.</translation>
-<translation id="2265830994243640896">असुरक्षित कनेक्शन वापरून सार्वजनिक साइट लोड करण्यापूर्वी Chromium तुम्हाला विचारेल, पण खाजगी नेटवर्कसाठी HTTP कनेक्शनना अनुमती देईल</translation>
 <translation id="2313870531055795960">Chromium मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. एखाद्या साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chromium हे पेजवरील काही आशयाच्या समावेशासह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकते.</translation>
 <translation id="2329088755516916767">सुरू असताना, Chromium हे पेज प्रीलोड करते, ज्यामुळे ब्राउझ करणे आणि शोधणे आणखी जलद होते.</translation>
 <translation id="2343156876103232566">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium जलद रन होतो आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार काम करतात (शिफारस केलेले)</translation>
 <translation id="2648074677641340862">स्‍थापनेदरम्‍यान ऑपरेटिंग सिस्टीम एरर आली. कृपया Chromium पुन्‍हा डाउनलोड करा.</translation>
-<translation id="2649201087614586016">सुरू असताना, HTTPS ला सपोर्ट न करणाऱ्या साइट लोड करण्यापूर्वी Chromium तुम्हाला विचारेल</translation>
 <translation id="2661879430930417727">तुम्ही डिव्हाइस शेअर केल्यास, मित्रमैत्रिणी आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना हवे तसे Chromium सेट करू शकतात</translation>
 <translation id="268602741124540128">Chromium वर स्‍वागत आहे, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium टॅब</translation>

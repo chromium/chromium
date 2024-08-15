@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Чтобы найти устройства, предоставьте браузеру Chromium доступ к Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Также удалить данные из Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Добро пожаловать в Chromium!</translation>
-<translation id="1465171403179274511">Chromium будет запрашивать разрешение, прежде чем перейти на любой сайт с незащищенным подключением</translation>
 <translation id="1478370723027452770">Справка о Chrome для тестирования</translation>
 <translation id="1497802159252041924">Ошибка установки: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="1524282610922162960">Откройте доступ к вкладке Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="2210682093923538346">Опасный сайт. Браузер Chromium отозвал разрешение на показ уведомлений.</translation>
 <translation id="2240214816234246077">Вы давно не посещали сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />".</translation>
 <translation id="2241627712206172106">Если, кроме вас, компьютером пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
-<translation id="2265830994243640896">Chromium будет запрашивать разрешение, прежде чем перейти на любой общедоступный сайт с незащищенным подключением, и допускать HTTP-соединение в частных сетях.</translation>
 <translation id="2313870531055795960">Сверяет URL со списком небезопасных сайтов в Chromium. Если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chromium может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="2329088755516916767">Когда этот параметр включен, Chromium предварительно загружает страницы, ускоряя работу браузера и поиска.</translation>
 <translation id="2343156876103232566">Чтобы отправить номер на телефон Android, войдите в Chromium на обоих устройствах.</translation>
@@ -105,7 +103,6 @@
 <translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Повысится скорость Chromium и вероятность корректной работы функций, использующих JavaScript (рекомендуется)</translation>
 <translation id="2648074677641340862">В процессе установки произошла ошибка в операционной системе. Скачайте Chromium ещё раз.</translation>
-<translation id="2649201087614586016">Если функция включена, Chromium будет запрашивать разрешение, прежде чем переходить на сайты, которые не поддерживают протокол HTTPS.</translation>
 <translation id="2661879430930417727">Если кроме вас устройством пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, добро пожаловать в Chromium!</translation>
 <translation id="2711502716910134313">Вкладка Chromium</translation>

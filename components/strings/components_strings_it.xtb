@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Mostra suggerimenti</translation>
 <translation id="1038842779957582377">nome sconosciuto</translation>
 <translation id="1041998700806130099">Messaggio foglio di lavoro</translation>
+<translation id="1044897699341250361">Cosa significa</translation>
 <translation id="1046350918013988591">Coupon e offerte di sconti</translation>
 <translation id="1048785276086539861">Quando modifichi le annotazioni, questo documento torna alla visualizzazione a pagina singola</translation>
 <translation id="1050038467049342496">Chiudi altre app</translation>
@@ -52,6 +53,7 @@
 <translation id="1089439967362294234">Cambia password</translation>
 <translation id="1089599132348386324">Puoi cambiare le impostazioni di Chrome in qualsiasi momento.</translation>
 <translation id="1090629319939036170">Menu VR</translation>
+<translation id="1091463901118115503">Continua a leggere</translation>
 <translation id="1091779689406092804">screenshot</translation>
 <translation id="1094777233105318927">Informazioni su browser, sistema operativo, dispositivo, software installato e file</translation>
 <translation id="1096545575934602868">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in esubero verranno eliminate.</translation>
@@ -537,6 +539,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1975457531113383421">Cassetto di ingresso</translation>
 <translation id="1975584088563498795">Mailbox 10</translation>
+<translation id="1976610264358655503">Visiti spesso questa pagina</translation>
 <translation id="1978555033938440688">Versione firmware</translation>
 <translation id="1979156660928743046">Informazioni sui contenuti multimediali</translation>
 <translation id="1988881251331415125">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" />.</translation>
@@ -774,6 +777,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="239429038616798445">Questo metodo di spedizione non è disponibile. Prova un metodo diverso.</translation>
 <translation id="2395840535409704129">Sport acquatici</translation>
 <translation id="2396249848217231973">&amp;Annulla eliminazione</translation>
+<translation id="2399344929880464793">Questo IBAN è stato salvato nel tuo Account Google per consentirti di utilizzarlo sui servizi Google.</translation>
 <translation id="2399868464369312507">Google Chrome sta tentando di modificare i metodi di pagamento.</translation>
 <translation id="2400600116338235695">Può chiedere di connettersi alle porte seriali</translation>
 <translation id="2404884497378469141">Prova a copiare di nuovo i file</translation>
@@ -887,6 +891,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2619052155095999743">Inserisci</translation>
 <translation id="2625385379895617796">L'orologio è avanti</translation>
 <translation id="262745152991669301">Può chiedere di connettersi ai dispositivi USB</translation>
+<translation id="2628224721443278970">Accedi a Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Impossibile trovare l'indirizzo IP del server di <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Stato:</translation>
 <translation id="2647086987482648627">Tessuto (semilucido)</translation>
@@ -1047,6 +1052,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2967098518029543669">salvala nel tuo Account Google</translation>
 <translation id="297173220375858963">Desktop publishing</translation>
 <translation id="2972581237482394796">&amp;Ripeti</translation>
+<translation id="2974468223369775963">Impossibile salvare questo IBAN nel tuo Account Google. È invece salvato su Chrome su questo dispositivo. Chrome ti chiederà di nuovo l'autorizzazione la prossima volta che utilizzerai questo IBAN.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, attualmente selezionata. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Blocca e usa la tastiera</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1827,6 +1833,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Il caricamento del file su Microsoft OneDrive è stato messo in pausa</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Verifica sempre quando è in uso la compilazione automatica</translation>
 <translation id="4397978002248035985">Apre un popup di verifica sul sito web della tua banca</translation>
@@ -1930,6 +1937,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4636930964841734540">Info</translation>
 <translation id="4640225694041297329">Mostra i risultati degli ultimi 7 giorni</translation>
 <translation id="464342062220857295">Funzionalità di ricerca</translation>
+<translation id="4644567637638438744">I file possono essere caricati solo se hai eseguito l'accesso a Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordine inverso a faccia in giù</translation>
 <translation id="4646534391647090355">Vai subito</translation>
 <translation id="4648262692072505866">L'hash deve essere nel formato SHA-256.</translation>
@@ -2639,6 +2647,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5999271311987646952">Chrome è dotato di funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura, che <ph name="BEGIN_LINK" />di recente ha rilevato malware<ph name="END_LINK" /> sul sito che vuoi visitare.</translation>
 <translation id="6000528814684428358">Hard rock e progressive</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> risultati per "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Inizia</translation>
 <translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6002968396561884726">Visualizzato di recente</translation>
 <translation id="6005659677094197001">Continuo</translation>
@@ -3028,6 +3037,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6704458454638854812">La proprietà "custom_size" è impostata, il nome previsto è "custom".</translation>
 <translation id="6706005862292023715">Trattamenti per finestre e tendaggi</translation>
 <translation id="6706210727756204531">Ambito</translation>
+<translation id="6706678697074905703">Impossibile salvare questo IBAN nel tuo Account Google. È invece salvato su Chrome su questo dispositivo.</translation>
 <translation id="6709133671862442373">Notizie</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="6710594484020273272">&lt;Digita un termine di ricerca&gt;</translation>
@@ -3042,8 +3052,10 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6734506549556896534">Giochi di simulazione</translation>
+<translation id="6735783933931458444">Visiti spesso questa pagina in questo momento della giornata</translation>
 <translation id="6737708609449480586">Prodotti da forno</translation>
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
+<translation id="6739943577740687354">Questa funzionalità utilizza l'AI e non funzionerà sempre correttamente</translation>
 <translation id="6740851646645036700">Per il momento, hai raggiunto il limite di aiuto per la scrittura. Riprova più tardi.</translation>
 <translation id="674375294223700098">Errore sconosciuto del certificato del server.</translation>
 <translation id="6744009308914054259">In attesa di una connessione, puoi visitare la pagina Download per leggere gli articoli offline.</translation>
@@ -3759,6 +3771,7 @@ Ulteriori dettagli:
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8041940743680923270">Usa predefinita globale (Chiedi)</translation>
 <translation id="8043255123207491407">Leggi i Termini e condizioni del venditore</translation>
+<translation id="8044986521421349135">La tua scheda più recente</translation>
 <translation id="8046360364391076336">Materiali e attrezzature industriali</translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8057023045886711556">Film commedie</translation>
@@ -3826,6 +3839,7 @@ Ulteriori dettagli:
 <translation id="8183800802493617952">Giochi e attività per le famiglie</translation>
 <translation id="8184538546369750125">Usa predefinita globale (Consenti)</translation>
 <translation id="8186706823560132848">Software</translation>
+<translation id="8188830160449823068">IBAN salvato solo sul dispositivo</translation>
 <translation id="8189557652711717875">Il motore di ricerca scelto verrà utilizzato per funzionalità quali la ricerca dalla barra degli indirizzi e dalle immagini nelle pagine web.</translation>
 <translation id="8190193880870196235">Gestita tramite un'estensione</translation>
 <translation id="8194412401381329820">Non puoi usare questa pagina da un account gestito su questo dispositivo non gestito. Se usi questa pagina verranno bloccati tutti gli account gestiti, ad eccezione degli account gestiti dalla stessa entità di questo dispositivo (account affiliati).</translation>
@@ -4429,5 +4443,6 @@ Ulteriori dettagli:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Aggiungi IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Da Google Pay</translation>
 </translationbundle>

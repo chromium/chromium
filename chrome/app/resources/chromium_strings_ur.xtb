@@ -26,7 +26,6 @@
 <translation id="1324107359134968521">‏‫Chromium کو بلوٹوتھ آلات دریافت کرنے کے لیے بلوٹوتھ تک رسائی درکار ہے۔ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">‏Chromium (<ph name="URL" />) سے ڈیٹا بھی حذف کریں</translation>
 <translation id="1414495520565016063">‏آپ Chromium میں سائن ان ہیں!</translation>
-<translation id="1465171403179274511">‏غیر محفوظ کنکشن کا استعمال کر کے کسی بھی سائٹ کو لوڈ کرنے سے پہلے Chromium آپ سے پوچھے گا</translation>
 <translation id="1478370723027452770">‏Chrome for Testing کے سلسلے میں مدد حاصل کریں</translation>
 <translation id="1497802159252041924">انسٹال کی خرابی: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">‏خطرناک سائٹ۔ ‫Chromium نے اطلاعات کی اجازتوں کو ہٹا دیا۔</translation>
 <translation id="2240214816234246077">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chromium نے <ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کو ہٹا دیا</translation>
 <translation id="2241627712206172106">‏اگر آپ ایک کمپیوٹر کا اشتراک کرتے ہیں تو دوست اور خاندان الگ الگ براؤز کر سکتے ہیں اور اپنی مرضی کے موافق Chromium کو ترتیب دے سکتے ہیں۔</translation>
-<translation id="2265830994243640896">‏غیر محفوظ کنکشن کا استعمال کرتے ہوئے عوامی سائٹس کو لوڈ کرنے سے پہلے Chromium آپ سے پوچھے گا، لیکن نجی نیٹ ورکس کے لیے HTTP کنکشنز کی اجازت دے گا</translation>
 <translation id="2313870531055795960">‏Chromium میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے۔ اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chromium محفوظ براؤزنگ پر صفحہ کے مواد کے بائٹس سمیت URLs بھیجتا ہے۔</translation>
 <translation id="2329088755516916767">‏آن ہونے پر، Chromium صفحات کو پہلے سے لوڈ کرتا ہے جو براؤزنگ اور تلاش کو تیز تر بناتا ہے۔</translation>
 <translation id="2343156876103232566">‏یہاں سے اپنے Android فون پر نمبر بھیجنے کے لیے، دونوں آلات پر Chromium میں سائن ان کریں۔</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">ڈاؤن لوڈ کردہ انسٹالر کو کیش کرنے میں ناکام۔ خرابی: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
 <translation id="264613044588233783">‏Chromium تیزی سے چلتا ہے اور JavaScript استعمال کرنے والی خصوصیات کو ڈیزائن کے مطابق کام کرنا چاہیے (تجویز کردہ)</translation>
 <translation id="2648074677641340862">‏انسٹالیشن کے دوران آپریٹنگ سسٹم کی ایک خرابی پیش آ گئی۔ براہ کرم Chromium دوبارہ ڈاؤن لوڈ کریں۔</translation>
-<translation id="2649201087614586016">‏آن ہونے پر، Chromium ایسی سائٹس لوڈ کرنے سے پہلے آپ سے پوچھے گا جو HTTPS کو سپورٹ نہیں کرتی ہیں</translation>
 <translation id="2661879430930417727">‏اگر آپ کسی آلے کا اشتراک کرتے ہیں تو دوست اور اہل خانہ الگ الگ براؤز کر سکتے ہیں اور Chromium کو اپنی مرضی کے مطابق سیٹ اپ کر سکتے ہیں</translation>
 <translation id="268602741124540128">‏Chromium میں خوش آمدید، <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">‏Chromium ٹیب</translation>

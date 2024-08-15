@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">ဝဘ်ဆိုက်တစ်ခုအတွက် အသံဖွင့်ခွင့်ပြုသည်။</translation>
 <translation id="789180354981963912">‘ရုပ်ဖျက်မုဒ်’ တွင် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားခြင်း-</translation>
 <translation id="7940722705963108451">သတိပေးရန်</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ၏ ဝဘ်ဆိုက်အုပ်စုရှိ ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုက အုပ်စုတွင်း သင့်လုပ်ဆောင်ချက်ကို သိနိုင်သည်}other{<ph name="FPS_OWNER" /> ၏ ဝဘ်ဆိုက်အုပ်စုရှိ ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုက အုပ်စုတွင်း သင့်လုပ်ဆောင်ချက်ကို သိနိုင်သည်}}</translation>
 <translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="7990211076305263060">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းကို မသုံးနိုင်ပါ။</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">စက်သို့ ဝဘ်ဆိုက်များ ချိတ်ဆက်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
 <translation id="8541410041357371550">ပိုမိုသက်ဆိုင်သည့် ကြော်ငြာများပြသရန် ဤဝဘ်ဆိုက်သည် သင့်ကြော်ငြာအကြောင်းအရာများကို Chrome ထံမှ ရယူသည်</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုအတွက် ကွတ်ကီးများ ခွင့်သည်}other{<ph name="FPS_OWNER" /> ဝဘ်ဆိုက် <ph name="FPS_MEMBERS_COUNT" /> ခုအတွက် ကွတ်ကီးများ ခွင့်သည်}}</translation>
 <translation id="857943718398505171">ခွင့်ပြု၏ (အကြံပြုထား)</translation>
 <translation id="8609465669617005112">အပေါ်ရွှေ့ပါ</translation>
 <translation id="8617611086246832542">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များ၏ ဒက်စ်တော့ မြင်ကွင်းကိုပြသည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များ၏ မိုဘိုင်း မြင်ကွင်းကိုပြသည်။</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">သင့်မိဘများမှ စီမံသည်</translation>
 <translation id="9039697262778250930">ဤဝဘ်ဆိုက်များမှ သင်ထွက်သွားနိုင်သည်</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
-<translation id="9090268041676521955">ယခုဝဘ်ဆိုက်သည် သင့်လုပ်ဆောင်ချက်ကိုမြင်နိုင်သည့် အုပ်စုဝင်ဖြစ်သည်။ <ph name="FPS_OWNER" /> က သတ်မှတ်သည့် အုပ်စုဖြစ်သည်</translation>
 <translation id="9106233582039520022">ကွတ်ကီးများ ဖျက်လိုသလား။</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်များကို ဖွင့်ပါ။</translation>

@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Chromium 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">你已登入 Chromium！</translation>
-<translation id="1465171403179274511">如果是採用不安全連線的網站，Chromium 一律會在載入網站前詢問你</translation>
 <translation id="1478370723027452770">查看 Chrome for Testing 相關說明</translation>
 <translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">分享 Chromium 分頁</translation>
@@ -80,7 +79,6 @@
 <translation id="2210682093923538346">危險網站。Chromium 已移除通知權限。</translation>
 <translation id="2240214816234246077">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」權限</translation>
 <translation id="2241627712206172106">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
-<translation id="2265830994243640896">如果是採用不安全連線的公開網站，Chromium 會在載入網站前詢問你，但會允許使用 HTTP 連上私人網路</translation>
 <translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
 <translation id="2329088755516916767">開啟後，Chromium 會預先載入網頁，加快瀏覽與搜尋速度。</translation>
 <translation id="2343156876103232566">如要將號碼從這裡傳送到 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
@@ -105,7 +103,6 @@
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="264613044588233783">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作 (建議)</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
-<translation id="2649201087614586016">開啟後，Chromium 會在載入不支援 HTTPS 的網站前詢問你</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />，歡迎使用 Chromium</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>

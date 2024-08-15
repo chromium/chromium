@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">顯示建議</translation>
 <translation id="1038842779957582377">不明名稱</translation>
 <translation id="1041998700806130099">工作表訊息</translation>
+<translation id="1044897699341250361">有什麼風險</translation>
 <translation id="1046350918013988591">優惠券和折扣</translation>
 <translation id="1048785276086539861">在您編輯註解時，此文件將會返回單頁檢視模式</translation>
 <translation id="1050038467049342496">關閉其他應用程式</translation>
@@ -2648,6 +2649,7 @@
 <translation id="5999271311987646952">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能<ph name="BEGIN_LINK" />最近曾在你嘗試瀏覽的網站上發現惡意軟件<ph name="END_LINK" />。</translation>
 <translation id="6000528814684428358">重搖滾和前衛音樂</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
+<translation id="6001839398155993679">立即使用</translation>
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6002968396561884726">最近查看過</translation>
 <translation id="6005659677094197001">連續</translation>
@@ -3056,6 +3058,7 @@
 <translation id="6735783933931458444">你經常在此時段瀏覽</translation>
 <translation id="6737708609449480586">烘焙品</translation>
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
+<translation id="6739943577740687354">此功能採用 AI，結果未必完全準確</translation>
 <translation id="6740851646645036700">「幫我寫」功能目前已達使用上限，請稍後再試。</translation>
 <translation id="674375294223700098">不明的伺服器憑證錯誤。</translation>
 <translation id="6744009308914054259">等待連線時，您可以前往「下載」閱讀離線文章。</translation>
@@ -4442,5 +4445,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">新增 IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">來自 Google Pay</translation>
 </translationbundle>

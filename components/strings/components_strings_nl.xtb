@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
+<translation id="1044897699341250361">Wat dit betekent</translation>
 <translation id="1046350918013988591">Kortingsbonnen en kortingen</translation>
 <translation id="1048785276086539861">Als je annotaties bewerkt, keert dit document terug naar een weergave op één pagina</translation>
 <translation id="1050038467049342496">Andere apps sluiten</translation>
@@ -2644,6 +2645,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5999271311987646952">Chrome bevat ingebouwde veiligheidsfuncties die je beschermen terwijl je browst, zoals Google Safe Browsing, dat <ph name="BEGIN_LINK" />recent malware heeft gevonden<ph name="END_LINK" /> op de site die je wilt bezoeken.</translation>
 <translation id="6000528814684428358">Hardrock en progressive rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
+<translation id="6001839398155993679">Aan de slag</translation>
 <translation id="6002122790816966947">Je apparaten</translation>
 <translation id="6002968396561884726">Recent bekeken</translation>
 <translation id="6005659677094197001">Doorlopend</translation>
@@ -3051,6 +3053,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6735783933931458444">Je bezoekt deze website vaak op dit tijdstip</translation>
 <translation id="6737708609449480586">Bakkerijproducten</translation>
 <translation id="6738516213925468394">Je gegevens zijn op <ph name="TIME" /> versleuteld met je <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Geef deze op om de synchronisatie te starten.</translation>
+<translation id="6739943577740687354">Deze functie gebruikt AI en heeft het niet altijd juist</translation>
 <translation id="6740851646645036700">Je hebt voor nu je limiet voor schrijfhulp bereikt. Probeer het later opnieuw.</translation>
 <translation id="674375294223700098">Onbekende fout met servercertificaat.</translation>
 <translation id="6744009308914054259">Terwijl je op een verbinding wacht, kun je naar Downloads gaan om offline artikelen te lezen.</translation>
@@ -4437,5 +4440,6 @@ Aanvullende informatie:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN toevoegen</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Van Google Pay</translation>
 </translationbundle>

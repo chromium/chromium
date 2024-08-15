@@ -25,7 +25,6 @@
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Eliminar também dados do Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Tem sessão iniciada no Chromium!</translation>
-<translation id="1465171403179274511">O Chromium pergunta-lhe antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
 <translation id="1497802159252041924">Erro ao instalar: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Partilhe um separador do Chromium</translation>
@@ -81,7 +80,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="2210682093923538346">Site perigoso. O Chromium removeu notificações.</translation>
 <translation id="2240214816234246077">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Se partilhar um computador, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
-<translation id="2265830994243640896">O Chromium pergunta-lhe antes de carregar sites públicos através de uma ligação insegura, mas permite ligações HTTP para redes privadas</translation>
 <translation id="2313870531055795960">Verifica os URLs com base numa lista de sites inseguros armazenada no Chromium. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
 <translation id="2329088755516916767">Quando esta definição está ativada, o Chromium pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas.</translation>
 <translation id="2343156876103232566">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chromium em ambos os dispositivos.</translation>
@@ -106,7 +104,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto (recomendado)</translation>
 <translation id="2648074677641340862">Ocorreu um erro no sistema operativo durante a instalação. Descarregue novamente o Chromium.</translation>
-<translation id="2649201087614586016">Quando esta opção está ativada, o Chromium pergunta-lhe antes de carregar sites que não suportam HTTPS</translation>
 <translation id="2661879430930417727">Se partilhar um dispositivo, os amigos e os familiares podem navegar separadamente e configurar o Chromium da forma que quiserem.</translation>
 <translation id="268602741124540128">Damos-lhe as boas-vindas ao Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Separador do Chromium</translation>

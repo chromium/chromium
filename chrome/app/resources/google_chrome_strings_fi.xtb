@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Tätä laajennusta ei enää tueta. Chrome suosittelee poistamaan sen.</translation>
 <translation id="1812689907177901597">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Chromeen.</translation>
 <translation id="1860536484129686729">Chrome tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
-<translation id="1861924772887221906">Chrome pyytää sinulta vahvistusta ennen kuin lataat julkisia sivustoja suojaamattomalla yhteydellä, mutta sallii HTTP-yhteydet yksityisissä verkoissa</translation>
 <translation id="1873233029667955273">Google Chrome ei ole oletusselain.</translation>
 <translation id="1874309113135274312">Google Chromen betaversio (saapuva mDNS)</translation>
 <translation id="1877026089748256423">Chrome on vanhentunut</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="3597003331831379823">Käyttöönotto laajennetuilla pääsyoikeuksilla epäonnistui. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Sivut, joilla et ole käynyt viime aikoina. Chrome poisti luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome pyytää sinulta vahvistusta ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="3622797965165704966">Nyt voit helpommin käyttää Chromea Google-tililläsi ja jaetuilla tietokoneilla.</translation>
 <translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
 <translation id="3667616615096815454">Asennus ei onnistu, palvelin ei tunnista sovellusta.</translation>
@@ -450,7 +448,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7296210096911315575">Tärkeää käyttö- ja turvallisuustietoa</translation>
 <translation id="7302361266603927550">Osaa Chrome-datastasi ei ole vielä tallennettu Google-tilillesi. Odota muutama minuutti ennen uloskirjautumista. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7308322188646931570">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
-<translation id="7324120788743384890">Kun tämä on päällä, Chrome pyytää sinulta vahvistusta ennen sellaisten sivustojen lataamista, jotka eivät tue HTTPS:ää</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7352881504289275361">Parannettu selaussuoja tarjoaa Chromen vahvimman suojauksen verkossa, jotta pysyt turvassa selatessasi</translation>
 <translation id="7394745511930161845">Luo oma teema Al:n avulla ja anna selaimelle yksilöllinen ilme</translation>

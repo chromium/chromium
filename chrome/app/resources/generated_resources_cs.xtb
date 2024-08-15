@@ -480,7 +480,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1340527397989195812">Zálohujte média ze zařízení pomocí aplikace Soubory.</translation>
 <translation id="1341701348342335220">Výborně!</translation>
 <translation id="1342886103232377846">Pokud chcete zkontrolovat, zda nedošlo k prolomení hesel, přejděte do Správce hesel Google</translation>
-<translation id="1343865611738742294">Udělte linuxovým aplikacím oprávnění k používání zařízení USB. Po odebrání si Linux nebude zařízení USB pamatovat.</translation>
 <translation id="1343920184519992513">Pokračujte, kde jste skončili, a otevírejte vybrané stránky</translation>
 <translation id="1344141078024003905">Odesíláte obrazovku. Odesílání obrazovky můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="1346403631707626730">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, například vývojáři aplikací pro Android. Pokud bude mít dítě zapnutou ještě Aktivitu na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. <ph name="BEGIN_LINK1" />Další informace o metrikách<ph name="BEGIN_LINK1_END" />Další informace<ph name="END_LINK1" /></translation>
@@ -822,7 +821,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1588919647604819635">Kliknutí na kartu pravým tlačítkem</translation>
 <translation id="1589055389569595240">Zobrazit pravopis a gramatiku</translation>
 <translation id="1590478605309955960">Skupiny karet se automaticky ukládají a aktualizují na všech zařízeních, ve kterých jste přihlášeni.</translation>
-<translation id="1591679663873027990">Udělte nástroji Parallels Desktop oprávnění k přístupu k zařízením USB. Po odebrání si Parallels Desktop nebude zařízení USB pamatovat.</translation>
 <translation id="15916883652754430">Systémová hlasová nastavení</translation>
 <translation id="1592074621872221573">Web <ph name="MANAGER" /> deaktivoval ladění ADB, a vaše zařízení <ph name="DEVICE_TYPE" /> proto bude resetováno. Před restartováním zálohujte soubory.</translation>
 <translation id="1592126057537046434">Rychlé odpovědi – překlad</translation>
@@ -2645,7 +2643,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2853121255651601031">Heslo uloženo</translation>
 <translation id="2855243985454069333">Vymaže historii ze všech synchronizovaných zařízení</translation>
 <translation id="2855812646048059450">Přihlaste se pomocí identifikačního údaje typu <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Přísný režim</translation>
 <translation id="2856776373509145513">Vytvoření nového kontejneru</translation>
 <translation id="2856907950922663165">Vypnout šifrování adres URL?</translation>
 <translation id="2859741939921354763">Importovat hesla do <ph name="BRAND" /></translation>
@@ -2927,7 +2924,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Zapnout uživatelský PIN</translation>
 <translation id="3053274730492362225">Neblikat</translation>
 <translation id="3054766768827382232">Po deaktivaci mohou mít periferní zařízení lepší výkon, ale vaše osobní údaje mohou být vyzrazeny v rámci neoprávněného použití.</translation>
-<translation id="3056438898277655057">Udělte virtuálnímu počítači <ph name="SPECIFIC_NAME" /> oprávnění k používání zařízení USB. Po odebrání si virtuální počítač <ph name="SPECIFIC_NAME" /> nebude zařízení USB pamatovat.</translation>
 <translation id="3058498974290601450">Synchronizaci můžete kdykoliv zapnout v nastavení</translation>
 <translation id="3058517085907878899">Zadejte název zařízení</translation>
 <translation id="3059195548603439580">Hledáte součásti systému? Přejděte na stránku</translation>
@@ -8538,7 +8534,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7222335051802562841">Dokončit aktualizaci</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Systémové služby budou moct k určení vaší polohy používat funkci Přesnost určování polohy. Přesnost polohy využívá k odhadu polohy zařízení informace o bezdrátových signálech a senzorech.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 web ve skupině vlastníka <ph name="FPS_OWNER" />}few{{MEMBERS} weby ve skupině vlastníka <ph name="FPS_OWNER" />}many{{MEMBERS} webu ve skupině vlastníka <ph name="FPS_OWNER" />}other{{MEMBERS} webů ve skupině vlastníka <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Při vyplňování hesel používat Windows Hello</translation>
 <translation id="7225179976675429563">Typ sítě není k dispozici.</translation>
 <translation id="7227235818314667565">Spravovat sdílení</translation>
@@ -9915,7 +9910,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8207404892907560325">Vyberte přístupový klíč</translation>
 <translation id="8207794858944505786">Virtuální počítač „<ph name="DEFAULT_VM_NAME" />“ existuje, ale zřejmě se nejedná o platný virtuální počítač <ph name="VM_TYPE" />. Obraťte se na administrátora.</translation>
 <translation id="8207901006380134182">Velká vlna v oceánu s temným lesem na břehu.</translation>
-<translation id="8208188204689616705">Tyto weby jsou ve skupině definované vlastníkem <ph name="FPS_OWNER" />. Weby ve skupině mohou sledovat vaši aktivitu ve skupině.</translation>
 <translation id="8208216423136871611">Neukládat</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové oznámení}few{# nová oznámení}many{# nového oznámení}other{# nových oznámení}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Probíhá stahování}few{Probíhají stahování}many{Probíhají stahování}other{Probíhají stahování}}</translation>
@@ -11043,7 +11037,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="9009707268312089299">Importováno z Windows</translation>
 <translation id="9009708085379296446">Chtěli jste tuto stránku změnit?</translation>
 <translation id="9010845741772269259">Přidat platební metody</translation>
-<translation id="901087299639956505">Vyvážený režim</translation>
 <translation id="9011163749350026987">Vždy zobrazovat ikonu</translation>
 <translation id="9011262023858991985">Odesílání této karty</translation>
 <translation id="9011393886518328654">Poznámky k vydání</translation>

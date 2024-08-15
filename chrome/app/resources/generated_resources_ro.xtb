@@ -479,7 +479,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1340527397989195812">Fă backup conținutului media de pe dispozitiv folosind aplicația Fișiere.</translation>
 <translation id="1341701348342335220">Bravo!</translation>
 <translation id="1342886103232377846">Pentru a verifica dacă există parole compromise, accesează Managerul de parole Google</translation>
-<translation id="1343865611738742294">Permite aplicațiilor Linux să acceseze dispozitivele USB. Linux nu va păstra un dispozitiv USB după ce este eliminat.</translation>
 <translation id="1343920184519992513">Continuă de unde ai rămas și deschide un anumit set de pagini</translation>
 <translation id="1344141078024003905">Proiectezi ecranul. Poți să întrerupi sau să oprești oricând proiectarea ecranului.</translation>
 <translation id="1346403631707626730">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK1" />Află mai multe despre valori<ph name="BEGIN_LINK1_END" />Află mai multe<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1588919647604819635">Card afișat la clic dreapta</translation>
 <translation id="1589055389569595240">Afișează verificarea ortografiei și a gramaticii</translation>
 <translation id="1590478605309955960">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele conectate.</translation>
-<translation id="1591679663873027990">Acordă Parallels Desktop permisiunea de a accesa dispozitive USB. Parallels Desktop nu își va aminti un dispozitiv USB după ce este eliminat.</translation>
 <translation id="15916883652754430">Setări de sistem pentru voce</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> a dezactivat remedierea erorilor prin ADB, resetând astfel <ph name="DEVICE_TYPE" />. Fă backup fișierelor înainte de repornire.</translation>
 <translation id="1592126057537046434">Traducere cu Răspunsuri rapide</translation>
@@ -2644,7 +2642,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2853121255651601031">Parola a fost salvată</translation>
 <translation id="2855243985454069333">Șterge istoricul de pe toate dispozitivele sincronizate</translation>
 <translation id="2855812646048059450">Conectează-te cu <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modul strict</translation>
 <translation id="2856776373509145513">Creează un container nou</translation>
 <translation id="2856907950922663165">Dezactivezi criptarea adreselor URL?</translation>
 <translation id="2859741939921354763">Importă parole în <ph name="BRAND" /></translation>
@@ -2926,7 +2923,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Activează codul PIN pentru utilizator</translation>
 <translation id="3053274730492362225">Fără clipire</translation>
 <translation id="3054766768827382232">Dacă dezactivezi protecția, dispozitivele periferice pot să funcționeze mai bine, dar îți pot expune datele cu caracter personal prin utilizare neautorizată.</translation>
-<translation id="3056438898277655057">Permite ca <ph name="SPECIFIC_NAME" /> să acceseze dispozitivele USB. <ph name="SPECIFIC_NAME" /> nu își va aminti un dispozitiv USB după ce este eliminat.</translation>
 <translation id="3058498974290601450">Poți să activezi sincronizarea oricând în setări</translation>
 <translation id="3058517085907878899">Denumește dispozitivul</translation>
 <translation id="3059195548603439580">Cauți componentele sistemului? Accesează</translation>
@@ -8540,7 +8536,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7222335051802562841">Finalizează actualizarea</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Astfel, serviciile de sistem pot să folosească Precizia locației pentru a-ți determina locația. Precizia locației folosește informații despre semnalele și senzorii wireless pentru a estima locația dispozitivului.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{Un site din grupul <ph name="FPS_OWNER" />}few{{MEMBERS} site-uri din grupul <ph name="FPS_OWNER" />}other{{MEMBERS} de site-uri din grupul <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Folosește Windows Hello la completarea parolelor</translation>
 <translation id="7225179976675429563">Lipsește tipul de rețea</translation>
 <translation id="7227235818314667565">Gestionare colaborări</translation>
@@ -9918,7 +9913,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8207404892907560325">Alege o cheie de acces</translation>
 <translation id="8207794858944505786">Mașina virtuală <ph name="DEFAULT_VM_NAME" /> există, dar nu pare să fie o mașină virtuală <ph name="VM_TYPE" /> validă. Contactează administratorul.</translation>
 <translation id="8207901006380134182">Un val mare învăluie oceanul, cu o pădure întunecată pe țărm.</translation>
-<translation id="8208188204689616705">Aceste site-uri fac parte dintr-un grup definit de <ph name="FPS_OWNER" />. Site-urile dintr-un grup îți pot vedea activitatea în grup.</translation>
 <translation id="8208216423136871611">Nu salva</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificare nouă}few{# notificări noi}other{# de notificări noi}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descărcarea este în desfășurare}few{Descărcările sunt în desfășurare}other{Descărcările sunt în desfășurare}}</translation>
@@ -11046,7 +11040,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9009707268312089299">Importate din Windows</translation>
 <translation id="9009708085379296446">Ai vrut să modifici această pagină?</translation>
 <translation id="9010845741772269259">Adaugă metode de plată</translation>
-<translation id="901087299639956505">Modul echilibrat</translation>
 <translation id="9011163749350026987">Afișează întotdeauna pictograma</translation>
 <translation id="9011262023858991985">Se proiectează această filă</translation>
 <translation id="9011393886518328654">Note despre versiune</translation>

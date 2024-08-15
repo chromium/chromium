@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Bluetooth デバイスを検出するには、Chromium に Bluetooth へのアクセスを許可する必要があります。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium（<ph name="URL" />）からもデータを削除する</translation>
 <translation id="1414495520565016063">Chromium にログインしました</translation>
-<translation id="1465171403179274511">安全でない接続を使用してサイトを読み込む前に確認のメッセージを表示します</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
@@ -80,7 +79,6 @@
 <translation id="2210682093923538346">危険なサイトのため、Chromium で通知の権限を削除しました。</translation>
 <translation id="2240214816234246077">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" /> と<ph name="PERMISSION_2" /> の権限を削除しました</translation>
 <translation id="2241627712206172106">パソコンを共有している場合、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
-<translation id="2265830994243640896">安全でない接続を使用して一般公開サイトを読み込む前に確認のメッセージを表示する一方、プライベート ネットワークの HTTP 接続は許可します</translation>
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2329088755516916767">オンにするとページがプリロードされ、閲覧と検索をすばやく行えるようになります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
@@ -105,7 +103,6 @@
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="264613044588233783">Chromium の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します（推奨）</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
-<translation id="2649201087614586016">オンにすると、HTTPS に対応していないサイトを読み込む前に確認のメッセージが表示されます</translation>
 <translation id="2661879430930417727">デバイスを共有している場合でも、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" /> さん、Chromium へようこそ</translation>
 <translation id="2711502716910134313">Chromium タブ</translation>

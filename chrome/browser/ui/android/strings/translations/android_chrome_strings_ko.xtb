@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">요약 의견 시트와 공유 닫힘</translation>
 <translation id="1089606299949659462">검토 완료</translation>
 <translation id="1094555143448724771">다른 기기의 탭을 보려면 탭과 방문 기록을 동기화하세요.</translation>
-<translation id="1095142578254888918"><ph name="SITE_NAME" />의 알림이 허용되지 않음</translation>
 <translation id="1095761715416917775">언제든지 동기화 데이터에 액세스할 수 있도록 하세요</translation>
 <translation id="1100066534610197918">새 탭을 그룹에서 열기</translation>
 <translation id="1103142993930332957">Chrome을 개선하는 데 도움을 주시겠어요?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">맞춤설정</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1183189057400844278">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{사이트 1개에 알림이 허용되지 않음}other{사이트 #개에 알림이 허용되지 않음}}</translation>
 <translation id="1187810343066461819">이 차량의 북마크 및 방문 기록 삭제</translation>
 <translation id="1193729455103054076">안전한 비밀번호를 사용하시겠습니까?</translation>
 <translation id="1197267115302279827">북마크 이동</translation>
@@ -454,7 +452,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3080525922482950719">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다.</translation>
 <translation id="3087218211037573995">이 기기에만 저장된 일부 비밀번호가 곧 작동하지 않게 됩니다. 이러한 비밀번호를 Google 비밀번호 관리자로 이동할 수 있습니다.</translation>
 <translation id="3091010850649238832">클립보드 내용 표시</translation>
-<translation id="3093004810561729002">다른 사용자</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
@@ -506,6 +503,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3407392651057365886">더 많은 페이지가 미리 로드됩니다. 다른 사이트에서 요청하면 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="3421726884497337397">타사 쿠키를 차단하는 경우 선택</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="3430670036890315772">프로필 잠금을 사용 중지하면 저장된 정보가 삭제됩니다.</translation>
 <translation id="3435465986463792564">창이 많이 열렸나요? 여기에서 관리할 수 있습니다.</translation>
 <translation id="3435738964857648380">보안</translation>
@@ -938,6 +936,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
 <translation id="5524843473235508879">리디렉션이 차단되었습니다.</translation>
 <translation id="5526281268548144413">여러 창을 닫을 수 없음</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5554520618550346933">비밀번호를 사용하면 온라인에 비밀번호가 게시된 경우 Chrome에서 경고를 표시합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5555525474779371165">세이프 브라우징 보호 기능을 선택하세요</translation>

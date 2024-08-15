@@ -27,7 +27,6 @@
  Bluetooth սարքեր որոնելու համար։ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Նաև հեռացնել տվյալները Chromium-ից (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Դուք մուտք եք գործել Chromium:</translation>
-<translation id="1465171403179274511">Chromium-ը կհարցնի ձեզ նախքան ոչ ապահով կապի միջոցով որևէ կայք բեռնելը</translation>
 <translation id="1478370723027452770">Ստանալ օգնություն Chrome for Testing-ի միջոցով</translation>
 <translation id="1497802159252041924">Տեղադրման սխալ՝ <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Կիսվեք Chromium-ի ներդիրով</translation>
@@ -83,7 +82,6 @@
 <translation id="2210682093923538346">Վտանգավոր կայք։ Chromium-ը հեռացրել է ծանուցումների թույլտվությունը։</translation>
 <translation id="2240214816234246077">Դուք վաղուց չեք այցելել կայք։ Chromium-ը հեռացրել է «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />» թույլտվությունները։</translation>
 <translation id="2241627712206172106">Եթե ձեզնից բացի որևէ այլ մեկն օգտվում է այս համակարգչից, օրինակ ձեր ընկերները կամ հարազատները, ապա նրանք կարող են առանձին աշխատել և կարգավորել Chromium-ն իրենց ուզած ձևով:</translation>
-<translation id="2265830994243640896">Chromium-ը կհարցնի ձեզ նախքան ոչ ապահով կապի միջոցով որևէ հանրային կայք բեռնելը, սակայն թույլ կտա HTTP միացումներ մասնավոր ցանցերում</translation>
 <translation id="2313870531055795960">Ստուգում է URL-ները Chromium-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chromium-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="2329088755516916767">Երբ այս կարգավորումը միացված է, Chromium-ը նախապես բեռնում է էջերը՝ արագացնելով դիտարկումն ու որոնումը։</translation>
 <translation id="2343156876103232566">Հեռախոսահամարն այստեղից ձեր Android հեռախոսին ուղարկելու համար երկու սարքերի Chromium դիտարկիչներում մտեք հաշիվ։</translation>
@@ -108,7 +106,6 @@
 <translation id="259935314519650377">Չհաջողվեց քեշավորել ներբեռնված տեղադրիչը։ Սխալ՝ <ph name="UNPACK_CACHING_ERROR_CODE" />։</translation>
 <translation id="264613044588233783">Chromium-ն ավելի արագ է աշխատում, իսկ JavaScript օգտագործող գործառույթները պետք է աշխատեն նախատեսվածի պես (խորհուրդ է տրվում)</translation>
 <translation id="2648074677641340862">Տեղադրման ժամանակ օպերացիոն համակարգի սխալ տեղի ունեցավ: Նորից տեղադրեք Chromium-ը:</translation>
-<translation id="2649201087614586016">Եթե գործառույթը միացված է, Chromium-ը կհարցնի ձեզ, նախքան կբեռնի կայքեր, որոնք չեն աջակցում HTTPS հաղորդակարգը</translation>
 <translation id="2661879430930417727">Եթե ձեզնից բացի որևէ այլ օգտատեր օգտվում է այս սարքից (օրինակ՝ ձեր ընկերները կամ հարազատները), ապա նրանք կարող են առանձին աշխատել և անհատականացնել Chromium-ը</translation>
 <translation id="268602741124540128">Բարի գալուստ Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-ի ներդիր</translation>

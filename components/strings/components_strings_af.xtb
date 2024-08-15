@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Wys voorstelle</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Taakbladsyboodskap</translation>
+<translation id="1044897699341250361">Wat dit beteken</translation>
 <translation id="1046350918013988591">Koepons en afslagaanbiedings</translation>
 <translation id="1048785276086539861">Hierdie dokument sal na enkelbladsyaansig toe terugkeer wanneer jy aantekeninge redigeer</translation>
 <translation id="1050038467049342496">Maak ander programme toe</translation>
@@ -2649,6 +2650,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5999271311987646952">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai – soos Google Veiligblaai, <ph name="BEGIN_LINK" />wat onlangs wanware gevind het<ph name="END_LINK" /> op die werf wat jy probeer besoek.</translation>
 <translation id="6000528814684428358">Harde rock en progressiewe musiek</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultate vir "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Kom ons begin</translation>
 <translation id="6002122790816966947">Jou toestelle</translation>
 <translation id="6002968396561884726">Onlangs bekyk</translation>
 <translation id="6005659677094197001">Aaneenlopend</translation>
@@ -3057,6 +3059,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6735783933931458444">Jy besoek gereeld hierdie tyd van die dag</translation>
 <translation id="6737708609449480586">Gebakte goedere</translation>
 <translation id="6738516213925468394">Jou data is om <ph name="TIME" /> met jou <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" /> geënkripeer. Voer dit in om sinkronisering te begin.</translation>
+<translation id="6739943577740687354">Hierdie kenmerk gebruik AI en sal dit nie altyd regkry nie</translation>
 <translation id="6740851646645036700">Jy het vir eers jou skryfhulplimiet bereik. Probeer later weer.</translation>
 <translation id="674375294223700098">Onbekende bedienersertifikaatfout.</translation>
 <translation id="6744009308914054259">Terwyl jy vir 'n verbinding wag, kan jy Aflaaie besoek om vanlyn artikels te lees.</translation>
@@ -4444,5 +4447,6 @@ Bykomende besonderhede:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Voeg IBAN by</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Van Google Pay af</translation>
 </translationbundle>

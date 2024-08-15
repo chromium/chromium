@@ -480,7 +480,6 @@
 <translation id="1340527397989195812">‏גיבוי המדיה מהמכשיר באמצעות אפליקציית Files.</translation>
 <translation id="1341701348342335220">כל הכבוד!</translation>
 <translation id="1342886103232377846">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך לעבור למנהל הסיסמאות של Google</translation>
-<translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
 <translation id="1344141078024003905">‏Cast של המסך מופעל. אפשר להשהות או להפסיק את הפעלת ה-Cast של המסך בכל שלב.</translation>
 <translation id="1346403631707626730">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לתרום לשיפור חוויית המשתמש של הילד או הילדה ב-Android, אפשר לשלוח אל Google נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות באופן אוטומטי. הנתונים האלה לא ישמשו כדי לזהות את הילד או הילדה שלך, והם יעזרו לנו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google ויעזרו לשותפים של Google, כמו מפתחים של Android. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה לילד או לילדה שלך, יכול להיות שהנתונים האלה יישמרו בחשבון שלהם ב-Google. <ph name="BEGIN_LINK1" />מידע נוסף על מדדים<ph name="BEGIN_LINK1_END" />מידע נוסף<ph name="END_LINK1" /></translation>
@@ -820,7 +819,6 @@
 <translation id="1588919647604819635">לחיצה ימנית על הכרטיס</translation>
 <translation id="1589055389569595240">הצגת איות ודקדוק</translation>
 <translation id="1590478605309955960">קבוצות הכרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים שמחוברים לחשבון.</translation>
-<translation id="1591679663873027990">‏הרשאת גישה למכשירי USB באמצעות Parallels Desktop. אחרי הוצאת התקן ה-USB, הוא לא נשמר בזיכרון של Parallels Desktop.</translation>
 <translation id="15916883652754430">הגדרות הקול של המערכת</translation>
 <translation id="1592074621872221573">‏ניפוי הבאגים באמצעות ADB הושבת על ידי <ph name="MANAGER" />. פעולה זו תאפס את מחשב <ph name="DEVICE_TYPE" /> שלך. יש לגבות את הקבצים לפני ההפעלה מחדש.</translation>
 <translation id="1592126057537046434">תרגום של תשובות מהירות</translation>
@@ -2655,7 +2653,6 @@
 <translation id="2853121255651601031">הסיסמה נשמרה</translation>
 <translation id="2855243985454069333">מחיקת ההיסטוריה בכל המכשירים המסונכרנים</translation>
 <translation id="2855812646048059450">כניסה דרך <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">מצב קפדני</translation>
 <translation id="2856776373509145513">יצירת קונטיינר חדש</translation>
 <translation id="2856907950922663165">‏להשבית את ההצפנה של כתובות ה-URL?</translation>
 <translation id="2859741939921354763">ייבוא סיסמאות אל <ph name="BRAND" /></translation>
@@ -2937,7 +2934,6 @@
 <translation id="3053273573829329829">הפעלה של קוד אימות משתמש</translation>
 <translation id="3053274730492362225">ללא הבהוב</translation>
 <translation id="3054766768827382232">לאחר השבתה, ייתכן שהביצועים של מכשירים היקפיים מסוימים ישתפרו, אבל הנתונים האישיים עלולים להיחשף עקב שימוש לא מורשה.</translation>
-<translation id="3056438898277655057">‏הענקת הרשאה ל-<ph name="SPECIFIC_NAME" /> לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3058498974290601450">אפשר להפעיל את הסנכרון בכל זמן דרך ההגדרות</translation>
 <translation id="3058517085907878899">שם המכשיר</translation>
 <translation id="3059195548603439580">רוצה לאתר את רכיבי המערכת? יש לעבור לכתובת</translation>
@@ -8557,7 +8553,6 @@
 <translation id="7222335051802562841">סיום העדכון</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{אתר אחד בקבוצה של <ph name="FPS_OWNER" />}one{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}two{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}other{{MEMBERS} אתרים בקבוצה של <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
 <translation id="7225179976675429563">חסר סוג רשת</translation>
 <translation id="7227235818314667565">ניהול השיתוף</translation>
@@ -9936,7 +9931,6 @@
 <translation id="8207404892907560325">בחירת מפתח גישה</translation>
 <translation id="8207794858944505786">קיימת מכונה וירטואלית בשם '<ph name="DEFAULT_VM_NAME" />' אבל נראה שזו לא מכונה וירטואלית תקינה מסוג <ph name="VM_TYPE" />. צריך לפנות לאדמין.</translation>
 <translation id="8207901006380134182">גל גדול באוקיינוס, עם יער חשוך על החוף.</translation>
-<translation id="8208188204689616705">האתרים האלה שייכים לקבוצה שהוגדרה על ידי <ph name="FPS_OWNER" />. לאתרים ששייכים לקבוצה יש הרשאה לראות את הפעילות שלך בקבוצה.</translation>
 <translation id="8208216423136871611">אל תשמור</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{התראה חדשה}one{# התראות חדשות}two{# התראות חדשות}other{# התראות חדשות}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{הורדה מתבצעת}one{הורדות מתבצעות}two{הורדות מתבצעות}other{הורדות מתבצעות}}</translation>
@@ -11065,7 +11059,6 @@
 <translation id="9009707268312089299">‏יובאו מ-Windows</translation>
 <translation id="9009708085379296446">האם התכוונת לשנות את הדף הזה?</translation>
 <translation id="9010845741772269259">הוספת אמצעי תשלום</translation>
-<translation id="901087299639956505">מצב מאוזן</translation>
 <translation id="9011163749350026987">הצגה תמיד של הסמל</translation>
 <translation id="9011262023858991985">הכרטיסייה הזו מועברת</translation>
 <translation id="9011393886518328654">נתוני גרסה</translation>

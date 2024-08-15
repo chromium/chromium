@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">ເນື້ອຫາພິເສດສະເພາະຂອງ <ph name="PRODUCT_NAME" /> ມີໃຫ້ແລ້ວຕອນນີ້</translation>
 <translation id="1022628058306505708">ກະແສໂລກ</translation>
 <translation id="1026212596705997935">ກຳລັງໃຊ້ທາງລັດສຳລັບ "<ph name="CONFLICT_ACCEL_NAME" />" ຢູ່. ກົດປຸ່ມທາງລັດໃໝ່. ເພື່ອແທນທີ່ທາງລັດທີ່ມີຢູ່ກ່ອນແລ້ວ, ໃຫ້ກົດປຸ່ມທາງລັດນີ້ອີກເທື່ອໜຶ່ງ.</translation>
+<translation id="1030856839388844477">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1049663189809099096">ເຫຼືອງພາສເທວ</translation>
@@ -1552,6 +1553,7 @@
 <translation id="9087578468327036362">ລາຍງານຄຳຊອກຫານີ້</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບວັນທີຣີເຊັດ</translation>
 <translation id="9100765901046053179">ການ​ຕັ້ງຄ່າຂັ້ນສູງ</translation>
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>

@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Full per compartir comentaris sobre el resum tancat</translation>
 <translation id="1089606299949659462">Revisió completada</translation>
 <translation id="1094555143448724771">Per veure les pestanyes dels altres dispositius, sincronitza les pestanyes i l'historial</translation>
-<translation id="1095142578254888918">No es permeten les notificacions per a <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Assegura't de poder accedir a les dades sincronitzades en qualsevol moment</translation>
 <translation id="1100066534610197918">Obre en una pestanya d'un grup</translation>
 <translation id="1103142993930332957">Vols ajudar a millorar Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Personalitzat</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1183189057400844278">Per assegurar-te que puguis fer servir sempre les contrasenyes del teu Compte de Google, verifica la teva identitat</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{No es permeten les notificacions per a 1 lloc web}other{No es permeten les notificacions per a # llocs web}}</translation>
 <translation id="1187810343066461819">Suprimeix també les adreces d'interès, l'historial i altres dades d'aquest cotxe</translation>
 <translation id="1193729455103054076">Vols utilitzar una contrasenya segura?</translation>
 <translation id="1197267115302279827">Mou les adreces d'interès</translation>
@@ -454,7 +452,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
 <translation id="3087218211037573995">Algunes contrasenyes desades només en aquest dispositiu deixaran de funcionar aviat. Pots moure aquestes contrasenyes al gestor de contrasenyes de Google.</translation>
 <translation id="3091010850649238832">Mostra els continguts del porta-retalls</translation>
-<translation id="3093004810561729002">Algú</translation>
 <translation id="3098745985164956033">Algunes imatges s'envien a Google per millorar-ne les descripcions per a tu</translation>
 <translation id="3114507951000454849">Llegeix les notícies d'avui <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anuncis</translation>
@@ -506,6 +503,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3407392651057365886">Es precarreguen més pàgines. És possible que les pàgines estiguin precarregades mitjançant els servidors de Google quan altres llocs web ho sol·licitin.</translation>
 <translation id="3414952576877147120">Mida:</translation>
 <translation id="3421726884497337397">Tria quan vols bloquejar galetes de tercers</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Fa # h}other{Fa # h}}</translation>
 <translation id="3430670036890315772">En desactivar el bloqueig de perfil, se suprimirà la informació desada</translation>
 <translation id="3435465986463792564">Tens moltes finestres obertes? Pots gestionar-les aquí.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
@@ -938,6 +936,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5517095782334947753">Tens les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de l'adreça <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">S'ha bloquejat la redirecció.</translation>
 <translation id="5526281268548144413">No es pot tancar en diverses finestres</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Fa # min}other{Fa # min}}</translation>
 <translation id="5548606607480005320">Comprovació de seguretat</translation>
 <translation id="5554520618550346933">Quan utilitzes una contrasenya, Chrome t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5555525474779371165">Tria la teva protecció de Navegació segura</translation>
@@ -1303,7 +1302,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7105047059074518658">Inicia la sessió per navegar millor en tots els dispositius</translation>
 <translation id="7106762743910369165">La teva organització gestiona el navegador</translation>
 <translation id="7111394291981742152">Chrome et proporciona més control sobre els anuncis que veus i limita la informació que els llocs web poden obtenir sobre tu quan et mostren anuncis personalitzats.</translation>
-<translation id="7136902389402789299">{NUM_SITES,plural, =1{S'han revisat els permisos d'1 lloc web}other{S'han revisat els permisos d’# lloc web}}</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{S'han revisat els permisos per a 1 lloc web}other{S'han revisat els permisos per a # llocs web}}</translation>
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7140829094791862589">Ordena manualment</translation>
 <translation id="7146622961999026732">Aquests llocs web i aquestes aplicacions semblen importants per a tu:</translation>

@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">ಸಲಹೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1038842779957582377">ಆಜ್ಞಾತ ಹೆಸರು</translation>
 <translation id="1041998700806130099">ಜಾಬ್ ಶೀಟ್ ಸಂದೇಶ</translation>
+<translation id="1044897699341250361">ಇದರ ಅರ್ಥವೇನು</translation>
 <translation id="1046350918013988591">ಕೂಪನ್‌ಗಳು ಮತ್ತು ರಿಯಾಯಿತಿ ಆಫರ್‌ಗಳು</translation>
 <translation id="1048785276086539861">ನೀವು ಟಿಪ್ಪಣಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿದಾಗ, ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಒಂದೇ ಪುಟದ ವೀಕ್ಷಣೆಗೆ ಹಿಂತಿರುಗುತ್ತದೆ</translation>
 <translation id="1050038467049342496">ಇತರ ಅಪ್ಲಿಕೇಶನ್‍ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
@@ -2656,6 +2657,7 @@
 <translation id="5999271311987646952">ನೀವು ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Chrome ಅಂತರ್ನಿರ್ಮಿತ ಭದ್ರತಾ ಫೀಚರ್‌ಗಳನ್ನು ಹೊಂದಿದೆ — ಉದಾಹರಣೆಗೆ, Google Safe Browsing ಫೀಚರ್, ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಇತ್ತೀಚೆಗೆ ಮಾಲ್‌ವೇರ್ ಕಂಡುಬಂದಿದೆ<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">ಹಾರ್ಡ್ ರಾಕ್ ಮತ್ತು ಪ್ರೊಗ್ರೆಸಿವ್</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' ಗಾಗಿ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳು</translation>
+<translation id="6001839398155993679">ಪ್ರಾರಂಭಿಸೋಣ</translation>
 <translation id="6002122790816966947">ನಿಮ್ಮ ಸಾಧನಗಳು</translation>
 <translation id="6002968396561884726">ಇತ್ತೀಚಿಗೆ ವೀಕ್ಷಿಸಿರುವುದು</translation>
 <translation id="6005659677094197001">ನಿರಂತರ</translation>
@@ -3064,6 +3066,7 @@
 <translation id="6735783933931458444">ದಿನದ ಈ ಸಮಯದಲ್ಲಿ ನೀವು ಆಗಾಗ್ಗೆ ಇವುಗಳಿಗೆ ಭೇಟಿ ನೀಡುತ್ತೀರಿ</translation>
 <translation id="6737708609449480586">ಬೇಯಿಸಿದ ವಸ್ತುಗಳು</translation>
 <translation id="6738516213925468394">ನಿಮ್ಮ ಡೇಟಾವನ್ನು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್<ph name="END_LINK" /> ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
+<translation id="6739943577740687354">ಈ ಫೀಚರ್ AI ಅನ್ನು ಬಳಸುತ್ತದೆ ಹಾಗೂ ಯಾವಾಗಲೂ ಸರಿಯಾದ ಫಲಿತಾಂಶಗಳನ್ನು ನೀಡುವುದಿಲ್ಲ</translation>
 <translation id="6740851646645036700">ನೀವು ಈಗ ನಿಮ್ಮ ಬರವಣಿಗೆಯ ಸಹಾಯದ ಮಿತಿಯನ್ನು ತಲುಪಿದ್ದೀರಿ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="674375294223700098">ಅಪರಿಚಿತ ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರ ದೋಷ.</translation>
 <translation id="6744009308914054259">ಸಂಪರ್ಕಕ್ಕಾಗಿ ನಿರೀಕ್ಷಿಸುತ್ತಿರುವಾಗ, ಆಫ್‌ಲೈನ್ ​​ಲೇಖನಗಳನ್ನು ಓದಲು ನೀವು ಡೌನ್‌ಲೋಡ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು.</translation>
@@ -4447,5 +4450,6 @@
 <translation id="992432478773561401">"<ph name="SOFTWARE_NAME" />" ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅಥವಾ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿಲ್ಲ: &lt;ul&gt; &lt;li&gt;"<ph name="SOFTWARE_NAME" />" ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲು ಅಥವಾ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ&lt;/li&gt; &lt;li&gt;ಇನ್ನೊಂದು ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಸಿಲು ಪ್ರಯತ್ನಿಸಿ &lt;/li&gt; &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN ಅನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay ನಿಂದ</translation>
 </translationbundle>

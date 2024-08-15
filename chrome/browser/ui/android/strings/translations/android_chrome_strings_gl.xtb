@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Pechouse a folla para compartir comentarios sobre o resumo</translation>
 <translation id="1089606299949659462">Completaches a revisión</translation>
 <translation id="1094555143448724771">Para ver as pestanas dos teus outros dispositivos, sincroniza as pestanas e o historial</translation>
-<translation id="1095142578254888918">Non se permiten as notificacións de <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Asegúrate de poder acceder sempre aos teus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir pestana nova nun grupo</translation>
 <translation id="1103142993930332957">Queres axudar a mellorar Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Personalizada</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1183189057400844278">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Non se permiten as notificacións de 1 sitio}other{Non se permiten as notificacións de # sitios}}</translation>
 <translation id="1187810343066461819">Borrar tamén os marcadores, o historial e outros datos deste coche</translation>
 <translation id="1193729455103054076">Queres usar un contrasinal seguro?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
@@ -454,7 +452,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3080525922482950719">Podes gardar páxinas para lelas máis tarde ou sen conexión</translation>
 <translation id="3087218211037573995">Algúns contrasinais gardados só neste dispositivo deixarán de funcionar en breve. Podes movelos ao xestor de contrasinais de Google.</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
-<translation id="3093004810561729002">Alguén</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Avisos</translation>
@@ -506,6 +503,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3407392651057365886">Precárganse máis páxinas. Poden precargarse a través dos servidores de Google cando o solicitan outros sitios.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3421726884497337397">Escolle cando queres bloquear as cookies de terceiros</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Hai # h}other{Hai # h}}</translation>
 <translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3435738964857648380">Seguranza</translation>
@@ -938,6 +936,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5517095782334947753">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Bloqueouse a redirección.</translation>
 <translation id="5526281268548144413">Non se poden pechar en varias ventás</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Hai # min}other{Hai # min}}</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
 <translation id="5554520618550346933">Cando usas un contrasinal, Chrome avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="5555525474779371165">Escolle a protección da función Navegación segura</translation>

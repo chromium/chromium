@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Zaprto deljenje s povzetkom povratnih informacij</translation>
 <translation id="1089606299949659462">Pregled je končan!</translation>
 <translation id="1094555143448724771">Če si želite ogledati zavihke iz drugih naprav, sinhronizirajte zavihke in zgodovino</translation>
-<translation id="1095142578254888918">Obvestila niso dovoljena za <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Poskrbite, da boste ves čas lahko dostopali do podatkov sinhronizacije</translation>
 <translation id="1100066534610197918">Odpri nov zavihek v skupini</translation>
 <translation id="1103142993930332957">Želite pomagati izboljšati Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Po meri</translation>
 <translation id="1181037720776840403">Odstrani</translation>
 <translation id="1183189057400844278">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Obvestila niso dovoljena za 1 spletno mesto}one{Obvestila niso dovoljena za # spletno mesto}two{Obvestila niso dovoljena za # spletni mesti}few{Obvestila niso dovoljena za # spletna mesta}other{Obvestila niso dovoljena za # spletnih mest}}</translation>
 <translation id="1187810343066461819">Prav tako izbriši zaznamke, zgodovino in drugo iz tega avtomobila</translation>
 <translation id="1193729455103054076">Želite uporabiti močno geslo?</translation>
 <translation id="1197267115302279827">Premakni zavihke</translation>
@@ -454,7 +452,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3080525922482950719">Strani lahko shranite, če želite brati pozneje ali brez povezave</translation>
 <translation id="3087218211037573995">Nekatera gesla, shranjena samo v tej napravi, bodo kmalu nehala delovati. Ta gesla lahko premaknete v Googlovega upravitelja gesel.</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
-<translation id="3093004810561729002">Nekdo</translation>
 <translation id="3098745985164956033">Nekatere slike so poslane Googlu zaradi izboljšanja opisov.</translation>
 <translation id="3114507951000454849">Preberite današnje novice <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Obvestila</translation>
@@ -506,6 +503,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3407392651057365886">Več strani je vnaprej naloženih. Strani so morda vnaprej naložene prek Googlovih strežnikov, ko tako zahtevajo druga spletna mesta.</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3421726884497337397">Izberite, kdaj blokirate piškotke drugih mest</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Pred # h}one{Pred # h}two{Pred # h}few{Pred # h}other{Pred # h}}</translation>
 <translation id="3430670036890315772">Če izklopite zaklepanje profila, se shranjeni podatki odstranijo</translation>
 <translation id="3435465986463792564">Imate odprtih veliko oken? Tukaj jih lahko upravljate.</translation>
 <translation id="3435738964857648380">Varnost</translation>
@@ -938,6 +936,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5517095782334947753">Iz računa <ph name="FROM_ACCOUNT" /> imate zaznamke, zgodovino, gesla in druge nastavitve.</translation>
 <translation id="5524843473235508879">Preusmeritev je bila blokirana.</translation>
 <translation id="5526281268548144413">Ni mogoče zapreti v več oknih</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Pred # min}one{Pred # min}two{Pred # min}few{Pred # min}other{Pred # min}}</translation>
 <translation id="5548606607480005320">Varnostno preverjanje</translation>
 <translation id="5554520618550346933">Ko uporabite geslo, vas Chrome opozori, če je bilo objavljeno v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>
 <translation id="5555525474779371165">Izbira zaščite Varnega brskanja</translation>

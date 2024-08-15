@@ -478,7 +478,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1340527397989195812">Sikkerhetskopiér medier fra enheten ved hjelp av Filer-appen.</translation>
 <translation id="1341701348342335220">Bra jobbet!</translation>
 <translation id="1342886103232377846">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, gå til Google Passordlagring</translation>
-<translation id="1343865611738742294">Gi Linux-apper tilgang til USB-enheter. Linux husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="1343920184519992513">Fortsett der du slapp, og åpne et spesifikt sett med sider</translation>
 <translation id="1344141078024003905">Du caster skjermen. Du kan når som helst stoppe castingen av skjermen eller sette den på pause.</translation>
 <translation id="1346403631707626730">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Hvis du har slått på annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. <ph name="BEGIN_LINK1" />Finn ut mer om beregninger<ph name="BEGIN_LINK1_END" />Finn ut mer<ph name="END_LINK1" /></translation>
@@ -818,7 +817,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1588919647604819635">Høyreklikk på kort</translation>
 <translation id="1589055389569595240">Vis stavekontroll og grammatikk</translation>
 <translation id="1590478605309955960">Fanegruppene dine lagres og oppdateres automatisk på alle de påloggede enhetene dine.</translation>
-<translation id="1591679663873027990">Gi Parallels Desktop tilgang til USB-enheter. Parallels Desktop husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="15916883652754430">Stemmeinnstillinger for systemet</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> har slått av ADB-feilsøking. Dette medfører at <ph name="DEVICE_TYPE" /> blir tilbakestilt. Sikkerhetskopiér filene dine før du starter på nytt.</translation>
 <translation id="1592126057537046434">Hurtiginfo-oversettelse</translation>
@@ -2650,7 +2648,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2853121255651601031">Passordet er lagret</translation>
 <translation id="2855243985454069333">Sletter loggen fra alle synkroniserte enheter</translation>
 <translation id="2855812646048059450">Logg på med <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Streng modus</translation>
 <translation id="2856776373509145513">Opprett en ny beholder</translation>
 <translation id="2856907950922663165">Vil du slå av nettadressekryptering?</translation>
 <translation id="2859741939921354763">Importer passord til <ph name="BRAND" /></translation>
@@ -2932,7 +2929,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3053273573829329829">Slå på bruker-PIN-kode</translation>
 <translation id="3053274730492362225">Ikke blink</translation>
 <translation id="3054766768827382232">Hvis du slår dette av, kan det hende de eksterne enhetene dine yter bedre, men det kan også medføre at personopplysningene dine blir avdekket som følge av uautorisert bruk.</translation>
-<translation id="3056438898277655057">Gi <ph name="SPECIFIC_NAME" /> tilgang til USB-enheter. <ph name="SPECIFIC_NAME" /> husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="3058498974290601450">Du kan når som helst slå på synkronisering i innstillingene</translation>
 <translation id="3058517085907878899">Gi enheten navn</translation>
 <translation id="3059195548603439580">Ser du etter systemkomponenter? Gå til</translation>
@@ -8542,7 +8538,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7222335051802562841">Fullfør oppdateringen</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Dette gjør at systemtjenester kan bruke Posisjonsnøyaktighet til å fastslå posisjonen din. Posisjonsnøyaktighet bruker informasjon om trådløse signaler og sensorer til å anslå enhetsposisjonen.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 nettsted i gruppen til <ph name="FPS_OWNER" />}other{{MEMBERS} nettsteder i gruppen til <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Bruk Windows Hello når du fyller ut passord</translation>
 <translation id="7225179976675429563">Nettverkstype mangler</translation>
 <translation id="7227235818314667565">Administrer deling</translation>
@@ -9920,7 +9915,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8207404892907560325">Velg en passnøkkel</translation>
 <translation id="8207794858944505786">VM-en «<ph name="DEFAULT_VM_NAME" />» finnes, men ser ikke ut til å være en gyldig <ph name="VM_TYPE" />-VM. Kontakt administratoren din.</translation>
 <translation id="8207901006380134182">En stor bølge sluker opp havet, med en mørk skog ved kysten.</translation>
-<translation id="8208188204689616705">Disse nettstedene er med i en gruppe som er definert av <ph name="FPS_OWNER" />. Nettsteder i grupper kan se aktiviteten din i gruppen.</translation>
 <translation id="8208216423136871611">Ikke lagre</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nytt varsel}other{# nye varsler}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Nedlasting pågår}other{Nedlastinger pågår}}</translation>
@@ -11047,7 +11041,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9009707268312089299">Importert fra Windows</translation>
 <translation id="9009708085379296446">Var det meningen å endre denne siden?</translation>
 <translation id="9010845741772269259">Legg til betalingsmåter</translation>
-<translation id="901087299639956505">Balansert modus</translation>
 <translation id="9011163749350026987">Vis alltid ikonet</translation>
 <translation id="9011262023858991985">Caster denne fanen</translation>
 <translation id="9011393886518328654">Versjonsnotater</translation>

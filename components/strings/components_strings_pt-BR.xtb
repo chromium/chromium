@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Exibir sugestões</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem de página de tarefa</translation>
+<translation id="1044897699341250361">O que isso significa</translation>
 <translation id="1046350918013988591">Cupons e ofertas de desconto</translation>
 <translation id="1048785276086539861">Quando você editar as anotações, este documento voltará à visualização de uma página</translation>
 <translation id="1050038467049342496">Fechar outros apps</translation>
@@ -2649,6 +2650,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5999271311987646952">O Chrome tem recursos de segurança integrados para proteger você durante a navegação, como a Navegação segura do Google, que <ph name="BEGIN_LINK" />encontrou malware recentemente<ph name="END_LINK" /> no site que você está tentando acessar.</translation>
 <translation id="6000528814684428358">Hard Rock e progressivo</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Vamos lá</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6002968396561884726">Acesso recente</translation>
 <translation id="6005659677094197001">Contínua</translation>
@@ -3057,6 +3059,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6735783933931458444">Você visita com frequência neste horário</translation>
 <translation id="6737708609449480586">Produtos assados</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
+<translation id="6739943577740687354">Este recurso usa IA e nem sempre acerta</translation>
 <translation id="6740851646645036700">Você atingiu o limite da ajuda para escrever. Tente de novo mais tarde.</translation>
 <translation id="674375294223700098">Erro, certificado de servidor desconhecido.</translation>
 <translation id="6744009308914054259">Enquanto espera por uma conexão, acesse "Downloads" para ler artigos off-line.</translation>
@@ -4446,5 +4449,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Adicionar IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 </translationbundle>

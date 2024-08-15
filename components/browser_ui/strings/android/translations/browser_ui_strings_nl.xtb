@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Geluid toestaan voor een specifieke site.</translation>
 <translation id="789180354981963912">Cookies van derden blokkeren in incognito:</translation>
 <translation id="7940722705963108451">Herinner me eraan</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site in de groep sites van <ph name="FPS_OWNER" /> die je activiteit in de groep kunnen bekijken}other{<ph name="FPS_MEMBERS_COUNT" /> sites in de groep sites van <ph name="FPS_OWNER" /> die je activiteit in de groep kunnen bekijken}}</translation>
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Voorkomen dat sites verbinding maken met apparaten</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
 <translation id="8541410041357371550">Deze site krijgt je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> site van <ph name="FPS_OWNER" />}other{Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> sites van <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8617611086246832542">Als deze optie aanstaat, wordt de desktopweergave van websites getoond. Staat de optie uit, dan wordt de mobiele weergave van websites getoond.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="9039697262778250930">Je wordt misschien uitgelogd van deze sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Cookies verwijderen?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>

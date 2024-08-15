@@ -478,7 +478,6 @@
 <translation id="1340527397989195812">透過「檔案」應用程式備份裝置中的媒體。</translation>
 <translation id="1341701348342335220">做得好！</translation>
 <translation id="1342886103232377846">如要檢查密碼是否被盜用，請前往「Google 密碼管理工具」</translation>
-<translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="1344141078024003905">您正在投放螢幕畫面。您可以隨時暫停或停止投放螢幕畫面。</translation>
 <translation id="1346403631707626730">傳送使用情況和診斷資料。將診斷、裝置及應用程式的使用情況資料自動傳送至 Google，協助改善你子女的 Android 使用體驗。這些資料不會用來識別你子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果你為子女開啟「其他網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解數據<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@
 <translation id="1588919647604819635">按一下右鍵資訊卡</translation>
 <translation id="1589055389569595240">顯示拼字和文法</translation>
 <translation id="1590478605309955960">系統會自動儲存分頁群組，並同步至所有你已登入帳戶的裝置。</translation>
-<translation id="1591679663873027990">授權 Parallels Desktop 存取 USB 裝置。移除後，Parallels Desktop 將不會記住此 USB 裝置。</translation>
 <translation id="15916883652754430">系統語音設定</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 偵錯，此操作會重設您的 <ph name="DEVICE_TYPE" />。請在重新開機前備份檔案。</translation>
 <translation id="1592126057537046434">「快速解答」的翻譯</translation>
@@ -2655,7 +2653,6 @@
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2855243985454069333">從所有已同步的裝置刪除記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
-<translation id="28559674945112027">嚴格模式</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
@@ -2937,7 +2934,6 @@
 <translation id="3053273573829329829">啟用使用者 PIN</translation>
 <translation id="3053274730492362225">不要閃動</translation>
 <translation id="3054766768827382232">停用此功能可提升周邊裝置的效能，但也可能讓有心人士在未經授權的情況下使用您的個人資料。</translation>
-<translation id="3056438898277655057">請授權 <ph name="SPECIFIC_NAME" /> 存取 USB 裝置。移除後，<ph name="SPECIFIC_NAME" /> 將不會記住 USB 裝置。</translation>
 <translation id="3058498974290601450">您可隨時在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">幫裝置改名</translation>
 <translation id="3059195548603439580">要查看系統組件嗎？請前往</translation>
@@ -8538,7 +8534,6 @@
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">此操作會允許系統服務使用「定位精確度」以判斷你的位置。「定位精確度」會使用無線訊號和感應器資料，估算裝置位置。</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群組中有 1 個網站}other{<ph name="FPS_OWNER" /> 的群組中有 {MEMBERS} 個網站}}</translation>
 <translation id="7225082563376899794">在填寫密碼時使用 Windows Hello</translation>
 <translation id="7225179976675429563">找不到網絡類型</translation>
 <translation id="7227235818314667565">管理共用設定</translation>
@@ -9915,7 +9910,6 @@
 <translation id="8207404892907560325">選擇密鑰</translation>
 <translation id="8207794858944505786">虛擬機器「<ph name="DEFAULT_VM_NAME" />」已存在，但似乎不是有效的 <ph name="VM_TYPE" /> 虛擬機器。請聯絡您的管理員。</translation>
 <translation id="8207901006380134182">一股巨浪吞噬海洋，岸邊有片幽暗的森林。</translation>
-<translation id="8208188204689616705">這些網站屬於由 <ph name="FPS_OWNER" /> 定義的群組，群組中的網站可以查看您在該群組的活動。</translation>
 <translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在進行一項下載}other{正在進行多項下載}}</translation>
@@ -11040,7 +11034,6 @@
 <translation id="9009707268312089299">從 Windows 匯入</translation>
 <translation id="9009708085379296446">您要變更此頁面嗎？</translation>
 <translation id="9010845741772269259">新增付款方法</translation>
-<translation id="901087299639956505">平衡模式</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
 <translation id="9011262023858991985">正在投放此分頁</translation>
 <translation id="9011393886518328654">版本說明</translation>

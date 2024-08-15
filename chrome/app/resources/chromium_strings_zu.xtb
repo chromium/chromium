@@ -26,7 +26,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1324107359134968521">I-Chromium idinga ukufinyelela i-Bluetooth ukuze ihlole amadivayisi we-Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Futhi sula idatha ku-Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Ungene ngemvume ku-Chromium!</translation>
-<translation id="1465171403179274511">IChromium izokubuza ngaphambi kokulayisha noma iyiphi isayithi esebenzisa ukuxhuma okungavikelekile</translation>
 <translation id="1478370723027452770">Thola usizo nge-Chrome Yokuhlola</translation>
 <translation id="1497802159252041924">Iphutha lokufaka <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Yabelana ngethebhu ye-Chromium</translation>
@@ -82,7 +81,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="2210682093923538346">Isayithi eyingozi. I-Chromium isuse izaziso.</translation>
 <translation id="2240214816234246077">Awukavakashi kamuva nje. I-Chromium isuse i-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Uma wabelana ngekhompyutha, abangani nomndeni bangadlulisa amehlo ngokuhlukile baphinde basethe i-Chrome ngendlela abafuna ngayo nje.</translation>
-<translation id="2265830994243640896">IChromium izokubuza ngaphambi kokulayisha amasayithi omphakathi asebenzisa ukuxhuma okungavikelekile, kodwa izokuvumela ukuxhuma kwe-HTTP kumanethiwekhi agodliwe</translation>
 <translation id="2313870531055795960">Kuhlola ama-URL anohlu lwamasayithi angaphephile agcinwe ku-Chromium. Uma isayithi lizama ukuntshontsha iphasiwedi yakho, noma uma ulanda ifayela eliyingozi, i-Chromium ingathumela nama-URL, kuhlanganise nokuthile okuqukethwe kulelo khasi, Ekuphequluleni Okuphephile.</translation>
 <translation id="2329088755516916767">Uma ivuliwe, i-Chromium ilayisha kuqala amakhasi okwenza ukubhrawuza nokusesha kusheshe.</translation>
 <translation id="2343156876103232566">Ukuze uthumele inombolo kusukela lapha kufoni yakho ye-Android, ngena ngemvume ku-Chromium kuwo womabili amadivayisi.</translation>
@@ -107,7 +105,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="259935314519650377">Yehlulekile ukufaka enqolobaneni isifaki esidawunilodiwe. Iphutha: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">I-Chromium iyashesha ukuqalisa futhi izathi ezisebenzisa i-JavaScript kufanele zisebenze njengoba ziklanyiwe (okunconywayo)</translation>
 <translation id="2648074677641340862">Iphutha le sistimu yokusebenza livele ngesikhathi sokufaka. Sicela uphinde ulande i-Chromium.</translation>
-<translation id="2649201087614586016">Uma ivuliwe, iChromium izokubuza ngaphambi kokulayisha amasayithi angayisekeli i-HTTPS</translation>
 <translation id="2661879430930417727">Uma wabelana ngedivayisi, abangane nomndeni bangaphequlula ngokuhlukile baphinde basethe i-Chrome ngendlela abafuna ngayo</translation>
 <translation id="268602741124540128">Siyakwamukela ku-Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Ithebhu le-Chromium</translation>

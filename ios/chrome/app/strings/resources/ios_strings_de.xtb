@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">Bild kopieren</translation>
 <translation id="1608337082864370066">Nach kopiertem Bild suchen</translation>
 <translation id="1612730193129642006">Tab-Raster anzeigen</translation>
+<translation id="1612754831519568745">Safe Browsing ist derzeit deaktiviert. Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Wähle „Zu Google Kalender hinzufügen“ oder „Zu Apple Kalender hinzufügen“ aus.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="1636234353664774105">Mit der detaillierten Routenführung eine Wegbeschreibung zu deinem Ziel erhalten</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> geöffnet, Gruppe mit <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">Folgen</translation>
 <translation id="1644574205037202324">Verlauf</translation>
@@ -402,6 +404,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2952246431280799028">Eine Adresse gedrückt halten.</translation>
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2958718410589002129">Passwörter</translation>
+<translation id="2963044753825419640">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen, wenn diese Option verfügbar ist</translation>
 <translation id="2964349545761222050">Drittanbieter-Cookies blockieren</translation>
 <translation id="2965328226365382335">Letzte 15 Minuten</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
@@ -557,7 +560,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3745190878148784130">„Text zoomen“ ausblenden</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
 <translation id="3768725474733206671">Zuletzt geschlossenen Tab wieder öffnen</translation>
-<translation id="3771033907050503522">Inkognito-Tabs</translation>
 <translation id="3775743491439407556">Synchronisierung funktioniert nicht</translation>
 <translation id="3779810277399252432">Keine Internetverbindung</translation>
 <translation id="3785672280731998727">Anzeigename</translation>
@@ -759,6 +761,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, nur auf diesem Gerät, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4766112107778026136">Discover &amp; Folgen</translation>
+<translation id="4769198578611055647">Mit dieser PIN kannst du von jedem Gerät auf deine gespeicherten Passkeys zugreifen</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
 <translation id="4779732376610430319">Zu den Einstellungen…</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1042,6 +1045,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6067849159007176401">Browsing-Schutz hinzufügen</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) konnte nicht hochgeladen werden</translation>
 <translation id="6084848228346514841">Tabs auswählen</translation>
+<translation id="6089212833343035912">PIN für Google Passwortmanager</translation>
 <translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>
 <translation id="6119050551270742952">Die aktuelle Webseite ist im Inkognitomodus</translation>
@@ -1261,6 +1265,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7022197654033719543">Websitein­formationen</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="704692552158601232">Standard-Browser-App</translation>
+<translation id="7051147526307793383">Automatische Passkey-Upgrades zulassen</translation>
 <translation id="7055240621761583113">Passwort automatisch ausfüllen</translation>
 <translation id="7063811929043357292">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -1336,6 +1341,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7470908168505178757">Tabgruppe. Minimiert.</translation>
 <translation id="7472734401283673885">Unternehmensname</translation>
 <translation id="7473891865547856676">Nein danke</translation>
+<translation id="7477974514217962959">{count,plural, =1{1 Tabgruppe geschlossen und gespeichert}other{{count} Tabgruppen geschlossen und gespeichert}}</translation>
 <translation id="7488874549363591659">Zugestellt</translation>
 <translation id="7491131399623468277">Zu den Einstellungen…</translation>
 <translation id="749854780843431406">Über die Schaltfläche „<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />“ kannst du einen neuen Tab öffnen.</translation>

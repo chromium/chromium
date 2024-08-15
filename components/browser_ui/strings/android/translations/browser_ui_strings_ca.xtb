@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
 <translation id="789180354981963912">Bloqueja les galetes de tercers en mode d'incògnit:</translation>
 <translation id="7940722705963108451">Recorda-m'ho</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> lloc web al grup de llocs web de <ph name="FPS_OWNER" /> que poden veure la teva activitat al grup}other{<ph name="FPS_MEMBERS_COUNT" /> llocs web al grup de llocs web de <ph name="FPS_OWNER" /> que poden veure la teva activitat al grup}}</translation>
 <translation id="7986741934819883144">Selecciona un contacte</translation>
 <translation id="7990211076305263060">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar el micròfon. Quan aquesta opció està desactivada, els llocs web no poden utilitzar el micròfon.</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> lloc web de <ph name="FPS_OWNER" />}other{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> llocs web de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
 <translation id="8609465669617005112">Desplaça cap amunt</translation>
 <translation id="8617611086246832542">Quan aquesta opció està activada, es mostra la visualització per a ordinadors dels llocs web. Quan aquesta opció està desactivada, es mostra la visualització per a mòbils dels llocs web.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Gestionat pels pares</translation>
 <translation id="9039697262778250930">És possible que se't tanqui la sessió d'aquests llocs web</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Aquest lloc web forma part d'un grup que pot veure la teva activitat. <ph name="FPS_OWNER" /> defineix el grup.</translation>
 <translation id="9106233582039520022">Vols suprimir les galetes?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>

@@ -480,7 +480,6 @@
 <translation id="1340527397989195812">Направите резервну копију медија са уређаја помоћу апликације Датотеке.</translation>
 <translation id="1341701348342335220">Одлично!</translation>
 <translation id="1342886103232377846">Да бисте проверили да ли има угрожених лозинки, идите у Google менаџер лозинки</translation>
-<translation id="1343865611738742294">Дајте Linux апликацијама дозволу да приступају USB уређајима. Linux неће запамтити USB уређај када га уклоните.</translation>
 <translation id="1343920184519992513">Наставите где сте стали и отворите одређену групу страница</translation>
 <translation id="1344141078024003905">Пребацујете екран. Пребацивање екрана можете да паузирате или зауставите у сваком тренутку.</translation>
 <translation id="1346403631707626730">Шаљите податке о коришћењу и дијагностичке податке. Помозите нам да побољшамо Android доживљај за дете тако што ћете аутоматски слати Google-у податке о дијагностици и коришћењу уређаја и апликација. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако за дете укључите додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. <ph name="BEGIN_LINK1" />Сазнајте више о показатељима<ph name="BEGIN_LINK1_END" />Сазнајте више<ph name="END_LINK1" /></translation>
@@ -819,7 +818,6 @@
 <translation id="1588919647604819635">Кликните десним тастером на картицу</translation>
 <translation id="1589055389569595240">Прикажи правопис и граматику</translation>
 <translation id="1590478605309955960">Групе картица се аутоматски чувају и ажурирају на свим уређајима на којима сте пријављени.</translation>
-<translation id="1591679663873027990">Дозволите да Parallels Desktop приступа USB уређајима. Parallels Desktop неће запамтити USB уређај када га уклоните.</translation>
 <translation id="15916883652754430">Гласовна подешавања система</translation>
 <translation id="1592074621872221573">Сајт <ph name="MANAGER" /> је онемогућио ADB отклањање грешака, због чега ће се <ph name="DEVICE_TYPE" /> ресетовати. Направите резервне копије датотека пре рестартовања.</translation>
 <translation id="1592126057537046434">Превод за брзе одговоре</translation>
@@ -2641,7 +2639,6 @@
 <translation id="2853121255651601031">Лозинка је сачувана</translation>
 <translation id="2855243985454069333">Брише историју са свих синхронизованих уређаја</translation>
 <translation id="2855812646048059450">Пријавите се на <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Строги режим</translation>
 <translation id="2856776373509145513">Направите нови контејнер</translation>
 <translation id="2856907950922663165">Желите да искључите шифровање URL-ова?</translation>
 <translation id="2859741939921354763">Увезите лозинке у <ph name="BRAND" /></translation>
@@ -2923,7 +2920,6 @@
 <translation id="3053273573829329829">Омогући PIN корисника</translation>
 <translation id="3053274730492362225">Не трепћи</translation>
 <translation id="3054766768827382232">Ако је онемогућите, периферни уређаји могу да имају бољи учинак, али лични подаци могу да буду откривени неовлашћеним коришћењем.</translation>
-<translation id="3056438898277655057">Дозволите да <ph name="SPECIFIC_NAME" /> приступа USB уређајима. <ph name="SPECIFIC_NAME" /> неће запамтити USB уређај када га уклоните.</translation>
 <translation id="3058498974290601450">Можете да укључите синхронизацију у подешавањима у било ком тренутку</translation>
 <translation id="3058517085907878899">Дајте назив уређају</translation>
 <translation id="3059195548603439580">Тражите компоненте система? Посетите</translation>
@@ -8542,7 +8538,6 @@
 <translation id="7222335051802562841">Заврши ажурирање</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Ово омогућава системским услугама да користе прецизност локације за утврђивање локације. Прецизност локације користи информације о бежичним сигналима и сензорима за процену локације уређаја.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 сајт у групи власника <ph name="FPS_OWNER" />}one{{MEMBERS} сајт у групи власника <ph name="FPS_OWNER" />}few{{MEMBERS} сајта у групи власника <ph name="FPS_OWNER" />}other{{MEMBERS} сајтова у групи власника <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Користи Windows Hello при попуњавању лозинки</translation>
 <translation id="7225179976675429563">Недостаје тип мреже</translation>
 <translation id="7227235818314667565">Управљај дељењем</translation>
@@ -9924,7 +9919,6 @@
 <translation id="8207404892907560325">Одаберите приступни кôд</translation>
 <translation id="8207794858944505786">Виртуелна машина <ph name="DEFAULT_VM_NAME" /> постоји, али изгледа да није важећа виртуелна машина типа <ph name="VM_TYPE" />. Обратите се администратору.</translation>
 <translation id="8207901006380134182">Велики талас захвата океан, са тамном шумом на обали.</translation>
-<translation id="8208188204689616705">Ови сајтови су у групи коју дефинише <ph name="FPS_OWNER" />. Сајтови у групи могу да виде ваше активности у групи.</translation>
 <translation id="8208216423136871611">Не чувај</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново обавештење}one{# ново обавештење}few{# нова обавештења}other{# нових обавештења}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преузимање је у току}one{Преузимања су у току}few{Преузимања су у току}other{Преузимања су у току}}</translation>
@@ -11053,7 +11047,6 @@
 <translation id="9009707268312089299">Увезено из Windows-а</translation>
 <translation id="9009708085379296446">Да ли сте желели да промените ову страницу?</translation>
 <translation id="9010845741772269259">Додајте начине плаћања</translation>
-<translation id="901087299639956505">Уравнотежени режим</translation>
 <translation id="9011163749350026987">Увек приказуј икону</translation>
 <translation id="9011262023858991985">Пребацивање ове картице</translation>
 <translation id="9011393886518328654">Напомене о верзији</translation>
@@ -11432,7 +11425,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – Камера и микрофон снимају</translation>
 <translation id="984275831282074731">Начини плаћања</translation>
 <translation id="984705303330760860">Додајте језике за проверу правописа</translation>
-<translation id="98515147261107953">Хоризонтално</translation>
+<translation id="98515147261107953">Пејзаж</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Опште</translation>
 <translation id="987475089238841621">Језички пакети се користе за титл уживо и чувају се на уређају</translation>

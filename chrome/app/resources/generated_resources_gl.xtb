@@ -478,7 +478,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1340527397989195812">Realiza unha copia de seguranza dos medios desde o dispositivo a través da aplicación Ficheiros.</translation>
 <translation id="1341701348342335220">Bo traballo!</translation>
 <translation id="1342886103232377846">Para comprobar os contrasinais vulnerados, vai ao xestor de contrasinais de Google</translation>
-<translation id="1343865611738742294">Concédelle permiso ás aplicacións de Linux para acceder a dispositivos USB. Linux non recordará un dispositivo USB unha vez que se quite.</translation>
 <translation id="1343920184519992513">Retomar a actividade onde a deixaches e abrir un conxunto de páxinas específico</translation>
 <translation id="1344141078024003905">Estás emitindo a pantalla. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="1346403631707626730">Envía datos de uso e diagnóstico. Para axudar a mellorar a experiencia do teu fillo ou filla en Android, envíalle automaticamente a Google datos de diagnóstico, do dispositivo e de uso das aplicacións. Esta información non se utilizará para identificar o teu fillo ou filla, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de implementar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo ou filla, estes datos pódense gardar na súa conta de Google. <ph name="BEGIN_LINK1" />Máis información sobre as métricas<ph name="BEGIN_LINK1_END" />Máis información<ph name="END_LINK1" /></translation>
@@ -819,7 +818,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1588919647604819635">Tarxeta de información ao facer clic co botón dereito</translation>
 <translation id="1589055389569595240">Mostrar ortografía e gramática</translation>
 <translation id="1590478605309955960">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos nos que teñas a sesión iniciada.</translation>
-<translation id="1591679663873027990">Concede permiso a Parallels Desktop para acceder a dispositivos USB. Unha vez que se quiten, Parallels Desktop non os lembrará.</translation>
 <translation id="15916883652754430">Configuración de voz do sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> desactivou a depuración de ADB, o cal provocará que se restableza o dispositivo (<ph name="DEVICE_TYPE" />). Antes de reinicialo, fai unha copia de seguranza dos ficheiros.</translation>
 <translation id="1592126057537046434">Tradución de Respostas rápidas</translation>
@@ -2642,7 +2640,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2853121255651601031">Gardouse o contrasinal</translation>
 <translation id="2855243985454069333">Elimina o historial de todos os dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Iniciar sesión con <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modo estrito</translation>
 <translation id="2856776373509145513">Crear un contedor novo</translation>
 <translation id="2856907950922663165">Queres desactivar a encriptación dos URL?</translation>
 <translation id="2859741939921354763">Importa os contrasinais a <ph name="BRAND" /></translation>
@@ -2924,7 +2921,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3053273573829329829">Activar PIN de usuario</translation>
 <translation id="3053274730492362225">Sen escintileo</translation>
 <translation id="3054766768827382232">Ao desactivala, podes conseguir que os periféricos teñan un mellor rendemento, pero é posible que os teus datos persoais se usen sen permiso e queden expostos.</translation>
-<translation id="3056438898277655057">Concédelle permiso a <ph name="SPECIFIC_NAME" /> para acceder a dispositivos USB. <ph name="SPECIFIC_NAME" /> non recordará un dispositivo USB unha vez que se quite.</translation>
 <translation id="3058498974290601450">Podes activar a sincronización en calquera momento na configuración</translation>
 <translation id="3058517085907878899">Nome de dispositivo</translation>
 <translation id="3059195548603439580">Buscas os compoñentes do sistema? Visita</translation>
@@ -8538,7 +8534,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7222335051802562841">Completar actualización</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Se aceptas, permitirás que os servizos do sistema utilicen a opción Precisión da localización para determinar a túa posición. Precisión da localización usa a información dos sensores e sinais sen fíos para calcular onde está o dispositivo.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 sitio no grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sitios no grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar Windows Hello ao completar contrasinais</translation>
 <translation id="7225179976675429563">Non se atopa o tipo de rede</translation>
 <translation id="7227235818314667565">Xestionar uso compartido</translation>
@@ -9915,7 +9910,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8207404892907560325">Escolle unha clave de acceso</translation>
 <translation id="8207794858944505786">A máquina virtual <ph name="DEFAULT_VM_NAME" /> existe, pero parece que non é unha máquina virtual de tipo <ph name="VM_TYPE" /> válida. Fala coa persoa administradora.</translation>
 <translation id="8207901006380134182">Onda grande que cobre o océano, cun bosque escuro na costa.</translation>
-<translation id="8208188204689616705">Estes sitios están nun grupo que definiu <ph name="FPS_OWNER" />. Os sitios dun grupo poden ver a túa actividade dese grupo.</translation>
 <translation id="8208216423136871611">Non gardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
@@ -11042,7 +11036,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="9009707268312089299">Importados de Windows</translation>
 <translation id="9009708085379296446">Querías cambiar esta páxina?</translation>
 <translation id="9010845741772269259">Engadir métodos de pago</translation>
-<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Mostrar sempre a icona</translation>
 <translation id="9011262023858991985">Emitindo esta pestana</translation>
 <translation id="9011393886518328654">Notas da versión</translation>

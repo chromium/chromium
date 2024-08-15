@@ -481,7 +481,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1340527397989195812">Varnostno kopiranje predstavnosti v napravi z aplikacijo Datoteke.</translation>
 <translation id="1341701348342335220">Dobro ste opravili.</translation>
 <translation id="1342886103232377846">Če želite preveriti, ali so gesla ogrožena, odprite Googlovega upravitelja gesel</translation>
-<translation id="1343865611738742294">Omogočanje, da aplikacije za Linux dostopajo do naprav USB. Linux si ne zapomni naprave USB, ko jo odstranite.</translation>
 <translation id="1343920184519992513">Nadaljuj prejšnjo sejo in odprti določen nabor strani</translation>
 <translation id="1344141078024003905">Predvajate zaslon. Predvajanje zaslona lahko kadar koli začasno zaustavite ali ustavite.</translation>
 <translation id="1346403631707626730">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati otrokovo izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste za otroka vklopili dodatno dejavnost v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. <ph name="BEGIN_LINK1" />Preberite več o meritvah<ph name="BEGIN_LINK1_END" />Več o tem<ph name="END_LINK1" />.</translation>
@@ -824,7 +823,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1588919647604819635">Desni klik kartice</translation>
 <translation id="1589055389569595240">Pokaži črkovanje in slovnico</translation>
 <translation id="1590478605309955960">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah, v katerih ste prijavljeni.</translation>
-<translation id="1591679663873027990">Programu Parallels Desktop dovolite dostop do naprav USB. Program Parallels Desktop si po odstranitvi naprave USB ne zapomni.</translation>
 <translation id="15916883652754430">Sistemske nastavitve za govor</translation>
 <translation id="1592074621872221573">Domena <ph name="MANAGER" /> je onemogočila odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB), zaradi česar bo naprava <ph name="DEVICE_TYPE" /> ponastavljena. Pred vnovičnim zagonom varnostno kopirajte datoteke.</translation>
 <translation id="1592126057537046434">Prevod hitrih odgovorov</translation>
@@ -2659,7 +2657,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2853121255651601031">Geslo je shranjeno</translation>
 <translation id="2855243985454069333">Izbriše zgodovino iz vseh sinhroniziranih naprav</translation>
 <translation id="2855812646048059450">Prijava s ponudnikom <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Strogi način</translation>
 <translation id="2856776373509145513">Ustvarjanje novega vsebnika</translation>
 <translation id="2856907950922663165">Želite izklopiti šifriranje URL-jev?</translation>
 <translation id="2859741939921354763">Uvoz gesel v izdelek <ph name="BRAND" /></translation>
@@ -2941,7 +2938,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3053273573829329829">Omogoči kodo PIN uporabnika</translation>
 <translation id="3053274730492362225">Brez utripanja</translation>
 <translation id="3054766768827382232">Z onemogočanjem bo zunanja dodatna oprema morda delovala bolje, vendar bo s tem ob nepooblaščeni uporabi morda prišlo do razkritja osebnih podatkov.</translation>
-<translation id="3056438898277655057">Sistemu <ph name="SPECIFIC_NAME" /> odobrite dovoljenje za dostop do naprav USB. <ph name="SPECIFIC_NAME" /> si ne zapomni naprave USB, ko jo odstranite.</translation>
 <translation id="3058498974290601450">Sinhronizacijo lahko kadarkoli vklopite v nastavitvah.</translation>
 <translation id="3058517085907878899">Poimenovanje naprave</translation>
 <translation id="3059195548603439580">Ali iščete komponente sistema? Obiščite</translation>
@@ -8564,7 +8560,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7222335051802562841">Dokončaj posodobitev</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">To sistemskim storitvam omogoča uporabo natančnosti zaznavanja lokacije za določanje vaše lokacije. Natančnost zaznavanja lokacije za oceno lokacije naprave uporablja podatke o brezžičnih signalih in tipalih.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 spletno mesto v skupini uporabnika <ph name="FPS_OWNER" />}one{{MEMBERS} spletno mesto v skupini uporabnika <ph name="FPS_OWNER" />}two{{MEMBERS} spletni mesti v skupini uporabnika <ph name="FPS_OWNER" />}few{{MEMBERS} spletna mesta v skupini uporabnika <ph name="FPS_OWNER" />}other{{MEMBERS} spletnih mest v skupini uporabnika <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Uporaba funkcije Windows Hello pri izpolnjevanju gesel</translation>
 <translation id="7225179976675429563">Vrsta omrežja manjka</translation>
 <translation id="7227235818314667565">Upravljanje deljenja</translation>
@@ -9942,7 +9937,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8207404892907560325">Izbira ključa za dostop</translation>
 <translation id="8207794858944505786">Navidezni računalnik »<ph name="DEFAULT_VM_NAME" />« že obstaja, vendar ni videti, da je veljaven navidezni računalnik vrste <ph name="VM_TYPE" />. Obrnite se na skrbnika.</translation>
 <translation id="8207901006380134182">Velik val se bohoti nad oceanom, na obali se razprostira temačen gozd.</translation>
-<translation id="8208188204689616705">Ta spletna mesta so v skupini, ki jo je definiral(-a) <ph name="FPS_OWNER" />. Spletna mesta v skupini lahko vidijo vašo dejavnost v skupini.</translation>
 <translation id="8208216423136871611">Ne shrani</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Novo obvestilo}one{# novo obvestilo}two{# novi obvestili}few{# nova obvestila}other{# novih obvestil}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Poteka prenos}one{Poteka prenos}two{Potekata prenosa}few{Potekajo prenosi}other{Potekajo prenosi}}</translation>
@@ -11072,7 +11066,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9009707268312089299">Uvoženo iz sistema Windows</translation>
 <translation id="9009708085379296446">Ali ste nameravali spremeniti to stran?</translation>
 <translation id="9010845741772269259">Dodajanje plačilnih sredstev</translation>
-<translation id="901087299639956505">Uravnoteženi način</translation>
 <translation id="9011163749350026987">Vedno pokaži ikono</translation>
 <translation id="9011262023858991985">Predvajanje tega zavihka</translation>
 <translation id="9011393886518328654">Opombe ob izdaji</translation>

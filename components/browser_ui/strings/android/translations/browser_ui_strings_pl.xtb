@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
 <translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> witryna w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}few{<ph name="FPS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}many{<ph name="FPS_MEMBERS_COUNT" /> witryn w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}other{<ph name="FPS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="FPS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}}</translation>
 <translation id="7986741934819883144">Wybierz kontakt</translation>
 <translation id="7990211076305263060">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do mikrofonu. Gdy jest wyłączona, strony nie mogą go używać.</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
 <translation id="8541410041357371550">Witryna wykorzystuje gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8617611086246832542">Gdy ta opcja jest włączona, strony internetowe są wyświetlane w wersji na komputery. Gdy jest wyłączona, strony są wyświetlane w wersji na urządzenia mobilne.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Zarządzany przez Twoich rodziców</translation>
 <translation id="9039697262778250930">Może nastąpić wylogowanie z tych stron</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ta witryna należy do grupy, która ma dostęp do danych o Twojej aktywności. Grupa jest zdefiniowana przez <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Usunąć pliki cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>

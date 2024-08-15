@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">सुझाव दिखाएं</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
 <translation id="1041998700806130099">जॉब शीट मैसेज</translation>
+<translation id="1044897699341250361">इसका क्या मतलब है</translation>
 <translation id="1046350918013988591">कूपन और डिस्काउंट ऑफ़र</translation>
 <translation id="1048785276086539861">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़, सिंगल पेज व्यू पर वापस चला जाएगा</translation>
 <translation id="1050038467049342496">दूूूूसरे ऐप्लिकेशन बंद करें</translation>
@@ -2649,6 +2650,7 @@
 <translation id="5999271311987646952">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. इसने उस साइट पर <ph name="BEGIN_LINK" />हाल ही में मैलवेयर होने का पता<ph name="END_LINK" /> लगाया है जिसे आपको ब्राउज़ करना है.</translation>
 <translation id="6000528814684428358">हार्ड रॉक और प्रोग्रेसिव</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' के लिए <ph name="RESULT_COUNT" /> नतीजे मिले हैं</translation>
+<translation id="6001839398155993679">आइए, शुरू करें</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6002968396561884726">हाल ही में देखे गए</translation>
 <translation id="6005659677094197001">कंटिन्यूअस</translation>
@@ -3057,6 +3059,7 @@
 <translation id="6735783933931458444">दिन के इस समय, आपके डिवाइस पर अक्सर खोले जाने वाले टैब</translation>
 <translation id="6737708609449480586">बेकरी का सामान</translation>
 <translation id="6738516213925468394">आपका डेटा <ph name="TIME" /> को <ph name="BEGIN_LINK" />सिंक करने के लिए लंबा पासवर्ड बनाकर<ph name="END_LINK" /> सुरक्षित किया गया था. सिंक शुरू करने के लिए पासवर्ड डालें.</translation>
+<translation id="6739943577740687354">यह सुविधा, एआई का इस्तेमाल करती है. इसलिए, ज़रूरी नहीं है कि यह हमेशा सही हो</translation>
 <translation id="6740851646645036700">फ़िलहाल, लिखने में मदद पाने की तय सीमा पूरी हो गई है. बाद में कोशिश करें.</translation>
 <translation id="674375294223700098">अज्ञात सर्वर प्रमाणपत्र गड़बड़ी.</translation>
 <translation id="6744009308914054259">कनेक्शन का इंतज़ार करते समय, ऑफ़लाइन लेख पढ़ने के लिए आप 'डाउनलोड' पर जा सकते हैं.</translation>
@@ -4445,5 +4448,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN जोड़ें</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay से</translation>
 </translationbundle>

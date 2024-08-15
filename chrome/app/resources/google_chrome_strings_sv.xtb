@@ -63,7 +63,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="178701303897325119">Detta tillägg stöds inte längre. Vi rekommenderar att du tar bort det i stället.</translation>
 <translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
 <translation id="1860536484129686729">Du behöver ge Chrome behörighet att använda kameran på webbplatsen</translation>
-<translation id="1861924772887221906">En fråga visas i Chrome innan offentliga webbplatser med osäkra anslutningar läses in, men HTTP-anslutningar tillåts för privata nätverk</translation>
 <translation id="1873233029667955273">Google Chrome är inte din standardwebbläsare</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-in)</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
@@ -201,7 +200,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas}=1{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="3597003331831379823">Det gick inte att köra konfigureringen med förhöjd behörighet. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Du har inte besökt webbplatsen nyligen. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">En fråga visas i Chrome innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="3622797965165704966">Nu är det enklare att använda Chrome med ditt Google-konto och på delade datorer.</translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="3667616615096815454">Det gick inte att installera appen. Appen är okänd för servern.</translation>
@@ -458,7 +456,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7296210096911315575">Viktig användnings- och säkerhetsinformation</translation>
 <translation id="7302361266603927550">Viss Chrome-data har inte sparats i ditt Google-konto ännu. Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
-<translation id="7324120788743384890">När detta är aktiverat visas en fråga i Chrome innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7352881504289275361">Med Förbättrad säker webbsökning får du det starkaste onlineskyddet i Chrome som skyddar dig när du surfar</translation>
 <translation id="7394745511930161845">Skapa ett eget tema med AI så att din webbläsare får ett unikt utseende</translation>

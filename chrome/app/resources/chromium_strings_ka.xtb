@@ -27,7 +27,6 @@
  Bluetooth მოწყობილობები. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">ასევე, წაიშალოს მონაცემები Chromium-იდან (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">თქვენ შესული ხართ Chromium-ში!</translation>
-<translation id="1465171403179274511">Chromium შეგეკითხებათ ნებისმიერი საიტის დაუცველი კავშირის გამოყენებით ჩატვირთვამდე</translation>
 <translation id="1478370723027452770">დახმარების მიღება Chrome for Testing-თან დაკავშირებით</translation>
 <translation id="1497802159252041924">შეცდომა ინსტალაციისას: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium ჩანართის გაზიარება</translation>
@@ -83,7 +82,6 @@
 <translation id="2210682093923538346">სახიფათო საიტი Chromium-მა ამოშალა შეტყობინებები.</translation>
 <translation id="2240214816234246077">ბოლო დროს არ ყოფილხართ. Chromium-მა ამოშალა <ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">თუ თქვენ გაზიარებული გაქვთ კომპიუტერი, თქვენი მეგობრები და ოჯახის წევრები შეძლებენ დამოუკიდებლად დათვალიერებას და Chromium-ის დაყენებას სურვილისამებრ.</translation>
-<translation id="2265830994243640896">Chromium შეგეკითხებათ საჯაროდ ხელმისაწვდომი საიტების დაუცველი კავშირის გამოყენებით ჩატვირთვამდე, მაგრამ დაუშვებს HTTP კავშირებს კერძო ქსელებისთვის</translation>
 <translation id="2313870531055795960">შეამოწმებს URL-ების თანხვედრას Chromium-ში შენახულ არაუსაფრთხო საიტების სიასთან. საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chromium-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი.</translation>
 <translation id="2329088755516916767">ჩართვის შემთხვევაში, Chromium წინასწარ ჩატვირთავს გვერდებს, რაც დააჩქარებს ვების დათვალიერებასა და ძიებას.</translation>
 <translation id="2343156876103232566">აქედან თქვენს Android ტელეფონზე ნომრის გასაგზავნად შედით Chromium-ში ორივე მოწყობილობაზე.</translation>
@@ -108,7 +106,6 @@
 <translation id="259935314519650377">ჩამოტვირთული ინსტალატორის ქეშირება ვერ მოხერხდა. შეცდომა: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium უფრო სწრაფად, ხოლო ფუნქციები, რომლებიც JavaScript-ს იყენებს, დანიშნულებისამებრ იმუშავებს (რეკომენდებული)</translation>
 <translation id="2648074677641340862">ინსტალაციის დროს ოპერაციული სისტემის შეცდომა მოხდა. ხელახლა ჩამოტვირთეთ Chromium.</translation>
-<translation id="2649201087614586016">როცა ჩართულია, Chromium შეგეკითხებათ ისეთი საიტების ჩატვირთვამდე, რომლებსაც არ აქვს HTTPS მხარდაჭერა</translation>
 <translation id="2661879430930417727">თუ საზიარო მოწყობილობა გაქვთ, თქვენს მეგობრებსა და ოჯახის წევრებს შეუძლიათ ვების დამოუკიდებლად დათვალიერება და Chromium-ის საკუთარი შეხედულებისამებრ დაყენება</translation>
 <translation id="268602741124540128">მოგესალმებათ Chromium-ზე, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
 <translation id="2711502716910134313">Chromium-ის ჩანართი</translation>

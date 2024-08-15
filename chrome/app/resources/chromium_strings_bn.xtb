@@ -25,7 +25,6 @@
  Chromium-কে ব্লুটুথের অ্যাক্সেস দিতে হবে। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">এছাড়া, Chromium থেকেও ডেটা মুছে দিন (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">আপনি Chromium এ প্রবেশ করেছেন!</translation>
-<translation id="1465171403179274511">অসুরক্ষিত কানেকশন ব্যবহার করে এমন যেকোনও সাইট লোড করার আগে Chromium আপনাকে জিজ্ঞেস করবে</translation>
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
 <translation id="1497802159252041924">ইনস্টলেশন সংক্রান্ত সমস্যা: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">একটি Chromium ট্যাব শেয়ার করুন</translation>
@@ -81,7 +80,6 @@
 <translation id="2210682093923538346">বিপজ্জনক সাইট। Chromium বিজ্ঞপ্তি পাওয়ার অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="2240214816234246077">আপনি সম্প্রতি ভিজিট করেননি। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="2241627712206172106">যদি আপনি একটি কম্পিউটার শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের ইচ্ছা অনুযায়ী Chromium-এর সেট-আপ করতে পারবেন৷</translation>
-<translation id="2265830994243640896">অসুরক্ষিত কানেকশন ব্যবহার করে এমন পাবলিক সাইট লোড করার আগে Chromium আপনাকে জিজ্ঞেস করবে, কিন্তু প্রাইভেট নেটওয়ার্কের জন্য HTTP কানেকশনকে অনুমতি দেবে</translation>
 <translation id="2313870531055795960">Chromium-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সেগুলির URL গুলি পরীক্ষা করে দেখে। যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Safe Browsing-এ Chromium পৃষ্ঠার কিছু কন্টেন্ট সহ URL গুলিও হয়ত পাঠাতে পারে।</translation>
 <translation id="2329088755516916767">চালু থাকলে, Chromium পৃষ্ঠা প্রিলোড করে যা ব্রাউজ ও সার্চ করার কাজকে আরও দ্রুত করে তোলে।</translation>
 <translation id="2343156876103232566">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chromium-এ সাইন-ইন করুন।</translation>
@@ -106,7 +104,6 @@
 <translation id="259935314519650377">ডাউনলোড করা ইনস্টলার ক্যাশে করা যায়নি। সমস্যা হয়েছে: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="264613044588233783">Chromium আরও দ্রুত কাজ করে এবং যেসব ফিচার জাভাস্ক্রিপ্ট ব্যবহার করে, সেগুলি ডিজাইন করা (সাজেস্ট করা হয়েছে) হিসেবে কাজ করতে হবে</translation>
 <translation id="2648074677641340862">ইনস্টলেশনের সময় একটি অপারেটিং সিস্টেম ত্রুটি ঘটেছে৷ অনুগ্রহ করে Chromium আবার ডাউনলোড করুন৷</translation>
-<translation id="2649201087614586016">চালু থাকলে, HTTPS কাজ করে না এমন সাইট লোড করার আগে Chromium আপনাকে জিজ্ঞেস করবে</translation>
 <translation id="2661879430930417727">যদি আপনি কোনও ডিভাইস শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের পছন্দ অনুযায়ী Chromium সেট-আপ করতে পারবেন</translation>
 <translation id="268602741124540128">Chromium-এ স্বাগতম <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium ট্যাব</translation>

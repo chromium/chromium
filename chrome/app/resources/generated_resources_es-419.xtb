@@ -477,7 +477,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1340527397989195812">Realizar una copia de seguridad del contenido multimedia desde el dispositivo mediante la aplicación Archivos</translation>
 <translation id="1341701348342335220">¡Bien hecho!</translation>
 <translation id="1342886103232377846">Para revisar si hay contraseñas hackeadas, ve al Administrador de contraseñas de Google</translation>
-<translation id="1343865611738742294">Concédeles a las apps de Linux acceso a dispositivos USB. Linux no recuerda los dispositivos USB después de quitarlos.</translation>
 <translation id="1343920184519992513">Continuar la sesión desde donde la dejaste y abrir un conjunto específico de páginas</translation>
 <translation id="1344141078024003905">Estás transmitiendo la pantalla. Puedes pausar o detener la transmisión de la pantalla en cualquier momento.</translation>
 <translation id="1346403631707626730">Enviar datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo o hija, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo o hija, y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad de web y de aplicaciones adicional para tu hijo o hija, es posible que se almacenen estos datos en su Cuenta de Google. <ph name="BEGIN_LINK1" />Más información sobre las métricas<ph name="BEGIN_LINK1_END" />Más información<ph name="END_LINK1" /></translation>
@@ -816,7 +815,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1588919647604819635">Hacer clic con el botón derecho en la tarjeta</translation>
 <translation id="1589055389569595240">Mostrar ortografía y gramática</translation>
 <translation id="1590478605309955960">Los grupos de pestañas se guardan y actualizan automáticamente en todos los dispositivos en los que accediste a tu cuenta.</translation>
-<translation id="1591679663873027990">Permite que Parallels Desktop acceda a los dispositivos USB. Parallels Desktop no recordará los dispositivos USB una vez que se quiten.</translation>
 <translation id="15916883652754430">Configuración de voz del sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> inhabilitó la depuración de ADB, por lo que se restablecerá tu <ph name="DEVICE_TYPE" />. Antes de reiniciar el dispositivo, crea una copia de seguridad de tus archivos.</translation>
 <translation id="1592126057537046434">Traducción de Respuestas rápidas</translation>
@@ -2639,7 +2637,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2853121255651601031">Se guardó la contraseña</translation>
 <translation id="2855243985454069333">Borra el historial de todos los dispositivos sincronizados</translation>
 <translation id="2855812646048059450">Acceder con <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modo estricto</translation>
 <translation id="2856776373509145513">Crea un contenedor nuevo</translation>
 <translation id="2856907950922663165">¿Quieres desactivar la encriptación de URLs?</translation>
 <translation id="2859741939921354763">Importa contraseñas a <ph name="BRAND" /></translation>
@@ -2920,7 +2917,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
 <translation id="3053274730492362225">Sin parpadeo</translation>
 <translation id="3054766768827382232">Si la inhabilitas, mejorará el rendimiento de los dispositivos periféricos, pero tus datos personales pueden quedar expuestos por un uso no autorizado.</translation>
-<translation id="3056438898277655057">Otorga permiso a <ph name="SPECIFIC_NAME" /> para acceder a dispositivos USB. <ph name="SPECIFIC_NAME" /> no recuerda los dispositivos USB después de quitarlos.</translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en la configuración en cualquier momento</translation>
 <translation id="3058517085907878899">Asignar un nombre al dispositivo</translation>
 <translation id="3059195548603439580">¿Buscas los componentes del sistema? Visita</translation>
@@ -8531,7 +8527,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7222335051802562841">Finalizar actualización</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Esto permite que los servicios del sistema usen la Precisión de la ubicación para determinar dónde te encuentras. La Precisión de la ubicación usa la información sobre sensores y señales inalámbricos para calcular la ubicación del dispositivo.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 sitio en el grupo de <ph name="FPS_OWNER" />}other{{MEMBERS} sitios en el grupo de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Usar Windows Hello para completar contraseñas</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
 <translation id="7227235818314667565">Administrar el uso compartido</translation>
@@ -9909,7 +9904,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8207404892907560325">Elige una llave de acceso</translation>
 <translation id="8207794858944505786">La VM "<ph name="DEFAULT_VM_NAME" />" existe, pero no parece ser una VM válida de <ph name="VM_TYPE" />. Comunícate con tu administrador.</translation>
 <translation id="8207901006380134182">Una gran ola que cubre el océano, con un bosque oscuro en la costa.</translation>
-<translation id="8208188204689616705">Estos sitios están en un grupo, definido por <ph name="FPS_OWNER" />. Los sitios de un grupo pueden ver tu actividad allí.</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
@@ -11035,7 +11029,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9009707268312089299">Importados desde Windows</translation>
 <translation id="9009708085379296446">¿Querías cambiar esta página?</translation>
 <translation id="9010845741772269259">Agregar formas de pago</translation>
-<translation id="901087299639956505">Modo equilibrado</translation>
 <translation id="9011163749350026987">Mostrar siempre el ícono</translation>
 <translation id="9011262023858991985">Transmitiendo esta pestaña</translation>
 <translation id="9011393886518328654">Notas de la versión</translation>

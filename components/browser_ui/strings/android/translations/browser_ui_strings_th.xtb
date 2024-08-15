@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">อนุญาตให้เว็บไซต์ที่ต้องการเล่นเสียงได้</translation>
 <translation id="789180354981963912">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน:</translation>
 <translation id="7940722705963108451">เตือนฉัน</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}other{เว็บไซต์ <ph name="FPS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="FPS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}}</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="8541410041357371550">เว็บไซต์นี้รับหัวข้อโฆษณาของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้นด้วย</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}other{อนุญาตคุกกี้สำหรับเว็บไซต์ <ph name="FPS_OWNER" /> แล้ว <ph name="FPS_MEMBERS_COUNT" /> รายการ}}</translation>
 <translation id="857943718398505171">อนุญาตแล้ว (แนะนำ)</translation>
 <translation id="8609465669617005112">เลื่อนขึ้น</translation>
 <translation id="8617611086246832542">เมื่อเปิด เว็บไซต์จะแสดงในมุมมองบนเดสก์ท็อป เมื่อปิด เว็บไซต์จะแสดงในมุมมองบนอุปกรณ์เคลื่อนที่</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">จัดการโดยผู้ปกครอง</translation>
 <translation id="9039697262778250930">ระบบอาจนำคุณออกจากระบบเว็บไซต์เหล่านี้</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
-<translation id="9090268041676521955">เว็บไซต์นี้อยู่ในกลุ่มที่สามารถดูกิจกรรมของคุณได้ ซึ่งเป็นกลุ่มที่ <ph name="FPS_OWNER" /> กำหนดไว้</translation>
 <translation id="9106233582039520022">ลบคุกกี้ไหม</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="913657688200966289">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>

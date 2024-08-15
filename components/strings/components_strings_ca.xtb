@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Mostra els suggeriments</translation>
 <translation id="1038842779957582377">nom desconegut</translation>
 <translation id="1041998700806130099">Missatge del full de treball</translation>
+<translation id="1044897699341250361">Què implica això</translation>
 <translation id="1046350918013988591">Cupons i ofertes de descompte</translation>
 <translation id="1048785276086539861">Quan editis anotacions, aquest document tornarà a la visualització d'una sola pàgina</translation>
 <translation id="1050038467049342496">Tanca altres aplicacions</translation>
@@ -2649,6 +2650,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5999271311987646952">Chrome té funcions de seguretat integrades per protegir-te mentre navegues, com ara Navegació segura de Google, que <ph name="BEGIN_LINK" />recentment ha trobat programari maliciós<ph name="END_LINK" /> al lloc web que proves de visitar.</translation>
 <translation id="6000528814684428358">Música heavy i progressiva</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Som-hi</translation>
 <translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6002968396561884726">Vistos recentment</translation>
 <translation id="6005659677094197001">Continu</translation>
@@ -3057,6 +3059,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6735783933931458444">La visites sovint a aquesta hora del dia</translation>
 <translation id="6737708609449480586">Pa i brioixeria</translation>
 <translation id="6738516213925468394">Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Introdueix-la per començar la sincronització.</translation>
+<translation id="6739943577740687354">Aquesta funció utilitza IA i no sempre l'encertarà</translation>
 <translation id="6740851646645036700">Has arribat al límit d'ajuda amb l'escriptura per ara. Torna-ho a provar més tard.</translation>
 <translation id="674375294223700098">Error de certificat del servidor desconegut.</translation>
 <translation id="6744009308914054259">Mentre esperes a tenir connexió, pots visitar Baixades per llegir articles sense connexió.</translation>
@@ -4443,5 +4446,6 @@ Detalls addicionals:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Afegeix un IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

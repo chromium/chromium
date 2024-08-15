@@ -59,7 +59,6 @@
 <translation id="178701303897325119">この拡張機能は現在サポートされていません。代わりに削除することをおすすめします。</translation>
 <translation id="1812689907177901597">この設定を無効にすると、Chrome にログインすることなく Gmail などの Google サイトにログインできます</translation>
 <translation id="1860536484129686729">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
-<translation id="1861924772887221906">安全でない接続を使用して一般公開サイトを読み込む前に確認メッセージを表示する一方、プライベート ネットワークの HTTP 接続は許可します</translation>
 <translation id="1873233029667955273">Google Chrome はデフォルトのブラウザとして設定されていません</translation>
 <translation id="1874309113135274312">Google Chrome ベータ版（mDNS-In）</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{管理者が、アップデートを適用するために Chrome を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3597003331831379823">昇格された権限で設定を実行できませんでした。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました</translation>
-<translation id="3614820178395775413">安全でない接続を使用してサイトを読み込む前に確認のメッセージを表示します</translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
@@ -449,7 +447,6 @@
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7302361266603927550">Chrome データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
-<translation id="7324120788743384890">オンにすると、HTTPS に対応していないサイトを読み込む前に確認のメッセージが表示されます</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7352881504289275361">Chrome のセーフ ブラウジング保護強化機能では、ブラウジング中のユーザーを最強レベルのセキュリティで保護します</translation>
 <translation id="7394745511930161845">AI を活用して独自のテーマを作成し、ブラウザを好みのデザインでカスタマイズできます</translation>

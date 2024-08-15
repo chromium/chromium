@@ -60,7 +60,6 @@
 <translation id="178701303897325119">Chrome 不再支援這項擴充功能，建議你移除。</translation>
 <translation id="1812689907177901597">關閉這項功能後，你可以單獨登入 Gmail 等這類 Google 網站，不必同時登入 Chrome</translation>
 <translation id="1860536484129686729">Chrome 需要相關權限，才能讓這個網站使用你的攝影機</translation>
-<translation id="1861924772887221906">如果是採用不安全連線的公開網站，Chrome 會在載入網站前詢問你，但會允許使用 HTTP 連上私人網路</translation>
 <translation id="1873233029667955273">Google Chrome 並非你的預設瀏覽器</translation>
 <translation id="1874309113135274312">Google Chrome Beta 版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
@@ -198,7 +197,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{系統管理員要求你重新啟動 Chrome，以套用更新}=1{系統管理員要求你重新啟動 Chrome，以套用更新。你的無痕視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。你的 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="3597003331831379823">無法以進階權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和「<ph name="PERMISSION_3" />」權限</translation>
-<translation id="3614820178395775413">如果是採用不安全連線的網站，Chrome 一律會在載入網站前詢問你</translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
 <translation id="3635073343384702370">Chrome 可以檢查你儲存的密碼</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>
@@ -452,7 +450,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7302361266603927550">部分 Chrome 資料尚未儲存到 Google 帳戶，請稍候幾分鐘後再登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>
-<translation id="7324120788743384890">開啟後，Chrome 會在載入不支援 HTTPS 的網站前詢問你</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7352881504289275361">安全瀏覽強化防護功能是 Chrome 最強大的線上防護機制，可維護上網時的安全</translation>
 <translation id="7394745511930161845">使用 AI 製作專屬主題，為瀏覽器打造獨一無二的外觀</translation>

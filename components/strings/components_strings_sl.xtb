@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Prikaz predlogov</translation>
 <translation id="1038842779957582377">neznano ime</translation>
 <translation id="1041998700806130099">Sporočilo glede delovnega lista</translation>
+<translation id="1044897699341250361">Kaj to pomeni</translation>
 <translation id="1046350918013988591">Kuponi za popust in akcijske ponudbe</translation>
 <translation id="1048785276086539861">Če boste urejali pripise, se bo ta dokument vrnil v pogled ene strani.</translation>
 <translation id="1050038467049342496">Zaprite druge aplikacije</translation>
@@ -2649,6 +2650,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5999271311987646952">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, na primer Google Varno brskanje, ki je na spletnem mestu, ki ga poskušate obiskati, <ph name="BEGIN_LINK" />nedavno našlo zlonamerno programsko opremo<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Hard rock in progresivni rock</translation>
 <translation id="6000758707621254961">Rezultati za »<ph name="SEARCH_TEXT" />« (<ph name="RESULT_COUNT" />)</translation>
+<translation id="6001839398155993679">Pa začnimo</translation>
 <translation id="6002122790816966947">Vaše naprave</translation>
 <translation id="6002968396561884726">Nedavno ogledano</translation>
 <translation id="6005659677094197001">Continuous</translation>
@@ -3057,6 +3059,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6735783933931458444">Pogosto obiskujete ob tej uri</translation>
 <translation id="6737708609449480586">Pecivo</translation>
 <translation id="6738516213925468394">Podatki so bili šifrirani (<ph name="TIME" />) z vašim <ph name="BEGIN_LINK" />geslom za sinhronizacijo<ph name="END_LINK" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
+<translation id="6739943577740687354">Ta funkcija uporablja umetno inteligenco in se lahko včasih tudi zmoti</translation>
 <translation id="6740851646645036700">Dosegli ste trenutno omejitev pomoči pri pisanju. Poskusite znova pozneje.</translation>
 <translation id="674375294223700098">Neznana napaka potrdila strežnika.</translation>
 <translation id="6744009308914054259">Med čakanjem na povezavo lahko berete članke za branje brez povezave med prenosi.</translation>
@@ -4444,5 +4447,6 @@ Dodatne podrobnosti:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Dodajanje IBAN-a</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Iz Googla Pay</translation>
 </translationbundle>

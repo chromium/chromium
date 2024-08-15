@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038842779957582377">不明な名前</translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
+<translation id="1044897699341250361">このメッセージの意味</translation>
 <translation id="1046350918013988591">クーポン、割引サービス</translation>
 <translation id="1048785276086539861">メモを編集すると、ドキュメントは単一ページ表示に戻ります</translation>
 <translation id="1050038467049342496">他のアプリを終了する</translation>
@@ -2649,6 +2650,7 @@
 <translation id="5999271311987646952">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、アクセスしようとしているサイトで<ph name="BEGIN_LINK" />最近マルウェアが検出<ph name="END_LINK" />されました。</translation>
 <translation id="6000528814684428358">ハードロック、プログレッシブ</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
+<translation id="6001839398155993679">開始する</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
 <translation id="6002968396561884726">最近チェックしたアイテム</translation>
 <translation id="6005659677094197001">連続</translation>
@@ -3057,6 +3059,7 @@
 <translation id="6735783933931458444">この時間帯に頻繁にアクセス</translation>
 <translation id="6737708609449480586">パン、焼菓子</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
+<translation id="6739943577740687354">この機能は AI を使用しており、常に正しく動作するとは限りません</translation>
 <translation id="6740851646645036700">文書作成サポートの使用上限に達しました。しばらくしてからもう一度お試しください。</translation>
 <translation id="674375294223700098">不明なサーバー証明書エラー</translation>
 <translation id="6744009308914054259">接続するまでの間、[ダウンロード] に移動してオフラインで記事を読むことができます。</translation>
@@ -4447,5 +4450,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN の追加</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay から</translation>
 </translationbundle>

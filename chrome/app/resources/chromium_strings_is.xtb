@@ -27,7 +27,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
  Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Eyða einnig gögnum úr Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Þú ert skráð(ur) inn á Chromium!</translation>
-<translation id="1465171403179274511">Chromium spyr þig áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="1478370723027452770">Fá hjálp með Chrome for Testing</translation>
 <translation id="1497802159252041924">Uppsetningarvilla: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Deila Chromium flipa</translation>
@@ -83,7 +82,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2210682093923538346">Skaðlegt vefsvæði. Chromium fjarlægði tilkynningar.</translation>
 <translation id="2240214816234246077">Þú hefur ekki skoðað vefsvæðið nýlega. Chromium fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Ef nokkrir eru um sömu tölvu geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chromium upp eins og hverjum og einum líkar best.</translation>
-<translation id="2265830994243640896">Chromium spyr þig áður en opinberum vefsvæðum með ótrygga tengingu er hlaðið en heimilar HTTP-tengingar fyrir einkanet</translation>
 <translation id="2313870531055795960">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chromium. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="2329088755516916767">Þegar kveikt er á Chromium forhleður það síður sem gerir skoðun og leit hraðari.</translation>
 <translation id="2343156876103232566">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chromium í báðum tækjunum.</translation>
@@ -108,7 +106,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="259935314519650377">Ekki tókst að vista uppsetningarforrit sem var sótt í skyndiminni. Villa: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium virkar hraðar og eiginleikar sem nota JavaScript ættu að virka sem skyldi (ráðlagt)</translation>
 <translation id="2648074677641340862">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Chromium aftur.</translation>
-<translation id="2649201087614586016">Þegar kveikt er á því spyr Chromium þig áður en vefsvæðum sem ekki styðja HTTPS er hlaðið</translation>
 <translation id="2661879430930417727">Ef nokkrir deila sama tæki geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chromium upp eins og hverjum og einum líkar best</translation>
 <translation id="268602741124540128">Velkomin(n) í Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium flipi</translation>

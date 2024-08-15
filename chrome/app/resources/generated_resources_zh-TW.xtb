@@ -478,7 +478,6 @@
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
 <translation id="1341701348342335220">太厲害了！</translation>
 <translation id="1342886103232377846">如要檢查密碼是否外洩，請前往 Google 密碼管理工具</translation>
-<translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
 <translation id="1344141078024003905">你正在投放螢幕畫面。你隨時可以暫停或停止投放螢幕畫面。</translation>
 <translation id="1346403631707626730">傳送使用狀況與診斷資料。如要協助改善貴子女的 Android 使用體驗，可以選擇讓系統自動將診斷情形、裝置狀態和應用程式使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提升產品和服務品質。如果將貴子女的「其他網路和應用程式活動」設定為開啟，這類資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK1" />進一步瞭解指標<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -820,7 +819,6 @@
 <translation id="1588919647604819635">右鍵資訊卡</translation>
 <translation id="1589055389569595240">顯示拼字與文法</translation>
 <translation id="1590478605309955960">系統會自動儲存分頁群組，並同步到所有你已登入帳戶的裝置。</translation>
-<translation id="1591679663873027990">授權 Parallels Desktop 存取 USB 裝置。Parallels Desktop 不會記住已移除的 USB 裝置。</translation>
 <translation id="15916883652754430">系統語音設定</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> 已停用 ADB 偵錯，這會讓系統重設 <ph name="DEVICE_TYPE" />。請先備份檔案再重新啟動。</translation>
 <translation id="1592126057537046434">快速解答功能的翻譯</translation>
@@ -2643,7 +2641,6 @@
 <translation id="2853121255651601031">密碼已儲存</translation>
 <translation id="2855243985454069333">從所有已同步裝置上刪除歷史記錄</translation>
 <translation id="2855812646048059450">使用 <ph name="CREDENTIAL_PROVIDER" /> 帳戶登入</translation>
-<translation id="28559674945112027">嚴格模式</translation>
 <translation id="2856776373509145513">建立新容器</translation>
 <translation id="2856907950922663165">要關閉網址加密功能嗎？</translation>
 <translation id="2859741939921354763">將密碼匯入「<ph name="BRAND" />」</translation>
@@ -2925,7 +2922,6 @@
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
 <translation id="3053274730492362225">不閃爍</translation>
 <translation id="3054766768827382232">停用這項功能可以提高周邊裝置的效能，但也可能讓有心人士能夠在未經授權的情況下使用你的個人資料。</translation>
-<translation id="3056438898277655057">請授權 <ph name="SPECIFIC_NAME" /> 存取 USB 裝置。移除後，<ph name="SPECIFIC_NAME" /> 不會記住這部 USB 裝置。</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">為裝置命名</translation>
 <translation id="3059195548603439580">要查看系統元件嗎？請前往</translation>
@@ -3467,7 +3463,7 @@
 <translation id="3480612136143976912">自訂即時字幕的文字大小和樣式。部分應用程式及網站也會套用這項設定。</translation>
 <translation id="3480827850068960424">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="3481268647794498892">將於 <ph name="COUNTDOWN_SECONDS" /> 秒後在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
-<translation id="348247802372410699">選擇樣式</translation>
+<translation id="348247802372410699">選擇風格</translation>
 <translation id="3482573964681964096">管理從 Windows 匯入的憑證</translation>
 <translation id="348268549820508141">語音辨識</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可以檢視下列檔案</translation>
@@ -6901,7 +6897,7 @@
 <translation id="6003143259071779217">移除 eSIM 卡的行動網路</translation>
 <translation id="6003479444341796444">正在顯示標題列</translation>
 <translation id="6003582434972667631">主題採用貴機構的設定</translation>
-<translation id="6005045517426700202">磚造</translation>
+<translation id="6005045517426700202">磚造建築</translation>
 <translation id="6006392003290068688">已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />的權限</translation>
 <translation id="6006484371116297560">傳統版</translation>
 <translation id="6007240208646052708">無法使用你的語言進行語音搜尋。</translation>
@@ -8530,7 +8526,6 @@
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">系統服務將可使用「定位精確度」判斷你的位置。「定位精確度」會根據無線訊號和感應器的相關資訊，估算出裝置位置。</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> 的群組中有 1 個網站}other{<ph name="FPS_OWNER" /> 的群組中有 {MEMBERS} 個網站}}</translation>
 <translation id="7225082563376899794">填入密碼時使用 Windows Hello 驗證</translation>
 <translation id="7225179976675429563">找不到網路類型</translation>
 <translation id="7227235818314667565">管理分享的群組</translation>
@@ -9908,7 +9903,6 @@
 <translation id="8207404892907560325">選擇密碼金鑰</translation>
 <translation id="8207794858944505786">VM「<ph name="DEFAULT_VM_NAME" />」已存在，但似乎不是有效的 <ph name="VM_TYPE" /> VM。請與管理員聯絡。</translation>
 <translation id="8207901006380134182">一道大浪吞沒海洋，岸邊有片黑暗森林。</translation>
-<translation id="8208188204689616705">這些網站屬於由 <ph name="FPS_OWNER" /> 定義的群組，群組中的網站可以查看你在該群組的活動。</translation>
 <translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
@@ -11035,7 +11029,6 @@
 <translation id="9009707268312089299">從 Windows 匯入</translation>
 <translation id="9009708085379296446">你要變更這個頁面嗎？</translation>
 <translation id="9010845741772269259">新增付款方式</translation>
-<translation id="901087299639956505">平衡模式</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
 <translation id="9011262023858991985">正在投放這個分頁</translation>
 <translation id="9011393886518328654">版本資訊</translation>
@@ -11414,7 +11407,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - 攝影機和麥克風正在錄影和錄音</translation>
 <translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">新增拼字檢查支援的語言</translation>
-<translation id="98515147261107953">橫向</translation>
+<translation id="98515147261107953">風景</translation>
 <translation id="987068745968718743">Parallels Desktop：<ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="987475089238841621">語言套件會儲存在裝置上，並會用於即時字幕</translation>

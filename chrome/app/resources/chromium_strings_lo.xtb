@@ -27,7 +27,6 @@
  ອຸປະກອນ Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">ລຶບຂໍ້ມູນອອກຈາກ Chromium (<ph name="URL" />) ນຳ</translation>
 <translation id="1414495520565016063">ທ່ານ​ລົງຊື່ເຂົ້າ​ໃຊ້ Chromium ແລ້ວ​!</translation>
-<translation id="1465171403179274511">Chromium ຈະຖາມທ່ານກ່ອນທີ່ຈະໂຫຼດເວັບໄຊໃດກໍຕາມທີ່ໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ</translation>
 <translation id="1478370723027452770">ຮັບຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບ Chrome ສຳລັບການທົດສອບ</translation>
 <translation id="1497802159252041924">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">ແບ່ງປັນແຖບ Chromium</translation>
@@ -83,7 +82,6 @@
 <translation id="2210682093923538346">ເວັບໄຊທີ່ເປັນອັນຕະລາຍ. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງການແຈ້ງເຕືອນອອກແລ້ວ.</translation>
 <translation id="2240214816234246077">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ອອກແລ້ວ</translation>
 <translation id="2241627712206172106">ຖ້າທ່ານແຊຣ໌ຄອມພິວເຕີ, ໝູ່​ເພື່ອນ ແລະຄອບຄົວຂອງທ່ານ ສາມາດທ່ອງເນັດໄດ້ແຍກຕ່າງຫາກ ແລະຕັ້ງ Chromium ໄດ້ຕາມ​ແບບທີ່ພວກເຂົາຕ້ອງການ.</translation>
-<translation id="2265830994243640896">Chromium ຈະຖາມທ່ານກ່ອນທີ່ຈະໂຫຼດເວັບໄຊສາທາລະນະທີ່ໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ, ແຕ່ຈະອະນຸຍາດການເຊື່ອມຕໍ່ HTTP ສຳລັບເຄືອຂ່າຍສ່ວນຕົວ</translation>
 <translation id="2313870531055795960">ກວດສອບ URL ກັບລາຍຊື່ເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ຈັດເກັບໄວ້ໃນ Chromium. ຖ້າມີເວັບໄຊໃດໜຶ່ງພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chromium ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນຂອງໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="2329088755516916767">ເມື່ອເປີດ, Chromium ຈະໂຫຼດໜ້າເວັບກ່ອນລ່ວງໜ້າເຊິ່ງເຮັດໃຫ້ທ່ອງເວັບ ແລະ ຊອກຫາໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="2343156876103232566">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
@@ -108,7 +106,6 @@
 <translation id="259935314519650377">ການແຄສຕົວຕິດຕັ້ງທີ່ດາວໂຫຼດໄວ້ບໍ່ສຳເລັດ. ຂໍ້ຜິດພາດ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium ເຮັດວຽກໄດ້ໄວຂຶ້ນ ແລະ ຄຸນສົມບັດທີ່ໃຊ້ JavaScript ຄວນເຮັດວຽກຕາມທີ່ອອກແບບໄວ້ (ແນະນຳ)</translation>
 <translation id="2648074677641340862">ເກີດຄວາມຜິດພາດດ້ານລະບົບປະຕິບັດການໃນລະຫວ່າງການຕິດຕັ້ງ. ກະລຸນາດາວໂຫຼດ Chromium ອີກ.</translation>
-<translation id="2649201087614586016">ເມື່ອເປີດໄວ້, Chromium ຈະຖາມທ່ານກ່ອນທີ່ຈະໂຫຼດເວັບໄຊທີ່ບໍ່ຮອງຮັບ HTTPS</translation>
 <translation id="2661879430930417727">ຖ້າທ່ານໃຊ້ອຸປະກອນຮ່ວມກັນ, ໝູ່ ແລະ ຄອບຄົວສາມາດທ່ອງເວັບແຍກຕ່າງຫາກ ແລະ ຕັ້ງຄ່າ Chromium ໃນແບບທີ່ເຂົາເຈົ້າຕ້ອງການໄດ້</translation>
 <translation id="268602741124540128">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">ແຖບ Chromium</translation>

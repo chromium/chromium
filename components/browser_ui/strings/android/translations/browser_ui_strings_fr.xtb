@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
 <translation id="789180354981963912">Bloquer les cookies tiers en mode navigation privée :</translation>
 <translation id="7940722705963108451">M'envoyer un rappel</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="FPS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}one{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}other{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> sites <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web sont affichés comme sur ordinateur. Lorsqu'elle est désactivée, les sites Web sont affichés comme sur mobile.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9039697262778250930">Vous serez peut-être déconnecté de ces sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Supprimer les cookies ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>

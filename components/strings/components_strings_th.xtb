@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">แสดงคำแนะนำ</translation>
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
+<translation id="1044897699341250361">หมายความว่าอะไร</translation>
 <translation id="1046350918013988591">คูปองและข้อเสนอส่วนลด</translation>
 <translation id="1048785276086539861">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปเป็นมุมมองแบบหน้าเดียว</translation>
 <translation id="1050038467049342496">ปิดแอปอื่นๆ</translation>
@@ -2648,6 +2649,7 @@
 <translation id="5999271311987646952">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing ที่<ph name="BEGIN_LINK" />พบมัลแวร์<ph name="END_LINK" />ในเว็บไซต์ที่คุณพยายามเข้าชมเมื่อเร็วๆ นี้</translation>
 <translation id="6000528814684428358">ฮาร์ดร็อกและโพรเกรสซีฟ</translation>
 <translation id="6000758707621254961">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" <ph name="RESULT_COUNT" /> รายการ</translation>
+<translation id="6001839398155993679">เริ่มเลย</translation>
 <translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6002968396561884726">ดูล่าสุด</translation>
 <translation id="6005659677094197001">ต่อเนื่อง</translation>
@@ -3056,6 +3058,7 @@
 <translation id="6735783933931458444">คุณเข้าชมบ่อย ณ เวลานี้ของวัน</translation>
 <translation id="6737708609449480586">สินค้าเบเกอรี</translation>
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
+<translation id="6739943577740687354">ฟีเจอร์นี้ใช้ AI และอาจไม่ถูกต้องเสมอไป</translation>
 <translation id="6740851646645036700">ขณะนี้คุณขอความช่วยเหลือในการเขียนถึงขีดจำกัดแล้ว โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>
 <translation id="6744009308914054259">ระหว่างที่รอการเชื่อมต่อ คุณไปที่หน้า "ดาวน์โหลด" เพื่ออ่านบทความออฟไลน์ได้</translation>
@@ -4445,5 +4448,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">เพิ่ม IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">จาก Google Pay</translation>
 </translationbundle>

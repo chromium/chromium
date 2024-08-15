@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Visa förslag</translation>
 <translation id="1038842779957582377">okänt namn</translation>
 <translation id="1041998700806130099">Meddelande på arbetsorder</translation>
+<translation id="1044897699341250361">Vad innebär det?</translation>
 <translation id="1046350918013988591">Kuponger och rabatterbjudanden</translation>
 <translation id="1048785276086539861">När du redigerar kommentarer aktiveras enkelsidig vy igen för dokumentet</translation>
 <translation id="1050038467049342496">Stäng andra appar</translation>
@@ -633,7 +634,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="214556005048008348">Avbryt betalningen</translation>
 <translation id="2147117373852943630">Musikinstrument</translation>
 <translation id="2148613324460538318">Lägg till kort</translation>
-<translation id="2148716181193084225">Idag</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2149968176347646218">Anslutningen är inte säker</translation>
 <translation id="2152495481414285304">Appar</translation>
 <translation id="2153609454945889823">Vill du installera Google Play-tjänster för AR?</translation>
@@ -2649,6 +2650,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5999271311987646952">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade skadlig kod<ph name="END_LINK" /> på webbplatsen du försöker besöka.</translation>
 <translation id="6000528814684428358">Hårdrock och progressiv musik</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultat för <ph name="SEARCH_TEXT" /></translation>
+<translation id="6001839398155993679">Då kör vi</translation>
 <translation id="6002122790816966947">Dina enheter</translation>
 <translation id="6002968396561884726">Nyligen visade</translation>
 <translation id="6005659677094197001">Kontinuerlig</translation>
@@ -3057,6 +3059,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6735783933931458444">Du öppnar detta ofta vid den här tiden på dagen</translation>
 <translation id="6737708609449480586">Bageri- och konditorivaror</translation>
 <translation id="6738516213925468394">Din data krypterades med din <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" /> den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
+<translation id="6739943577740687354">Den här funktionen använder AI och det blir kanske inte alltid rätt</translation>
 <translation id="6740851646645036700">Du har nått gränsen för skrivhjälp. Försök igen senare.</translation>
 <translation id="674375294223700098">Fel - okänt servercertifikat.</translation>
 <translation id="6744009308914054259">Du kan öppna Nedladdningar och läsa artiklar offline medan du väntar på anslutningen.</translation>
@@ -4447,5 +4450,6 @@ Mer information:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Lägg till IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Från Google Pay</translation>
 </translationbundle>

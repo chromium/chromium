@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Тодорхой сайтад дуу тоглуулахыг зөвшөөрнө үү.</translation>
 <translation id="789180354981963912">Нууцлалтай горимд гуравдагч талын күүкиг блоклох:</translation>
 <translation id="7940722705963108451">Надад сануул</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{Бүлэг дэх таны үйл ажиллагааг харах боломжтой <ph name="FPS_OWNER" />-н бүлэг сайтууд дахь <ph name="FPS_MEMBERS_COUNT" /> сайт}other{Бүлэг дэх таны үйл ажиллагааг харах боломжтой <ph name="FPS_OWNER" />-н бүлэг сайтууд дахь <ph name="FPS_MEMBERS_COUNT" /> сайт}}</translation>
 <translation id="7986741934819883144">Харилцагч сонгох</translation>
 <translation id="7990211076305263060">Асаалттай үед сайтууд таны микрофоныг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд таны микрофоныг ашиглах боломжгүй.</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Сайтуудыг төхөөрөмжүүдэд холбогдохыг нь блоклох</translation>
 <translation id="8525306231823319788">Бүтэн дэлгэц</translation>
 <translation id="8541410041357371550">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}other{<ph name="FPS_OWNER" />-н <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкиг зөвшөөрсөн}}</translation>
 <translation id="857943718398505171">Зөвшөөрөгдсөн (санал болгосон)</translation>
 <translation id="8609465669617005112">Дээш зөөх</translation>
 <translation id="8617611086246832542">Асаалттай үед вебсайтуудын дэлгэц дээр харагдах байдлыг харуулдаг. Унтраалттай үед вебсайтуудын гар утсан дээр харагдах байдлыг харуулдаг.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Эцэг, эх нь хариуцан удирдаж байна</translation>
 <translation id="9039697262778250930">Таныг эдгээр сайтаас гаргаж магадгүй</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Энэ сайт таны үйл ажиллагааг харах боломжтой бүлэгт байна. Бүлгийг <ph name="FPS_OWNER" />-с тодорхойлсон</translation>
 <translation id="9106233582039520022">Күүкиг устгах уу?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-н зөвшөөрлийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>

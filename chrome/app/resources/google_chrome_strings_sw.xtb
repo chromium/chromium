@@ -63,7 +63,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="178701303897325119">Kiendelezi hiki hakitumiki tena. Badala yake, Chrome inapendekeza ukiondoe.</translation>
 <translation id="1812689907177901597">Kwa kuzima kipengele hiki, unaweza kuingia katika tovuti za Google kama vile Gmail bila kuingia katika akaunti ya Chrome</translation>
 <translation id="1860536484129686729">Chrome inahitaji ruhusa ya kufikia kamera yako katika tovuti hii</translation>
-<translation id="1861924772887221906">Chrome itakuomba uthibitishe kabla ya kupakia tovuti za umma zinazotumia muunganisho usio salama, lakini itaruhusu miunganisho ya HTTP kwenye mitandao binafsi</translation>
 <translation id="1873233029667955273">Google Chrome si kivinjari chako chaguomsingi</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Toleo hili la Chrome limepitwa na wakati</translation>
@@ -201,7 +200,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3596080736082218006">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="3597003331831379823">Imeshindwa kuweka mipangilio ikitumia ufikiaji maalum. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Hujatembelea hivi majuzi. Chrome imeondoa <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome itakuomba uthibitishe kabla ya kupakia tovuti yoyote inayotumia muunganisho usio salama</translation>
 <translation id="3622797965165704966">Sasa ni rahisi zaidi kutumia Chrome pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
 <translation id="3635073343384702370">Chrome inaweza kukagua manenosiri yako unapoyahifadhi</translation>
 <translation id="3667616615096815454">Imeshindwa kusakinisha, seva haitambui programu hii.</translation>
@@ -458,7 +456,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7296210096911315575">Maelezo muhimu kuhusu usalama na matumizi</translation>
 <translation id="7302361266603927550">Baadhi ya data yako ya Chrome bado haijahifadhiwa kwenye Akaunti yako ya Google. Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="7308322188646931570">Chrome inahitaji idhini ya kufikia hifadhi ili ipakue faili</translation>
-<translation id="7324120788743384890">Ukiiwasha, Chrome itakuomba uthibitishe kabla ya kupakia tovuti zisizotumia HTTPS</translation>
 <translation id="7339898014177206373">Dirisha jipya</translation>
 <translation id="7352881504289275361">Kipengele cha Kuvinjari Salama Kilichoboreshwa kinatoa ulinzi thabiti zaidi wa Chrome mtandaoni ili uendelee kuwa salama unapovinjari</translation>
 <translation id="7394745511930161845">Buni mandhari yako binafsi ukitumia AI ili kivinjari chako kipate mwonekano wa kipekee</translation>

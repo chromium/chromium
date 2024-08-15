@@ -27,7 +27,6 @@
 Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium'дан да (<ph name="URL" />) дайындарды өчүрүү</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
-<translation id="1465171403179274511">Chromium корголбогон байланыш аркылуу сайттарды жүктөөдөн мурун сизден уруксат сурайт</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>
 <translation id="1497802159252041924">Орнотуу катасы: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium өтмөгүн бөлүшүү</translation>
@@ -83,7 +82,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2210682093923538346">Кооптуу сайт. Chromium билдирмелерди өчүрдү.</translation>
 <translation id="2240214816234246077">Акыркы убакта кирген жоксуз. Chromium <ph name="PERMISSION_1" /> жана <ph name="PERMISSION_2" /> өчүрдү</translation>
 <translation id="2241627712206172106">Компьютерди бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өзүлөрү каалагандай орнотуп алышат.</translation>
-<translation id="2265830994243640896">Chromium корголбогон байланыш аркылуу жалпыга ачык сайттарды жүктөөдөн мурун сизден уруксат сурайт, бирок купуя тармактар үчүн HTTPS байланыштарына уруксат берет</translation>
 <translation id="2313870531055795960">Chromium'дагы кооптуу сайттардын тизмесиндеги URL даректерин текшерет. Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактардагы мазмунду Коопсуз серептөөгө жөнөтүшү мүмкүн.</translation>
 <translation id="2329088755516916767">Бул параметр күйүп турганда, Chromium барактарды алдын ала жүктөп, карап чыгуу жана издөө процессин тездетет.</translation>
 <translation id="2343156876103232566">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chromium'га кириңиз.</translation>
@@ -108,7 +106,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium ылдамыраак иштейт жана JavaScript'ти колдонгон функциялар туура иштеши керек (сунушталат)</translation>
 <translation id="2648074677641340862">Орнотулуп жатканда иш системасында ката кетти. Chromium'ду кайра жүктөп алыңыз.</translation>
-<translation id="2649201087614586016">Функция күйүп турганда, HTTPS колдоого алынбаган сайттарды жүктөөдөн мурун Chromium сизден уруксат сурайт</translation>
 <translation id="2661879430930417727">Түзмөктү бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chromium'ду өздөрү каалагандай тууралап алышат</translation>
 <translation id="268602741124540128">Chromium'га кош келиңиз, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium өтмөгү</translation>

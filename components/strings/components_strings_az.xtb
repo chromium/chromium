@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Təklifləri göstərin</translation>
 <translation id="1038842779957582377">bilinməyən ad</translation>
 <translation id="1041998700806130099">İş vərəqi mesajı</translation>
+<translation id="1044897699341250361">Mənası nədir</translation>
 <translation id="1046350918013988591">Kuponlar və Endirim Təklifləri</translation>
 <translation id="1048785276086539861">Annotasiyaları redaktə etdiyiniz zaman bu sənəd bir səhifəlik görünüşə qayıdacaq</translation>
 <translation id="1050038467049342496">Digər tətbiqləri bağlayın</translation>
@@ -52,6 +53,7 @@
 <translation id="1089439967362294234">Parolu Dəyişin</translation>
 <translation id="1089599132348386324">Chrome ayarlarında fikrinizi dəyişə bilərsiniz.</translation>
 <translation id="1090629319939036170">VR menyusu</translation>
+<translation id="1091463901118115503">Davamlı oxu</translation>
 <translation id="1091779689406092804">skrinşotlar</translation>
 <translation id="1094777233105318927">Brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat</translation>
 <translation id="1096545575934602868">Bu sahədə maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə olmalıdır. Əlavə daxiletmələr silinəcək.</translation>
@@ -537,6 +539,7 @@
 <translation id="1974060860693918893">Qabaqcıl</translation>
 <translation id="1975457531113383421">Daxiletmə Qabı</translation>
 <translation id="1975584088563498795">Poçt qutusu 10</translation>
+<translation id="1976610264358655503">Tez-tez ziyarət edirsiniz</translation>
 <translation id="1978555033938440688">Firmware Versiyası</translation>
 <translation id="1979156660928743046">Media məlumatı</translation>
 <translation id="1988881251331415125">Yazılış doğrudursa, <ph name="BEGIN_LINK" />Bağlantı Diaqnostikasını icra edin<ph name="END_LINK" />.</translation>
@@ -774,6 +777,7 @@
 <translation id="239429038616798445">Bu göndərmə üsulu əlçatan deyil. Başqa üsul seçin.</translation>
 <translation id="2395840535409704129">Su idman növləri</translation>
 <translation id="2396249848217231973">&amp;Silinməni ləğv edin</translation>
+<translation id="2399344929880464793">Google xidmətlərində istifadə etməyiniz üçün bu IBAN Google Hesabında yadda saxlanır.</translation>
 <translation id="2399868464369312507">Google Chrome ödəniş metodlarını redaktə etməyə çalışır.</translation>
 <translation id="2400600116338235695">Saytlar ardıcıl portlara qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="2404884497378469141">Faylları yenidən kopyalayın</translation>
@@ -887,6 +891,7 @@
 <translation id="2619052155095999743">Daxil edin</translation>
 <translation id="2625385379895617796">Saatınız irəlidədir</translation>
 <translation id="262745152991669301">Saytlar USB cihazlarına qoşulmaq icazəsi istəyə bilər</translation>
+<translation id="2628224721443278970">Microsoft OneDrive-a daxil olun</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> serverinin IP ünvanı tapılmadı.</translation>
 <translation id="2639739919103226564">Status:</translation>
 <translation id="2647086987482648627">Parça (yarıparlaq)</translation>
@@ -1047,6 +1052,7 @@
 <translation id="2967098518029543669">Google Hesabında yadda saxlayın</translation>
 <translation id="297173220375858963">Masaüstü Yayım</translation>
 <translation id="2972581237482394796">&amp;Yenidən edin</translation>
+<translation id="2974468223369775963">Bu IBAN-ı Google Hesabında yadda saxlamaq olmadı. Bu cihazda Chrome-da yadda saxlanıb. Növbəti dəfə bu IBAN-dan istifadə edəndə Chrome yenidən soruşacaq.</translation>
 <translation id="2977665033722899841">Hazırda <ph name="ROW_NAME" /> seçilib. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Klaviaturanı kilidləyin və istifadə edin</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1826,6 +1832,7 @@
 <translation id="4377125064752653719"><ph name="DOMAIN" /> domeninə daxil olmağa çalışdınız, onun sertifikatı geri alınıb. Bu o deməkdir ki, güvənlik kredensiallarına kəsinliklə inanmaq olmaz. Ola bilər ki, hücumçu ilə əlaqəyə girirsiniz.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Microsoft OneDrive-a fayl yükləməsi durduruldu</translation>
 <translation id="4390472908992056574">Xətlər</translation>
 <translation id="4397059608630092079">Avto doldurma zamanı həmişə yoxlansın</translation>
 <translation id="4397978002248035985">Bank veb-saytında doğrulamaq üçün popap açır</translation>
@@ -1929,6 +1936,7 @@
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4640225694041297329">Son 7 günə aid nəticələri göstərin</translation>
 <translation id="464342062220857295">Axtarış funksiyaları</translation>
+<translation id="4644567637638438744">Yalnız Microsoft OneDrive-a daxil olduqda fayllar yüklənə bilər</translation>
 <translation id="4644670975240021822">Tərs sıra ilə üzü aşağı</translation>
 <translation id="4646534391647090355">İndi giriş edilsin</translation>
 <translation id="4648262692072505866">Heş SHA-256 formatında olmalıdır.</translation>
@@ -2638,6 +2646,7 @@
 <translation id="5999271311987646952">Chrome axtarış zamanı sizi qoruyan daxili güvənlik funksiyalarına malikdir. Daxil olduğunuz saytda <ph name="BEGIN_LINK" />bu yaxınlarda zərərli proqram tapan<ph name="END_LINK" /> Google güvənli baxış buna misaldır.</translation>
 <translation id="6000528814684428358">Hard Rok və Proqressiv</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
+<translation id="6001839398155993679">Başlayaq</translation>
 <translation id="6002122790816966947">Cihazlarınız</translation>
 <translation id="6002968396561884726">Son baxılmış</translation>
 <translation id="6005659677094197001">Davamlı</translation>
@@ -3028,6 +3037,7 @@
 <translation id="6704458454638854812">"Fərdi_ölçü" xüsusiyyəti ayarlanıb, ad "fərdi" olmalıdır.</translation>
 <translation id="6706005862292023715">Pərdə və pəncərə aksesuarları</translation>
 <translation id="6706210727756204531">Çərçivə</translation>
+<translation id="6706678697074905703">Bu IBAN-ı Google Hesabında yadda saxlamaq olmadı. Bu cihazda Chrome-da yadda saxlanıb.</translation>
 <translation id="6709133671862442373">Xəbərlər</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6710594484020273272">&lt;Axtarış sözünü yazın&gt;</translation>
@@ -3042,8 +3052,10 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simulasiya Oyunları</translation>
+<translation id="6735783933931458444">Günün bu vaxtında tez-tez ziyarət edirsiniz</translation>
 <translation id="6737708609449480586">Bişmiş məhsullar</translation>
 <translation id="6738516213925468394">Data <ph name="TIME" /> tarixində <ph name="BEGIN_LINK" />sinxronizasiya parolu<ph name="END_LINK" /> ilə şifrələnib. Sinxronizasiyanı başlatmaq üçün klikləyin.</translation>
+<translation id="6739943577740687354">Bu funksiya AI istifadə edir və həmişə dəqiq nəticə təmin etməyə bilər</translation>
 <translation id="6740851646645036700">Yazı köməyi limitinə çatdınız. Sonra cəhd edin.</translation>
 <translation id="674375294223700098">Naməlum server sertifikatı xətası</translation>
 <translation id="6744009308914054259">Bağlantı gözlənilərkən oflayn məqalələri oxumaq üçün Endirilənlərə baxa bilərsiniz.</translation>
@@ -3759,6 +3771,7 @@
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8041940743680923270">Qlobal defoltdan istifadə edin (Soruşun)</translation>
 <translation id="8043255123207491407">Satıcının şərt və qaydalarına baxın</translation>
+<translation id="8044986521421349135">Son tab</translation>
 <translation id="8046360364391076336">Sənaye material və avadanlığı</translation>
 <translation id="8052898407431791827">Mübadilə buferinə kopyalandı</translation>
 <translation id="8057023045886711556">Komediya Filmləri</translation>
@@ -3826,6 +3839,7 @@
 <translation id="8183800802493617952">Ailəyönümlü oyun və fəaliyyətlər</translation>
 <translation id="8184538546369750125">Qlobal defoltdan istifadə edin (İcazə verin)</translation>
 <translation id="8186706823560132848">Proqram</translation>
+<translation id="8188830160449823068">IBAN yalnız cihazda yadda saxlandı</translation>
 <translation id="8189557652711717875">Ünvan paneli və veb-səhifələrdəki şəkillərdən axtarış kimi funksiyalar üçün seçdiyiniz axtarış mexanizmi istifadə ediləcək.</translation>
 <translation id="8190193880870196235">Artırma tərəfindən idarə edilir</translation>
 <translation id="8194412401381329820">Bu səhifəni idarə olunmayan cihazda idarə olunan hesabdan istifadə etmək olmaz. Bu səhifədən istifadə etsəniz, bu cihazla eyni müəssisə tərəfindən idarə olunan hesablar (əlaqəli hesablar) istisna olmaqla bütün idarə olunan hesablar kilidlənəcək.</translation>
@@ -4429,5 +4443,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN əlavə edin</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay'dən</translation>
 </translationbundle>

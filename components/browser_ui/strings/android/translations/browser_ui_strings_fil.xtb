@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Payagan ang tunog para sa isang partikular na site.</translation>
 <translation id="789180354981963912">I-block ang third-party na cookies sa Incognito:</translation>
 <translation id="7940722705963108451">Ipaalala sa akin</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="FPS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="FPS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="FPS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="FPS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="FPS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
 <translation id="7986741934819883144">Pumili ng contact</translation>
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="8541410041357371550">Kinukuha ng site na ito ang iyong mga paksa ng ad mula sa Chrome para magpakita pa sa iyo ng mga may kaugnayang ad</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> site ng<ph name="FPS_OWNER" />}one{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> site ng <ph name="FPS_OWNER" />}other{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> na site ng <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Pinamamahalaan ng iyong mga magulang</translation>
 <translation id="9039697262778250930">Posibleng ma-sign out ka sa mga site na ito</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ang site na ito ay nasa isang grupong makakakita ng iyong aktibidad. Tinukoy ni <ph name="FPS_OWNER" /> ang grupo</translation>
 <translation id="9106233582039520022">I-delete ang cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="913657688200966289">I-on ang mga pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>

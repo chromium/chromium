@@ -26,7 +26,6 @@
 <translation id="1324107359134968521">Браўзеру Chromium неабходны доступ да Bluetooth для пошуку прылад з Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Выдаліць таксама даныя з Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Вы ўвайшлі ў Chromium!</translation>
-<translation id="1465171403179274511">Chromium будзе запытваць ваш дазвол, перш чым загружаць сайт праз неабароненае падключэнне</translation>
 <translation id="1478370723027452770">Атрымаць даведку па Chrome for Testing</translation>
 <translation id="1497802159252041924">Памылка ўсталявання: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Абагульце ўкладку Chromium</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">Небяспечны сайт. Chromium адклікаў дазвол на апавяшчэнні.</translation>
 <translation id="2240214816234246077">Вы даўно не наведвалі сайт. Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Калі камп'ютар выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chromium для сябе і праглядаць старонкі асобна ад іншых.</translation>
-<translation id="2265830994243640896">Chromium будзе запытваць ваш дазвол, перш чым загружаць агульнадаступныя сайты праз неабароненае падключэнне, але будзе дазваляць HTTP-падключэнні для прыватных сетак</translation>
 <translation id="2313870531055795960">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chromium. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chromium можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
 <translation id="2329088755516916767">Калі гэты параметр уключаны, Chromium перадзагружае старонкі, што паскарае работу браўзера і пошуку.</translation>
 <translation id="2343156876103232566">Каб адпраўляць нумары з гэтай прылады на свой тэлефон Android, увайдзіце ў Chromium на абедзвюх прыладах.</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">Не ўдалося кэшаваць спампаваны ўсталёўшчык. Памылка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Павышаецца хуткасць Chromium, і правільна працуюць функцыі, якія выкарыстоўваюць JavaScript (рэкамендуецца)</translation>
 <translation id="2648074677641340862">Падчас усталявання адбылася памылка аперацыйнай сістэмы. Спампуйце Chromium зноў.</translation>
-<translation id="2649201087614586016">Калі вы ўключыце гэту функцыю, Chromium будзе запытваць ваш дазвол, перш чым загружаць сайты, якія не падтрымліваюць HTTPS</translation>
 <translation id="2661879430930417727">Калі прыладу выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chromium для сябе і праглядаць старонкі асобна ад іншых</translation>
 <translation id="268602741124540128">Вітаем вас у Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Укладка Chromium</translation>

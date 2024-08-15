@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Deljenje pomoću tabele sa rezimeom povratnih informacija je zatvoreno</translation>
 <translation id="1089606299949659462">Pregled je završen!</translation>
 <translation id="1094555143448724771">Da biste videli kartice sa drugih uređaja, sinhronizujte kartice i istoriju</translation>
-<translation id="1095142578254888918">Obaveštenja nisu dozvoljena za <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Uverite se da uvek možete da pristupate sinhronizovanim podacima</translation>
 <translation id="1100066534610197918">Otvori u novoj kartici u grupi</translation>
 <translation id="1103142993930332957">Želite li da nam pomognete da poboljšamo Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1183189057400844278">Da biste bili sigurni da uvek možete da koristite lozinke na Google nalogu, potvrdite svoj identitet</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Obaveštenja nisu dozvoljena za 1 sajt}one{Obaveštenja nisu dozvoljena za # sajt}few{Obaveštenja nisu dozvoljena za # sajta}other{Obaveštenja nisu dozvoljena za # sajtova}}</translation>
 <translation id="1187810343066461819">Izbriši i obeleživače, istoriju i drugo iz ovog automobila</translation>
 <translation id="1193729455103054076">Želite da koristite jaku lozinku?</translation>
 <translation id="1197267115302279827">Premesti obeleživače</translation>
@@ -455,7 +453,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3080525922482950719">Možete da sačuvate stranice da biste ih čitali kasnije ili oflajn</translation>
 <translation id="3087218211037573995">Neke lozinke sačuvane samo na ovom uređaju uskoro će prestati da rade. Možete da premestite ove lozinke u Google menadžer lozinki.</translation>
 <translation id="3091010850649238832">Prikaži sadržaj privremene memorije</translation>
-<translation id="3093004810561729002">Neko</translation>
 <translation id="3098745985164956033">Neke slike se šalju Google-u radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Čitajte današnje vesti <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Saopštenja</translation>
@@ -507,6 +504,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3407392651057365886">Više stranica se predučitava. Stranice mogu da budu predučitane preko Google servera kada to traže drugi sajtovi.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="3421726884497337397">Izaberite kada ćete blokirati kolačiće trećih strana</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Pre # s}one{Pre # s}few{Pre # s}other{Pre # s}}</translation>
 <translation id="3430670036890315772">Ako isključite zaključavanje profila, uklonićete sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
@@ -939,6 +937,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
 <translation id="5526281268548144413">Ne možete da zatvorite u više prozora</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Pre # min}one{Pre # min}few{Pre # min}other{Pre # min}}</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>

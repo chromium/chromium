@@ -27,7 +27,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
-<translation id="1465171403179274511">En fråga visas i Chromium innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>
 <translation id="1497802159252041924">Installationsfel: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Dela en flik i Chromium</translation>
@@ -83,7 +82,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2210682093923538346">Farlig webbplats. Chromium har tagit bort aviseringar.</translation>
 <translation id="2240214816234246077">Du har inte besökt webbplatsen nyligen. Chromium har tagit bort <ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Om du delar en dator med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
-<translation id="2265830994243640896">En fråga visas i Chromium innan offentliga webbplatser med osäkra anslutningar läses in, men HTTP-anslutningar tillåts för privata nätverk</translation>
 <translation id="2313870531055795960">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="2329088755516916767">När detta är aktiverat läses sidor in i förväg i Chromium, vilket gör det snabbare att surfa och söka.</translation>
 <translation id="2343156876103232566">Logga in på Chromium på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
@@ -108,7 +106,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="259935314519650377">Det gick inte att cachelagra det nedladdade installationsprogrammet. Fel: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium körs snabbare och funktioner som använder JavaScript bör fungera som de ska (rekommenderas)</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
-<translation id="2649201087614586016">När detta är aktiverat visas en fråga i Chromium innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="2661879430930417727">Om du delar en enhet med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
 <translation id="268602741124540128">Välkommen till Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-flik</translation>

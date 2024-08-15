@@ -27,7 +27,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
  naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Iz Chromiuma izbriši tudi podatke (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Prijavljeni ste v Chromium.</translation>
-<translation id="1465171403179274511">Chromium vas bo pozval za dovoljenje pred nalaganjem katerega koli spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="1478370723027452770">Pomoč za Chrome for Testing</translation>
 <translation id="1497802159252041924">Napaka pri namestitvi: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
@@ -83,7 +82,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2210682093923538346">Nevarno spletno mesto. Chromium je odstranil dovoljenje za obvestila.</translation>
 <translation id="2240214816234246077">Nedavno niste obiskali tega mesta. Chromium je odstranil ti dovoljenji: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Če računalnik souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
-<translation id="2265830994243640896">Chromium vas bo pozval za dovoljenje pred nalaganjem javnih spletnih mest prek povezave, ki ni varna, vendar bo dovolil povezave HTTP za zasebna omrežja</translation>
 <translation id="2313870531055795960">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromiumu. Če vam spletno mesto poskusi ukrasti geslo ali če prenašate škodljivo datoteko, lahko Chromium prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="2329088755516916767">Če je vklopljena ta nastavitev, Chromium vnaprej naloži strani, kar omogoča hitrejše brskanje in iskanje.</translation>
 <translation id="2343156876103232566">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chromium v obeh napravah.</translation>
@@ -108,7 +106,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="259935314519650377">Prenesenega namestitvenega programa ni bilo mogoče predpomniti. Napaka: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium se izvaja hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno (priporočeno)</translation>
 <translation id="2648074677641340862">Napaka v operacijskem sistemu med namestitvijo. Znova prenesite Chromium.</translation>
-<translation id="2649201087614586016">Če je vklopljeno, vas bo Chromium pozval za dovoljenje pred nalaganjem spletnih mest, ki ne podpirajo protokola HTTPS</translation>
 <translation id="2661879430930417727">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
 <translation id="268602741124540128">Pozdravljeni v Chromiumu, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Zavihek v Chromiumu</translation>

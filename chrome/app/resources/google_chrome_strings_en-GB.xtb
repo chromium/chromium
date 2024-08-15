@@ -63,7 +63,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="178701303897325119">This extension is no longer supported. Chrome recommends that you remove it instead.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
-<translation id="1861924772887221906">Chrome will ask you before loading public sites using an insecure connection, but will allow HTTP connections for private networks</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
@@ -201,7 +200,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3596080736082218006">{COUNT,plural, =0{Your administrator requires that you relaunch Chrome to apply an update}=1{Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome will ask you before loading any site using an insecure connection</translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
@@ -458,7 +456,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7302361266603927550">Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
-<translation id="7324120788743384890">When on, Chrome will ask you before loading sites that don't support HTTPS</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7352881504289275361">Enhanced Safe Browsing offers Chrome's strongest online protection to keep you safe as you browse</translation>
 <translation id="7394745511930161845">Create your own theme with AI to give your browser a unique look</translation>

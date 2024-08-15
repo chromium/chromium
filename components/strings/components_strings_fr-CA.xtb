@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1038842779957582377">nom inconnu</translation>
 <translation id="1041998700806130099">Message de la feuille de travail</translation>
+<translation id="1044897699341250361">Qu'est-ce que cela signifie?</translation>
 <translation id="1046350918013988591">Coupons et offres de rabais</translation>
 <translation id="1048785276086539861">Lorsque vous modifiez des annotations, ce document s'affiche au format de vue par page</translation>
 <translation id="1050038467049342496">Fermer les autres applications</translation>
@@ -776,6 +777,7 @@
 <translation id="239429038616798445">Ce mode de livraison n'est pas disponible. Essayez un autre mode.</translation>
 <translation id="2395840535409704129">Sports nautiques</translation>
 <translation id="2396249848217231973">&amp;Annuler la suppression</translation>
+<translation id="2399344929880464793">Cet IBAN est enregistré dans votre compte Google afin que vous puissiez l'utiliser dans tous les services Google.</translation>
 <translation id="2399868464369312507">Google Chrome essaie de modifier les modes de paiement.</translation>
 <translation id="2400600116338235695">Les sites peuvent demander à se connecter à des ports série</translation>
 <translation id="2404884497378469141">Réessayez de copier vos fichiers</translation>
@@ -1050,6 +1052,7 @@
 <translation id="2967098518029543669">enregistrez-le dans votre compte Google</translation>
 <translation id="297173220375858963">Éditique</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
+<translation id="2974468223369775963">Cet IBAN n'a pas pu être enregistré dans votre compte Google. Il est plutôt enregistré dans Chrome sur cet appareil. Chrome vous le demandera à nouveau la prochaine fois que vous utiliserez cet IBAN.</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">verrouiller et utiliser votre clavier.</translation>
 <translation id="2978824962390592855">Opéra</translation>
@@ -2647,6 +2650,7 @@
 <translation id="5999271311987646952">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google, qui a <ph name="BEGIN_LINK" />récemment détecté un logiciel malveillant<ph name="END_LINK" /> sur le site que vous essayez de visiter.</translation>
 <translation id="6000528814684428358">Hard rock et rock progressif</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
+<translation id="6001839398155993679">Accéder</translation>
 <translation id="6002122790816966947">Vos appareils</translation>
 <translation id="6002968396561884726">Récemment consulté</translation>
 <translation id="6005659677094197001">Continu</translation>
@@ -3037,6 +3041,7 @@
 <translation id="6704458454638854812">La propriété « Taille_personnalisée » est définie, le nom doit être « Personnalisé ».</translation>
 <translation id="6706005862292023715">Rideaux et accessoires de fenêtre</translation>
 <translation id="6706210727756204531">Portée</translation>
+<translation id="6706678697074905703">Cet IBAN n'a pas pu être enregistré dans votre compte Google. Il est plutôt enregistré dans Chrome sur cet appareil.</translation>
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6710594484020273272">&lt;Entrez un terme de recherche&gt;</translation>
@@ -3054,6 +3059,7 @@
 <translation id="6735783933931458444">Fréquemment consulté à cette heure de la journée</translation>
 <translation id="6737708609449480586">Produits de boulangerie-pâtisserie</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
+<translation id="6739943577740687354">Cette fonctionnalité utilise l'IA et ne fonctionnera pas toujours correctement</translation>
 <translation id="6740851646645036700">Vous avez atteint votre limite d'aide à la rédaction pour le moment. Réessayez plus tard.</translation>
 <translation id="674375294223700098">Erreur inconnue de certificat de serveur.</translation>
 <translation id="6744009308914054259">En attendant la connexion, vous pouvez consulter vos téléchargements pour lire des articles hors connexion.</translation>
@@ -3837,6 +3843,7 @@ Détails supplémentaires :
 <translation id="8183800802493617952">Activités et jeux pour la famille</translation>
 <translation id="8184538546369750125">Utiliser le paramètre global par défaut (« Autoriser »)</translation>
 <translation id="8186706823560132848">Logiciel</translation>
+<translation id="8188830160449823068">IBAN enregistré sur l'appareil uniquement</translation>
 <translation id="8189557652711717875">Le moteur de recherche que vous choisirez sera utilisé pour des fonctionnalités, telles que la recherche à partir de la barre d'adresse et les images sur les pages Web.</translation>
 <translation id="8190193880870196235">Gérée par une extension</translation>
 <translation id="8194412401381329820">Vous ne pouvez pas utiliser cette page à partir d'un compte géré sur cet appareil non géré. Tous les comptes gérés seront verrouillés si vous utilisez cette page, à l'exception des comptes gérés par la même entité que cet appareil (comptes affiliés).</translation>
@@ -4439,5 +4446,6 @@ Détails supplémentaires :
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Ajouter un IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

@@ -3489,6 +3489,17 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 <translation id="3660562134618097814">Transférer des cookies de fournisseurs d'identité SAML lors de la connexion</translation>
 <translation id="3662660961914441274">Désactiver le stockage local des fichiers utilisateur</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
+<translation id="3667467644216039144">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur.
+
+Avertissement : La définition de cette règle peut affecter les données à caractère personnel locales et entraîner leur suppression définitive. Nous vous recommandons de tester vos paramètres avant de les déployer pour éviter toute suppression accidentelle de données à caractère personnel.
+
+Les types de données disponibles sont les suivants : historique de navigation (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historique des téléchargements (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), saisie automatique (<ph name="DATA_TYPE_AUTOFILL" />), mots de passe (<ph name="DATA_TYPE_PASSWORD" />), paramètres des sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) et données des applis hébergées (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Cette règle ne prévaut pas sur <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "true". À partir de Chrome 115, si vous configurez cette règle, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.
+
+Si, pour une raison quelconque, la suppression des données a commencé, mais ne s'est pas terminée, les données de navigation seront effacées lors du prochain chargement du profil.
+
+Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement (par exemple, si le navigateur ou l'OS plante), les données de navigation ne sont pas effacées, car l'utilisateur n'a pas causé la fermeture du navigateur en fermant toutes ses fenêtres.</translation>
 <translation id="3671773704245936868">Désactiver la mise en surbrillance des éléments sélectionnés au clavier</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) est souvent utilisée pour décomposer les longues tâches JavaScript.
@@ -6744,6 +6755,27 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
       Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent installer et exécuter Chrome for Testing.
 
       Si cette règle est désactivée, les utilisateurs ne sont pas autorisés à exécuter Chrome for Testing. Ils pourront quand même installer Chrome for Testing, mais cette version ne s'exécutera pas avec les profils pour lesquels cette règle est désactivée.</translation>
+<translation id="6258646807927528870">Configure une liste de règles de contrôle des données pour éviter les fuites de données.
+
+      Chaque règle se compose des éléments suivants :
+- Des champs de conditions permettant de déclencher la règle. Une règle ne se déclenche que si une action utilisateur correspond à tous ses champs <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> et <ph name="DATA_CONTROLS_NOT" /> renseignés. Pour les sous-champs de liste, il suffit de faire correspondre une entrée. Par exemple, la règle se déclenche dès qu'un format d'URL correspond.
+      - Une liste de restrictions à appliquer. En fonction de la restriction, seules les conditions <ph name="DATA_CONTROLS_SOURCES" /> ou <ph name="DATA_CONTROLS_DESTINATIONS" /> peuvent être disponibles.
+
+      Les règles peuvent être ajoutées pour :
+- Contrôler les données du presse-papiers partagées entre les sources et les destinations.
+      - Contrôler le blocage des captures d'écran en fonction des onglets sources.
+
+      Si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est définie sur "True", les règles déclenchées sont signalées à l'administrateur.
+      Le niveau de restriction peut être défini sur "BLOCK", "WARN" ou "REPORT".
+      - Si le niveau de restriction est défini sur "BLOCK", l'action concernée ne sera pas autorisée.
+      - Si le niveau de restriction est défini sur "WARN", l'utilisateur sera averti et pourra choisir de continuer ou d'annuler l'action.
+      - Si le niveau de restriction est défini sur "REPORT", l'action utilisateur ne sera pas interrompue, mais un rapport sera envoyé si la règle <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> est activée.
+
+      Remarques :
+- Les formats d'URL doivent respecter les conditions énoncées sur https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+- Pour les règles de prévention des fuites de données propres à <ph name="PRODUCT_OS_NAME" />, consultez également la règle <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Si la règle n'est pas configurée, aucune restriction ne sera appliquée.</translation>
 <translation id="6258658183356534534">Contrôlez la fonctionnalité de mise à jour GREASE des indications du client user-agent.</translation>
 <translation id="6261643884958898336">Enregistrer les informations d'identification de l'ordinateur</translation>
 <translation id="6264247808139384018">Si cette règle est activée ou n'est pas configurée, les utilisateurs qui s'authentifient avec un mot de passe peuvent verrouiller l'écran.

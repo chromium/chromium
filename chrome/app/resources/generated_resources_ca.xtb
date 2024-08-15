@@ -478,7 +478,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1340527397989195812">Feu una còpia de seguretat dels fitxers multimèdia del dispositiu mitjançant l'aplicació Fitxers.</translation>
 <translation id="1341701348342335220">Ben fet!</translation>
 <translation id="1342886103232377846">Per comprovar si hi ha contrasenyes en perill, ves al gestor de contrasenyes de Google</translation>
-<translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
 <translation id="1344141078024003905">Estàs emetent la teva pantalla. Pots posar en pausa o aturar l'emissió de la pantalla en qualsevol moment.</translation>
 <translation id="1346403631707626730">Envia dades d'ús i de diagnòstic. Ajuda a millorar l'experiència a Android del teu fill o filla enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill o filla i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada per al teu fill o filla, és possible que aquestes dades es desin al seu Compte de Google. <ph name="BEGIN_LINK1" />Més informació sobre les mètriques<ph name="BEGIN_LINK1_END" />Més informació<ph name="END_LINK1" /></translation>
@@ -820,7 +819,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1588919647604819635">Fes clic amb el botó dret a la targeta</translation>
 <translation id="1589055389569595240">Mostra l'ortografia i la gramàtica</translation>
 <translation id="1590478605309955960">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els dispositius en què tens la sessió iniciada.</translation>
-<translation id="1591679663873027990">Dona permís a Parallels Desktop per accedir als dispositius USB. Parallels Desktop no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="15916883652754430">Configuració de la veu del sistema</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ha desactivat la depuració d'ADB, cosa que restablirà el dispositiu <ph name="DEVICE_TYPE" />. Crea una còpia de seguretat dels fitxers abans de reiniciar.</translation>
 <translation id="1592126057537046434">Traducció de Respostes ràpides</translation>
@@ -2643,7 +2641,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2853121255651601031">S'ha desat la contrasenya</translation>
 <translation id="2855243985454069333">Suprimeix l'historial de tots els dispositius sincronitzats</translation>
 <translation id="2855812646048059450">Inicia la sessió amb <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Mode estricte</translation>
 <translation id="2856776373509145513">Crea un contenidor nou</translation>
 <translation id="2856907950922663165">Vols desactivar l'encriptació d'URL?</translation>
 <translation id="2859741939921354763">Importa les contrasenyes a <ph name="BRAND" /></translation>
@@ -2925,7 +2922,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3053273573829329829">Activa el PIN de l'usuari</translation>
 <translation id="3053274730492362225">No parpellegis</translation>
 <translation id="3054766768827382232">Si desactives aquesta opció, és possible que els perifèrics funcionin millor, però pot exposar les teves dades personals mitjançant un ús no autoritzat.</translation>
-<translation id="3056438898277655057">Dona permís a <ph name="SPECIFIC_NAME" /> per accedir a dispositius USB. <ph name="SPECIFIC_NAME" /> no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="3058498974290601450">Pots activar la sincronització en qualsevol moment des de la configuració</translation>
 <translation id="3058517085907878899">Anomena el dispositiu</translation>
 <translation id="3059195548603439580">Busques els components del sistema? Ves a</translation>
@@ -8534,7 +8530,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7222335051802562841">Finalitza l'actualització</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Això permet que els serveis del sistema utilitzin la precisió de la ubicació per determinar la teva ubicació. Per estimar la ubicació del dispositiu, la precisió de la ubicació utilitza informació de sensors i senyals sense fil.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 lloc web al grup de <ph name="FPS_OWNER" />}other{{MEMBERS} llocs web al grup de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Utilitza Windows Hello en emplenar les contrasenyes</translation>
 <translation id="7225179976675429563">Falta el tipus de xarxa</translation>
 <translation id="7227235818314667565">Gestiona la compartició</translation>
@@ -9912,7 +9907,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8207404892907560325">Tria una clau d'accés</translation>
 <translation id="8207794858944505786">La màquina virtual "<ph name="DEFAULT_VM_NAME" />" existeix, però sembla que no és una VM <ph name="VM_TYPE" /> vàlida. Contacta amb l'administrador.</translation>
 <translation id="8207901006380134182">Una gran onada al mar, amb una vora de bosc fosc.</translation>
-<translation id="8208188204689616705">Aquests llocs web es troben en un grup definit per <ph name="FPS_OWNER" />. Els llocs web d'un grup poden veure l'activitat que dus a terme al grup.</translation>
 <translation id="8208216423136871611">No desis</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificació nova}other{# notificacions noves}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Baixada en curs}other{Baixades en curs}}</translation>
@@ -10170,7 +10164,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
     <ph name="END_LIST" />
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="8383614331548401927">Recapitulació de benvinguda</translation>
+<translation id="8383614331548401927">Resum de benvinguda</translation>
 <translation id="8386091599636877289">No s'ha trobat la política.</translation>
 <translation id="8387361103813440603">Sense permís per veure la teva ubicació</translation>
 <translation id="8387617938027387193">Verifica la teva identitat</translation>
@@ -11040,7 +11034,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9009707268312089299">Importats de Windows</translation>
 <translation id="9009708085379296446">Volies canviar aquesta pàgina?</translation>
 <translation id="9010845741772269259">Afegeix formes de pagament</translation>
-<translation id="901087299639956505">Mode equilibrat</translation>
 <translation id="9011163749350026987">Mostra sempre la icona</translation>
 <translation id="9011262023858991985">S'està emetent aquesta pestanya</translation>
 <translation id="9011393886518328654">Notes de la versió</translation>

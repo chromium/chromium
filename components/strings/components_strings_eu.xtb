@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Erakutsi iradokizunak</translation>
 <translation id="1038842779957582377">izen ezezaguna</translation>
 <translation id="1041998700806130099">Lan-orriko mezua</translation>
+<translation id="1044897699341250361">Zer esan nahi du horrek?</translation>
 <translation id="1046350918013988591">Kupoiak eta deskontuak</translation>
 <translation id="1048785276086539861">Oharpenak editatzen dituzunean, orri bakarreko ikuspegira itzuliko da dokumentua</translation>
 <translation id="1050038467049342496">Itxi beste aplikazio batzuk</translation>
@@ -776,6 +777,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="239429038616798445">Ez dago erabilgarri bidalketa-metodo hori. Saiatu beste metodo batekin.</translation>
 <translation id="2395840535409704129">Ur-kirolak</translation>
 <translation id="2396249848217231973">&amp;Desegin ezabatzea</translation>
+<translation id="2399344929880464793">IBANa zure Google-ko kontuan gorde da; beraz, Google-ren zerbitzu guztietan erabil dezakezu.</translation>
 <translation id="2399868464369312507">Google Chrome-k ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="2400600116338235695">Serieko ataketara konektatzea eska dezake</translation>
 <translation id="2404884497378469141">Saiatu berriro fitxategiak kopiatzen</translation>
@@ -1050,6 +1052,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2967098518029543669">gorde Google-ko kontuan</translation>
 <translation id="297173220375858963">Argitalpen elektronikoak</translation>
 <translation id="2972581237482394796">&amp;Berregin</translation>
+<translation id="2974468223369775963">Ezin izan da gorde IBANa Google-ko kontuan. Horren ordez, gailu honetako Chrome-n gorde da. IBANa erabiltzen duzun hurrengoan, Chrome-k berriro galdetuko dizu.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> dago hautatuta. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Teklatua blokeatu eta erabili</translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -2643,6 +2646,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5999271311987646952">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da, eta <ph name="BEGIN_LINK" />duela gutxi malwarea aurkitu du<ph name="END_LINK" /> bisitatu nahi duzun webgunean.</translation>
 <translation id="6000528814684428358">Hard rocka eta rock progresiboa</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" bilaketak <ph name="RESULT_COUNT" /> emaitza ditu</translation>
+<translation id="6001839398155993679">Has gaitezen</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6002968396561884726">Duela gutxi ikusia</translation>
 <translation id="6005659677094197001">Etengabea</translation>
@@ -3032,6 +3036,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6704458454638854812">"custom_size" propietatea ezarri da; espero den izena "custom" da.</translation>
 <translation id="6706005862292023715">Gortinak eta leihoetarako elementuak</translation>
 <translation id="6706210727756204531">Esparrua</translation>
+<translation id="6706678697074905703">Ezin izan da gorde IBANa Google-ko kontuan. Horren ordez, gailu honetako Chrome-n gorde da.</translation>
 <translation id="6709133671862442373">Albisteak</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
 <translation id="6710594484020273272">&lt;Idatzi bilaketa-hitza&gt;</translation>
@@ -3049,6 +3054,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6735783933931458444">Maiz bisitatzen duzu ordu honetan</translation>
 <translation id="6737708609449480586">Labean egindako produktuak</translation>
 <translation id="6738516213925468394">Data honetan hasi ziren enkriptatzen zure datuak <ph name="BEGIN_LINK" />Sinkronizatzeko pasaesaldiaren<ph name="END_LINK" /> bidez: <ph name="TIME" />. Idatz ezazu sinkronizatzen hasteko.</translation>
+<translation id="6739943577740687354">Eginbide honek AA darabil, eta ez du beti dena ongi egingo.</translation>
 <translation id="6740851646645036700">Idazteko laguntzaren mugara iritsi zara oraingoz. Saiatu berriro geroago.</translation>
 <translation id="674375294223700098">Zerbitzari-ziurtagiriaren errore ezezaguna.</translation>
 <translation id="6744009308914054259">Konexio baten zain zauden bitartean, Deskargak atalera joan zaitezke konexiorik behar ez duten artikuluak irakurtzera.</translation>
@@ -3832,6 +3838,7 @@ Xehetasun gehiago:
 <translation id="8183800802493617952">Familientzako jokoak eta jarduerak</translation>
 <translation id="8184538546369750125">Erabili lehenespen globala (Baimendu)</translation>
 <translation id="8186706823560132848">Softwarea</translation>
+<translation id="8188830160449823068">Gailuan soilik gorde da IBANa</translation>
 <translation id="8189557652711717875">Helbide-barratik eta web-orrietako irudietatik bilatzeko eta antzeko eginbideetarako erabiliko da aukeratzen duzun bilatzailea.</translation>
 <translation id="8190193880870196235">Luzapen batek kudeatzen du</translation>
 <translation id="8194412401381329820">Ezin duzu erabili orri hau kontu kudeatu batekin kudeatu gabeko gailu honetan. Orria erabiltzen baduzu, kontu kudeatu guztiak blokeatuko dira, gailu hau kudeatzen duen entitate berak kudeatutako kontuak izan ezean (kontu afiliatuak).</translation>
@@ -4434,5 +4441,6 @@ Xehetasun gehiago:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Gehitu IBANa</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay-tik dator</translation>
 </translationbundle>

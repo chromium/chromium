@@ -424,13 +424,13 @@
       如果選取了「Forced」(2)，使用者將無法隱藏設定檔選擇畫面。即使只有一個設定檔，瀏覽器也會顯示設定檔選擇畫面。</translation>
 <translation id="1339174690935954950">禁止使用者提出意見回饋</translation>
 <translation id="1340053691042184658">禁止透過瀏覽器訪客模式登入</translation>
-<translation id="134154550994512097">這項政策可控管使用者能否在「設定」中啟用僅限 HTTPS 模式 (一律使用安全連線)。此模式會禁止瀏覽僅支援 HTTP 的網站。
+<translation id="134154550994512097">這項政策可控管使用者能否在「設定」中啟用僅限 HTTPS 模式 (一律使用安全連線)。此模式會將所有瀏覽作業升級為僅限 HTTPS。
       如果將這項政策設為允許或不設定，使用者將可啟用僅限 HTTPS 模式。
       如果將這項政策設為禁止，使用者無法啟用僅限 HTTPS 模式。
       如果將這項政策設為 force_enabled，系統會在嚴格模式下啟用僅限 HTTPS 模式，而且使用者無法停用。
       如果將這項政策設為 force_balanced_enabled，系統會在平衡模式中啟用僅限 HTTPS 模式，而且使用者無法停用。
       系統將自 M112 版起支援 force_enabled，並自 M129 版起支援 force_balanced_enabled。
-      如果適用這項政策的 Chrome 版本不支援你在政策中設定的值，Chrome 預設會設為允許。
+      如果適用這項政策的 Chrome 版本不支援你在政策中設定的值，Chrome 將預設為允許。
 
 獨立的 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 政策可排除特定主機名稱或主機名稱模式，避免這項功能將其升級為 HTTPS。</translation>
 <translation id="1342918903685430097">設定裝置的最低 <ph name="PRODUCT_OS_NAME" /> 版本限制。</translation>

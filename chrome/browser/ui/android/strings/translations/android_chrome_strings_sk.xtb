@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Hárok zdieľania so súhrnnou spätnou väzbou bol zavretý</translation>
 <translation id="1089606299949659462">Kontrola bola dokončená.</translation>
 <translation id="1094555143448724771">Ak chcete vidieť karty z vašich ostatných zariadení, synchronizujte si karty aj históriu.</translation>
-<translation id="1095142578254888918">Web <ph name="SITE_NAME" /> nemá povolené upozornenia</translation>
 <translation id="1095761715416917775">Zaistite, aby ste mali neustály prístup k svojim údajom synchronizácie</translation>
 <translation id="1100066534610197918">Otvoriť v skupine na novej karte</translation>
 <translation id="1103142993930332957">Chcete pomôcť zlepšiť Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Vlastné</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1183189057400844278">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek použiť heslá, overte svoju totožnosť</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Upozornenia nie sú povolené pre 1 web}few{Upozornenia nie sú povolené pre # weby}many{Notifications not allowed for # sites}other{Upozornenia nie sú povolené pre # webov}}</translation>
 <translation id="1187810343066461819">Odstrániť aj záložky, históriu a ďalší obsah z tohto auta</translation>
 <translation id="1193729455103054076">Chcete použiť silné heslo?</translation>
 <translation id="1197267115302279827">Presunúť záložky</translation>
@@ -454,7 +452,6 @@
 <translation id="3080525922482950719">Stránky si môžete uložiť a prečítať neskôr či offline</translation>
 <translation id="3087218211037573995">Niektoré heslá uložené iba v tomto zariadení čoskoro prestanú fungovať. Môžete ich presunúť do Správcu hesiel Google.</translation>
 <translation id="3091010850649238832">Zobraziť obsah schránky</translation>
-<translation id="3093004810561729002">Niekto</translation>
 <translation id="3098745985164956033">Niektoré obrázky sa na zlepšovanie popisov pre vás odosielajú Googlu</translation>
 <translation id="3114507951000454849">Prečítajte si dnešné správy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Oznámenia</translation>
@@ -506,6 +503,7 @@
 <translation id="3407392651057365886">Prednačítavajú sa ďalšie stránky. Stránky môžu byť prednačítané prostredníctvom serverov Googlu, keď o ne požiadajú iné weby.</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
 <translation id="3421726884497337397">Vyberte, kedy blokovať súbory cookie tretích strán</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Pred # h}few{Pred # h}many{Pred # h}other{Pred # h}}</translation>
 <translation id="3430670036890315772">Vypnutím zámky profilu odstránite uložené informácie</translation>
 <translation id="3435465986463792564">Máte veľa okien? Tu ich môžete spravovať.</translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
@@ -938,6 +936,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5517095782334947753">Máte záložky, históriu, heslá a ďalšie nastavenia z účtu <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Presmerovanie bolo zablokované.</translation>
 <translation id="5526281268548144413">Nie je možné zavrieť vo viacerých oknách</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Pred # min}few{Pred # min}many{Pred # min}other{Pred # min}}</translation>
 <translation id="5548606607480005320">Kontrola bezpečnosti</translation>
 <translation id="5554520618550346933">Ak používate heslo, Chrome vás upozorní, keď bude zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="5555525474779371165">Výber ochrany v rámci Bezpečného prehliadania</translation>

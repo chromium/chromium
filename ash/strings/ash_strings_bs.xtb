@@ -465,6 +465,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2670350619068134931">Smanjene animacije</translation>
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2678852583403169292">Meni Odaberite za govor</translation>
+<translation id="2683887737780133806"><ph name="DAY_OF_WEEK" />, prošli tjedan</translation>
 <translation id="2687510499067466116">Prečica tastature je promijenjena</translation>
 <translation id="2689613560355655046">Radna površina 8</translation>
 <translation id="2695305337569143674">web</translation>
@@ -515,6 +516,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2849936225196189499">Kritična</translation>
 <translation id="2860184359326882502">Najbolje podudaranje</translation>
 <translation id="2865888419503095837">Informacije o mreži</translation>
+<translation id="2869095047958348710">Prošli/prošlu: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Zamjena primarnog monitora</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2876338922445400217">Uvećavanje ekrana</translation>
@@ -622,6 +624,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3264031581203585083">Sakrij sve prijedloge Google Diska</translation>
 <translation id="3265032511221679826">Uključiti pristup tačnoj lokaciji?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
+<translation id="3271554781793662131">Pretražite za umetanje</translation>
 <translation id="3273040715184276344">Caps Lock je isključen</translation>
 <translation id="3274634049061007184">Pregledajte aplikacije telefona</translation>
 <translation id="3289364673986435196">Meni napajanja</translation>
@@ -1051,6 +1054,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4706121060329443414">Pokušaj preuzimanja će se izvršiti kasnije. Govor će se odmah poslati Googleu na obradu.</translation>
 <translation id="470644585772471629">Inverzija boja</translation>
 <translation id="4708065238214351979">Povećavanje osvjetljenja tastature</translation>
+<translation id="4708185346211948049"><ph name="DAY_OF_WEEK" />, sljedeći tjedan</translation>
 <translation id="4717575069099566988">USB-C kabl ne podržava USB4. Performanse uređaja su možda ograničene.</translation>
 <translation id="4724328513667182700">6 savjeta za početak korištenja uređaja <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ČESTO KORIŠTENO</translation>
@@ -1154,6 +1158,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="5013847959275396160">Sakrij alatnu traku</translation>
 <translation id="5016558321564993266">Uključite/isključite označivač. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Kategorije pretraživanja</translation>
+<translation id="5025389392398927910">Pretražite da biste uredili tekst</translation>
 <translation id="5030659775136592441">Prikaži upravitelja oznaka</translation>
 <translation id="5030687792513154421">Vrijeme je isteklo</translation>
 <translation id="5033299697334913360">Kliknite na bilo šta da snimite cijeli ekran</translation>
@@ -1259,6 +1264,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5369573834963677938">Upravljanje licem će biti dostupno drugim korisnicima na uređaju</translation>
 <translation id="5369717264580061086">Pregledajte fajl u aplikaciji Files</translation>
 <translation id="5377367976106153749">Uključiti pristup kameri?</translation>
+<translation id="5378450298115733949">Više</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
 <translation id="5383434787520761436">Nema fajlova na Google Disku</translation>
 <translation id="5391307769715781764">Zamijeniti sačuvanu radnu površinu?</translation>
@@ -1493,6 +1499,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6141988275892716286">Potvrdite lozinku</translation>
 <translation id="6143578372829139382">Dijeli na YouTubeu</translation>
 <translation id="6147182561428020853">Sada možete blokirati aplikacije instalirane na uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="6153745728877356366">Pretražite da biste otvorili</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Postavke jezika</translation>
 <translation id="6158923546703693047">Informacije o izvoru sadržaja</translation>
@@ -1752,6 +1759,7 @@ Nova instalacija</translation>
 <translation id="7051244143160304048">Veza s uređajem <ph name="DEVICE_NAME" /> je prekinuta</translation>
 <translation id="7055910611768509537">Olovka nije korištena duže od sedam dana</translation>
 <translation id="7061457967428964661">Pregled kamere, pritisnite tipke control i strelice da premjestite prikaz u drugi ugao</translation>
+<translation id="7064351585062927183">Sljedeći/sljedeću <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">Ovu mrežu je onemogućio vaš administrator.</translation>
 <translation id="7067196344162293536">Automatsko rotiranje</translation>
 <translation id="7068360136237591149">Otvorite fajlove</translation>
@@ -1864,7 +1872,6 @@ Nova instalacija</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">Page down</translation>
-<translation id="7518182783647693467">Promijeni jedinice temperature (F ili C)</translation>
 <translation id="7519206258459640379">Kadriranje kamere je uključeno.</translation>
 <translation id="7519649142417630956">Nakon isključivanja administrator će se odjaviti i neće moći kontrolirati vaš uređaj.
 

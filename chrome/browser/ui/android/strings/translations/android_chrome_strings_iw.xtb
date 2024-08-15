@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">גיליון השיתוף עם סיכום המשוב נסגר</translation>
 <translation id="1089606299949659462">הבדיקה הושלמה!</translation>
 <translation id="1094555143448724771">כדי לראות כרטיסיות מהמכשירים האחרים שלך, צריך לסנכרן את הכרטיסיות ואת ההיסטוריה</translation>
-<translation id="1095142578254888918">לאתר <ph name="SITE_NAME" /> אין הרשאה לשלוח התראות</translation>
 <translation id="1095761715416917775">כדאי לוודא שניתן לגשת לנתונים המסונכרנים בכל רגע</translation>
 <translation id="1100066534610197918">פתיחה בכרטיסייה חדשה בקבוצה</translation>
 <translation id="1103142993930332957">‏רוצה לעזור לנו לשפר את Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1183189057400844278">‏כדי שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך, עליך לאמת את הזהות שלך</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{לאתר אחד אין הרשאה לשליחת התראות}one{ל-# אתרים אין הרשאה לשליחת התראות}two{ל-# אתרים אין הרשאה לשליחת התראות}other{ל-# אתרים אין הרשאה לשליחת התראות}}</translation>
 <translation id="1187810343066461819">ניתן למחוק גם את הסימניות, ההיסטוריה ונתונים נוספים ברכב הזה</translation>
 <translation id="1193729455103054076">רוצה להשתמש בסיסמה החזקה?</translation>
 <translation id="1197267115302279827">העברת סימניות</translation>
@@ -454,7 +452,6 @@
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
 <translation id="3087218211037573995">‏חלק מהסיסמאות ששמורות רק במכשיר הזה יפסיקו לפעול בקרוב. אפשר להעביר את הסיסמאות האלה למנהל הסיסמאות של Google.</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
-<translation id="3093004810561729002">מישהו</translation>
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">הודעות</translation>
@@ -506,6 +503,7 @@
 <translation id="3407392651057365886">‏יותר דפים נטענים מראש. דפים יכולים להיטען מראש באמצעות השרתים של Google כשמתקבלת בקשה מאתרים אחרים.</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3421726884497337397">‏אפשר לקבוע מתי קובצי cookie של צד שלישי ייחסמו</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{לפני שעה}one{# hr ago}two{לפני שעתיים}other{לפני # שעות}}</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
 <translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
 <translation id="3435738964857648380">אבטחה</translation>
@@ -938,6 +936,7 @@
 <translation id="5517095782334947753">יש לך סימניות, היסטוריה, סיסמאות והגדרות נוספות מ-<ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">הפניה לכתובת אתר אחרת נחסמה.</translation>
 <translation id="5526281268548144413">אי אפשר לסגור בכמה חלונות</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{לפני דקה}one{# min ago}two{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
 <translation id="5554520618550346933">‏אם משתמשים בסיסמה והיא פורסמה באינטרנט, מוצגת אזהרה ב-Chrome. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
 <translation id="5555525474779371165">בחירת סוג ההגנה במסגרת 'גלישה בטוחה'</translation>

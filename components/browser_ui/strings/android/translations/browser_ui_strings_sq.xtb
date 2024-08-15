@@ -426,7 +426,6 @@
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="789180354981963912">Blloko kukit e palëve të treta në modalitetin "e fshehtë"</translation>
 <translation id="7940722705963108451">Më kujto</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="FPS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="FPS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="FPS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
 <translation id="7986741934819883144">Zgjidh një kontakt</translation>
 <translation id="7990211076305263060">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin mikrofonin. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin mikrofonin.</translation>
 <translation id="8007176423574883786">E çaktivizuar për këtë pajisje</translation>
@@ -473,7 +472,6 @@
 <translation id="851751545965956758">Blloko lidhjen e sajteve me pajisjet</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
 <translation id="8541410041357371550">Ky sajt merr temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajt të <ph name="FPS_OWNER" />}other{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajte të <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8617611086246832542">Kur cilësimi është aktiv, shfaqet pamja e uebsajteve për desktop. Kur cilësimi është joaktiv, shfaqet pamja e uebsajteve për celular.</translation>
@@ -511,7 +509,6 @@
 <translation id="9019902583201351841">Menaxhuar nga prindërit e tu</translation>
 <translation id="9039697262778250930">Mund të dalësh nga këto sajte</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
-<translation id="9090268041676521955">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Të fshihen kukit?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera}}</translation>
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>

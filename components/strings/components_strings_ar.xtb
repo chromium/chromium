@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">عرض الاقتراحات</translation>
 <translation id="1038842779957582377">اسم غير معروف</translation>
 <translation id="1041998700806130099">رسالة ورقة المهمة</translation>
+<translation id="1044897699341250361">المقصود بذلك</translation>
 <translation id="1046350918013988591">قسائم وخصومات</translation>
 <translation id="1048785276086539861">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى عرض صفحة واحدة.</translation>
 <translation id="1050038467049342496">إغلاق التطبيقات الأخرى</translation>
@@ -2652,6 +2653,7 @@
 <translation id="5999271311987646952">‏يتضمّن متصفِّح Chrome ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل ميزة "التصفُّح الآمن من Google" التي <ph name="BEGIN_LINK" />رصدت مؤخرًا برامج ضارة<ph name="END_LINK" /> على الموقع الإلكتروني الذي تحاول الانتقال إليه.</translation>
 <translation id="6000528814684428358">موسيقى "هارد روك" و"بروغريسيف روك"</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> من نتائج البحث عن "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">البدء</translation>
 <translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6002968396561884726">منتج تم عرضه مؤخرًا</translation>
 <translation id="6005659677094197001">غير متقطع</translation>
@@ -3060,6 +3062,7 @@
 <translation id="6735783933931458444">تزور هذا الموقع الإلكتروني كثيرًا في هذا الوقت من اليوم</translation>
 <translation id="6737708609449480586">مخبوزات</translation>
 <translation id="6738516213925468394">تم ترميز بياناتك باستخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> في <ph name="TIME" />. يُرجى إدخالها لبدء المزامنة.</translation>
+<translation id="6739943577740687354">تستخدم هذه الميزة الذكاء الاصطناعي وقد تخطئ في بعض الأحيان</translation>
 <translation id="6740851646645036700">لقد وصلت إلى الحد الأقصى لاستخدام ميزة "مساعدة في الكتابة". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="674375294223700098">حدث خطأ غير معروف في شهادة الخادم.</translation>
 <translation id="6744009308914054259">أثناء انتظار اتصال، يمكنك الانتقال إلى مجلد "المحتوى الذي تم تنزيله" للاطِّلاع على المقالات بلا اتصال بالإنترنت.</translation>
@@ -4450,5 +4453,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">‏إضافة رقم الحساب بصيغة IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">‏من Google Pay</translation>
 </translationbundle>

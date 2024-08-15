@@ -25,7 +25,6 @@
  dispositius Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="1342274909142618978">Suprimeix també les dades de Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Teniu la sessió iniciada a Chromium.</translation>
-<translation id="1465171403179274511">Chromium et preguntarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
 <translation id="1478370723027452770">Obtén ajuda amb Chrome for Testing</translation>
 <translation id="1497802159252041924">Error d'instal·lació: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Comparteix una pestanya de Chromium</translation>
@@ -81,7 +80,6 @@
 <translation id="2210682093923538346">Lloc web perillós. Chromium ha suprimit les notificacions.</translation>
 <translation id="2240214816234246077">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chromium com vulguin.</translation>
-<translation id="2265830994243640896">Chromium et preguntarà abans de carregar llocs web públics amb una connexió no segura, però permetrà les connexions HTTP per a xarxes privades</translation>
 <translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="2329088755516916767">Quan aquesta opció està activada, Chromium precarrega les pàgines perquè la navegació i la cerca siguin més ràpides.</translation>
 <translation id="2343156876103232566">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chromium en tots dos dispositius.</translation>
@@ -106,7 +104,6 @@
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar (opció recomanada)</translation>
 <translation id="2648074677641340862">S'ha produït un error en el sistema operatiu durant la instal·lació. Torneu a baixar Chromium.</translation>
-<translation id="2649201087614586016">Si aquesta opció està activada, Chromium et preguntarà abans de carregar llocs web que no admeten HTTPS</translation>
 <translation id="2661879430930417727">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chromium com vulguin</translation>
 <translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, et donem la benvinguda a Chromium</translation>
 <translation id="2711502716910134313">Pestanya de Chromium</translation>

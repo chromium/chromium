@@ -478,7 +478,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1340527397989195812">Back up media from the device using the Files app.</translation>
 <translation id="1341701348342335220">Nicely done!</translation>
 <translation id="1342886103232377846">To check for compromised passwords, go to Google Password Manager</translation>
-<translation id="1343865611738742294">Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.</translation>
 <translation id="1343920184519992513">Continue from where you left off and open a specific set of pages</translation>
 <translation id="1344141078024003905">You are casting your screen. You can pause or stop casting your screen at any time.</translation>
 <translation id="1346403631707626730">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If the additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Learn more about metrics<ph name="BEGIN_LINK1_END" />Learn more<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1588919647604819635">Right-click card</translation>
 <translation id="1589055389569595240">Show Spelling and Grammar</translation>
 <translation id="1590478605309955960">Your tab groups automatically save and update across all your signed-in devices.</translation>
-<translation id="1591679663873027990">Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.</translation>
 <translation id="15916883652754430">System voice settings</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> has disabled ADB debugging, which will reset your <ph name="DEVICE_TYPE" />. Back up your files before restarting.</translation>
 <translation id="1592126057537046434">Quick Answers translation</translation>
@@ -2656,7 +2654,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2853121255651601031">Password Saved</translation>
 <translation id="2855243985454069333">Deletes history from all synced devices</translation>
 <translation id="2855812646048059450">Sign in with <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Strict mode</translation>
 <translation id="2856776373509145513">Create a new container</translation>
 <translation id="2856907950922663165">Turn off URL encryption?</translation>
 <translation id="2859741939921354763">Import passwords to <ph name="BRAND" /></translation>
@@ -2938,7 +2935,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3053273573829329829">Enable user pin</translation>
 <translation id="3053274730492362225">Don't blink</translation>
 <translation id="3054766768827382232">Disabling can make your peripherals perform better, but may expose your personal data by unauthorised usage.</translation>
-<translation id="3056438898277655057">Give <ph name="SPECIFIC_NAME" /> permission to access USB devices. <ph name="SPECIFIC_NAME" /> won't remember a USB device after it's removed.</translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
 <translation id="3058517085907878899">Name device</translation>
 <translation id="3059195548603439580">Looking for system components? Visit</translation>
@@ -8553,7 +8549,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7222335051802562841">Finish update</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">This allows system services to use Location Accuracy to determine your location. Location Accuracy uses information about wireless signals and sensors to estimate device location.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 site in <ph name="FPS_OWNER" />'s group}other{{MEMBERS} sites in <ph name="FPS_OWNER" />'s group}}</translation>
 <translation id="7225082563376899794">Use Windows Hello when filling passwords</translation>
 <translation id="7225179976675429563">Network type missing</translation>
 <translation id="7227235818314667565">Manage sharing</translation>
@@ -9931,7 +9926,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8207404892907560325">Choose a passkey</translation>
 <translation id="8207794858944505786">VM ‘<ph name="DEFAULT_VM_NAME" />’ exists, but does not appear to be a valid <ph name="VM_TYPE" /> VM. Please contact your administrator.</translation>
 <translation id="8207901006380134182">A large wave engulfs the ocean, with a dark forest ashore.</translation>
-<translation id="8208188204689616705">These sites are in a group defined by <ph name="FPS_OWNER" />. Sites in a group can see your activity in the group.</translation>
 <translation id="8208216423136871611">Don't save</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{New notification}other{# new notifications}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download is in progress}other{Downloads are in progress}}</translation>
@@ -11058,7 +11052,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9009707268312089299">Imported from Windows</translation>
 <translation id="9009708085379296446">Did you mean to change this page?</translation>
 <translation id="9010845741772269259">Add payment methods</translation>
-<translation id="901087299639956505">Balanced mode</translation>
 <translation id="9011163749350026987">Always show icon</translation>
 <translation id="9011262023858991985">Casting this tab</translation>
 <translation id="9011393886518328654">Release notes</translation>

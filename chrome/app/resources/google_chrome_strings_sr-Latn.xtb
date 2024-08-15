@@ -63,7 +63,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="178701303897325119">Ovaj dodatak više nije podržan. Chrome preporučuje da ga uklonite.</translation>
 <translation id="1812689907177901597">Kada to uključite, možete da se prijavljujete na Google sajtove, kao što je Gmail, ali se ne prijavljujete u Chrome</translation>
 <translation id="1860536484129686729">Chrome traži dozvolu da pristupi kameri za ovaj sajt</translation>
-<translation id="1861924772887221906">Chrome će vas pitati pre učitavanja javnih sajtova pomoću nebezbedne veze, ali će dozvoliti HTTP veze za privatne mreže</translation>
 <translation id="1873233029667955273">Google Chrome nije podrazumevani pregledač</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastareo</translation>
@@ -201,7 +200,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje}=1{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Administrator zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="3597003331831379823">Pokretanje podešavanja sa punim privilegijama nije uspelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome će vas pitati pre učitavanja bilo kog sajta pomoću nebezbedne veze</translation>
 <translation id="3622797965165704966">Sada možete lakše da koristite Chrome sa Google nalogom i na deljenim računarima.</translation>
 <translation id="3635073343384702370">Chrome može da proverava lozinke kada ih sačuvate</translation>
 <translation id="3667616615096815454">Instaliranje nije uspelo, aplikacije je nepoznata serveru.</translation>
@@ -458,7 +456,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7296210096911315575">Važne informacije o upotrebi i bezbednosti</translation>
 <translation id="7302361266603927550">Neki Chrome podaci još nisu sačuvani na Google nalogu. Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
-<translation id="7324120788743384890">Kada je uključeno, Chrome će vas pitati pre učitavanja sajtova koji ne podržavaju HTTPS</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7352881504289275361">Poboljšano bezbedno pregledanje nudi najjaču Chrome onlajn zaštitu da biste bili bezbedni dok pregledate</translation>
 <translation id="7394745511930161845">Napravite sopstvenu temu pomoću veštačke inteligencije da biste pregledaču dali jedinstven izgled</translation>

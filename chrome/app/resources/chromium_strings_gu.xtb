@@ -27,7 +27,6 @@
  ઍક્સેસની જરૂર છે. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />)માંથી પણ ડેટા ડિલીટ કરો</translation>
 <translation id="1414495520565016063">તમે Chromium માં સાઇન ઇન કર્યું છે!</translation>
-<translation id="1465171403179274511">કોઈ અસુરક્ષિત કનેક્શન પરથી કોઈપણ સાઇટ લોડ કરવા પહેલાં Chromium તમને પૂછશે</translation>
 <translation id="1478370723027452770">Chrome for Testing માટે સહાય મેળવો</translation>
 <translation id="1497802159252041924">ઇન્સ્ટૉલ કરવામાં ભૂલ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium ટૅબ શેર કરો</translation>
@@ -83,7 +82,6 @@
 <translation id="2210682093923538346">જોખમી સાઇટ. Chromium દ્વારા નોટિફિકેશન કાઢી નાખવામાં આવ્યા.</translation>
 <translation id="2240214816234246077">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chromium દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ની પરવાનગીઓ કાઢી નાખવામાં આવી</translation>
 <translation id="2241627712206172106">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી અને તેમને જોઇએ તેમ Chromium ને સેટ કરી શકે છે.</translation>
-<translation id="2265830994243640896">કોઈ અસુરક્ષિત કનેક્શન વડે સાર્વજનિક સાઇટ લોડ કરવા પહેલાં Chromium તમને પૂછશે, પરંતુ ખાનગી નેટવર્ક માટે HTTP કનેક્શનને મંજૂરી આપશે</translation>
 <translation id="2313870531055795960">URLsને Chromiumમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="2329088755516916767">જ્યારે ચાલુ હોય, ત્યારે Chromium પેજને પહેલેથી લોડ કરે છે, જે બ્રાઉઝ કરવાનું અને શોધવાનું વધુ ઝડપી બનાવે છે.</translation>
 <translation id="2343156876103232566">અહીંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromiumમાં સાઇન ઇન કરો.</translation>
@@ -108,7 +106,6 @@
 <translation id="259935314519650377">ડાઉનલોડ કરેલા ઇન્સ્ટૉલરને કૅશ મેમરીમાં સાચવવામાં નિષ્ફળ રહ્યાં. ભૂલ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ (સુઝાવ આપવામાં આવે છે)</translation>
 <translation id="2648074677641340862">ઇન્સ્ટૉલેશન દરમિયાન ઓપરેટિંગ સિસ્ટમ ભૂલ આવી. કૃપા કરીને ફરીથી Chromium ડાઉનલોડ કરો.</translation>
-<translation id="2649201087614586016">જ્યારે ચાલુ હોય, ત્યારે Chromium તમને HTTPSને સપોર્ટ ન આપતી સાઇટ લોડ કરવા પહેલાં પૂછશે</translation>
 <translation id="2661879430930417727">જો તમે ડિવાઇસ શેર કરતા હો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેઓ તેમને જોઈએ તે પ્રમાણે Chromiumનું સેટઅપ કરી શકે છે</translation>
 <translation id="268602741124540128">Chromiumમાં સ્વાગત છે, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium ટૅબ</translation>

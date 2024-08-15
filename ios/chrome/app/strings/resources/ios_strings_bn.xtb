@@ -123,10 +123,12 @@
 <translation id="1605658421715042784">ছবি কপি করুন</translation>
 <translation id="1608337082864370066">কপি করা ছবি সার্চ করুন</translation>
 <translation id="1612730193129642006">ট্যাব গ্রিড দেখান</translation>
+<translation id="1612754831519568745">আপনার Safe Browsing এখন বন্ধ করা আছে। বিপজ্জনক সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত থাকুন।</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622717322707146952">“Google Calendar-এ যোগ করুন“ বা “Apple Calendar-এ যোগ করুন“ বিকল্প বেছে নিন।</translation>
 <translation id="1626771852476987600"><ph name="COUNT" />টি একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে</translation>
 <translation id="1636234353664774105">নেভিগেশন ফিচার ব্যবহার করে এক এক করে আপনার গন্তব্যের দিকনির্দেশ সংক্রান্ত নির্দেশিকা দেখুন</translation>
+<translation id="1641068175940982148"><ph name="GROUP_TITLE" /> খুলুন, <ph name="NUMBER_OF_TABS" />-এর গ্রুপ, <ph name="CREATION_TEXT" /></translation>
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
 <translation id="1641316430523156212">ফলো করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
@@ -402,6 +404,7 @@
 <translation id="2952246431280799028">কোনও ঠিকানাতে টাচ করে ধরে থাকুন।</translation>
 <translation id="2952278131021475699">Lens-এর ক্যামেরার মাধ্যমে সার্চ করার সুবিধা</translation>
 <translation id="2958718410589002129">পাসওয়ার্ড</translation>
+<translation id="2963044753825419640">উপলভ্য থাকাকালীন পাসকী ব্যবহার করার জন্য আগে থাকা অ্যাকাউন্ট, অটোমেটিক আপগ্রেড করতে ওয়েবসাইট ও অ্যাপকে অনুমতি দিন</translation>
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2965328226365382335">শেষ ১৫ মিনিট ধরে</translation>
 <translation id="2969979262385602596">সাইন-ইন করা যায়নি৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
@@ -557,7 +560,6 @@
 <translation id="3745190878148784130">'টেক্সট বড় করুন' বিকল্পটি লুকান</translation>
 <translation id="3762232513783804601">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="3768725474733206671">শেষে বন্ধ হওয়া ট্যাবটি আবার খুলুন</translation>
-<translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="3775743491439407556">সিঙ্ক কাজ করছে না</translation>
 <translation id="3779810277399252432">কোনও ইন্টারনেট সংযোগ নেই৷</translation>
 <translation id="3785672280731998727">যে নাম দেখানো হবে</translation>
@@ -759,6 +761,7 @@
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, শুধুমাত্র এই ডিভাইসে, <ph name="URL" /></translation>
 <translation id="4751645464639803239">নতুন ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="4766112107778026136">ডিসকভার ও ফলো</translation>
+<translation id="4769198578611055647">যেকোনও ডিভাইসে আপনাকে সেভ করা পাসকী অ্যাক্সেস করতে সাহায্য করে</translation>
 <translation id="4775879719735953715">ডিফল্ট ব্রাউজার</translation>
 <translation id="4779732376610430319">'সেটিংস'-এ যান...</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
@@ -1043,6 +1046,7 @@
 <translation id="6067849159007176401">ব্রাউজিং সম্পর্কিত সুরক্ষা যোগ করুন</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) আপলোড করা যায়নি</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
+<translation id="6089212833343035912">Google Password Manager-এর পিন</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করেছেন। সেটিংস খোলে।</translation>
 <translation id="6103540626693881831">অন-ডিভাইস এনক্রিপশন</translation>
 <translation id="6119050551270742952">বর্তমান ওয়েবপেজটি ছদ্মবেশী মোডে আছে</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7022197654033719543">সাইটের তথ্য</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="704692552158601232">ডিফল্ট ব্রাউজার অ্যাপ</translation>
+<translation id="7051147526307793383">অটোমেটিক পাসকী আপগ্রেড করার অনুমতি দিন</translation>
 <translation id="7055240621761583113">পাসওয়ার্ড অটোফিল করুন</translation>
 <translation id="7063811929043357292">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -1337,6 +1342,7 @@
 <translation id="7470908168505178757">ট্যাব গ্রুপ। আড়াল করা রয়েছে।</translation>
 <translation id="7472734401283673885">কোম্পানির নাম:</translation>
 <translation id="7473891865547856676">না থাক</translation>
+<translation id="7477974514217962959">{count,plural, =1{১টি ট্যাব গ্রুপ বন্ধ ও সেভ করা হয়েছে}one{{count}টি ট্যাব গ্রুপ বন্ধ ও সেভ করা হয়েছে}other{{count}টি ট্যাব গ্রুপ বন্ধ ও সেভ করা হয়েছে}}</translation>
 <translation id="7488874549363591659">ডেলিভারি হয়ে গেছে</translation>
 <translation id="7491131399623468277">সেটিংসে যান…</translation>
 <translation id="749854780843431406">আপনি <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> বোতাম থেকে নতুন একটি ট্যাব খুলতে পারবেন।</translation>

@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Dein Mikrofon und deine Kamera verwenden</translation>
 <translation id="1005333234656240382">ADB-Fehlerbehebung aktivieren?</translation>
 <translation id="1005671386794704751">Rosé</translation>
+<translation id="1005919400326853998">Zertifikatdetails für <ph name="CERT_NAME" /> in einem neuen Dialogfeld ansehen</translation>
 <translation id="1006033052970139968">Apps, Websites mit Mikrofonberechtigung und Systemdienste haben Zugriff auf das Mikrofon</translation>
 <translation id="1006873397406093306">Diese Erweiterung kann deine Daten auf Websites lesen und ändern. Du kannst festlegen, auf welche Websites die Erweiterung Zugriff hat.</translation>
 <translation id="1007057452468855774">Google Play Store aktivieren</translation>
@@ -477,7 +478,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1340527397989195812">Sichere Medien von diesem Gerät mit der App "Dateien".</translation>
 <translation id="1341701348342335220">Gut gemacht!</translation>
 <translation id="1342886103232377846">Rufe den Google Passwortmanager auf, um nach kompromittierten Passwörtern zu suchen</translation>
-<translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1343920184519992513">Da weitermachen, wo du aufgehört hast, und bestimmte Seiten öffnen</translation>
 <translation id="1344141078024003905">Du streamst gerade deinen Bildschirm. Du kannst den Stream jederzeit pausieren oder beenden.</translation>
 <translation id="1346403631707626730">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android für dein Kind zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Dein Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ für dein Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK1" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
@@ -816,7 +816,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1588919647604819635">Karte rechtsklicken</translation>
 <translation id="1589055389569595240">Rechtschreibung und Grammatik einblenden</translation>
 <translation id="1590478605309955960">Deine Tabgruppen werden automatisch auf allen deinen angemeldeten Geräten gespeichert und aktualisiert.</translation>
-<translation id="1591679663873027990">Parallels Desktop erlauben, auf USB-Geräte zuzugreifen. Parallels Desktop merkt sich keine USB-Geräte, nachdem sie entfernt wurden.</translation>
 <translation id="15916883652754430">Systemspracheinstellungen</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> hat die ADB-Fehlerbehebung deaktiviert. Dadurch wird <ph name="DEVICE_TYPE" /> zurückgesetzt. Sichere vor dem Neustart deine Dateien.</translation>
 <translation id="1592126057537046434">Schnellinfo – Übersetzung</translation>
@@ -2639,7 +2638,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2853121255651601031">Passwort gespeichert</translation>
 <translation id="2855243985454069333">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
 <translation id="2855812646048059450">Mit <ph name="CREDENTIAL_PROVIDER" /> anmelden</translation>
-<translation id="28559674945112027">Strenger Modus</translation>
 <translation id="2856776373509145513">Neuen Container erstellen</translation>
 <translation id="2856907950922663165">URL-Verschlüsselung deaktivieren?</translation>
 <translation id="2859741939921354763">Passwörter in <ph name="BRAND" /> importieren</translation>
@@ -2736,6 +2734,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2926708162326352948">Design wurde durch das hochgeladene Bild aktualisiert</translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
 <translation id="2928795416630981206">Dürfen meine Kameraposition erfassen</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome hat Berechtigungen von 1 Website entfernt}other{Chrome hat Berechtigungen von {NUM_SITES} Websites entfernt}}</translation>
 <translation id="2931157624143513983">An Druckbereich anpassen</translation>
 <translation id="2931342457001070961">Es ist kein Mikrofon angeschlossen</translation>
 <translation id="2932085390869194046">Passwort vorschlagen…</translation>
@@ -2920,7 +2919,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3053273573829329829">Nutzer-PIN aktivieren</translation>
 <translation id="3053274730492362225">Nicht blinken</translation>
 <translation id="3054766768827382232">Die Deaktivierung verbessert möglicherweise die Leistung deiner Peripheriegeräte. Allerdings könnten deine personenbezogenen Daten dann durch unautorisierte Nutzung preisgegeben werden.</translation>
-<translation id="3056438898277655057"><ph name="SPECIFIC_NAME" /> erlauben, auf USB-Geräte zuzugreifen. <ph name="SPECIFIC_NAME" /> merkt sich keine USB-Geräte, nachdem sie entfernt wurden.</translation>
 <translation id="3058498974290601450">Du kannst die Synchronisierung jederzeit in den Einstellungen aktivieren</translation>
 <translation id="3058517085907878899">Gerät benennen</translation>
 <translation id="3059195548603439580">Suchst du Systemkomponenten? Gehe zu</translation>
@@ -3182,6 +3180,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3269093882174072735">Bild laden</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> ausblenden</translation>
 <translation id="3269175001434213183">Synchronisierung aktivieren, um deine Inhalte zu sichern und auf jedem Gerät zu verwenden</translation>
+<translation id="3269209112443570745">Neu! Eine einfache Möglichkeit, nach dem zu suchen, was du auf deinem Display siehst.</translation>
 <translation id="3269612321104318480">Helles Blaugrün und Weiß</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Datei}other{# Dateien}}</translation>
 <translation id="326999365752735949">DIFF-Datei wird heruntergeladen.</translation>
@@ -3651,6 +3650,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3621202678540785336">Eingang</translation>
 <translation id="3621807901162200696">Helfen, die Funktionen und die Leistung von Chrome OS zu verbessern</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{eine App}other{# Apps}}</translation>
+<translation id="3622716124581627104">Du kannst Dinge oder Orte erkennen und Text kopieren oder übersetzen. Wenn du Google Lens verwendest, wird ein Screenshot der Seite an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Farbe des Bildschirms beim Aufleuchten</translation>
 <translation id="362333465072914957">Es wird darauf gewartet, dass die Zertifizierungsstelle ein Zertifikat ausstellt</translation>
 <translation id="3623598555687153298">Dadurch werden <ph name="TOTAL_USAGE" /> an von angezeigten Websites gespeicherten Daten gelöscht</translation>
@@ -4062,6 +4062,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3894983081771074056">Tastatur- und Mausverhalten, Spracheinstellungen und mehr</translation>
 <translation id="3895076768659607631">Suchmaschinen &amp;verwalten…</translation>
 <translation id="3895090224522145010">Kerberos-Nutzername</translation>
+<translation id="3895097816015686240">Du kannst deine vorherigen Fenster und Tabs noch einmal öffnen und einfach da weitermachen, wo du aufgehört hast</translation>
 <translation id="389521680295183045">Websites dürfen nachfragen, ob sie Informationen zu meiner aktiven Nutzung dieses Geräts abrufen dürfen</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{ein Bild}other{# Bilder}}</translation>
 <translation id="3897746662269329507">Dein <ph name="DEVICE_TYPE" /> eignet sich perfekt zum Spielen. Als Nächstes öffnet sich die App „Entdecken“. Dort kannst du auf Hunderte von aktuellen Spielen zugreifen, dir Gaming-Angebote ansehen und Gaming-Funktionen entdecken, die auf deinem Gerät verfügbar sind.</translation>
@@ -5295,6 +5296,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4823484602432206655">Nutzer- und Geräteeinstellungen lesen und ändern</translation>
 <translation id="4824037980212326045">Linux-Sicherung und ‑Wiederherstellung</translation>
 <translation id="4824958205181053313">Synchronisierung abbrechen?</translation>
+<translation id="4825462365587146530">Weitere Informationen zum Chrome Root Store erhältst du auf einem neuen Tab.</translation>
 <translation id="4825532258163983651">Passkey kann nicht gelöscht werden</translation>
 <translation id="4827134188176577524">Der Chrome Root Store enthält Zertifikate von Zertifizierungsstellen, die vom Chrome Root Program als vertrauenswürdig eingestuft werden. Er wird regelmäßig überprüft.</translation>
 <translation id="4827283332383516812">Karte löschen</translation>
@@ -6010,7 +6012,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5355099869024327351">Zulassen, dass Assistant dir Benachrichtigungen anzeigt</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5355498626146154079">Du musst das Flag „Borealis enabled“ aktivieren</translation>
-<translation id="5355501370336370394">Enterprise-Gerät anmelden</translation>
+<translation id="5355501370336370394">Enterprise-Gerät registrieren</translation>
 <translation id="5356155057455921522">Durch dieses Update von deinem Administrator öffnen sich die Apps deiner Organisation schneller. Das kann einige Minuten dauern.</translation>
 <translation id="5357010010552553606">Nicht berechtigt, automatisch in den Vollbildmodus zu wechseln</translation>
 <translation id="5359910752122114278">1 Ergebnis</translation>
@@ -6061,7 +6063,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">Standardschriftart</translation>
-<translation id="5397378439569041789">Kiosk- und Beschilderungsgeräte anmelden</translation>
+<translation id="5397378439569041789">Kiosk- und Beschilderungsgeräte registrieren</translation>
 <translation id="5397794290049113714">Ich</translation>
 <translation id="5398062879200420134">⌥+ Mauszeiger daraufbewegen</translation>
 <translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
@@ -8524,7 +8526,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7222335051802562841">Update abschließen</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Dadurch dürfen Systemdienste die Einstellung „Standortgenauigkeit“ nutzen, um deinen Standort zu ermitteln. „Standortgenauigkeit“ verwendet Informationen zu drahtlosen Signalen sowie Sensordaten, um den Standort des Geräts einzuschätzen.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 Website in der Gruppe von <ph name="FPS_OWNER" />}other{{MEMBERS} Websites in der Gruppe von <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Windows Hello beim Ausfüllen von Passwörtern verwenden</translation>
 <translation id="7225179976675429563">Netzwerktyp fehlt.</translation>
 <translation id="7227235818314667565">Freigaben verwalten</translation>
@@ -9902,7 +9903,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8207404892907560325">Passkey auswählen</translation>
 <translation id="8207794858944505786">VM „<ph name="DEFAULT_VM_NAME" />“ ist vorhanden, anscheinend jedoch keine gültige <ph name="VM_TYPE" />-VM. Bitte wende dich an den Administrator.</translation>
 <translation id="8207901006380134182">Eine große Welle erhebt sich aus dem Ozean, an der Küste ist ein dunkler Wald zu sehen.</translation>
-<translation id="8208188204689616705">Diese Websites sind in einer von <ph name="FPS_OWNER" /> definierten Gruppe enthalten. Websites in einer Gruppe können deine Aktivitäten in der Gruppe sehen.</translation>
 <translation id="8208216423136871611">Nicht speichern</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Neue Benachrichtigung}other{# neue Benachrichtigungen}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wird ausgeführt}other{Downloads werden ausgeführt}}</translation>
@@ -11005,6 +11005,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8991766915726096402">Wiederherstellung lokaler Daten</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Arbeitsspeichernutzung – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Wenn du dein <ph name="DEVICE_TYPE" />-Passwort vergessen hast, kannst du trotzdem deine lokalen Daten wiederherstellen. Melde dich in deinem Google-Konto an oder verwende die Kontowiederherstellung.</translation>
+<translation id="8993198843374358393">Zertifikatshash für <ph name="CERT_NAME" /> kopieren</translation>
 <translation id="8993737615451556423">Steuerelemente, damit die Vorlesestimme schneller oder langsamer liest oder pausiert</translation>
 <translation id="899384117894244799">Nutzer mit eingeschränktem Zugriff entfernen</translation>
 <translation id="8993853206419610596">Alle Anfragen maximieren</translation>
@@ -11028,7 +11029,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="9009707268312089299">Aus Windows importiert</translation>
 <translation id="9009708085379296446">Wolltest du diese Seite ändern?</translation>
 <translation id="9010845741772269259">Zahlungsmethoden hinzufügen</translation>
-<translation id="901087299639956505">Ausgewogener Modus</translation>
 <translation id="9011163749350026987">Symbol immer zeigen</translation>
 <translation id="9011262023858991985">Tab wird gestreamt</translation>
 <translation id="9011393886518328654">Versionshinweise</translation>
@@ -11212,6 +11212,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9128317794749765148">Einrichtung nicht abgeschlossen</translation>
 <translation id="9128335130883257666">Einstellungen für <ph name="INPUT_METHOD_NAME" /> aufrufen</translation>
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
+<translation id="9129562557082598582">Alle <ph name="CERT_GROUP" /> exportieren</translation>
 <translation id="9130015405878219958">Eingegebener Modus ist ungültig.</translation>
 <translation id="9130208109420587135">Gruppenname „<ph name="NAME" />“ bearbeiten</translation>
 <translation id="9130364135697530260">Eingebettete Inhalte auf dieser Website dürfen Informationen nutzen, die sie zu deiner Person gespeichert haben</translation>

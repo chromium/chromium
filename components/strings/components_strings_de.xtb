@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Vorschläge anzeigen</translation>
 <translation id="1038842779957582377">Unbekannter Name</translation>
 <translation id="1041998700806130099">Auftragsblattnachricht</translation>
+<translation id="1044897699341250361">Was das bedeutet</translation>
 <translation id="1046350918013988591">Gutscheine und Rabatte</translation>
 <translation id="1048785276086539861">Wenn du Anmerkungen bearbeitest, wechselt das Dokument zur Einzelseitenansicht zurück</translation>
 <translation id="1050038467049342496">Andere Apps schließen</translation>
@@ -52,6 +53,7 @@
 <translation id="1089439967362294234">Passwort ändern</translation>
 <translation id="1089599132348386324">Wenn du deine Meinung änderst, kannst du die Chrome-Einstellungen jederzeit entsprechend anpassen.</translation>
 <translation id="1090629319939036170">VR-Menü</translation>
+<translation id="1091463901118115503">Weiterlesen</translation>
 <translation id="1091779689406092804">Screenshots</translation>
 <translation id="1094777233105318927">Informationen zu deinem Browser, Betriebssystem, Gerät, der installierten Software und den Dateien</translation>
 <translation id="1096545575934602868">Dieses Feld sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten. Alle weiteren werden verworfen.</translation>
@@ -537,6 +539,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1974060860693918893">Erweitert</translation>
 <translation id="1975457531113383421">Papierfach</translation>
 <translation id="1975584088563498795">Ablage 10</translation>
+<translation id="1976610264358655503">Diese Seiten besuchst du häufig</translation>
 <translation id="1978555033938440688">Firmwareversion</translation>
 <translation id="1979156660928743046">Medieninformationen</translation>
 <translation id="1988881251331415125">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />kannst du die Verbindungsdiagnose durchführen<ph name="END_LINK" />.</translation>
@@ -774,6 +777,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="239429038616798445">Diese Versandart ist nicht verfügbar. Bitte wähle eine andere aus.</translation>
 <translation id="2395840535409704129">Wassersport</translation>
 <translation id="2396249848217231973">&amp;Löschen rückgängig machen</translation>
+<translation id="2399344929880464793">Diese IBAN wurde in deinem Google-Konto gespeichert, damit du sie auch in anderen Google-Diensten verwenden kannst.</translation>
 <translation id="2399868464369312507">Google Chrome versucht, Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="2400600116338235695">Darf nachfragen, wenn sie eine Verbindung mit seriellen Ports herstellen möchte</translation>
 <translation id="2404884497378469141">Versuche noch einmal, deine Dateien zu kopieren</translation>
@@ -887,6 +891,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2619052155095999743">Einfügen</translation>
 <translation id="2625385379895617796">Deine Uhr geht vor</translation>
 <translation id="262745152991669301">Darf nachfragen, wenn sie eine Verbindung mit USB-Geräten herstellen möchte</translation>
+<translation id="2628224721443278970">In Microsoft OneDrive anmelden</translation>
 <translation id="2634124572758952069">Die Server-IP-Adresse von <ph name="HOST_NAME" /> wurde nicht gefunden.</translation>
 <translation id="2639739919103226564">Status: </translation>
 <translation id="2647086987482648627">Stoff (halbglanz)</translation>
@@ -1047,6 +1052,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2967098518029543669">speichere es in deinem Google-Konto</translation>
 <translation id="297173220375858963">Desktop-Publishing</translation>
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
+<translation id="2974468223369775963">Diese IBAN konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du diese IBAN das nächste Mal verwendest, fragt Chrome dich noch einmal.</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktuell ausgewählt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2977847223286097084">Tastatur sperren und verwenden</translation>
 <translation id="2978824962390592855">Oper</translation>
@@ -1828,6 +1834,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4377125064752653719">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, das vom Server übermittelte Zertifikat wurde jedoch vom entsprechenden Aussteller widerrufen. Das bedeutet, dass die vom Server übermittelten Sicherheitsinformationen nicht vertrauenswürdig sind. Möglicherweise kommunizierst du mit einem Hacker.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4384395682990721132">A4x3</translation>
+<translation id="4387692837058041921">Datei-Upload in Microsoft OneDrive wurde pausiert</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4397059608630092079">Bei Verwendung von Autofill immer bestätigen</translation>
 <translation id="4397978002248035985">Öffnet ein Bestätigungs-Pop-up auf der Website deiner Bank</translation>
@@ -1931,6 +1938,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4636930964841734540">Info</translation>
 <translation id="4640225694041297329">Ergebnisse der letzten 7 Tage anzeigen</translation>
 <translation id="464342062220857295">Suchfunktionen</translation>
+<translation id="4644567637638438744">Dateien können nur hochgeladen werden, wenn du in Microsoft OneDrive angemeldet bist</translation>
 <translation id="4644670975240021822">Umgekehrte Reihenfolge mit der Vorderseite nach unten</translation>
 <translation id="4646534391647090355">Jetzt aufrufen</translation>
 <translation id="4648262692072505866">Der Hashwert muss das Format SHA-256 haben.</translation>
@@ -2640,6 +2648,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5999271311987646952">Chrome verfügt über integrierte Sicherheitsfunktionen, die dich beim Surfen schützen. Eine dieser Funktionen, Google Safe Browsing, hat auf dieser Website kürzlich <ph name="BEGIN_LINK" />Malware gefunden<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Hard Rock und Progressive Rock</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> Ergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Los gehts</translation>
 <translation id="6002122790816966947">Meine Geräte</translation>
 <translation id="6002968396561884726">Kürzlich angesehen</translation>
 <translation id="6005659677094197001">Endlos</translation>
@@ -3030,6 +3039,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6704458454638854812">Die Eigenschaft „custom_size“ wurde festgelegt, der erwartete Name ist daher „Benutzerdefiniert“.</translation>
 <translation id="6706005862292023715">Gardinen, Vorhänge, Jalousien und Rollläden</translation>
 <translation id="6706210727756204531">Umfang</translation>
+<translation id="6706678697074905703">Diese IBAN konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert.</translation>
 <translation id="6709133671862442373">Nachrichten</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6710594484020273272">&lt;Suchbegriff eingeben&gt;</translation>
@@ -3044,8 +3054,10 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">Kamera</translation>
 <translation id="6734506549556896534">Simulationsspiele</translation>
+<translation id="6735783933931458444">Diese Seiten besuchst du häufig zu dieser Tageszeit</translation>
 <translation id="6737708609449480586">Backwaren</translation>
 <translation id="6738516213925468394">Deine Daten wurden am <ph name="TIME" /> mit deiner <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung<ph name="END_LINK" /> verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
+<translation id="6739943577740687354">Diese Funktion verwendet KI und funktioniert nicht immer richtig</translation>
 <translation id="6740851646645036700">Du hast dein Limit für „Formuliere für mich“ erreicht. Bitte versuche es später noch einmal.</translation>
 <translation id="674375294223700098">Fehler wegen unbekanntem Serverzertifikat</translation>
 <translation id="6744009308914054259">Während du auf eine Verbindung wartest, kannst du "Downloads" aufrufen und Offline-Artikel lesen.</translation>
@@ -3762,6 +3774,7 @@ Weitere Details:
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8041940743680923270">Globalen Standard verwenden (Fragen)</translation>
 <translation id="8043255123207491407">Nutzungsbedingungen des Verkäufers ansehen</translation>
+<translation id="8044986521421349135">Dein zuletzt geöffneter Tab</translation>
 <translation id="8046360364391076336">Industriematerialien und ‑geräte</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8057023045886711556">Komödien</translation>
@@ -3829,6 +3842,7 @@ Weitere Details:
 <translation id="8183800802493617952">Spiele und Aktivitäten für Familien</translation>
 <translation id="8184538546369750125">Globalen Standard verwenden (Zulassen)</translation>
 <translation id="8186706823560132848">Software</translation>
+<translation id="8188830160449823068">IBAN nur auf dem Gerät gespeichert</translation>
 <translation id="8189557652711717875">Die von dir ausgewählte Suchmaschine wird für Funktionen wie die Suche über die Adressleiste oder die Suche in Bildern auf Webseiten verwendet.</translation>
 <translation id="8190193880870196235">Wird über eine Erweiterung verwaltet</translation>
 <translation id="8194412401381329820">Du kannst diese Seite auf diesem nicht verwalteten Gerät nicht in einem verwalteten Konto verwenden. Alle verwalteten Konten werden gesperrt, wenn du diese Seite nutzt. Ausgenommen sind Konten, die von derselben Entität wie dieses Gerät verwaltet werden (verknüpfte Konten).</translation>
@@ -4433,5 +4447,6 @@ Weitere Details:
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBAN hinzufügen</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Aus Google Pay</translation>
 </translationbundle>

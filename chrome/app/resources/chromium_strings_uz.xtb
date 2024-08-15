@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Qurilmalarni topish uchun Chromium Bluetooth aloqadan foydalanishiga ruxsat bering. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium maʼlumotlari ham oʻchirilsin (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Chromium‘ga xush kelibsiz!</translation>
-<translation id="1465171403179274511">Chromium himoyasiz ulanish orqali har qanday saytni yuklashdan oldin ruxsat soʻraydi</translation>
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
@@ -80,7 +79,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2210682093923538346">Xavfli sayt. Chromium bildirishnomalarni olib tashladi.</translation>
 <translation id="2240214816234246077">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Agar kompyuterdan yaqinlaringiz va do‘stlaringiz ham foydalansa, ular Chromium brauzerini o‘zlari xohlagancha sozlab olishlari mumkin.</translation>
-<translation id="2265830994243640896">Chromium himoyasiz ulanish orqali hammaga ochiq saytlarni yuklashdan oldin ruxsat soʻraydi, ammo maxfiy tarmoqlar orqali HTTP ulanishlarga ruxsat beradi</translation>
 <translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="2329088755516916767">Yoniqligida, Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi.</translation>
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
@@ -105,7 +103,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="259935314519650377">Yuklab olingan oʻrnatish vositasi keshlanmadi. Xato: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi (tavsiya etiladi)</translation>
 <translation id="2648074677641340862">O‘rnatish vaqtida operatsion tizim xatoligi yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
-<translation id="2649201087614586016">Yoqilsa, Chromium HTTPS protokolisiz saytlarni yuklashdan oldin ruxsat soʻraydi</translation>
 <translation id="2661879430930417727">Agar qurilmangizdan yaqinlaringiz va doʻstlaringiz ham foydalansa, ular Chromium brauzerini oʻzlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="268602741124540128">Chromium brauzeriga xush kelibsiz, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium sahifasi</translation>

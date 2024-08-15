@@ -24,7 +24,6 @@
 <translation id="1324107359134968521">Aby można było przeglądać urządzenia Bluetooth, Chromium musi mieć dostęp do Bluetootha. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Usuń też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jesteś zalogowany w Chromium.</translation>
-<translation id="1465171403179274511">Chromium będzie Cię pytać o zgodę przed wczytaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
 <translation id="1497802159252041924">Błąd instalacji: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Udostępnij kartę Chromium</translation>
@@ -80,7 +79,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2210682093923538346">Niebezpieczna witryna. Przeglądarka Chromium usunęła powiadomienia.</translation>
 <translation id="2240214816234246077">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Jeśli dzielisz się komputerem ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chromium.</translation>
-<translation id="2265830994243640896">Chromium będzie Cię pytać o zgodę przed wczytaniem stron publicznych, które korzystają z niezabezpieczonego połączenia, ale będzie zezwalać na połączenia HTTP w sieciach prywatnych</translation>
 <translation id="2313870531055795960">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2329088755516916767">Gdy to ustawienie jest włączone, Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie.</translation>
 <translation id="2343156876103232566">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
@@ -105,7 +103,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="259935314519650377">Pobranego instalatora nie udało się załadować do pamięci podręcznej. Błąd: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami (zalecane)</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
-<translation id="2649201087614586016">Gdy ta opcja jest włączona, Chromium pyta o zgodę przed wczytaniem stron, które nie obsługują protokołu HTTPS</translation>
 <translation id="2661879430930417727">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chromium po swojemu</translation>
 <translation id="268602741124540128">Witamy w Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Karta Chromium</translation>

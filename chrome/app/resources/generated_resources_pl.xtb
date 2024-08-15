@@ -480,7 +480,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1340527397989195812">Wykonaj kopię zapasową multimediów zapisanych na urządzeniu, używając aplikacji Pliki.</translation>
 <translation id="1341701348342335220">Dobra robota!</translation>
 <translation id="1342886103232377846">Aby sprawdzić, czy jakieś hasła nie zostały przejęte, otwórz Menedżera haseł Google</translation>
-<translation id="1343865611738742294">Przyznaj aplikacjom na Linuksa dostęp do urządzeń USB. Linux nie będzie pamiętać urządzenia USB po jego odłączeniu.</translation>
 <translation id="1343920184519992513">Kontynuuj od tego samego miejsca i otwórz konkretny zestaw stron</translation>
 <translation id="1344141078024003905">Przesyłasz ekran. Przesyłanie ekranu możesz w każdej chwili wstrzymać lub zakończyć.</translation>
 <translation id="1346403631707626730">Wysyłaj dane o użytkowaniu i diagnostyce. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane o diagnostyce i korzystaniu z urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, aby poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być na nim zapisywane. <ph name="BEGIN_LINK1" />Więcej informacji o danych<ph name="BEGIN_LINK1_END" />Więcej informacji<ph name="END_LINK1" /></translation>
@@ -822,7 +821,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1588919647604819635">Kliknij kartę prawym przyciskiem</translation>
 <translation id="1589055389569595240">Pokaż pisownię i gramatykę</translation>
 <translation id="1590478605309955960">Grupy kart automatycznie zapisują się i aktualizują na wszystkich urządzeniach, na których się logujesz.</translation>
-<translation id="1591679663873027990">Przyznaj Parallels Desktop uprawnienia dostępu do urządzeń USB. Parallels Desktop nie pamięta usuniętych urządzeń USB.</translation>
 <translation id="15916883652754430">Ustawienia głosowe systemu</translation>
 <translation id="1592074621872221573">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB, co spowoduje zresetowanie urządzenia <ph name="DEVICE_TYPE" />. Przed ponownym uruchomieniem utwórz kopie zapasowe plików.</translation>
 <translation id="1592126057537046434">Szybkie podpowiedzi – tłumaczenie</translation>
@@ -2627,7 +2625,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2853121255651601031">Hasło zostało zapisane</translation>
 <translation id="2855243985454069333">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
 <translation id="2855812646048059450">Zaloguj się przez: <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Tryb ścisły</translation>
 <translation id="2856776373509145513">Utwórz nowy kontener</translation>
 <translation id="2856907950922663165">Wyłączyć szyfrowanie adresów URL?</translation>
 <translation id="2859741939921354763">Zaimportuj hasła do usługi <ph name="BRAND" /></translation>
@@ -2909,7 +2906,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3053273573829329829">Włącz kod PIN użytkownika</translation>
 <translation id="3053274730492362225">Nie mrugaj</translation>
 <translation id="3054766768827382232">Po wyłączeniu tej opcji urządzenia peryferyjne mogą działać lepiej, ale Twoje dane osobowe będą mogły dostać się w niepowołane ręce.</translation>
-<translation id="3056438898277655057">Przyznaj elementowi <ph name="SPECIFIC_NAME" /> dostęp do urządzeń USB. <ph name="SPECIFIC_NAME" /> nie będzie pamiętać urządzenia USB po jego odłączeniu.</translation>
 <translation id="3058498974290601450">W każdej chwili możesz włączyć synchronizację w ustawieniach</translation>
 <translation id="3058517085907878899">Nazwij urządzenie</translation>
 <translation id="3059195548603439580">Szukasz komponentów systemu? Wejdź na</translation>
@@ -8520,7 +8516,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7222335051802562841">Dokończ aktualizację</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Pozwoli to usługom systemowym na określanie Twojej lokalizacji przy użyciu Dokładności lokalizacji. Dokładność lokalizacji używa danych o sygnałach bezprzewodowych i czujnikach, aby określać w przybliżeniu lokalizację urządzenia.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 witryna w grupie, którą zarządza <ph name="FPS_OWNER" />}few{{MEMBERS} witryny w grupie, którą zarządza <ph name="FPS_OWNER" />}many{{MEMBERS} witryn w grupie, którą zarządza <ph name="FPS_OWNER" />}other{{MEMBERS} witryny w grupie, którą zarządza <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Podczas wypełniania haseł używaj Windows Hello</translation>
 <translation id="7225179976675429563">Brak typu sieci</translation>
 <translation id="7227235818314667565">Zarządzaj udostępnianiem</translation>
@@ -9901,7 +9896,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8207404892907560325">Wybierz klucz</translation>
 <translation id="8207794858944505786">Maszyna wirtualna „<ph name="DEFAULT_VM_NAME" />” istnieje, ale prawdopodobnie nie jest prawidłową maszyną wirtualną typu <ph name="VM_TYPE" />. Skontaktuj się z administratorem.</translation>
 <translation id="8207901006380134182">Wielka fala na oceanie z ciemnym lasem na brzegu.</translation>
-<translation id="8208188204689616705">Te witryny należą do grupy zdefiniowanej przez firmę <ph name="FPS_OWNER" />. Witryny z tej grupy mają dostęp do danych o Twojej aktywności w grupie.</translation>
 <translation id="8208216423136871611">Nie zapisuj</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nowe powiadomienie}few{# nowe powiadomienia}many{# nowych powiadomień}other{# nowego powiadomienia}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Trwa pobieranie pliku}few{Trwa pobieranie plików}many{Trwa pobieranie plików}other{Trwa pobieranie plików}}</translation>
@@ -11028,7 +11022,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9009707268312089299">Zaimportowano z systemu Windows</translation>
 <translation id="9009708085379296446">Czy ta strona miała zostać zmieniona?</translation>
 <translation id="9010845741772269259">Dodawanie form płatności</translation>
-<translation id="901087299639956505">Tryb zrównoważony</translation>
 <translation id="9011163749350026987">Zawsze pokazuj ikonę</translation>
 <translation id="9011262023858991985">Przesyłam tę kartę</translation>
 <translation id="9011393886518328654">Informacje o wersji</translation>

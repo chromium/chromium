@@ -27,7 +27,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
  Bluetooth-toestelle te verken. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Vee ook data uit Chromium uit (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Jy is by Chromium aangemeld!</translation>
-<translation id="1465171403179274511">Chromium sal jou vra voordat enige werf met ’n onveilige verbinding gelaai word</translation>
 <translation id="1478370723027452770">Kry hulp met Chrome-toetsweergawe</translation>
 <translation id="1497802159252041924">Installeerfout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Deel 'n Chromium-oortjie</translation>
@@ -83,7 +82,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2210682093923538346">Gevaarlike webwerf. Chromium het kennisgewings verwyder.</translation>
 <translation id="2240214816234246077">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> verwyder</translation>
 <translation id="2241627712206172106">As jy 'n rekenaar deel, kan vriende en familie apart blaai en Chromium opstel net soos hulle dit wil hê.</translation>
-<translation id="2265830994243640896">Chromium sal jou vra voordat publieke werwe met ’n onveilige verbinding gelaai word, maar sal HTTP-verbindings vir privaat netwerke toelaat</translation>
 <translation id="2313870531055795960">Vergelyk URL'e met 'n lys onveilige werwe wat in Chromium geberg is. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="2329088755516916767">Wanneer dit aan is, laai Chromium bladsye vooraf wat blaai en soek vinniger maak.</translation>
 <translation id="2343156876103232566">Meld op albei toestelle by Chromium aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
@@ -108,7 +106,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="259935314519650377">Kon nie die afgelaaide installeerder kas nie. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium werk vinniger en kenmerke wat JavaScript gebruik, moet werk soos ontwerp (aanbeveel)</translation>
 <translation id="2648074677641340862">'n Bedryfstelselfout het voorgekom met installering. Laai Chromium asseblief weer af.</translation>
-<translation id="2649201087614586016">Wanneer dit aan is, sal Chromium jou vra voordat werwe wat nie HTTPS steun nie, gelaai word</translation>
 <translation id="2661879430930417727">As jy 'n toestel deel, kan vriende en familie apart blaai en Chromium opstel net soos hulle dit wil hê</translation>
 <translation id="268602741124540128">Welkom by Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium-oortjie</translation>

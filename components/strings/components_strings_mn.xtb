@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
 <translation id="1041998700806130099">Ажлын хүснэгтийн мессеж</translation>
+<translation id="1044897699341250361">Энэ нь юу гэсэн үг вэ</translation>
 <translation id="1046350918013988591">Купон, хөнгөлөлтийн саналууд</translation>
 <translation id="1048785276086539861">Та тэмдэглэгээг засах үед энэ документ нэг хуудсаар харах руу буцна</translation>
 <translation id="1050038467049342496">Бусад аппыг хаах</translation>
@@ -2650,6 +2651,7 @@
 <translation id="5999271311987646952">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэх үед хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг бөгөөд энэ нь таны зочлохоор оролдож буй сайтаас <ph name="BEGIN_LINK" />саяхан хортой программ олсон<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">Хард рок, прогрессив</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-н <ph name="RESULT_COUNT" /> илэрц</translation>
+<translation id="6001839398155993679">Эхэлцгээе</translation>
 <translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
 <translation id="6002968396561884726">Саяхан үзсэн</translation>
 <translation id="6005659677094197001">Тасралтгүй</translation>
@@ -3057,6 +3059,7 @@
 <translation id="6735783933931458444">Та өдрийн энэ үеэр байнга зочилдог</translation>
 <translation id="6737708609449480586">Жигнэсэн бүтээгдэхүүнүүд</translation>
 <translation id="6738516213925468394">Таны өгөгдлийг таны <ph name="BEGIN_LINK" />синкийн нэвтрэх үгтэй<ph name="END_LINK" /> <ph name="TIME" />-д синк хийсэн байна. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
+<translation id="6739943577740687354">Энэ онцлог ХОУ-ыг ашигладаг бөгөөд үргэлж зөв хийхгүй</translation>
 <translation id="6740851646645036700">Та одоогоор бичих тусламжийн хязгаартаа хүрлээ. Дараа дахин оролдоно уу.</translation>
 <translation id="674375294223700098">Серверийн гэрчилгээний алдаа танигдахгүй байна.</translation>
 <translation id="6744009308914054259">Холболтыг хүлээх явцад та офлайн нийтлэлүүдийг уншихын тулд татаж авсан хэсэгт зочлох боломжтой.</translation>
@@ -4444,5 +4447,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Олон улсын банк акаунтны дугаар нэмэх</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay-с</translation>
 </translationbundle>

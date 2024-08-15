@@ -25,7 +25,6 @@
 устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Изтриване на данните и от Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Влязохте в Chromium!</translation>
-<translation id="1465171403179274511">Chromium ще извежда запитване, преди да зареди сайт, който използва незащитена връзка</translation>
 <translation id="1478370723027452770">Получаване на помощ за Chrome for Testing</translation>
 <translation id="1497802159252041924">Грешка при инсталирането: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Споделяне на раздел в Chromium</translation>
@@ -81,7 +80,6 @@
 <translation id="2210682093923538346">Опасен сайт. Chromium премахна разрешението за известията.</translation>
 <translation id="2240214816234246077">Не сте посещавали този сайт наскоро. Chromium премахна разрешенията „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“</translation>
 <translation id="2241627712206172106">Ако споделяте компютър, близките и приятелите ви могат да сърфират отделно и да настроят Chromium точно така, както искат.</translation>
-<translation id="2265830994243640896">Chromium ще извежда запитване, преди да зареди обществени сайтове посредством незащитена връзка, но ще разрешава HTTP връзките за частни мрежи</translation>
 <translation id="2313870531055795960">Проверка на URL адресите в съхраняван в Chromium списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chromium може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
 <translation id="2329088755516916767">Когато настройката е включена, Chromium зарежда предварително страниците, което ускорява сърфирането и търсенето.</translation>
 <translation id="2343156876103232566">За да изпратите номер от тук до телефона си с Android, влезте в Chromium и на двете устройства.</translation>
@@ -106,7 +104,6 @@
 <translation id="259935314519650377">Кеширането на изтеглената инсталационна програма не бе успешно. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">Chromium е по-бърз и функциите, които използват JavaScript, би трябвало да работят нормално (препоръчително)</translation>
 <translation id="2648074677641340862">По време на инсталирането възникна грешка в операционната система. Моля, изтеглете отново Chromium.</translation>
-<translation id="2649201087614586016">Когато е включено, Chromium ще извежда запитване, преди да зареди сайтове, които не поддържат HTTPS</translation>
 <translation id="2661879430930417727">Ако споделяте устройство, близките и приятелите ви могат да сърфират отделно и да настроят Chromium точно така, както искат</translation>
 <translation id="268602741124540128">Добре дошли в Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Раздел в Chromium</translation>

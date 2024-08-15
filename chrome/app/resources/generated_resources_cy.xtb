@@ -482,7 +482,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1340527397989195812">Gwneud copïau wrth gefn o gyfryngau o'r ddyfais gan ddefnyddio'r ap Files.</translation>
 <translation id="1341701348342335220">Da iawn!</translation>
 <translation id="1342886103232377846">I wirio am gyfrineiriau sydd wedi'u darganfod, ewch i Reolwr Cyfrineiriau Google</translation>
-<translation id="1343865611738742294">Rhowch ganiatâd i apiau Linux gael mynediad at ddyfeisiau USB. Ni fydd Linux yn cofio dyfais USB ar ôl ei dynnu.</translation>
 <translation id="1343920184519992513">Parhau lle y gwnaethoch adael ac agor set penodol o dudalennau</translation>
 <translation id="1344141078024003905">Rydych yn castio i'ch sgrîn. Gallwch oedi neu stopio castio eich sgrîn unrhyw bryd.</translation>
 <translation id="1346403631707626730">Anfon data defnydd a diagnostig. Helpwch i wella profiad Android eich plentyn drwy anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Ni ddefnyddir hyn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os yw Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w gyfrif Google. <ph name="BEGIN_LINK1" />Dysgu rhagor am fetrigau<ph name="BEGIN_LINK1_END" />Dysgu rhagor<ph name="END_LINK1" /></translation>
@@ -824,7 +823,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1588919647604819635">Cerdyn clic de</translation>
 <translation id="1589055389569595240">Dangos Sillafu a Gramadeg</translation>
 <translation id="1590478605309955960">Mae eich grwpiau tabiau yn cael eu cadw a'u diweddaru'n awtomatig ar draws eich holl ddyfeisiau sydd wedi'u mewngofnodi.</translation>
-<translation id="1591679663873027990">Rhoi caniatâd i Parallels Desktop i gael mynediad at eich dyfeisiau USB. Ni fydd Parallels Desktop yn cofio dyfais USB ar ôl ei thynnu.</translation>
 <translation id="15916883652754430">Gosodiadau llais y system</translation>
 <translation id="1592074621872221573">Mae <ph name="MANAGER" /> wedi analluogi dadfygio ABD, a fydd yn ailosod eich <ph name="DEVICE_TYPE" />. Gwnewch gopïau wrth gefn o'ch ffeiliau cyn ailgychwyn.</translation>
 <translation id="1592126057537046434">Cyfieithiad Atebion Cyflym</translation>
@@ -2659,7 +2657,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2853121255651601031">Cadwyd y Cyfrinair</translation>
 <translation id="2855243985454069333">Yn dileu hanes o bob dyfais sydd wedi'i chysoni</translation>
 <translation id="2855812646048059450">Mewngofnodi gyda <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Modd llym</translation>
 <translation id="2856776373509145513">Creu cynhwysydd newydd</translation>
 <translation id="2856907950922663165">Diffodd amgryptio cyfeiriadau URL?</translation>
 <translation id="2859741939921354763">Mewnforio cyfrineiriau i <ph name="BRAND" /></translation>
@@ -2941,7 +2938,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3053273573829329829">Galluogi pin defnyddiwr</translation>
 <translation id="3053274730492362225">Peidiwch ag amrantu</translation>
 <translation id="3054766768827382232">Gall analluogi wneud i'ch perifferolion perfformio'n well, ond mae'n bosib y bydd yn datgelu'ch data personol drwy ddefnydd anawdurdodedig.</translation>
-<translation id="3056438898277655057">Rhowch ganiatâd i <ph name="SPECIFIC_NAME" /> gyrchu dyfeisiau USB. Ni fydd <ph name="SPECIFIC_NAME" /> yn cofio dyfais USB ar ôl iddi gael ei thynnu.</translation>
 <translation id="3058498974290601450">Gallwch droi'r cysoni ymlaen unrhyw bryd yn y gosodiadau</translation>
 <translation id="3058517085907878899">Enwi dyfais</translation>
 <translation id="3059195548603439580">Chwilio am gydrannau system? Ewch i</translation>
@@ -8563,7 +8559,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7222335051802562841">Gorffen diweddaru</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Mae hyn yn caniatáu i wasanaethau system ddefnyddio Cywirdeb Lleoliad i benderfynu ar eich lleoliad. Mae Cywirdeb Lleoliad yn defnyddio gwybodaeth am signalau a synwyryddion diwifr i amcangyfrif lleoliad dyfais.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 wefan yng ngrŵp <ph name="FPS_OWNER" />}zero{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}two{{MEMBERS} wefan yng ngrŵp <ph name="FPS_OWNER" />}few{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}many{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}other{{MEMBERS} gwefan yng ngrŵp <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Defnyddiwch Windows Hello wrth lenwi cyfrineiriau</translation>
 <translation id="7225179976675429563">Mae math y rhwydwaith ar goll</translation>
 <translation id="7227235818314667565">Rheoli Rhannu</translation>
@@ -9940,7 +9935,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8207404892907560325">Dewiswch god pas</translation>
 <translation id="8207794858944505786">Mae VM "<ph name="DEFAULT_VM_NAME" />" yn bodoli, ond nid yw'n ymddangos i fod yn VM <ph name="VM_TYPE" /> dilys. Cysylltwch â'ch gweinyddwr.</translation>
 <translation id="8207901006380134182">Ton fawr yn amlyncu'r cefnfor, gyda choedwig dywyll ar y lan.</translation>
-<translation id="8208188204689616705">Mae'r gwefannau hyn mewn grŵp a ddiffinnir gan <ph name="FPS_OWNER" />. Gall gwefannau mewn grŵp weld eich gweithgarwch yn y grŵp.</translation>
 <translation id="8208216423136871611">Peidiwch â chadw</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Hysbysiad newydd}zero{# hysbysiad newydd}two{# hysbysiad newydd}few{# hysbysiad newydd}many{# hysbysiad newydd}other{# hysbysiad newydd}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Mae lawrlwytho ar y gweill}zero{Mae lawrlwythiadau ar y gweill}two{Mae lawrlwythiadau ar y gweill}few{Mae lawrlwythiadau ar y gweill}many{Mae lawrlwythiadau ar y gweill}other{Mae lawrlwythiadau ar y gweill}}</translation>
@@ -11071,7 +11065,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9009707268312089299">Mewnforiwyd o Windows</translation>
 <translation id="9009708085379296446">Oeddech chi'n bwriadu newid y dudalen hon?</translation>
 <translation id="9010845741772269259">Ychwanegwch ddulliau talu</translation>
-<translation id="901087299639956505">Modd cytbwys</translation>
 <translation id="9011163749350026987">Dangos yr eicon bob amser</translation>
 <translation id="9011262023858991985">Castio'r tab hwn</translation>
 <translation id="9011393886518328654">Nodiadau cyhoeddi</translation>

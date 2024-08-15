@@ -25,7 +25,6 @@
 باید به بلوتوث دسترسی داشته باشد. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">‏داده‌ها از Chromium هم حذف شود (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">‏شما وارد سیستم Chromium شدید!</translation>
-<translation id="1465171403179274511">‏‫Chromium قبل‌از اینکه سایتی را ازطریق اتصال ناامن بار کند از شما سؤال می‌کند</translation>
 <translation id="1478370723027452770">‏دریافت راهنمایی درباره Chrome for Testing</translation>
 <translation id="1497802159252041924">خطای نصب: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">‏هم‌رسانی برگه Chromium</translation>
@@ -81,7 +80,6 @@
 <translation id="2210682093923538346">‏سایت خطرناک. ‫Chromium اعلان‌ها را برداشت.</translation>
 <translation id="2240214816234246077">‏اخیراً بازدیدی نداشته‌اید. ‫Chromium ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت</translation>
 <translation id="2241627712206172106">‏اگر رایانه‌ای را به صورت مشترک استفاده می‌کنید، دوستان و خانواده می‌توانند به صورت جداگانه مرور کنند و Chromium را به صورتی که مایلند تنظیم کنند.</translation>
-<translation id="2265830994243640896">‏‫Chromium قبل‌از بار کردن سایت‌های عمومی ازطریق اتصال ناامن از شما سؤال می‌کند، اما به اتصالات HTTP برای شبکه‌های خصوصی اجازه می‌دهد</translation>
 <translation id="2313870531055795960">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chromium ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chromium ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه به «مرور ایمن» ارسال کند.</translation>
 <translation id="2329088755516916767">‏وقتی روشن باشد، Chromium صفحه‌ها را پیش‌بارگیری می‌کند تا مرور و جستجو سریع‌تر شود.</translation>
 <translation id="2343156876103232566">‏برای ارسال شماره از اینجا به تلفن Android خود، در هر دو دستگاه به سیستم Chromium وارد شوید.</translation>
@@ -106,7 +104,6 @@
 <translation id="259935314519650377">نصب‌کننده بارگیری‌شده در حافظه نهان ذخیره نشد. خطا: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="264613044588233783">‏Chromium سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند (توصیه می‌شود)</translation>
 <translation id="2648074677641340862">‏یک خطای سیستم‌عامل در طول نصب روی داد. لطفاً Chromium را دوباره نصب کنید.</translation>
-<translation id="2649201087614586016">‏وقتی روشن باشد، Chromium قبل‌از بار کردن سایت‌هایی که از HTTPS پشتیبانی نمی‌کنند از شما سؤال می‌کند</translation>
 <translation id="2661879430930417727">‏اگر از دستگاهی به‌صورت مشترک استفاده می‌کنید، دوستان و اعضای خانواده می‌توانند جداگانه مرور کنند و Chromium را به‌شیوه خودشان تنظیم کنند</translation>
 <translation id="268602741124540128">‏<ph name="ACCOUNT_FIRST_NAME" /> به Chromium خوش آمدید</translation>
 <translation id="2711502716910134313">‏برگه Chromium</translation>

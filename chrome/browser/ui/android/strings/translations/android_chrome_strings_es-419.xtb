@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Se cerró la hoja de comentarios del resumen para compartir</translation>
 <translation id="1089606299949659462">¡Se completó la revisión!</translation>
 <translation id="1094555143448724771">Para ver las pestañas de tus otros dispositivos, sincroniza las pestañas y el historial</translation>
-<translation id="1095142578254888918">No se permiten notificaciones para <ph name="SITE_NAME" /></translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir en pestaña nueva en grupo</translation>
 <translation id="1103142993930332957">¿Quieres ayudar a mejorar Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu Cuenta de Google, verifica tu identidad</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{No se permiten notificaciones para 1 sitio}other{No se permiten notificaciones para # sitios}}</translation>
 <translation id="1187810343066461819">Borrar también los favoritos, el historial y otros datos de este automóvil</translation>
 <translation id="1193729455103054076">¿Quieres usar una contraseña segura?</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
@@ -454,7 +452,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión.</translation>
 <translation id="3087218211037573995">Algunas contraseñas guardadas solo en este dispositivo dejarán de funcionar pronto. Puedes mover estas contraseñas al Administrador de contraseñas de Google.</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
-<translation id="3093004810561729002">Alguien</translation>
 <translation id="3098745985164956033">Se envían algunas imágenes a Google para proporcionarte mejores descripciones.</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anuncios</translation>
@@ -506,6 +503,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3407392651057365886">Se precargan más páginas. Las páginas pueden precargarse mediante servidores de Google cuando las solicitan otros sitios.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3421726884497337397">Decide cuándo bloquear las cookies de terceros</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Hace # h}other{Hace # h}}</translation>
 <translation id="3430670036890315772">Si desactivas el bloqueo de perfil, se quitará la información guardada</translation>
 <translation id="3435465986463792564">¿Tienes muchas ventanas? Puedes administrarlas desde aquí.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
@@ -936,6 +934,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5517095782334947753">Tienes favoritos, historial, contraseñas y otras opciones de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Se bloqueó el redireccionamiento</translation>
 <translation id="5526281268548144413">No se pueden cerrar en varias ventanas</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te advierte si se publicó en línea. Cuando lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>

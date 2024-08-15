@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Utiliser votre micro et votre caméra</translation>
 <translation id="1005333234656240382">Activer le débogage ADB ?</translation>
 <translation id="1005671386794704751">Rose</translation>
+<translation id="1005919400326853998">Afficher les détails du certificat pour <ph name="CERT_NAME" /> dans une nouvelle boîte de dialogue</translation>
 <translation id="1006033052970139968">L'accès au micro est accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur les sites. Vous pouvez contrôler les sites auxquels elle a accès.</translation>
 <translation id="1007057452468855774">Activer le Google Play Store</translation>
@@ -478,7 +479,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1340527397989195812">Sauvegardez du contenu multimédia en provenance de l'appareil à l'aide de l'application Fichiers.</translation>
 <translation id="1341701348342335220">Félicitations !</translation>
 <translation id="1342886103232377846">Pour vérifier les mots de passe compromis, accédez au Gestionnaire de mots de passe de Google</translation>
-<translation id="1343865611738742294">Autoriser les applications Linux à accéder aux périphériques USB. Dès qu'un périphérique est déconnecté, il est effacé de la mémoire de Linux.</translation>
 <translation id="1343920184519992513">Reprendre là où vous en étiez et ouvrir un ensemble de pages spécifiques</translation>
 <translation id="1344141078024003905">Vous castez votre écran. Vous pouvez suspendre ou arrêter la diffusion à tout moment.</translation>
 <translation id="1346403631707626730">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de l'expérience de votre enfant sur Android en envoyant automatiquement à Google des données liées aux diagnostics, à l'appareil et à l'utilisation des applis. Ces données ne serviront pas à identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applis. Certaines données globales seront aussi utiles aux développeurs d'applis Google et à nos partenaires tels que les développeurs Android. Si le paramètre "Activité additionnelle sur le Web et les applications" est activé pour votre enfant, ces données pourront être enregistrées dans son compte Google. <ph name="BEGIN_LINK1" />En savoir plus sur les métriques<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
@@ -820,7 +820,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1588919647604819635">Effectuer un clic droit sur la fiche</translation>
 <translation id="1589055389569595240">Afficher l'orthographe et la grammaire</translation>
 <translation id="1590478605309955960">Vos groupes d'onglets sont enregistrés et mis à jour automatiquement sur tous les appareils connectés à votre compte.</translation>
-<translation id="1591679663873027990">Autorisez Parallels Desktop à accéder aux périphériques USB. Dès qu’un périphérique est déconnecté, il est effacé de la mémoire de Parallels Desktop.</translation>
 <translation id="15916883652754430">Paramètres vocaux du système</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> a désactivé le débogage ADB, ce qui va réinitialiser votre <ph name="DEVICE_TYPE" />. Sauvegardez vos fichiers avant le redémarrage.</translation>
 <translation id="1592126057537046434">Traduction pour Réponses rapides</translation>
@@ -2643,7 +2642,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2853121255651601031">Mot de passe enregistré</translation>
 <translation id="2855243985454069333">Supprime l'historique de tous les appareils synchronisés</translation>
 <translation id="2855812646048059450">Se connecter avec <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Mode Strict</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2856907950922663165">Désactiver le chiffrement des URL ?</translation>
 <translation id="2859741939921354763">Importez des mots de passe dans <ph name="BRAND" /></translation>
@@ -2740,6 +2738,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2926708162326352948">Thème mis à jour avec l'image importée</translation>
 <translation id="2927017729816812676">Espace de stockage du cache</translation>
 <translation id="2928795416630981206">Autorisé à suivre la position de la caméra</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome a supprimé les autorisations pour 1 site}one{Chrome a supprimé les autorisations pour {NUM_SITES} site}other{Chrome a supprimé les autorisations pour {NUM_SITES} sites}}</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
 <translation id="2931342457001070961">Aucun micro connecté</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
@@ -2924,7 +2923,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3053273573829329829">Activer le code de l'utilisateur</translation>
 <translation id="3053274730492362225">Ne pas faire clignoter</translation>
 <translation id="3054766768827382232">Vous pourrez améliorer les performances de vos périphériques, mais vos données à caractère personnel risquent d'être divulguées via une utilisation non autorisée.</translation>
-<translation id="3056438898277655057">Autoriser <ph name="SPECIFIC_NAME" /> à accéder aux périphériques USB. Dès qu’un périphérique est déconnecté, il est effacé de la mémoire de <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3058517085907878899">Nommer l'appareil</translation>
 <translation id="3059195548603439580">Vous recherchez des composants du système ? Accédez à la page</translation>
@@ -3186,6 +3184,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="326911502853238749">Ne pas afficher <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Activer la synchronisation pour sauvegarder vos données et les utiliser sur n'importe quel appareil</translation>
+<translation id="3269209112443570745">Nouveau ! Recherchez facilement le contenu de l'écran</translation>
 <translation id="3269612321104318480">Turquoise clair et blanc</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="326999365752735949">Différence de téléchargement</translation>
@@ -3655,6 +3654,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3621807901162200696">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une appli}one{# appli}other{# applis}}</translation>
+<translation id="3622716124581627104">Identifiez des objets ou des lieux, et copiez ou traduisez du texte. Lorsque vous utilisez Google Lens, une capture d'écran de la page est envoyée à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">Couleur de clignotement de l'écran</translation>
 <translation id="362333465072914957">En attente de l'émission du certificat par l'autorité de certification</translation>
 <translation id="3623598555687153298">Cela effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites affichés</translation>
@@ -4066,6 +4066,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3894983081771074056">Comportement du clavier et de la souris, préférences linguistiques, etc.</translation>
 <translation id="3895076768659607631">Gérer les &amp;moteurs de recherche</translation>
 <translation id="3895090224522145010">Nom d'utilisateur Kerberos</translation>
+<translation id="3895097816015686240">Ouvrez vos fenêtres et onglets précédents pour reprendre facilement là où vous en étiez</translation>
 <translation id="389521680295183045">Les sites peuvent demander à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{une image}one{# image}other{# images}}</translation>
 <translation id="3897746662269329507">Votre <ph name="DEVICE_TYPE" /> est conçu pour les jeux vidéo. L'appli Explorer qui va s'ouvrir vous permet d'accéder à des centaines de jeux récents, mais aussi de découvrir des offres relatives aux jeux et des fonctionnalités intégrées à votre appareil.</translation>
@@ -5299,6 +5300,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4823484602432206655">Consulter et modifier les paramètres d'utilisateur et d'appareil</translation>
 <translation id="4824037980212326045">Sauvegarde et restauration Linux</translation>
 <translation id="4824958205181053313">Annuler la synchronisation ?</translation>
+<translation id="4825462365587146530">En savoir plus sur le Chrome Root Store (s'ouvre dans un nouvel onglet).</translation>
 <translation id="4825532258163983651">Impossible de supprimer la clé d'accès</translation>
 <translation id="4827134188176577524">Chrome Root Store contient des certificats provenant d'autorités de certification approuvées par Chrome Root Program. Il est régulièrement mis à jour.</translation>
 <translation id="4827283332383516812">Supprimer la carte</translation>
@@ -8534,7 +8536,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7222335051802562841">Terminer la mise à jour</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Cela permet aux services système d'utiliser la précision de la localisation pour déterminer votre position. La précision de la localisation utilise des informations concernant les signaux sans fil et les capteurs pour estimer la position de l'appareil.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 site dans le groupe de <ph name="FPS_OWNER" />}one{{MEMBERS} site dans le groupe de <ph name="FPS_OWNER" />}other{{MEMBERS} sites dans le groupe de <ph name="FPS_OWNER" />}}</translation>
 <translation id="7225082563376899794">Utiliser Windows Hello pour saisir les mots de passe</translation>
 <translation id="7225179976675429563">Type de réseau manquant.</translation>
 <translation id="7227235818314667565">Gérer le partage</translation>
@@ -9912,7 +9913,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8207404892907560325">Choisir une clé d'accès</translation>
 <translation id="8207794858944505786">La VM "<ph name="DEFAULT_VM_NAME" />" existe, mais ne semble pas être une VM <ph name="VM_TYPE" /> valide. Veuillez contacter votre administrateur.</translation>
 <translation id="8207901006380134182">Grande vague en plein océan, avec une forêt sombre sur le rivage.</translation>
-<translation id="8208188204689616705">Ces sites font partie d'un groupe défini par <ph name="FPS_OWNER" />. Les sites d'un groupe peuvent voir votre activité dans celui-ci.</translation>
 <translation id="8208216423136871611">Ne pas enregistrer</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours}one{Téléchargement en cours}other{Téléchargements en cours}}</translation>
@@ -11016,6 +11016,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8991766915726096402">Récupération des données locales</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - Utilisation de la mémoire - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Même si vous oubliez votre mot de passe <ph name="DEVICE_TYPE" />, vous pouvez restaurer vos données locales. Vous devrez pour cela vous connecter à votre compte Google ou utiliser la récupération de compte.</translation>
+<translation id="8993198843374358393">Copier le hachage du certificat pour <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Elles permettent d'accélérer, de ralentir et de suspendre la lecture à voix haute</translation>
 <translation id="899384117894244799">Supprimer un utilisateur avec accès restreint</translation>
 <translation id="8993853206419610596">Développer toutes les demandes</translation>
@@ -11039,7 +11040,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9009707268312089299">Importés depuis Windows</translation>
 <translation id="9009708085379296446">Vouliez-vous modifier cette page ?</translation>
 <translation id="9010845741772269259">Ajouter des modes de paiement</translation>
-<translation id="901087299639956505">Mode Équilibré</translation>
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
 <translation id="9011262023858991985">Onglet casté</translation>
 <translation id="9011393886518328654">Notes de version</translation>
@@ -11223,6 +11223,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>
 <translation id="9128335130883257666">Accéder aux paramètres pour "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="9128870381267983090">Connectez-vous au réseau</translation>
+<translation id="9129562557082598582">Exporter <ph name="CERT_GROUP" /> dans son intégralité</translation>
 <translation id="9130015405878219958">Le mode indiqué est incorrect.</translation>
 <translation id="9130208109420587135">Modifier le nom du groupe <ph name="NAME" /></translation>
 <translation id="9130364135697530260">Le contenu intégré de ce site peut utiliser les informations que celui-ci a enregistrées vous concernant</translation>

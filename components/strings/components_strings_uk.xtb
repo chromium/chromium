@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Показувати пропозиції</translation>
 <translation id="1038842779957582377">Невідоме ім’я</translation>
 <translation id="1041998700806130099">Повідомлення на аркуші вихідних даних</translation>
+<translation id="1044897699341250361">Що це означає</translation>
 <translation id="1046350918013988591">Купони й дисконтні пропозиції</translation>
 <translation id="1048785276086539861">Коли ви редагуєте примітки, документ переходить у режим перегляду по одній сторінці</translation>
 <translation id="1050038467049342496">Закрийте інші додатки</translation>
@@ -2649,6 +2650,7 @@
 <translation id="5999271311987646952">Chrome має вбудовані функції безпеки, що захищають вас під час веб-перегляду, як-от Безпечний перегляд Google. Зокрема, ця функція <ph name="BEGIN_LINK" />нещодавно виявила зловмисне програмне забезпечення<ph name="END_LINK" /> на сайті, який ви намагалися відвідати.</translation>
 <translation id="6000528814684428358">Хард-рок і прогресивний рок</translation>
 <translation id="6000758707621254961">Результатів для запиту "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="6001839398155993679">Почати</translation>
 <translation id="6002122790816966947">Ваші пристрої</translation>
 <translation id="6002968396561884726">Нещодавно переглянуто</translation>
 <translation id="6005659677094197001">Безперервний друк</translation>
@@ -3057,6 +3059,7 @@
 <translation id="6735783933931458444">Ви часто відвідуєте сторінку в цей час доби</translation>
 <translation id="6737708609449480586">Випічка</translation>
 <translation id="6738516213925468394">Ваші дані було зашифровано за допомогою <ph name="BEGIN_LINK" />парольної фрази для синхронізації<ph name="END_LINK" /> від <ph name="TIME" />. Введіть її, щоб почати синхронізацію.</translation>
+<translation id="6739943577740687354">Ця функція використовує ШІ, тому вона не завжди працює правильно</translation>
 <translation id="6740851646645036700">Ви досягли ліміту для запитів на допомогу з текстом. Повторіть спробу пізніше.</translation>
 <translation id="674375294223700098">Помилка "Невідомий сертифікат сервера".</translation>
 <translation id="6744009308914054259">Очікуючи на з’єднання, можете перейти в папку "Завантаження" й переглянути статті, доступні в режимі офлайн.</translation>
@@ -4446,5 +4449,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Додати номер IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">З Google Pay</translation>
 </translationbundle>

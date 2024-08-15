@@ -59,7 +59,6 @@
 <translation id="178701303897325119">Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
 <translation id="1812689907177901597">Dengan mematikan pilihan ini, anda boleh mengelog masuk ke tapak Google seperti Gmail tanpa perlu mengelog masuk ke Chrome</translation>
 <translation id="1860536484129686729">Chrome memerlukan kebenaran untuk mengakses kamera anda bagi tapak ini</translation>
-<translation id="1861924772887221906">Chrome akan meminta pengesahan anda sebelum memuatkan laman umum menggunakan sambungan tidak selamat tetapi akan membenarkan sambungan HTTP untuk rangkaian peribadi</translation>
 <translation id="1873233029667955273">Google Chrome bukan penyemak imbas lalai anda</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini}=1{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="3597003331831379823">Gagal untuk menjalankan persediaan dengan keistimewaan dipertingkat. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
-<translation id="3614820178395775413">Chrome akan meminta pengesahan anda sebelum memuatkan sebarang laman menggunakan sambungan tidak selamat</translation>
 <translation id="3622797965165704966">Kini lebih mudah menggunakan Chrome dengan Google Account anda dan pada komputer yang dikongsi.</translation>
 <translation id="3635073343384702370">Chrome boleh menyemak kata laluan anda apabila anda menyimpan kata laluan tersebut</translation>
 <translation id="3667616615096815454">Tidak dapat memasang, aplikasi tidak dikenali oleh pelayan.</translation>
@@ -450,7 +448,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7302361266603927550">Sesetengah data Chrome anda belum disimpan dalam Google Account anda. Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="7308322188646931570">Chrome memerlukan akses storan untuk memuat turun fail</translation>
-<translation id="7324120788743384890">Apabila dihidupkan, Chrome akan meminta pengesahan anda sebelum memuatkan laman yang tidak menyokong HTTPS</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7352881504289275361">Penyemakan Imbas Selamat Dipertingkat menawarkan perlindungan dalam talian Chrome yang paling kukuh untuk memastikan anda selamat semasa menyemak imbas</translation>
 <translation id="7394745511930161845">Buat tema anda sendiri dengan AI untuk memberi penyemak imbas anda rupa yang unik</translation>

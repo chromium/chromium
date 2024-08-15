@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">ਆਪਣਾ ਮਾਈਕ੍ਰੋਫੋਨ ਅਤੇ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="1005333234656240382">ਕੀ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1005671386794704751">ਗੁਲਾਬੀ</translation>
+<translation id="1005919400326853998">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ <ph name="CERT_NAME" /> ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੇ ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="1006033052970139968">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਐਪਾਂ, ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="1006873397406093306">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਸਾਈਟਾਂ 'ਤੇ ਮੌਜੂਦ ਤੁਹਾਡਾ ਡਾਟਾ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀ ਹੈ। ਤੁਸੀਂ ਸਾਈਟਾਂ ਤੱਕ ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1007057452468855774">Google Play Store ਚਾਲੂ ਕਰੋ</translation>
@@ -478,7 +479,6 @@
 <translation id="1340527397989195812">Files ਐਪ ਵਰਤਦੇ ਹੋਏ ਡੀਵਾਈਸ ਤੋਂ ਮੀਡੀਆ ਦਾ ਬੈਕਅੱਪ ਲਓ।</translation>
 <translation id="1341701348342335220">ਸ਼ਾਬਾਸ਼!</translation>
 <translation id="1342886103232377846">ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡਾਂ ਦਾ ਜਾਂਚ ਕਰਨ ਲਈ, Google Password Manager 'ਤੇ ਜਾਓ</translation>
-<translation id="1343865611738742294">USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ Linux ਐਪਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ। Linux ਕਿਸੇ USB ਡੀਵਾਈਸ ਨੂੰ ਹਟਾਉਣ ਤੋਂ ਬਾਅਦ ਉਸਨੂੰ ਯਾਦ ਨਹੀਂ ਰੱਖੇਗਾ।</translation>
 <translation id="1343920184519992513">ਉੱਥੋਂ ਜਾਰੀ ਰੱਖੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਅਤੇ ਪੰਨਿਆਂ ਦਾ ਖਾਸ ਸੈੱਟ ਖੋਲ੍ਹੋ</translation>
 <translation id="1344141078024003905">ਤੁਸੀਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰ ਰਹੇ ਹੋ। ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਸਮੇਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਕਰਨਾ ਰੋਕ ਸਕਦੇ ਜਾਂ ਉਸਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1346403631707626730">ਵਰਤੋਂ ਅਤੇ ਤਸ਼ਖੀਸ ਡਾਟਾ ਭੇਜੋ। Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ, ਡੀਵਾਈਸ ਅਤੇ ਐਪ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜ ਕੇ ਆਪਣੇ ਬੱਚੇ ਦੇ Android ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ। ਇਸਦੀ ਵਰਤੋਂ ਤੁਹਾਡੇ ਬੱਚੇ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਥਿਰਤਾ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਮਿਲੇਗੀ। ਇਕੱਤਰ ਕੀਤਾ ਕੁਝ ਡਾਟਾ Google ਐਪਾਂ ਅਤੇ Android Developers ਵਰਗੇ ਪਾਰਟਨਰਾਂ ਦੀ ਵੀ ਮਦਦ ਕਰੇਗਾ। ਜੇ ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਉਸਦੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK1" />ਮਾਪਕਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="BEGIN_LINK1_END" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
@@ -821,7 +821,6 @@
 <translation id="1588919647604819635">ਕਾਰਡ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1589055389569595240">ਸਪੈਲਿੰਗ ਅਤੇ ਵਿਆਕਰਣ ਦਿਖਾਓ</translation>
 <translation id="1590478605309955960">ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਰੱਖਿਅਤ ਹੁੰਦੇ ਹਨ ਅਤੇ ਅੱਪਡੇਟ ਹੁੰਦੇ ਹਨ।</translation>
-<translation id="1591679663873027990">Parallels Desktop ਨੂੰ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਇੱਕ ਵਾਰ USB ਡੀਵਾਈਸ ਹਟਾਉਣ 'ਤੇ Parallels Desktop ਵੱਲੋਂ ਇਸਨੂੰ ਯਾਦ ਨਹੀਂ ਰੱਖਿਆ ਜਾਵੇਗਾ।</translation>
 <translation id="15916883652754430">ਸਿਸਟਮ ਅਵਾਜ਼ੀ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> ਨੇ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ, ਜਿਸ ਨਾਲ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ। ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਬੈਕਅੱਪ ਲਓ।</translation>
 <translation id="1592126057537046434">ਤਤਕਾਲ ਜਵਾਬਾਂ ਦਾ ਅਨੁਵਾਦ</translation>
@@ -2658,7 +2657,6 @@
 <translation id="2853121255651601031">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2855243985454069333">ਸਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਇਤਿਹਾਸ ਮਿਟਾਉਂਦਾ ਹੈ</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
-<translation id="28559674945112027">ਸਟ੍ਰਿਕਟ ਮੋਡ</translation>
 <translation id="2856776373509145513">ਨਵਾਂ ਕੰਟੇਨਰ ਬਣਾਓ</translation>
 <translation id="2856907950922663165">ਕੀ URL ਇਨਕ੍ਰਿਪਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2859741939921354763">ਪਾਸਵਰਡਾਂ ਨੂੰ <ph name="BRAND" /> ਵਿੱਚ ਆਯਾਤ ਕਰੋ</translation>
@@ -2754,6 +2752,7 @@
 <translation id="2926708162326352948">ਅੱਪਲੋਡ ਕੀਤੇ ਚਿੱਤਰ 'ਤੇ ਥੀਮ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2927017729816812676">ਕੈਸ਼ੇ ਸਟੋਰੇਜ</translation>
 <translation id="2928795416630981206">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
+<translation id="2929345818093040583">{NUM_SITES,plural, =1{Chrome ਨੇ 1 ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ}one{Chrome ਨੇ {NUM_SITES} ਸਾਈਟ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ}other{Chrome ਨੇ {NUM_SITES} ਸਾਈਟਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ}}</translation>
 <translation id="2931157624143513983">ਪ੍ਰਿੰਟ ਕਰਨ ਯੋਗ ਖੇਤਰ ਵਿੱਚ ਫਿੱਟ ਕਰੋ</translation>
 <translation id="2931342457001070961">ਕੋਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2932085390869194046">ਪਾਸਵਰਡ ਸੁਝਾਓ...</translation>
@@ -2938,7 +2937,6 @@
 <translation id="3053273573829329829">ਵਰਤੋਂਕਾਰ ਪਿੰਨ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3053274730492362225">ਬਲਿੰਕ ਨਾ ਕਰੋ</translation>
 <translation id="3054766768827382232">ਬੰਦ ਕਰਨ ਨਾਲ ਤੁਹਾਡੇ ਪੈਰੀਫੈਰਲ ਬਿਹਤਰ ਕਾਰਗੁਜ਼ਾਰੀ ਕਰ ਸਕਦੇ ਹਨ, ਪਰ ਤੁਹਾਡੇ ਵਿਅਕਤੀਗਤ ਡਾਟੇ ਨੂੰ ਅਣਅਧਿਕਾਰਤ ਵਰਤੋਂ ਰਾਹੀਂ ਪ੍ਰਗਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
-<translation id="3056438898277655057"><ph name="SPECIFIC_NAME" /> ਨੂੰ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। <ph name="SPECIFIC_NAME" /> ਕਿਸੇ USB ਡੀਵਾਈਸ ਨੂੰ ਹਟਾਉਣ ਤੋਂ ਬਾਅਦ ਉਸਨੂੰ ਯਾਦ ਨਹੀਂ ਰੱਖੇਗਾ।</translation>
 <translation id="3058498974290601450">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੇਲੇ ਵੀ ਸਿੰਕ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3058517085907878899">ਡੀਵਾਈਸ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="3059195548603439580">ਕੀ ਸਿਸਟਮ ਤੱਤਾਂ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
@@ -3202,6 +3200,7 @@
 <translation id="3269093882174072735">ਚਿੱਤਰ ਲੋਡ ਕਰੋ</translation>
 <translation id="326911502853238749"><ph name="MODULE_NAME" /> ਨਾ ਦਿਖਾਓ</translation>
 <translation id="3269175001434213183">ਆਪਣੀ ਸਮੱਗਰੀ ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਅਤੇ ਉਸਨੂੰ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਵਰਤਣ ਲਈ, ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="3269209112443570745">ਨਵਾਂ! ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿਖਾਈ ਦੇ ਰਹੀ ਚੀਜ਼ ਨੂੰ ਖੋਜਣ ਦਾ ਇੱਕ ਅਸਾਨ ਤਰੀਕਾ</translation>
 <translation id="3269612321104318480">ਹਲਕਾ ਹਰਾ-ਨੀਲਾ ਅਤੇ ਸਫ਼ੈਦ</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="326999365752735949">diff ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -3671,6 +3670,7 @@
 <translation id="3621202678540785336">ਇਨਪੁਟ</translation>
 <translation id="3621807901162200696">ChromeOS ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ਇੱਕ ਐਪ}one{# ਐਪ}other{# ਐਪਾਂ}}</translation>
+<translation id="3622716124581627104">ਚੀਜ਼ਾਂ ਜਾਂ ਥਾਵਾਂ ਦੀ ਪਛਾਣ ਕਰੋ ਅਤੇ ਲਿਖਤ ਨੂੰ ਕਾਪੀ ਕਰੋ ਜਾਂ ਅਨੁਵਾਦ ਕਰੋ। Google Lens ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ, ਪੰਨੇ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ Google ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। <ph name="LEARN_MORE" /></translation>
 <translation id="3622820753353315928">ਫਲੈਸ਼ ਸਕ੍ਰੀਨ ਦਾ ਰੰਗ</translation>
 <translation id="362333465072914957">CA ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਜਾਰੀ ਕਰਨ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3623598555687153298">ਇੰਝ ਕਰਨ ਨਾਲ ਦਿਖਾਈਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਦਾ ਸਟੋਰ ਕੀਤਾ ਗਿਆ <ph name="TOTAL_USAGE" /> ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
@@ -4082,6 +4082,7 @@
 <translation id="3894983081771074056">ਕੀ-ਬੋਰਡ ਅਤੇ ਮਾਊਸ ਵਿਹਾਰ, ਭਾਸ਼ਾ ਤਰਜੀਹਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
 <translation id="3895076768659607631">&amp;ਖੋਜ ਇੰਜਣਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ...</translation>
 <translation id="3895090224522145010">Kerberos ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
+<translation id="3895097816015686240">ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਹੀ ਆਸਾਨੀ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਲਈ ਆਪਣੀਆਂ ਪਿਛਲੀਆਂ ਵਿੰਡੋਆਂ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="389521680295183045">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਨਾਲ ਕੀਤੀ ਜਾ ਰਹੀ ਵਰਤੋਂ ਬਾਰੇ ਜਾਣਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{ਇੱਕ ਚਿੱਤਰ}one{# ਚਿੱਤਰ}other{# ਚਿੱਤਰ}}</translation>
 <translation id="3897746662269329507">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਗੇਮਿੰਗ ਲਈ ਬਣਾਇਆ ਗਿਆ ਹੈ। ਅੱਗੇ Explore ਐਪ ਖੁੱਲ੍ਹੇਗੀ ਜਿੱਥੋਂ ਤੁਸੀਂ ਸੈਂਕੜੇ ਗੇਮਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ, ਗੇਮਿੰਗ ਸੰਬੰਧੀ ਪੇਸ਼ਕਸ਼ਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਆਉਣ ਵਾਲੀਆਂ ਗੇਮਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਖੋਜ ਸਕਦੇ ਹੋ।</translation>
@@ -5315,6 +5316,7 @@
 <translation id="4823484602432206655">ਵਰਤੋਂਕਾਰ ਅਤੇ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="4824037980212326045">Linux ਬੈਕਅੱਪ ਅਤੇ ਮੁੜ-ਬਹਾਲੀ</translation>
 <translation id="4824958205181053313">ਕੀ ਸਿੰਕ ਰੱਦ ਕਰਨਾ ਹੈ?</translation>
+<translation id="4825462365587146530">ਨਵੇਂ ਟੈਬ ਵਿੱਚ Chrome Root Store ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="4825532258163983651">ਪਾਸਕੀ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="4827134188176577524">Chrome Root Store ਤੋਂ ਅਜਿਹੀਆਂ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਥਾਰਟੀਆਂ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸ਼ਾਮਲ ਹੁੰਦੇ ਹਨ ਜੋ Chrome Root Program ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਹੁੰਦੀਆਂ ਹਨ ਅਤੇ ਇਨ੍ਹਾਂ ਦੀ ਸਮੇਂ-ਸਮੇਂ 'ਤੇ ਸਮੀਖਿਆ ਵੀ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="4827283332383516812">ਕਾਰਡ ਮਿਟਾਓ</translation>
@@ -8551,7 +8553,6 @@
 <translation id="7222335051802562841">ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">ਇਸ ਨਾਲ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਨੂੰ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ। ਟਿਕਾਣਾ ਸਟੀਕਤਾ ਸੈਟਿੰਗ ਵਾਇਰਲੈੱਸ ਸਿਗਨਲਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ, ਤਾਂ ਜੋ ਡੀਵਾਈਸ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਇਆ ਜਾ ਸਕੇ।</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{<ph name="FPS_OWNER" /> ਦੇ ਗਰੁੱਪ ਵਿੱਚ 1 ਸਾਈਟ}one{<ph name="FPS_OWNER" /> ਦੇ ਗਰੁੱਪ ਵਿੱਚ {MEMBERS} ਸਾਈਟ}other{<ph name="FPS_OWNER" /> ਦੇ ਗਰੁੱਪ ਵਿੱਚ {MEMBERS} ਸਾਈਟਾਂ}}</translation>
 <translation id="7225082563376899794">ਪਾਸਵਰਡ ਭਰਨ ਦੌਰਾਨ Windows Hello ਵਰਤੋ</translation>
 <translation id="7225179976675429563">ਨੈੱਟਵਰਕ ਪ੍ਰਕਾਰ ਲੁਪਤ</translation>
 <translation id="7227235818314667565">ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -9931,7 +9932,6 @@
 <translation id="8207404892907560325">ਪਾਸਕੀ ਚੁਣੋ</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ਮੌਜੂਦ ਹੈ, ਪਰ ਇਹ ਇੱਕ ਵੈਧ <ph name="VM_TYPE" /> VM ਨਹੀਂ ਜਾਪਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="8207901006380134182">ਅਜਿਹਾ ਮਹਾਂਸਾਗਰ, ਜਿਸ ਵਿੱਚ ਵੱਡੀਆਂ-ਵੱਡੀਆਂ ਲਹਿਰਾਂ ਉੱਠ ਰਹੀਆਂ ਹਨ, ਕਿਨਾਰੇ 'ਤੇ ਸੰਘਣਾ ਜੰਗਲ ਦਿਖਾਈ ਦੇ ਰਿਹਾ ਹੈ।</translation>
-<translation id="8208188204689616705">ਇਹ ਸਾਈਟਾਂ <ph name="FPS_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤੇ ਗਰੁੱਪ ਵਿੱਚ ਹਨ। ਗਰੁੱਪ ਵਿਚਲੀਆਂ ਸਾਈਟਾਂ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਦੇਖ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="8208216423136871611">ਸੁਰੱਖਿਅਤ ਨਾ ਕਰੋ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ਨਵੀਂ ਸੂਚਨਾ}one{# ਨਵੀਂ ਸੂਚਨਾ}other{# ਨਵੀਆਂ ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹੈ}one{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹੈ}other{ਡਾਊਨਲੋਡ ਪ੍ਰਗਤੀ ਵਿੱਚ ਹਨ}}</translation>
@@ -11035,6 +11035,7 @@
 <translation id="8991766915726096402">ਸਥਾਨਕ ਡਾਟਾ ਰਿਕਵਰੀ</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - ਮੈਮੋਰੀ ਵਰਤੋਂ - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">ਜੇ ਤੁਸੀਂ ਆਪਣਾ <ph name="DEVICE_TYPE" /> ਦਾ ਪਾਸਵਰਡ ਭੁੱਲ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਆਪਣੇ ਸਥਾਨਕ ਡਾਟਾ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਜਾਂ ਖਾਤਾ ਰਿਕਵਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
+<translation id="8993198843374358393"><ph name="CERT_NAME" /> ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਹੈਸ਼ ਨੂੰ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="8993737615451556423">ਪੜ੍ਹਨ ਵਾਲੀ ਅਵਾਜ਼ ਦੀ ਗਤੀ ਵਧਾਉਣ, ਘੱਟ ਕਰਨ ਅਤੇ ਰੋਕਣ ਦੇ ਕੰਟਰੋਲ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦਾ ਹੈ</translation>
 <translation id="899384117894244799">ਪ੍ਰਤਿਬੰਧਿਤ ਵਰਤੋਂਕਾਰ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="8993853206419610596">ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
@@ -11058,7 +11059,6 @@
 <translation id="9009707268312089299">Windows ਤੋਂ ਆਯਾਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9009708085379296446">ਕੀ ਤੁਸੀਂ ਇਹ ਪੰਨਾ ਬਦਲਣਾ ਸੀ?</translation>
 <translation id="9010845741772269259">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
-<translation id="901087299639956505">ਸੰਤੁਲਿਤ ਮੋਡ</translation>
 <translation id="9011163749350026987">ਹਮੇਸ਼ਾਂ ਚਿੰਨ੍ਹ ਦਿਖਾਓ</translation>
 <translation id="9011262023858991985">ਇਸ ਟੈਬ ਨੂੰ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9011393886518328654">ਰਿਲੀਜ਼ ਨੋਟ-ਕਥਨ</translation>
@@ -11242,6 +11242,7 @@
 <translation id="9128317794749765148">ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋ ਸਕਿਆ</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> ਲਈ ਸੈਟਿੰਗਾਂ ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="9128870381267983090">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
+<translation id="9129562557082598582">ਸਭ <ph name="CERT_GROUP" /> ਦਾ ਨਿਰਯਾਤ ਕਰੋ</translation>
 <translation id="9130015405878219958">ਅਵੈਧ ਮੋਡ ਦਾਖ਼ਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="9130208109420587135"><ph name="NAME" /> ਦੇ ਗਰੁੱਪ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="9130364135697530260">ਇਸ ਸਾਈਟ 'ਤੇ ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਵਰਤ ਸਕਦੀ ਹੈ</translation>

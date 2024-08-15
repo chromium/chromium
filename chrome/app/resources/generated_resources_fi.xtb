@@ -478,7 +478,6 @@
 <translation id="1340527397989195812">Varmuuskopioi mediatiedostot laitteelta Tiedostot-sovelluksen avulla.</translation>
 <translation id="1341701348342335220">Hyvin tehty!</translation>
 <translation id="1342886103232377846">Siirry Google Salasanoihin ja tarkista vaarantuneet salasanat</translation>
-<translation id="1343865611738742294">Anna Linux-sovelluksille USB-laitteiden käyttöoikeus. Linux ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
 <translation id="1344141078024003905">Striimaat näyttöä. Voit keskeyttää tai lopettaa näytön striimauksen milloin tahansa.</translation>
 <translation id="1346403631707626730">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan lapsesi Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille. Jos muun verkko- ja sovellustoiminnan asetus on lapsella käytössä, tätä dataa voidaan tallentaa hänen Google-tililleen. <ph name="BEGIN_LINK1" />Lue lisää mittareista<ph name="BEGIN_LINK1_END" />Lue lisää<ph name="END_LINK1" /></translation>
@@ -821,7 +820,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1588919647604819635">Kakkospainikekortti</translation>
 <translation id="1589055389569595240">Näytä oikeinkirjoitus ja kielioppi</translation>
 <translation id="1590478605309955960">Välilehtiryhmät tallennetaan ja päivittyvät automaattisesti kaikilla sisäänkirjautuneilla laitteilla.</translation>
-<translation id="1591679663873027990">Myönnä Parallels Desktopille pääsy USB-laitteisiin. Parallels Desktop ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="15916883652754430">Järjestelmän ääniasetukset</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> on poistanut ADB-virheenkorjauksen käytöstä, mikä nollaa laitteesi (<ph name="DEVICE_TYPE" />). Varmuuskopioi tiedostosi ennen kuin aloitat.</translation>
 <translation id="1592126057537046434">Pikavastaukset: käännös</translation>
@@ -2655,7 +2653,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2853121255651601031">Salasana tallennettu</translation>
 <translation id="2855243985454069333">Poistaa kaikkien synkronoitujen laitteiden historian</translation>
 <translation id="2855812646048059450">Kirjaudu sisään: <ph name="CREDENTIAL_PROVIDER" /></translation>
-<translation id="28559674945112027">Tiukka tila</translation>
 <translation id="2856776373509145513">Luo uusi säilö</translation>
 <translation id="2856907950922663165">Laitetaanko URL-salaus pois päältä?</translation>
 <translation id="2859741939921354763">Tuo salasanoja tänne: <ph name="BRAND" /></translation>
@@ -2937,7 +2934,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3053273573829329829">Ota käyttöön käyttäjän PIN-koodi</translation>
 <translation id="3053274730492362225">Älä vilku</translation>
 <translation id="3054766768827382232">Jos poistat tämän käytöstä, lisälaitteet saattavat toimia paremmin, mutta henkilökohtainen datasi voi vaarantua luvattoman käytön seurauksena.</translation>
-<translation id="3056438898277655057">Salli, että <ph name="SPECIFIC_NAME" /> saa pääsyn USB-laitteisiin. <ph name="SPECIFIC_NAME" /> ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="3058498974290601450">Voit ottaa synkronoinnin käyttöön milloin tahansa asetuksista.</translation>
 <translation id="3058517085907878899">Nimeä laite</translation>
 <translation id="3059195548603439580">Etsitkö järjestelmän osuuksia? Avaa</translation>
@@ -3146,7 +3142,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3230539834943294477">Katso ohjeartikkeleita tai etsi laitetukea</translation>
 <translation id="3232168089952388105">Jaetaanko laitteen tiedot?</translation>
 <translation id="3232368113895801406">Tietoturva-asetuksesi eivät salli eristettyjen sovellusten asentamista. <ph name="CHANGE_PREFERENCE" /></translation>
-<translation id="323251815203765852">Mainos</translation>
+<translation id="323251815203765852">Luova</translation>
 <translation id="3232558119926886907">Tasaa oikealle</translation>
 <translation id="3232754137068452469">Verkkosovellus</translation>
 <translation id="3233271424239923319">Varmuuskopioi Linux-sovellukset ja ‑tiedostot</translation>
@@ -7689,7 +7685,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6586213706115310390">Käytä Assistantia sanomalla "Hey Google".</translation>
 <translation id="6586451623538375658">Vaihda hiiren ykköspainiketta</translation>
 <translation id="6588043302623806746">Käytä suojattua DNS:ää</translation>
-<translation id="6589760925779188068">Panna cotta</translation>
+<translation id="6589760925779188068">Pannacotta</translation>
 <translation id="659005207229852190">Turvatarkistus on valmis.</translation>
 <translation id="6590458744723262880">Nimeä kansio uudelleen</translation>
 <translation id="6592267180249644460">WebRTC-loki kaapattiin <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
@@ -8549,7 +8545,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7222335051802562841">Viimeistele päivitys</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7223952304612664117">Näin järjestelmäpalvelut voivat määrittää sijaintisi sijaintitietojen tarkkuuden avulla. Sijainnin tarkkuus arvioi laitteen sijainnin langattomista signaaleista ja antureista saatujen tietojen perusteella.</translation>
-<translation id="722408235435815623">{MEMBERS,plural, =1{1 sivusto ryhmässä, jota <ph name="FPS_OWNER" /> ylläpitää}other{<ph name="FPS_OWNER" /> sivustoa ryhmässä, jota {MEMBERS} ylläpitää}}</translation>
 <translation id="7225082563376899794">Käytä Windows Hellota salasanojen täyttämiseen</translation>
 <translation id="7225179976675429563">Verkon tyyppi puuttuu</translation>
 <translation id="7227235818314667565">Hallitse jakamista</translation>
@@ -9926,7 +9921,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8207404892907560325">Valitse avainkoodi</translation>
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" on olemassa, mutta se ei näytä olevan kelvollinen VM (<ph name="VM_TYPE" />). Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="8207901006380134182">Suuri aalto halkoo valtamerta ja rannan tuntumassa on tumma metsä.</translation>
-<translation id="8208188204689616705">Nämä sivustot kuuluvat ryhmään, jonka <ph name="FPS_OWNER" /> on määritellyt. Ryhmään kuuluvat sivustot voivat nähdä toimintasi ryhmässä</translation>
 <translation id="8208216423136871611">Älä tallenna</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Uusi ilmoitus}other{# uutta ilmoitusta}}</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Lataus on käynnissä}other{Latauksia on käynnissä}}</translation>
@@ -11053,7 +11047,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9009707268312089299">Tuotu Windowsista</translation>
 <translation id="9009708085379296446">Halusitko muuttaa tätä sivua?</translation>
 <translation id="9010845741772269259">Maksutapojen lisääminen</translation>
-<translation id="901087299639956505">Tasapainoinen tila</translation>
 <translation id="9011163749350026987">Näytä kuvake aina</translation>
 <translation id="9011262023858991985">Välilehteä striimataan</translation>
 <translation id="9011393886518328654">Julkaisutiedot</translation>
@@ -11432,7 +11425,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> – kameran ja mikrofonin tallennus</translation>
 <translation id="984275831282074731">Maksutavat</translation>
 <translation id="984705303330760860">Lisää oikeinkirjoituksen tarkistuksen kieliä</translation>
-<translation id="98515147261107953">Vaakasuunta</translation>
+<translation id="98515147261107953">Maisema</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Yleistä</translation>
 <translation id="987475089238841621">Kielipaketteja käytetään livetekstityksissä, ja ne tallennetaan laitteellesi</translation>

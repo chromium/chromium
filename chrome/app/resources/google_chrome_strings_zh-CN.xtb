@@ -59,7 +59,6 @@
 <translation id="178701303897325119">此扩展程序已不再受支持。Chrome 建议您移除它。</translation>
 <translation id="1812689907177901597">关闭此设置后，您无需登录 Chrome 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1860536484129686729">Chrome 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
-<translation id="1861924772887221906">Chrome 会在使用不安全的连接加载公共网站前询问您，但会允许私有网络使用 HTTP 连接</translation>
 <translation id="1873233029667955273">Google Chrome 不是您的默认浏览器</translation>
 <translation id="1874309113135274312">Google Chrome 测试版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
@@ -197,7 +196,6 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用一项更新}=1{您的管理员要求您重新启动 Chrome 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
-<translation id="3614820178395775413">Chrome 会在使用不安全的连接加载网站前询问您</translation>
 <translation id="3622797965165704966">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
@@ -449,7 +447,6 @@
 <translation id="7296210096911315575">重要用途和安全信息</translation>
 <translation id="7302361266603927550">部分 Chrome 数据尚未保存到您的 Google 账号。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7308322188646931570">Chrome 需要获得存储空间使用权限，才能下载文件</translation>
-<translation id="7324120788743384890">开启后，Chrome 会在加载不支持 HTTPS 的网站前询问您</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7352881504289275361">“增强型安全浏览”功能提供了 Chrome 最强大的在线保护机制，可在您浏览网页时保障您的安全</translation>
 <translation id="7394745511930161845">利用 AI 创建您自己的主题，使浏览器呈现独特的外观</translation>

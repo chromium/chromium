@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
 <translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />"కు ఒక షార్ట్‌కట్ ఉపయోగించబడుతోంది. కొత్త షార్ట్‌కట్‌ను నొక్కండి. ఇప్పటికే ఉన్న షార్ట్‌కట్‌ను రీప్లేస్ చేయడానికి, ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి.</translation>
+<translation id="1030856839388844477">డేటా వినియోగాన్ని రీసెట్ చేయండి</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="1049663189809099096">పాస్టెల్ పసుపు రంగు</translation>
@@ -1551,6 +1552,7 @@
 <translation id="9087578468327036362">ఈ క్వెరీని రిపోర్ట్ చేయండి</translation>
 <translation id="9088306295921699330">ప్రస్తుత వినియోగం</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">తేదీని రీసెట్ చేయడానికి సంబంధించి మరింత సమాచారం</translation>
 <translation id="9100765901046053179">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="9106415115617144481">పేజీ <ph name="PAGE_NUMBER" />ని స్కాన్ చేస్తోంది</translation>

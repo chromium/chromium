@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">Εμφάνιση προτάσεων</translation>
 <translation id="1038842779957582377">άγνωστο όνομα</translation>
 <translation id="1041998700806130099">Μήνυμα φύλλου εργασίας</translation>
+<translation id="1044897699341250361">Τι σημαίνει αυτό</translation>
 <translation id="1046350918013988591">Κουπόνια και εκπτωτικές προσφορές</translation>
 <translation id="1048785276086539861">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην προβολή μίας σελίδας.</translation>
 <translation id="1050038467049342496">Κλείστε τις άλλες εφαρμογές</translation>
@@ -2650,6 +2651,7 @@
 <translation id="5999271311987646952">Το Chrome διαθέτει ενσωματωμένες λειτουργίες ασφάλειας για την προστασία σας κατά την περιήγηση, όπως η Ασφαλής περιήγηση Google, η οποία <ph name="BEGIN_LINK" />εντόπισε πρόσφατα ένα κακόβουλο πρόγραμμα<ph name="END_LINK" /> στον ιστότοπο που προσπαθείτε να επισκεφτείτε.</translation>
 <translation id="6000528814684428358">Hard Rock και Progressive</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> αποτελέσματα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6001839398155993679">Ας ξεκινήσουμε</translation>
 <translation id="6002122790816966947">Οι συσκευές σας</translation>
 <translation id="6002968396561884726">Προβλήθηκαν πρόσφατα</translation>
 <translation id="6005659677094197001">Συνεχές</translation>
@@ -3058,6 +3060,7 @@
 <translation id="6735783933931458444">Επισκέπτεστε συχνά αυτή την ώρα της ημέρας</translation>
 <translation id="6737708609449480586">Προϊόντα αρτοποιΐας</translation>
 <translation id="6738516213925468394">Τα δεδομένα σας κρυπτογραφήθηκαν με τη <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" /> στις <ph name="TIME" />. Καταχωρίστε την, για να ξεκινήσει ο συγχρονισμός.</translation>
+<translation id="6739943577740687354">Αυτή η λειτουργία χρησιμοποιεί AI και δεν είναι αλάνθαστη.</translation>
 <translation id="6740851646645036700">Προς το παρόν, έχετε συμπληρώσει το όριο βοήθειας γραφής. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="674375294223700098">Άγνωστο σφάλμα πιστοποιητικού διακομιστή</translation>
 <translation id="6744009308914054259">Ενώ περιμένετε για την επίτευξη κάποιας σύνδεσης, μπορείτε να μεταβείτε στις Λήψεις, για να διαβάσετε άρθρα εκτός σύνδεσης.</translation>
@@ -4448,5 +4451,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">Προσθήκη IBAN</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Από το Google Pay</translation>
 </translationbundle>

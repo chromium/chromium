@@ -26,7 +26,6 @@
 <translation id="1324107359134968521">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium (<ph name="URL" />)ରୁ ମଧ୍ୟ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1414495520565016063">ଆପଣ Chromium‍ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି!</translation>
-<translation id="1465171403179274511">ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରି ଯେ କୌଣସି ସାଇଟକୁ ଲୋଡ କରିବା ପୂର୍ବରୁ Chromium ଆପଣଙ୍କୁ ପଚାରିବ</translation>
 <translation id="1478370723027452770">Chrome for Testing ସହ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="1497802159252041924">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">ଗୋଟିଏ Chromium ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -82,7 +81,6 @@
 <translation id="2210682093923538346">ବିପଦଜନକ ସାଇଟ। Chromium ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="2240214816234246077">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />କୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="2241627712206172106">ଯଦି ଆପଣ ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍‍କୁ ସେୟାର୍ କରିବେ, ବନ୍ଧୁମାନେ ଓ ପରିବାର ଲୋକେ ଅଲଗା ଭାବେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସରେ Chromiumକୁ ସେଟ୍-ଅପ୍ କରନ୍ତୁ।</translation>
-<translation id="2265830994243640896">ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରି ପବ୍ଲିକ ସାଇଟଗୁଡ଼ିକୁ ଲୋଡ କରିବା ପୂର୍ବରୁ Chromium ଆପଣଙ୍କୁ ପଚାରିବ, କିନ୍ତୁ ପ୍ରାଇଭେଟ ନେଟୱାର୍କଗୁଡ଼ିକ ପାଇଁ HTTP କନେକ୍ସନକୁ ଅନୁମତି ଦେବ</translation>
 <translation id="2313870531055795960">Chromiumରେ ଷ୍ଟୋର କରାଯାଇଥିବା ଅସୁରକ୍ଷିତ ସାଇଟଗୁଡ଼ିକର ଏକ ତାଲିକା ସହିତ URLଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ସାଇଟ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଚୋରି କରିବାକୁ ଚେଷ୍ଟା କରେ କିମ୍ବା ଆପଣ ଏକ କ୍ଷତିକାରକ ଫାଇଲ ଡାଉନଲୋଡ କଲେ, ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ସହିତ URLଗୁଡ଼ିକୁ ମଧ୍ୟ Chromium ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଇପାରେ।</translation>
 <translation id="2329088755516916767">ଏହା ଚାଲୁ ଥିବା ସମୟରେ, Chromium ବ୍ରାଉଜ ଓ ସର୍ଚ୍ଚ କରିବାକୁ ଦ୍ରୁତ କରାଉଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରେ।</translation>
 <translation id="2343156876103232566">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
@@ -107,7 +105,6 @@
 <translation id="259935314519650377">ଡାଉନଲୋଡ କରାଯାଇଥିବା ଇନଷ୍ଟଲରକୁ କେଶେ କରିବାରେ ବିଫଳ ହୋଇଛି। ତ୍ରୁଟି: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
 <translation id="264613044588233783">Chromium ଆହୁରି ଦ୍ରୁତ ଭାବରେ ଚାଲେ ଏବଂ JavaScript ବ୍ୟବହାର କରୁଥିବା ଫିଚରଗୁଡ଼ିକ ଡିଜାଇନ ହୋଇଥିବା ଅନୁସାରେ ଚାଲିବା ଉଚିତ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="2648074677641340862">ଇନ୍‍ଷ୍ଟଲେସନ୍ ସମୟରେ ଏକ ଅପରେଟିଂ ସିଷ୍ଟମ୍ ତ୍ରୁଟି ଦେଖାଦେଲା। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ।</translation>
-<translation id="2649201087614586016">ଚାଲୁ ଥିଲେ, HTTPSକୁ ସପୋର୍ଟ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକୁ ଲୋଡ କରିବା ପୂର୍ବରୁ Chromium ଆପଣଙ୍କୁ ପଚାରିବ</translation>
 <translation id="2661879430930417727">ଯଦି ଆପଣ ଏକ ଡିଭାଇସକୁ ସେୟାର୍ କରନ୍ତି, ତେବେ ସାଙ୍ଗ ଏବଂ ପରିବାରର ଲୋକମାନେ ଅଲଗା ଭାବରେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଓ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସାରେ Chromiumକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ</translation>
 <translation id="268602741124540128">Chromiumକୁ ସ୍ଵାଗତ, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium ଟାବ୍</translation>

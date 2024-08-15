@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="1038842779957582377">அறியப்படாத பெயர்</translation>
 <translation id="1041998700806130099">பணித் தாள் மெசேஜ்</translation>
+<translation id="1044897699341250361">இதன் பொருள் என்ன?</translation>
 <translation id="1046350918013988591">கூப்பன்கள் மற்றும் தள்ளுபடிச் சலுகைகள்</translation>
 <translation id="1048785276086539861">விரிவுரைகளைத் திருத்தினால் இந்த ஆவணம் ஒற்றைப் பக்கக்காட்சிக்கு மாறும்</translation>
 <translation id="1050038467049342496">பிற ஆப்ஸை மூடவும்</translation>
@@ -2645,6 +2646,7 @@
 <translation id="5999271311987646952">நீங்கள் உலாவும்போது உங்களைப் பாதுகாக்க ‘Google பாதுகாப்பு உலாவல்’ போன்ற உள்ளமைந்த பாதுகாப்பு அம்சங்கள் Chromeமில் உள்ளன. இந்த அம்சம் நீங்கள் பார்க்க முயலும் தளத்தில் <ph name="BEGIN_LINK" />சமீபத்தில் மால்வேரைக் கண்டறிந்தது<ph name="END_LINK" />.</translation>
 <translation id="6000528814684428358">ஹார்ட் ராக் மற்றும் புராக்ரெஸிவ்</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'க்கு <ph name="RESULT_COUNT" /> முடிவுகள் உள்ளன</translation>
+<translation id="6001839398155993679">தொடங்குக</translation>
 <translation id="6002122790816966947">உங்கள் சாதனங்கள்</translation>
 <translation id="6002968396561884726">சமீபத்தில் பார்த்தது</translation>
 <translation id="6005659677094197001">தொடர்ச்சியானது</translation>
@@ -3052,6 +3054,7 @@
 <translation id="6735783933931458444">நாளின் இந்த நேரத்தில் நீங்கள் அடிக்கடி பார்ப்பது</translation>
 <translation id="6737708609449480586">பேக்கரி உணவுகள்</translation>
 <translation id="6738516213925468394"><ph name="TIME" />க்கு உங்கள் தரவு உங்கள் <ph name="BEGIN_LINK" />ஒத்திசைவுக் கடவுச்சொற்றொடரைக்<ph name="END_LINK" /> கொண்டு என்க்ரிப்ட் செய்யப்பட்டது. ஒத்திசைவைத் தொடங்க, அதை உள்ளிடவும்.</translation>
+<translation id="6739943577740687354">இந்த அம்சம் AIயைப் பயன்படுத்துவதால் சில சமயங்களில் சரியாகச் செயல்படாமல் போகலாம்</translation>
 <translation id="6740851646645036700">எழுத உதவுவதற்கான தற்போதைய வரம்பை அடைந்துவிட்டீர்கள். பிறகு முயலவும்.</translation>
 <translation id="674375294223700098">தெரியாத சேவையகச் சான்றிதழ் பிழை.</translation>
 <translation id="6744009308914054259">இணைப்புக்காகக் காத்திருக்கும்போது ​​ஆஃப்லைன் கட்டுரைகளைப் படிக்க, ‘பதிவிறக்கங்கள்’ என்பதைப் பார்க்கவும்.</translation>
@@ -4440,5 +4443,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBANனைச் சேர்த்தல்</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Pay இலிருந்து</translation>
 </translationbundle>

@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Compartir con la hoja de comentarios sobre el resumen cerrada</translation>
 <translation id="1089606299949659462">Revisión completada</translation>
 <translation id="1094555143448724771">Para ver las pestañas de tus otros dispositivos, sincroniza tus pestañas y tu historial</translation>
-<translation id="1095142578254888918"><ph name="SITE_NAME" /> no tiene permiso para enviar notificaciones</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="1100066534610197918">Abrir en pestaña nueva en grupo</translation>
 <translation id="1103142993930332957">¿Quieres ayudar a mejorar Chrome?</translation>
@@ -42,7 +41,6 @@
 <translation id="1177863135347784049">Personalizado</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, verifica tu identidad</translation>
-<translation id="1183443789037147668">{NUM_SITES,plural, =1{Notificaciones no permitidas en 1 sitio}other{Notificaciones no permitidas en # sitios}}</translation>
 <translation id="1187810343066461819">Eliminar también de este coche los marcadores, el historial y otros datos</translation>
 <translation id="1193729455103054076">¿Usar contraseña segura?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
@@ -454,7 +452,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3087218211037573995">Algunas contraseñas guardadas solo en este dispositivo dejarán de funcionar pronto, pero puedes moverlas al Gestor de contraseñas de Google.</translation>
 <translation id="3091010850649238832">Muestra el contenido del portapapeles</translation>
-<translation id="3093004810561729002">Alguien</translation>
 <translation id="3098745985164956033">Algunas imágenes se envían a Google para mejorar las descripciones que recibes</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anuncios</translation>
@@ -506,6 +503,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3407392651057365886">Se precargan más páginas. Es posible que las páginas se precarguen a través de los servidores de Google cuando lo soliciten otros sitios.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3421726884497337397">Elige cuándo bloquear las cookies de terceros</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Hace # h}other{Hace # h}}</translation>
 <translation id="3430670036890315772">Si desactivas el bloqueo de perfil, se eliminarán tus datos guardados</translation>
 <translation id="3435465986463792564">¿Tienes demasiadas ventanas? Puedes gestionarlas desde aquí.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
@@ -938,6 +936,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5517095782334947753">Tienes marcadores, historial, contraseñas y otros ajustes de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Redirección bloqueada.</translation>
 <translation id="5526281268548144413">No se puede cerrar en varias ventanas</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Comprobación de seguridad</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te avisa si se ha publicado online. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5555525474779371165">Elige tu nivel de protección de Navegación segura</translation>

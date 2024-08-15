@@ -8,6 +8,7 @@
 <translation id="1020274983236703756">თქვენთვის ამიერიდან ხელმისაწვდომია <ph name="PRODUCT_NAME" />-ისთვის ექსკლუზიური რესურსები</translation>
 <translation id="1022628058306505708">ხმელეთის ნაკადი</translation>
 <translation id="1026212596705997935">ამ მალსახმობის მეშვეობით უკვე ხდება „<ph name="CONFLICT_ACCEL_NAME" />“. დააჭირეთ ახალ მალსახმობს. არსებული მალსახმობის ჩასანაცვლებლად დააჭირეთ ამ მალსახმობს ხელახლა.</translation>
+<translation id="1030856839388844477">მონაცემთა მოხმარების გადაყენება</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ნაკადი, <ph name="CPU_MAX_CLOCK_SPEED" /> გჰც)</translation>
 <translation id="1047773237499189053">ხელმისაწვდომია ახალი ფუნქცია, დამატებითი ინფორმაციისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
 <translation id="1049663189809099096">პასტელური ყვითელი</translation>
@@ -507,7 +508,7 @@
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
 <translation id="3715651196924935218">ლივლივიდან გასვლა</translation>
 <translation id="3716250181321371108">მართვის საშუალების შექმნა</translation>
-<translation id="3716830479327464973">როცა დაუშვებთ ამას, რეკორდები გააანალიზებს თქვენს აუდიოჩანაწერებს, რომ:</translation>
+<translation id="3716830479327464973">როცა დაუშვებთ ამას, რეკორდერი გააანალიზებს თქვენს აუდიოჩანაწერებს, რომ:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
 <translation id="3748026146096797577">არ არის დაკავშირებული</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
@@ -534,7 +535,7 @@
 <translation id="3869314628814282185">ტიული</translation>
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
 <translation id="3877066159641251281">თარგმანის მოსმენა</translation>
-<translation id="3880601782712134623">ავტომატურად ამოიცნობს სხვადასხვა ხმებს და მიანიჭებს თითოეულ მოსაუბრეს ზოგად ლეიბლებს, მაგალითად მოსაუბრე 1 და მოსაუბრე 2</translation>
+<translation id="3880601782712134623">ავტომატურად ამოიცნობს სხვადასხვა ხმას და მიანიჭებს თითოეულ მოსაუბრეს ზოგად ლეიბლებს, მაგალითად მოსაუბრე 1 და მოსაუბრე 2</translation>
 <translation id="3885327323343477505">ეკრანმზოგის შეცვლა</translation>
 <translation id="3889914174935857450">გადაყენების თარიღი</translation>
 <translation id="3897092660631435901">მენიუ</translation>
@@ -883,6 +884,7 @@
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ის <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605">რედაქტირების ღილაკი „<ph name="SHORTCUT_DESCRIPTION" />“-ისთვის.</translation>
 <translation id="5733298426544876109">განახლდეს <ph name="DEVICE_NAME" /></translation>
+<translation id="5736820754189340309">მონაცემთა გამოყენება გადაყენებულია</translation>
 <translation id="574392208103952083">საშუალო</translation>
 <translation id="5757187557809630523">შემდეგი ჩანაწერი</translation>
 <translation id="5760715441271661976">პორტალის მდგომარეობა</translation>
@@ -1551,6 +1553,7 @@
 <translation id="9087578468327036362">მოხსენება ამ მოთხოვნის შესახებ</translation>
 <translation id="9088306295921699330">ამჟამად გამოყენებული</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
+<translation id="909856219855259344">მეტი ინფორმაცია გადაყენების თარიღზე</translation>
 <translation id="9100765901046053179">გაფართოებული პარამეტრები</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>

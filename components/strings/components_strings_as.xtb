@@ -22,6 +22,7 @@
 <translation id="1038106730571050514">পৰামৰ্শসমূহ দেখুৱাওক</translation>
 <translation id="1038842779957582377">অজ্ঞাত নাম</translation>
 <translation id="1041998700806130099">কামৰ শ্বীটৰ বাৰ্তা</translation>
+<translation id="1044897699341250361">ইয়ে কি বুজায়</translation>
 <translation id="1046350918013988591">কুপন আৰু ৰেহাইৰ অফাৰ</translation>
 <translation id="1048785276086539861">আপুনি এন’টেশ্বন সম্পাদনা কৰিলে, এই নথিখন একক পৃষ্ঠাৰ ভিউলৈ সলনি হ’ব</translation>
 <translation id="1050038467049342496">অন্য এপ্‌বোৰ বাছনি কৰক</translation>
@@ -2645,6 +2646,7 @@
 <translation id="5999271311987646952">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে, যিয়ে আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত <ph name="BEGIN_LINK" />শেহতীয়াকৈ মালৱেৰ ধৰা পেলাইছে<ph name="END_LINK" />।</translation>
 <translation id="6000528814684428358">হাৰ্ড ৰক প্ৰগ্ৰেছিভ</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="RESULT_COUNT" />টা ফলাফল</translation>
+<translation id="6001839398155993679">আৰম্ভ কৰক</translation>
 <translation id="6002122790816966947">আপোনাৰ ডিভাইচ</translation>
 <translation id="6002968396561884726">শেহতীয়াকৈ চোৱা</translation>
 <translation id="6005659677094197001">অবিৰত</translation>
@@ -3052,6 +3054,7 @@
 <translation id="6735783933931458444">দিনৰ এই সময়ত, আপোনাৰ ডিভাইচত সঘনাই খোলা টেব</translation>
 <translation id="6737708609449480586">চুলাত সেকা সামগ্ৰী</translation>
 <translation id="6738516213925468394">আপোনাৰ ডেটাখিনি আপুনি <ph name="BEGIN_LINK" />ছিংক কৰি থোৱা পাছফ্ৰে'জ<ph name="END_LINK" />ৰ সহায়ত <ph name="TIME" />ত এনক্রিপ্ট কৰা হৈছিল। ছিংক আৰম্ভ কৰিবলৈ এইটো দিয়ক।</translation>
+<translation id="6739943577740687354">এই সুবিধাটোৱে AI ব্যৱহাৰ কৰে আৰু ই সদায় শুদ্ধ ফলাফল প্ৰদৰ্শন নকৰে</translation>
 <translation id="6740851646645036700">সদ্যহতে আপুনি আপোনাৰ লিখাৰ সহায়ৰ সীমাত উপনীত হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="674375294223700098">ছাৰ্ভাৰ প্ৰমাণপত্ৰ সম্পর্কীয় কোনো অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="6744009308914054259">সংযোগলৈ অপেক্ষা কৰি থকা সময়ত আপুনি ডাউনল’ড-লৈ গৈ অফলাইনত থকা লেখাসমূহ পঢ়িব পাৰে।</translation>
@@ -4438,5 +4441,6 @@
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="995755448277384931">IBANটো যোগ দিয়ক</translation>
+<translation id="995782501881226248">YouTube</translation>
 <translation id="997986563973421916">Google Payৰ পৰা</translation>
 </translationbundle>
