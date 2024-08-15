@@ -63,7 +63,7 @@ Browser* GetDesktopBrowser(content::WebUI* web_ui) {
 base::TimeDelta GetMinorModeRestrictionsDeadline() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Not implemented for those platforms.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   return base::Milliseconds(kMinorModeRestrictionsFetchDeadlineMs);
 #endif

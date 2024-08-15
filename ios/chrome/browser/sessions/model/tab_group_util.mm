@@ -60,7 +60,7 @@ ios::proto::TabGroupColorId ColorForStorage(
     case tab_groups::TabGroupColorId::kOrange:
       return ios::proto::TabGroupColorId::ORANGE;
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED_NORETURN() << "kNumEntries is not a supported color enum.";
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 }
 
@@ -94,7 +94,7 @@ tab_groups::TabGroupColorId ColorFromStorage(
     case ios::proto::TabGroupColorId::ORANGE:
       return tab_groups::TabGroupColorId::kOrange;
     default:
-      NOTREACHED_NORETURN() << "value is not a supported color enum.";
+      NOTREACHED() << "value is not a supported color enum.";
   }
 }
 

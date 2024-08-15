@@ -873,9 +873,8 @@ std::optional<PasswordAttributesMetadata>
 VotesUploader::GeneratePasswordAttributesMetadata(
     const std::u16string& password_value) {
   if (password_value.empty()) {
-    NOTREACHED_NORETURN()
-        << "GeneratePasswordAttributesMetadata cannot take an empty "
-           "password value.";
+    NOTREACHED() << "GeneratePasswordAttributesMetadata cannot take an empty "
+                    "password value.";
   }
 
   // Don't crowdsource password attributes for non-ascii passwords.

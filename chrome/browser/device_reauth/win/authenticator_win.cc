@@ -225,7 +225,7 @@ void OnAuthenticationReceived(base::OnceCallback<void(bool)> callback,
     case AuthenticationResultStatusWin::kFailedToFindBrowser:
     case AuthenticationResultStatusWin::kFailedToFindHWNDForNativeWindow:
       // This values are not returned by UserConsentVerifier API.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

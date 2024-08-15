@@ -113,7 +113,7 @@ std::string_view ConnectResultToString(bluetooth::mojom::ConnectResult result) {
       return "Wakelock";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

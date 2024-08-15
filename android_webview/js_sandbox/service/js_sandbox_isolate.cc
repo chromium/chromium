@@ -196,7 +196,7 @@ jint remapConsoleMessageErrorLevel(const v8::Isolate::MessageErrorLevel level) {
     case v8::Isolate::MessageErrorLevel::kMessageWarning:
       return 1 << 4;
     case v8::Isolate::MessageErrorLevel::kMessageAll:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

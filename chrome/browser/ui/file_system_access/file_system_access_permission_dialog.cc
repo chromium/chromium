@@ -61,7 +61,7 @@ int GetMessageText(const FileRequestData& file_request_data) {
                    : IDS_FILE_SYSTEM_ACCESS_ORIGIN_SCOPED_WRITE_PERMISSION_FILE_TEXT;
       }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int GetButtonLabel(const FileRequestData& file_request_data) {
@@ -77,7 +77,7 @@ int GetButtonLabel(const FileRequestData& file_request_data) {
                  ? IDS_FILE_SYSTEM_ACCESS_EDIT_DIRECTORY_PERMISSION_ALLOW_TEXT
                  : IDS_FILE_SYSTEM_ACCESS_EDIT_FILE_PERMISSION_ALLOW_TEXT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string GetWindowTitle(const FileRequestData& file_request_data) {
@@ -108,7 +108,7 @@ std::u16string GetWindowTitle(const FileRequestData& file_request_data) {
                 file_request_data.path));
       }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<ui::DialogModel> CreateFileSystemAccessPermissionDialog(

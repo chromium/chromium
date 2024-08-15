@@ -107,7 +107,7 @@ std::u16string CertificateSelector::CertificateTableModel::GetText(
     case IDS_CERT_SELECTOR_SERIAL_COLUMN:
       return row.serial;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

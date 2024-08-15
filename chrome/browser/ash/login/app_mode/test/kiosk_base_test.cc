@@ -305,7 +305,7 @@ KioskApp KioskBaseTest::test_kiosk_app() const {
       return app;
     }
   }
-  NOTREACHED_NORETURN() << "App not in KioskController: " << test_app_id();
+  NOTREACHED() << "App not in KioskController: " << test_app_id();
 }
 
 }  // namespace ash

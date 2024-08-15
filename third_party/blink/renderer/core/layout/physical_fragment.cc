@@ -917,7 +917,7 @@ void PhysicalFragment::AddOutlineRectsForCursor(
         break;
       }
       case FragmentItem::kInvalid:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     cursor->MoveToNext();
   }

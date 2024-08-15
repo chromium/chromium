@@ -248,7 +248,7 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
           return IconCode::kKeyboardShortcutLauncherRefresh;
         case ui::mojom::MetaKey::kExternalMeta:
         case ui::mojom::MetaKey::kCommand:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     case (KeyboardCode::VKEY_MEDIA_LAUNCH_APP2):
       return IconCode::kKeyboardShortcutCalculator;

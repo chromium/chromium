@@ -100,7 +100,7 @@ class ThrottleTestParam {
       case FeatureStatus::kEnabled:
         return "ClassifyUrlNavigationThrottle";
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   static void InitFeatureList(base::test::ScopedFeatureList& feature_list,

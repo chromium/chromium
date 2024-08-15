@@ -56,7 +56,7 @@ PaymentsWindowUserConsentDialogResult GetDialogResultForClosedReason(
       // There is no close button present for the consent dialog, so this should
       // never be reached. It is also a tab-modal dialog, so it should never
       // lose focus.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case views::Widget::ClosedReason::kUnspecified:
       return PaymentsWindowUserConsentDialogResult::kTabOrBrowserClosed;
     case views::Widget::ClosedReason::kEscKeyPressed:

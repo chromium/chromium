@@ -143,7 +143,7 @@ bool IsFillable(FocusedFieldType focused_field_type) {
     case FocusedFieldType::kUnknown:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {

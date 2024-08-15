@@ -167,7 +167,7 @@ void AXRelationCache::CheckElementWasProcessed(Element& element) {
   }
 
   AXObject* obj = Get(ancestor);
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "The following element was attached to the document, but "
          "UpdateCacheAfterNodeIsAttached() was never called with it, and it "
          "did not exist when the cache was first initialized:"

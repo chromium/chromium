@@ -252,13 +252,13 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnWebSocketHandshakeStreamReady(
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void OnBidirectionalStreamImplReady(
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<BidirectionalStreamImpl> stream) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void OnStreamFailed(int status,
@@ -278,7 +278,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {

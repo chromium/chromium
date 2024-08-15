@@ -150,7 +150,7 @@ class ClearKeyKeySystemInfo : public KeySystemInfo {
       case EncryptionScheme::kUnencrypted:
         break;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   SupportedCodecs GetSupportedCodecs() const final {

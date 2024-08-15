@@ -166,7 +166,7 @@ const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
       return "gl_renderer";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,

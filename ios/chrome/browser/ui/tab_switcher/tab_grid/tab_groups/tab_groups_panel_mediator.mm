@@ -170,13 +170,13 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)setPageAsActive {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 #pragma mark TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)doneButtonTapped:(id)sender {
@@ -185,31 +185,31 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)searchButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 #pragma mark TabGroupsPanelItemDataSource

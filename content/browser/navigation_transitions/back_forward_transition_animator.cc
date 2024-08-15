@@ -895,7 +895,7 @@ bool BackForwardTransitionAnimator::CanAdvanceTo(State from, State to) {
              to == State::kAnimationAborted;
     case State::kAnimationFinished:
     case State::kAnimationAborted:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -921,7 +921,7 @@ std::string BackForwardTransitionAnimator::ToString(State state) {
     case State::kAnimationAborted:
       return "kAnimationAborted";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static.
@@ -942,7 +942,7 @@ std::string BackForwardTransitionAnimator::ToString(NavigationState state) {
     case NavigationState::kCancelled:
       return "kCancelled";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BackForwardTransitionAnimator::

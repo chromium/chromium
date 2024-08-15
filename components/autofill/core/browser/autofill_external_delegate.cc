@@ -128,7 +128,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return AutofillTriggerSource::kPredictionImprovements;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns a pointer to the first Suggestion whose GUID matches that of a
@@ -573,7 +573,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
-      NOTREACHED_NORETURN();  // Should be handled elsewhere.
+      NOTREACHED();  // Should be handled elsewhere.
   }
 }
 
@@ -725,7 +725,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
-      NOTREACHED_NORETURN();  // Should be handled elsewhere.
+      NOTREACHED();  // Should be handled elsewhere.
   }
   if (suggestion.type == SuggestionType::kShowAccountCards) {
     manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_);
@@ -1297,7 +1297,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       break;
     }
     default:
-      NOTREACHED_NORETURN();  // Should be handled elsewhere.
+      NOTREACHED();  // Should be handled elsewhere.
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user having accepted an address suggestion on this field, all strikes
@@ -1420,7 +1420,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
                          AutofillTriggerSource::kKeyboardAccessory));
       break;
     default:
-      NOTREACHED_NORETURN();  // Should be handled elsewhere
+      NOTREACHED();  // Should be handled elsewhere
   }
   if (base::Contains(shown_suggestion_types_,
                      SuggestionType::kScanCreditCard)) {

@@ -199,8 +199,7 @@ class OpticalCharacterRecognizerTest
       ScreenAIInstallState::GetInstance()->SetComponentFolder(
           GetComponentBinaryPathForTests().DirName());
 #else
-      NOTREACHED_NORETURN()
-          << "Test library is used on a not-suppported platform.";
+      NOTREACHED() << "Test library is used on a not-suppported platform.";
 #endif
     } else {
       // Set an observer to reply download failed, when download requested.

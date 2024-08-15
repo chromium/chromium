@@ -101,7 +101,7 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool DCompImageBackingFactory::IsSupported(

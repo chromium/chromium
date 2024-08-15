@@ -87,7 +87,7 @@
     case CustomizationToggleType::kDiscover:
       return _prefService->GetBoolean(prefs::kArticlesForYouEnabled);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -108,7 +108,7 @@
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

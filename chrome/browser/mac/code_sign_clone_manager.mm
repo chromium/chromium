@@ -493,7 +493,7 @@ MacCloneExists CloneExists(const base::FilePath& clone_app_path,
   } else if (!main_executable_exists && !info_plist_exists) {
     return MacCloneExists::kMissingMainExecutableAndInfoPlist;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

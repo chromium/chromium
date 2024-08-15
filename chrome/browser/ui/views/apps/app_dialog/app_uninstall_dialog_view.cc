@@ -267,7 +267,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case apps::AppType::kStandaloneBrowserChromeApp:
       // Do nothing special for kStandaloneBrowserChromeApp.
       break;
@@ -276,7 +276,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       InitializeViewForArcApp(profile, app_id);
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kPluginVm:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -284,7 +284,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_UNINSTALL_PROMPT_BODY));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kBorealis:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -297,7 +297,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       }
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kCrostini:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -305,14 +305,14 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
           IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kBruschetta:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // TODO(b/247636749): Implement Bruschetta uninstall.
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
 
     case apps::AppType::kWeb:

@@ -173,7 +173,7 @@ mojom::blink::PermissionsPolicyFeature PermissionNameToPermissionsPolicyFeature(
     case PermissionName::GEOLOCATION:
       return mojom::blink::PermissionsPolicyFeature::kGeolocation;
     default:
-      NOTREACHED_NORETURN() << "Not supported permission " << permission_name;
+      NOTREACHED() << "Not supported permission " << permission_name;
   }
 }
 
@@ -188,7 +188,7 @@ String PermissionNameToString(PermissionName permission_name) {
     case PermissionName::VIDEO_CAPTURE:
       return "video_capture";
     default:
-      NOTREACHED_NORETURN() << "Not supported permission " << permission_name;
+      NOTREACHED() << "Not supported permission " << permission_name;
   }
 }
 
@@ -437,7 +437,7 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
     case DisableReason::kInvalidStyle:
       return "invalid style";
     case DisableReason::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -461,7 +461,7 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
     case DisableReason::kInvalidStyle:
       return UserInteractionDeniedReason::kInvalidStyle;
     case DisableReason::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -482,7 +482,7 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
     case DisableReason::kInvalidStyle:
       return AtomicString("style_invalid");
     case DisableReason::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -38,7 +38,7 @@ std::string GetErrorMessageName(PasswordStoreBackendErrorType error_type) {
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -173,7 +173,7 @@ bool PasswordManagerErrorMessageDelegate::ShouldShowErrorUI(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

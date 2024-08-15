@@ -331,7 +331,7 @@ void GifEncoder::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
 }
 
 EncodeAudioCallback GifEncoder::GetEncodeAudioCallback() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void GifEncoder::FlushAndFinalize(base::OnceClosure on_done) {

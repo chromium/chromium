@@ -123,7 +123,7 @@ void BrowserProcessSnapshotController::TakeSnapshotsOnSnapshotSequence() {
         snapshot_probability_pct = kUtilitySnapshotProbability.Get();
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     CHECK_GE(snapshot_probability_pct, 0);
     CHECK_LE(snapshot_probability_pct, 100);

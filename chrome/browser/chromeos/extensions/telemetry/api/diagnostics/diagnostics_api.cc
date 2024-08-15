@@ -61,7 +61,7 @@ ParseRoutineArgumentSupportResult(
       return base::ok(std::move(info));
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsPendingApprovalRoutine(

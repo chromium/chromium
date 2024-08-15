@@ -105,7 +105,7 @@ class SupervisionExtensionTestBase
 #else
     // For ChromeOS, the parental controls should always apply to extensions
     // and this case should not be reached. See the instantiation of the test suite.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

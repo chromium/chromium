@@ -268,7 +268,7 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
     }
     *endpos = (nalu.data + base::checked_cast<size_t>(nalu.size)) - data;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void H264InputBufferFragmentSplitter::Reset() {
@@ -402,7 +402,7 @@ bool HEVCInputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
     }
     *endpos = (nalu.data + base::checked_cast<size_t>(nalu.size)) - data;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void HEVCInputBufferFragmentSplitter::Reset() {

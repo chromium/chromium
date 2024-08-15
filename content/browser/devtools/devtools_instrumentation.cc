@@ -200,7 +200,7 @@ BuildAttributionReportingIssueViolationType(
     case blink::mojom::AttributionReportingIssueType::
         kNavigationRegistrationWithoutTransientUserActivation:
       // This issue is not reported from the browser.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case blink::mojom::AttributionReportingIssueType::kInvalidInfoHeader:
       return AttributionReportingIssueTypeEnum::InvalidInfoHeader;
     case blink::mojom::AttributionReportingIssueType::kNoRegisterSourceHeader:
@@ -386,7 +386,7 @@ FederatedAuthRequestResultToProtocol(
       return FederatedAuthRequestIssueReasonEnum::TypeNotMatching;
     }
     case FederatedAuthRequestResult::kSuccess: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
@@ -456,7 +456,7 @@ FederatedAuthUserInfoRequestResultToProtocol(
     }
     case FederatedAuthUserInfoRequestResult::kSuccess:
     case FederatedAuthUserInfoRequestResult::kUnhandledRequest: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

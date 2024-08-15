@@ -71,7 +71,7 @@ class SublevelManagerMacTest
         test_name += "Activatable";
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     return test_name;
   }

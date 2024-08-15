@@ -1026,7 +1026,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
   if (state == DownloadItem::CANCELLED || state == DownloadItem::INTERRUPTED) {
     return DangerUiPattern::kOther;
   } else if (state == DownloadItem::MAX_DOWNLOAD_STATE) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   switch (GetInsecureDownloadStatus()) {

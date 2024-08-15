@@ -322,7 +322,7 @@ Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -338,7 +338,7 @@ Adapter::~Adapter() {
     CHECK_EQ(npu_instance_, this);
     npu_instance_ = nullptr;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

@@ -192,7 +192,7 @@ base::expected<void, RandomizedResponseError> GetReportsFromIndexRecursive(
     }
     CHECK(current_sum.AssignIfValid(&prev_sum));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(

@@ -452,7 +452,7 @@ void EncodeSortableIDBKey(const IndexedDBKey& value, std::string* into) {
     case blink::mojom::IDBKeyType::Invalid:
     case blink::mojom::IDBKeyType::Min:
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

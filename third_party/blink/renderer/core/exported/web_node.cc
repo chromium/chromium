@@ -313,7 +313,7 @@ base::ScopedClosureRunner WebNode::AddEventListener(
         case EventType::kSelectionchange:
           return event_type_names::kSelectionchange;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
 
     Member<Node> node_;

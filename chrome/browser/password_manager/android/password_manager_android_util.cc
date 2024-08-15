@@ -356,7 +356,7 @@ UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
     case kOn:
       return value;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool AreMinUpmRequirementsMet() {

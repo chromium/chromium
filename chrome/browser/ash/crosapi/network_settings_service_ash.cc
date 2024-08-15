@@ -64,14 +64,14 @@ void NetworkSettingsServiceAsh::BindReceiver(
 
 void NetworkSettingsServiceAsh::SetExtensionProxy(
     crosapi::mojom::ProxyConfigPtr proxy_config) {
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "This version of Ash receives the proxy pref from the Prefs mojo "
          "service. Please use SetExtensionControllingProxyMetadata to set the "
          "extension metadata.";
 }
 
 void NetworkSettingsServiceAsh::ClearExtensionProxy() {
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "This version of Ash clears the proxy pref from the Prefs mojo "
          "service. Please use ClearExtensionControllingProxyMetadata to clear "
          "the extension metadata.";

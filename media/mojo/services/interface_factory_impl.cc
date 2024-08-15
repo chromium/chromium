@@ -198,7 +198,7 @@ void InterfaceFactoryImpl::CreateStableVideoDecoder(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
         video_decoder) {
   // The browser process ensures that this is not called in the GPU process.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 

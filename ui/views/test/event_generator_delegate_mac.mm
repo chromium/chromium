@@ -112,7 +112,7 @@ NSEventType EventTypeToNative(ui::EventType ui_event_type,
     case ui::EventType::kScrollFlingStart:
       return NSEventTypeSwipe;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -183,9 +183,9 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
     case NSEventTypeSwipe:
       // NSEventTypeSwipe events can't be generated using public interfaces on
       // NSEvent, so this will need to be handled at a higher level.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -485,7 +485,7 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void EventGeneratorDelegateMac::OnTouchEvent(ui::TouchEvent* event) {
-  NOTREACHED_NORETURN() << "Touchscreen events not supported on Chrome Mac.";
+  NOTREACHED() << "Touchscreen events not supported on Chrome Mac.";
 }
 
 void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {

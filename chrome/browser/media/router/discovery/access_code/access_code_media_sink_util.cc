@@ -256,7 +256,7 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
     case AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR:
       return AccessCodeCastAddSinkResult::kInternalMediaRouterError;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<net::IPEndPoint> GetIPEndPointFromValueDict(

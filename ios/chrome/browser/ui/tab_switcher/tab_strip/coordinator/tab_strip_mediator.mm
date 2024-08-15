@@ -1109,8 +1109,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (NSArray<UIDragItem*>*)allSelectedDragItems {
-  NOTREACHED_NORETURN() << "You should not be able to drag and drop multiple "
-                           "items. There is no selection mode in tab strip.";
+  NOTREACHED() << "You should not be able to drag and drop multiple "
+                  "items. There is no selection mode in tab strip.";
 }
 
 #pragma mark - Private

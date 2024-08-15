@@ -677,7 +677,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
       case WebAppManagement::kSync:
       case WebAppManagement::kApsDefault:
       case WebAppManagement::kDefault: {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
 
       // Do not touch installed apps if they are managed by a higher priority (=

@@ -457,7 +457,7 @@ class ContentAutofillDriverFactoryTestLifecycleState
         CHECK_EQ(main_frame()->GetLastCommittedURL(), kPrerenderUrl);
         return main_frame();
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

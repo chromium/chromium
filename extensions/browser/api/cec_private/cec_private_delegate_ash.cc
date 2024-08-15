@@ -40,7 +40,7 @@ ConvertCecServiceClientPowerState(
       return extensions::api::cec_private::DisplayCecPowerState::kUnknown;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class CecPrivateDelegateAsh : public extensions::api::CecPrivateDelegate {

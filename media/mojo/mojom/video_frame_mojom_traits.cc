@@ -439,7 +439,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     frame->set_ycbcr_info(ycbcr_info);
   } else {
     // TODO(sandersd): Switch on the union tag to avoid this ugliness?
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   if (!frame) {

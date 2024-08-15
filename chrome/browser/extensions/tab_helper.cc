@@ -178,7 +178,7 @@ void TabHelper::SetReloadRequired(
     case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
       // Granting access to all extensions is allowed iff feature is
       // enabled, and it shouldn't be enabled anywhere where this is called.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
     case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
       // A reload is required if any extension that had site access will lose

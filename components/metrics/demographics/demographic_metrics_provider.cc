@@ -29,7 +29,7 @@ bool IsValidUploadState(syncer::UploadState upload_state) {
     case syncer::UploadState::ACTIVE:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {

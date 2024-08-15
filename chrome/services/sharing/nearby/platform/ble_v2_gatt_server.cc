@@ -34,7 +34,7 @@ device::BluetoothGattCharacteristic::Permissions ConvertPermission(
     case nearby::api::ble_v2::GattCharacteristic::Permission::kWrite:
       return device::BluetoothGattCharacteristic::Permission::PERMISSION_WRITE;
     case nearby::api::ble_v2::GattCharacteristic::Permission::kLast:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -52,7 +52,7 @@ device::BluetoothGattCharacteristic::Properties ConvertProperty(
     case nearby::api::ble_v2::GattCharacteristic::Property::kNotify:
       return device::BluetoothGattCharacteristic::Property::PROPERTY_NOTIFY;
     case nearby::api::ble_v2::GattCharacteristic::Property::kLast:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

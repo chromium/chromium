@@ -358,7 +358,7 @@ bool NavigationTransitionUtils::
       only_use_embedder_screenshot = true;
       break;
     case NavigationRequest::EarlyRenderFrameHostSwapType::kNavigationTransition:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   int request_sequence = navigation_controller.GetLastCommittedEntry()

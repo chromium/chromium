@@ -131,13 +131,13 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 }
 
 - (NSUInteger)rowCount {
-  NOTREACHED_NORETURN() << "Subclasses of TableViewBottomSheetViewController "
-                           "must implement this method.";
+  NOTREACHED() << "Subclasses of TableViewBottomSheetViewController "
+                  "must implement this method.";
 }
 
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  NOTREACHED_NORETURN() << "Subclasses of TableViewBottomSheetViewController "
-                           "must implement this method.";
+  NOTREACHED() << "Subclasses of TableViewBottomSheetViewController "
+                  "must implement this method.";
 }
 
 #pragma mark - UIViewController

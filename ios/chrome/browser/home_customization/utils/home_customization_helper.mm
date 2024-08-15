@@ -207,7 +207,7 @@
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_PAGE_HEADER);
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -222,7 +222,7 @@
     case CustomizationMenuPage::kDiscover:
       return l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE);
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

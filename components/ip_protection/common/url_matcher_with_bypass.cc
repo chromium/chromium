@@ -165,7 +165,7 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
   };
 
   if (!skip_bypass_check && !top_frame_site.has_value()) {
-    NOTREACHED_NORETURN()
+    NOTREACHED()
         << "top frame site has no value and skip_bypass_check is false";
   }
 

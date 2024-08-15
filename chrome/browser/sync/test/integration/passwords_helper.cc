@@ -153,7 +153,7 @@ password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
     PasswordForm::Store store) {
   switch (store) {
     case PasswordForm::Store::kNotSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PasswordForm::Store::kProfileStore:
       return GetProfilePasswordStoreInterface(index);
     case PasswordForm::Store::kAccountStore:

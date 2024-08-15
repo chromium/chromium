@@ -89,7 +89,7 @@ void IpProtectionConfigHttp::DoRequest(
       replacements.SetPathStr(ip_protection_server_get_tokens_path_);
       break;
     case quiche::BlindSignMessageRequestType::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);

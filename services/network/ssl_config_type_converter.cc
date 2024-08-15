@@ -21,7 +21,7 @@ std::optional<bool> OptionalBoolFromMojo(network::mojom::OptionalBool v) {
     case network::mojom::OptionalBool::kUnset:
       return std::nullopt;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace
 

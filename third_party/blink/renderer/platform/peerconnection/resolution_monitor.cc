@@ -106,7 +106,7 @@ class Vp9ResolutionMonitor : public ResolutionMonitor {
         parse_error = true;
         return false;
     }
-    NOTREACHED_NORETURN() << "Unexpected result: " << static_cast<int>(result);
+    NOTREACHED() << "Unexpected result: " << static_cast<int>(result);
   }
 
   media::Vp9Parser parser_;

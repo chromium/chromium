@@ -123,7 +123,7 @@ class CalendarKeyedServiceIOTest : public testing::Test {
           google_apis::test_util::GetTestFilePath(
               "calendar/group_calendar_events.json"));
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   content::BrowserTaskEnvironment task_environment_{

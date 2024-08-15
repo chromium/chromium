@@ -32,7 +32,7 @@ BufferTypeToD3D11BufferType(D3DVideoDecoderWrapper::BufferType type) {
     case D3DVideoDecoderWrapper::BufferType::kBitstream:
       return D3D11_VIDEO_DECODER_BUFFER_BITSTREAM;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 template <typename D3D11VideoContext, typename D3D11VideoDecoderBufferDesc>
@@ -250,7 +250,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
           status_code = D3D11StatusCode::kGetBitstreamBufferFailed;
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       media_log_->NotifyError(
           D3D11Status{status_code, "D3D11 GetDecoderBuffer failed", hr});
@@ -292,7 +292,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
           status_code = D3D11StatusCode::kReleaseBitstreamBufferFailed;
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       media_log_->NotifyError(
           D3D11Status{status_code, "D3D11 ReleaseDecoderBuffer failed", hr});

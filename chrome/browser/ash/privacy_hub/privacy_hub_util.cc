@@ -229,7 +229,7 @@ void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
         case Sensor::kLocation:
           break;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
 
    private:

@@ -1768,7 +1768,7 @@ bool V4L2Request::WaitForCompletion(int poll_timeout_ms) {
       VPLOGF(1) << "Failed to poll request";
       return false;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

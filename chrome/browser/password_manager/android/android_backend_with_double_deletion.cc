@@ -88,7 +88,7 @@ void AndroidBackendWithDoubleDeletion::GetAutofillableLoginsAsync(
 void AndroidBackendWithDoubleDeletion::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AndroidBackendWithDoubleDeletion::FillMatchingLoginsAsync(

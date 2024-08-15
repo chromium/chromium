@@ -90,7 +90,7 @@ std::u16string GetTooltipForEmojiResult(
       return l10n_util::GetStringFUTF16(
           IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, data.name);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Creates an item view for a search result. Only supports results that can be

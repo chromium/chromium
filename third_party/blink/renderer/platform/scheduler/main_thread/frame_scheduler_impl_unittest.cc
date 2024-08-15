@@ -1651,7 +1651,7 @@ class FrameSchedulerImplLowPriorityAsyncScriptExecutionTest
     } else if (specified_priority() == "best_effort") {
       return TaskPriority::kBestEffortPriority;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

@@ -135,7 +135,7 @@ int GetCommandTextId(CommandType command_type) {
     case CommandType::kEditWithMediaApp:
       return IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT;
     case CommandType::kOpenFile:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CommandType::kOpenWithMediaApp:
       return IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN;
     case CommandType::kPause:
@@ -143,7 +143,7 @@ int GetCommandTextId(CommandType command_type) {
     case CommandType::kResume:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME;
     case CommandType::kShowInBrowser:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CommandType::kShowInFolder:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER;
     case CommandType::kViewDetailsInBrowser:

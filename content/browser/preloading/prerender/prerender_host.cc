@@ -328,7 +328,7 @@ void PrerenderHost::SetFocusedFrame(FrameTreeNode* node,
                                     SiteInstanceGroup* source) {
   // `node` can only become focused when `node`'s current RenderFrameHost is
   // active.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FrameTree* PrerenderHost::GetOwnedPictureInPictureFrameTree() {
@@ -1206,7 +1206,7 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kActivated:
       // The activation path does not call this method, so it should never reach
       // this case.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

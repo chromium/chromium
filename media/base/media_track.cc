@@ -28,7 +28,7 @@ const char* TrackTypeToStr(MediaTrack::Type type) {
     case MediaTrack::Type::kVideo:
       return "video";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace media

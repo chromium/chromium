@@ -644,7 +644,7 @@ class EnrollmentErrorScreenTest
   bool IsManualEnrollmentMode(policy::EnrollmentConfig::Mode mode) const {
     switch (mode) {
       case policy::EnrollmentConfig::MODE_NONE:
-        NOTREACHED_NORETURN() << "Bad enrollment mode " << mode;
+        NOTREACHED() << "Bad enrollment mode " << mode;
       case policy::EnrollmentConfig::MODE_MANUAL:
       case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
       case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:

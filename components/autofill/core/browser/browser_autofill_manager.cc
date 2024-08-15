@@ -564,9 +564,9 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ShouldOfferSingleFieldFormFill(
@@ -2704,15 +2704,15 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           case FieldTypeGroup::kIban:
           case FieldTypeGroup::kNoGroup:
             // Since we early return on non-address types.
-            NOTREACHED_NORETURN();
+            NOTREACHED();
         }
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case SuggestionType::kAddressFieldByFieldFilling:
         return SuggestionType::kAddressFieldByFieldFilling;
       default:
         // `last_suggestion_type` is only one of the address filling suggestion
         // types, therefore no other type should be passed to this function.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }();
 
@@ -3073,7 +3073,7 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
     case FormType::kUnknownFormType:
       return nullptr;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BrowserAutofillManager::PreProcessStateMatchingTypes(

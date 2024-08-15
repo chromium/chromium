@@ -122,5 +122,5 @@ Browser* TestBrowser::CreateInactiveBrowser() {
 }
 
 void TestBrowser::DestroyInactiveBrowser() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

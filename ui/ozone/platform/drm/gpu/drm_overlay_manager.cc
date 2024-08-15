@@ -278,13 +278,11 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
         disallow_fullscreen_overlays_end_time_ =
             base::TimeTicks::Now() + kDisallowSkipFullscreenOverlaysDRMTestTime;
       } else {
-        NOTREACHED_NORETURN()
-            << "It's not expected to receive swap failures for "
-               "fullscreen overlays as they are drm tested.";
+        NOTREACHED() << "It's not expected to receive swap failures for "
+                        "fullscreen overlays as they are drm tested.";
       }
     } else {
-      NOTREACHED_NORETURN()
-          << "Only fullscreen overlays are treated specially.";
+      NOTREACHED() << "Only fullscreen overlays are treated specially.";
     }
   }
 

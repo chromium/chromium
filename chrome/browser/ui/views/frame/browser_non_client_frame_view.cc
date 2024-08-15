@@ -204,15 +204,15 @@ void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
 
 gfx::Insets BrowserNonClientFrameView::RestoredMirroredFrameBorderInsets()
     const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Insets BrowserNonClientFrameView::GetInputInsets() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {

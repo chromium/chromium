@@ -61,7 +61,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case INVALID_MESSAGE:
       return SyncerErrorValueForUma::kServerReturnUnknownError;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
@@ -80,7 +80,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
     case SyncerError::Type::kProtocolViolationError:
       return SyncerErrorValueForUma::kServerResponseValidationFailed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns invalidation info after applying updates. This is used to drop

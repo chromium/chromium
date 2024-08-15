@@ -248,7 +248,7 @@
       mediatorClass = [EnhancedSafeBrowsingBannerOverlayMediator class];
       break;
     default:
-      NOTREACHED_NORETURN() << "Received unsupported infobarType.";
+      NOTREACHED() << "Received unsupported infobarType.";
   }
 
   return [[mediatorClass alloc] initWithRequest:self.request];

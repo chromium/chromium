@@ -219,7 +219,7 @@ CTFontRef SystemFontForConstructorOfType(PlatformFontMac::SystemFontType type) {
       break;
     }
     default: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 

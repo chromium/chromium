@@ -21,7 +21,7 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
     const supervised_user::UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
   // Method unsupported on iOS.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IOSWebContentHandlerImpl::IsMainFrame() const {
@@ -36,7 +36,7 @@ void IOSWebContentHandlerImpl::CleanUpInfoBarOnMainFrame() {
 int64_t IOSWebContentHandlerImpl::GetInterstitialNavigationId() const {
   // Method not currently used on iOS. If needed, this
   // infomation is available in `chrome_web_client` and can be set here.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void IOSWebContentHandlerImpl::GoBack() {

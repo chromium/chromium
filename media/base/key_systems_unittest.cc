@@ -130,7 +130,7 @@ class ExternalKeySystemInfo : public TestKeySystemInfoBase {
       case EncryptionScheme::kCbcs:
         return EmeConfig{.hw_secure_codecs = EmeConfigRuleState::kNotAllowed};
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // We have hardware secure codec support for FOO_VIDEO and FOO_SECURE_VIDEO.

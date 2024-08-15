@@ -43,7 +43,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ShouldAutofillOnLongValues(
@@ -73,7 +73,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
@@ -105,7 +105,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ShouldShowFullSuggestionListForPasswordManager(
@@ -147,7 +147,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill

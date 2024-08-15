@@ -135,9 +135,9 @@ struct EnumTraits<ui::mojom::WindowShowState, ui::WindowShowState> {
       case ui::SHOW_STATE_NORMAL:
         return ui::mojom::WindowShowState::SHOW_STATE_NORMAL;
       case ui::SHOW_STATE_END:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::WindowShowState window_show_state,
@@ -162,7 +162,7 @@ struct EnumTraits<ui::mojom::WindowShowState, ui::WindowShowState> {
         *out = ui::SHOW_STATE_NORMAL;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

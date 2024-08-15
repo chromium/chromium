@@ -27,7 +27,7 @@ MediaCoordinator::ViewType ComputePreviewType(
 
   // We always expect that `content_settings_type` is either MEDIASTREAM_CAMERA,
   // CAMERA_PAN_TILT_ZOOM or MEDIASTREAM_MIC.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

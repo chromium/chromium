@@ -93,7 +93,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
         ShowBubbleForGPayPromoCodeOfferAndVerify();
         break;
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -153,7 +153,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
         return "FreeListingCouponOffer";
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

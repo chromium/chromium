@@ -74,7 +74,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
   void TryGetAuthTokens(uint32_t batch_size,
                         IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void GetProxyList(GetProxyListCallback callback) override {

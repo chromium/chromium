@@ -183,7 +183,7 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
         // indicates that vertical flipping is needed.
         return {libyuv::FOURCC_24BG, true};
       } else {
-        NOTREACHED_NORETURN()
+        NOTREACHED()
             << "RGB24 is only available in Linux and Windows platforms";
       }
     case media::PIXEL_FORMAT_ARGB:
@@ -192,7 +192,7 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
     case media::PIXEL_FORMAT_MJPEG:
       return {libyuv::FOURCC_MJPG};
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -743,7 +743,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
             buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
         break;
       case VideoCaptureBufferType::kMailboxHolder:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case VideoCaptureBufferType::kGpuMemoryBuffer:
         buffer_handle =
             media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(

@@ -365,7 +365,7 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
     case AVIF_PIXEL_FORMAT_COUNT:
       break;
   }
-  NOTREACHED_NORETURN() << "Invalid YUV format: " << avif_yuv_format_;
+  NOTREACHED() << "Invalid YUV format: " << avif_yuv_format_;
 }
 
 gfx::Size AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {

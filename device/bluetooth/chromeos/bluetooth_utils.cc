@@ -304,7 +304,7 @@ ConnectionFailureReason GetConnectionFailureReason(
     case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
       return device::ConnectionFailureReason::kWakelock;
     case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

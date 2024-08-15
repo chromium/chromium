@@ -462,6 +462,6 @@ std::u16string PageInfoCookiesContentView::GetStatusLabel(
       return l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

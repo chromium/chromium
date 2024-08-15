@@ -281,7 +281,7 @@ void DataTypeManagerImpl::ConfigureImpl(DataTypeSet preferred_types,
   switch (state_) {
     case STOPPING:
       // Handled earlier in this function.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case STOPPED:
     case CONFIGURED:

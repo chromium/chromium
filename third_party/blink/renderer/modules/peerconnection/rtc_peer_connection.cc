@@ -1907,7 +1907,7 @@ RTCDataChannel* RTCPeerConnection::createDataChannel(
       if (data_channel_dict->priority() == "high") {
         return webrtc::PriorityValue(webrtc::Priority::kHigh);
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
   }
   // Checks from WebRTC specification section 6.1

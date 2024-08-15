@@ -231,7 +231,7 @@ bool AuthenticatorRequestDialogView::IsDialogButtonEnabled(
     case ui::DIALOG_BUTTON_CANCEL:
       return true;  // Cancel is always enabled if visible.
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
@@ -270,7 +270,7 @@ std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
 
 void AuthenticatorRequestDialogView::OnModelDestroyed(
     AuthenticatorRequestDialogModel* model) {
-  NOTREACHED_NORETURN() << "The model should outlive this view.";
+  NOTREACHED() << "The model should outlive this view.";
 }
 
 void AuthenticatorRequestDialogView::OnStepTransition() {

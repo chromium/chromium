@@ -312,7 +312,7 @@ TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
                                return signature_info.public_key();
                              },
                              [](const SignedWebBundleSignatureInfoUnknown&)
-                                 -> PublicKey { NOTREACHED_NORETURN(); }},
+                                 -> PublicKey { NOTREACHED(); }},
             signature.signature_info());
       });
   std::vector<PublicKey> expected_public_keys =

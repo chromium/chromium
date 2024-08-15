@@ -23,7 +23,7 @@ void SetAutofillSuggestionAvailability(
         case mojom::AutofillSuggestionAvailability::kNoSuggestions:
           return blink::WebAXAutofillSuggestionAvailability::kNoSuggestions;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     };
     blink::WebAXObject::FromWebNode(element)
         .HandleAutofillSuggestionAvailabilityChanged(

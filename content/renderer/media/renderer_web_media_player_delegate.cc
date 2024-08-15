@@ -74,7 +74,7 @@ bool RendererWebMediaPlayerDelegate::IsPageHidden() {
     case blink::mojom::PageVisibilityState::kHidden:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {

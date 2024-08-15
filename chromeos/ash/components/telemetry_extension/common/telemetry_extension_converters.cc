@@ -77,7 +77,7 @@ crosapi::mojom::TelemetryExtensionException::Reason Convert(
       return crosapi::mojom::TelemetryExtensionException::Reason::
           kCameraFrontendNotOpened;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash::converters

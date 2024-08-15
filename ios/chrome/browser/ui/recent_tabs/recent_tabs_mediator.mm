@@ -82,7 +82,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       return false;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -362,13 +362,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)setPageAsActive {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)doneButtonTapped:(id)sender {
@@ -377,11 +377,11 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)searchButtonTapped:(id)sender {
@@ -395,15 +395,15 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 #pragma mark - TabGridActivityObserver

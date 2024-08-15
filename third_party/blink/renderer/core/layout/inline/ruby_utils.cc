@@ -155,7 +155,7 @@ RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
       i = sub_indexes.column_end;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,

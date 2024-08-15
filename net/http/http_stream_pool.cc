@@ -85,9 +85,9 @@ class HttpStreamPool::PooledStreamRequestHelper
     // `this` is deleted.
   }
 
-  int RestartTunnelWithProxyAuth() override { NOTREACHED_NORETURN(); }
+  int RestartTunnelWithProxyAuth() override { NOTREACHED(); }
 
-  void SetPriority(RequestPriority priority) override { NOTREACHED_NORETURN(); }
+  void SetPriority(RequestPriority priority) override { NOTREACHED(); }
 
  private:
   void CallRequestComplete() {
@@ -356,7 +356,7 @@ bool HttpStreamPool::CloseOneIdleStreamSocket() {
       return true;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::CreatePooledStreamRequest(

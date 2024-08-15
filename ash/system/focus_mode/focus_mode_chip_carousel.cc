@@ -335,7 +335,7 @@ void FocusModeChipCarousel::OnChevronPressed(bool left) {
   }
 
   // Pressing a chevron should always result in a scroll.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void FocusModeChipCarousel::ScrollToChip(views::View* chip) {

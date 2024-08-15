@@ -83,7 +83,7 @@ ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
     case InitStageBrowserBasic:
     case InitStageSafeMode:
     case InitStageVariationsSeed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case InitStageBrowserObjectsForBackgroundHandlers:
       return ProfileInitStage::InitStageProfileLoaded;

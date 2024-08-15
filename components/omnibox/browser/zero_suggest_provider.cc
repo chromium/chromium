@@ -390,7 +390,7 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
   } else if (result_type == ResultType::kRemoteSendURL) {
     prefetch_loader = &srp_web_prefetch_loader_;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // If the app is currently in the background state, do not initiate ZPS
@@ -620,7 +620,7 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
   } else if (result_type == ResultType::kRemoteSendURL) {
     prefetch_loader = &srp_web_prefetch_loader_;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   DCHECK_EQ(prefetch_loader->get(), source);

@@ -2357,7 +2357,7 @@ StyleViewTransitionGroup StyleBuilderConverter::ConvertViewTransitionGroup(
       case CSSValueID::kContain:
         return StyleViewTransitionGroup::Contain();
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return StyleViewTransitionGroup::Create(

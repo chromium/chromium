@@ -51,7 +51,7 @@ ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
     case SetUpListItemType::kNotifications:
       return ContentSuggestionsModuleType::kSetUpListNotifications;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

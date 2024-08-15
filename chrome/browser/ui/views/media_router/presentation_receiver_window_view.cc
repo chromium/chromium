@@ -257,13 +257,13 @@ const LocationBarModel* PresentationReceiverWindowView::GetLocationBarModel()
 
 ContentSettingBubbleModelDelegate*
 PresentationReceiverWindowView::GetContentSettingBubbleModelDelegate() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PresentationReceiverWindowView::ExecuteCommandWithDisposition(
     int id,
     WindowOpenDisposition disposition) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 WebContents* PresentationReceiverWindowView::GetActiveWebContents() const {

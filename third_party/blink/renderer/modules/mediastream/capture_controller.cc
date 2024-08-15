@@ -102,7 +102,7 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
     case V8CaptureStartFocusBehavior::Enum::kNoFocusChange:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void OnCapturedSurfaceControlResult(

@@ -60,7 +60,7 @@ std::string GenerateGroupParentNotificationIdSuffix(
     case message_center::NotifierType::APPLICATION:
     case message_center::NotifierType::CROSTINI_APPLICATION:
     case message_center::NotifierType::PHONE_HUB:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

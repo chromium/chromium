@@ -75,7 +75,7 @@ std::string EnumToString(MediaRouterChannelError error) {
     case MediaRouterChannelError::PING_TIMEOUT:
       return "PING_TIMEOUT";
     case MediaRouterChannelError::TOTAL_COUNT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

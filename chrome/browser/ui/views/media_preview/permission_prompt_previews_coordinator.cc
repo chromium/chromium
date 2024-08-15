@@ -27,7 +27,7 @@ MediaCoordinator::ViewType ComputePreviewType(
     return MediaCoordinator::ViewType::kMicOnly;
   }
   // We always expect that at least one of the 2 vectors is not empty.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

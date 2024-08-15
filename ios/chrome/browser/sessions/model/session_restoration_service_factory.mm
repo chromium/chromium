@@ -131,7 +131,7 @@ void RecordSessionStorageFormatAndMigrationStatusMetrics(
       break;
 
     case SessionStorageMigrationStatus::kUnkown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(kSessionHistogramStorageMigrationStatus,

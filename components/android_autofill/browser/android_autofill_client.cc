@@ -86,7 +86,7 @@ autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
 
 autofill::AutocompleteHistoryManager*
 AndroidAutofillClient::GetAutocompleteHistoryManager() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PrefService* AndroidAutofillClient::GetPrefs() {
@@ -220,7 +220,7 @@ bool AndroidAutofillClient::IsPasswordManagerEnabled() {
   // Android 3P mode and WebView rely on the AndroidAutofillManager which
   // doesn't call this function. If it ever does, the function needs to
   // be implemented in a meaningful way.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AndroidAutofillClient::DidFillOrPreviewForm(

@@ -566,7 +566,7 @@ int GetTooltipID(DeskTemplateType type, TooltipStatus status) {
       return kSaveForLaterButtonTooltipIDs[static_cast<int>(status)];
     case DeskTemplateType::kFloatingWorkspace:
     case DeskTemplateType::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1407,7 +1407,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
       CHECK(target_bounds.empty());
       break;
     case OverviewTransition::kInOverview:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // On top items are items that are higher up on the z-order, or in the always

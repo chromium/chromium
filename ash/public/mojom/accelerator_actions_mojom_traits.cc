@@ -352,7 +352,7 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kDevToggleUnifiedDesktop;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
@@ -858,7 +858,7 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       *out = ash::AcceleratorAction::kDevToggleUnifiedDesktop;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace mojo

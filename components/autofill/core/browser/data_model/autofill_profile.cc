@@ -1297,9 +1297,9 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kStandaloneCvcField:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill

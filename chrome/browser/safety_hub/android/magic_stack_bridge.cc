@@ -37,7 +37,7 @@ std::string ModuleTypeToString(safety_hub::SafetyHubModuleType module) {
     case safety_hub::SafetyHubModuleType::PASSWORDS:
       return kPasswords;
     default:
-      NOTREACHED_NORETURN() << "Module not supported on Android.";
+      NOTREACHED() << "Module not supported on Android.";
   }
 }
 

@@ -141,7 +141,7 @@ const base::FilePath& GetCacheRootDir(ambient_photo_cache::Store store) {
     case ambient_photo_cache::Store::kBackup:
       return GetAmbientBackupPhotoCacheRootDir();
   }
-  NOTREACHED_NORETURN() << "Unknown cache store: " << static_cast<int>(store);
+  NOTREACHED() << "Unknown cache store: " << static_cast<int>(store);
 }
 
 base::FilePath GetCachePath(int cache_index, const base::FilePath& root_path) {

@@ -283,7 +283,7 @@ class WebThemeEngine {
   virtual SkColor4f GetScrollbarThumbColor(State,
                                            const ExtraParams*,
                                            const ui::ColorProvider*) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Paint the given the given theme part.

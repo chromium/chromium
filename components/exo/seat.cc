@@ -95,7 +95,7 @@ std::optional<CustomizableButton> GetMouseButtonFromNativeEvent(
       return CustomizableButton::kExtra;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsPhysicalCodeEmpty(const PhysicalCode& code) {

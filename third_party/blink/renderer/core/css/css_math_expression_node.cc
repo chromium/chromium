@@ -166,7 +166,7 @@ CSSMathOperator CSSValueIDToCSSMathOperator(CSSValueID id) {
 
 #undef CONVERSION_CASE
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1147,7 +1147,7 @@ CalculationExpressionSizingKeywordNode::Keyword CSSValueIDToSizingKeyword(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CSSValueID SizingKeywordToCSSValueID(
@@ -1173,7 +1173,7 @@ CSSValueID SizingKeywordToCSSValueID(
 #undef KEYWORD_CASE
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CalculationResultCategory DetermineKeywordCategory(
@@ -1216,7 +1216,7 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
               CalculationExpressionPixelsAndPercentNode>(
               PixelsAndPercent(length_resolver.ViewportHeight()));
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
@@ -1225,7 +1225,7 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       // TODO(crbug.com/325309578): Produce a CalculationExpressionNode-derived
       // object for color channel keywords.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
 }
 
@@ -1239,12 +1239,12 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
         case CSSValueID::kHeight:
           return length_resolver.ViewportHeight();
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
 }
 
@@ -1259,7 +1259,7 @@ CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
         case CSSValueID::kHeight:
           return PixelsAndPercent(length_resolver.ViewportHeight());
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
@@ -2946,7 +2946,7 @@ double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
       case CSSValueID::kHeight:
         return length_resolver.ContainerHeight(*name);
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     switch (size_feature->GetValueID()) {
@@ -2955,7 +2955,7 @@ double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
       case CSSValueID::kHeight:
         return length_resolver.ContainerHeight();
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

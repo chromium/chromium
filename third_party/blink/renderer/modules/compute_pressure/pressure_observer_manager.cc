@@ -25,7 +25,7 @@ PressureSource V8PressureSourceToPressureSource(V8PressureSource::Enum source) {
     case V8PressureSource::Enum::kCpu:
       return PressureSource::kCpu;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

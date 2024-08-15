@@ -156,7 +156,7 @@ void FinishFree(const AllocationInfo& allocation) {
       next->aligned_free_function(allocation.address, context);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

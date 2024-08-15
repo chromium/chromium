@@ -1093,13 +1093,13 @@ class TestTouchEditable : public ui::TouchEditable {
 
  private:
   // Overridden from ui::TouchEditable.
-  void MoveCaret(const gfx::Point& position) override { NOTREACHED_NORETURN(); }
+  void MoveCaret(const gfx::Point& position) override { NOTREACHED(); }
   void MoveRangeSelectionExtent(const gfx::Point& extent) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   void SelectBetweenCoordinates(const gfx::Point& base,
                                 const gfx::Point& extent) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   void GetSelectionEndPoints(gfx::SelectionBound* anchor,
                              gfx::SelectionBound* focus) override {
@@ -1120,20 +1120,14 @@ class TestTouchEditable : public ui::TouchEditable {
     if (screen_position_client)
       screen_position_client->ConvertPointFromScreen(window_, point);
   }
-  void OpenContextMenu(const gfx::Point& anchor) override {
-    NOTREACHED_NORETURN();
-  }
-  void DestroyTouchSelection() override { NOTREACHED_NORETURN(); }
+  void OpenContextMenu(const gfx::Point& anchor) override { NOTREACHED(); }
+  void DestroyTouchSelection() override { NOTREACHED(); }
 
   // Overridden from ui::SimpleMenuModel::Delegate.
-  bool IsCommandIdChecked(int command_id) const override {
-    NOTREACHED_NORETURN();
-  }
-  bool IsCommandIdEnabled(int command_id) const override {
-    NOTREACHED_NORETURN();
-  }
+  bool IsCommandIdChecked(int command_id) const override { NOTREACHED(); }
+  bool IsCommandIdEnabled(int command_id) const override { NOTREACHED(); }
   void ExecuteCommand(int command_id, int event_flags) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   raw_ptr<aura::Window> window_;

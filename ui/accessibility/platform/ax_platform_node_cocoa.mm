@@ -685,7 +685,7 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kPortalDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

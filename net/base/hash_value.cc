@@ -74,7 +74,7 @@ std::string HashValue::ToString() const {
       return std::string(kSha256Slash) + base64_str;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 size_t HashValue::size() const {
@@ -83,7 +83,7 @@ size_t HashValue::size() const {
       return sizeof(fingerprint.sha256.data);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 unsigned char* HashValue::data() {
@@ -96,7 +96,7 @@ const unsigned char* HashValue::data() const {
       return fingerprint.sha256.data;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool operator==(const HashValue& lhs, const HashValue& rhs) {
@@ -108,7 +108,7 @@ bool operator==(const HashValue& lhs, const HashValue& rhs) {
       return lhs.fingerprint.sha256 == rhs.fingerprint.sha256;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool operator!=(const HashValue& lhs, const HashValue& rhs) {

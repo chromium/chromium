@@ -211,7 +211,7 @@ bool DecryptWebauthnCredentialSpecificsData(
       DVLOG(1) << "WebauthnCredentialSpecifics.encrypted_data not set";
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EncryptWebauthnCredentialSpecificsData(

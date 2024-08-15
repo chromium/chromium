@@ -143,6 +143,6 @@ void SupervisedUserVerificationPage::CommandReceived(
       // Commands are for testing.
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

@@ -105,7 +105,7 @@ void AddCssSystemColorMixer(ColorProvider* provider,
       AddWhitePageColorsToMixer(mixer);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Don't apply system colors to web native controls if forced colors is

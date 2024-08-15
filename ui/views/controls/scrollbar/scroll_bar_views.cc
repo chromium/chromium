@@ -109,7 +109,7 @@ ui::NativeTheme::State ScrollBarThumb::GetNativeThemeState() const {
     case Button::STATE_NORMAL:
       return ui::NativeTheme::kNormal;
     case Button::STATE_COUNT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

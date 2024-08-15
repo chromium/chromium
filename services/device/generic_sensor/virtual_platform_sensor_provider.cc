@@ -66,7 +66,7 @@ bool VirtualPlatformSensorProvider::IsOverridingSensor(
 void VirtualPlatformSensorProvider::AddReading(mojom::SensorType type,
                                                const SensorReading& reading) {
   if (!IsOverridingSensor(type)) {
-    NOTREACHED_NORETURN()
+    NOTREACHED()
         << "AddReading() was called but "
            "VirtualPlatformSensorProvider is not overriding sensor type "
         << type;
@@ -84,7 +84,7 @@ void VirtualPlatformSensorProvider::CreateSensorInternal(
     mojom::SensorType type,
     CreateSensorCallback callback) {
   if (!IsOverridingSensor(type)) {
-    NOTREACHED_NORETURN()
+    NOTREACHED()
         << "CreateSensorInternal() was called but "
            "VirtualPlatformSensorProvider is not overriding sensor type "
         << type;

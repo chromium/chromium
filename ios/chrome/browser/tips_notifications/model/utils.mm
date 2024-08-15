@@ -48,7 +48,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
       return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
     case TipsNotificationType::kError:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

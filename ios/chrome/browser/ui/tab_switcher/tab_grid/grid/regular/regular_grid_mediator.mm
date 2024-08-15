@@ -47,7 +47,7 @@
 // TODO(crbug.com/40273478): Refactor the grid commands to have the same
 // function name to close all.
 - (void)closeAllItems {
-  NOTREACHED_NORETURN() << "Regular tabs should be saved before close all.";
+  NOTREACHED() << "Regular tabs should be saved before close all.";
 }
 
 - (void)saveAndCloseAllItems {

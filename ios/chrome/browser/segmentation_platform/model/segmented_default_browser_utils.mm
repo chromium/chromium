@@ -81,7 +81,7 @@ int GetFirstRunDefaultBrowserScreenTitleStringID(
                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int GetFirstRunDefaultBrowserScreenSubtitleStringID(
@@ -102,7 +102,7 @@ int GetFirstRunDefaultBrowserScreenSubtitleStringID(
                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int GetDefaultBrowserGenericPromoTitleStringID(
@@ -116,7 +116,7 @@ int GetDefaultBrowserGenericPromoTitleStringID(
     case DefaultBrowserUserSegment::kDefault:
       return IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int GetSetUpListDefaultBrowserDescriptionStringID(
@@ -130,7 +130,7 @@ int GetSetUpListDefaultBrowserDescriptionStringID(
     case DefaultBrowserUserSegment::kDefault:
       return IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace segmentation_platform

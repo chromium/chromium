@@ -87,7 +87,7 @@ class AddAccountSigninManagerTest
       case TestCase::kResigninWithoutUsername:
         return AddAccountSigninIntent::kResignin;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   NSString* expected_prefilled_email() { return expected_prefilled_email_; }

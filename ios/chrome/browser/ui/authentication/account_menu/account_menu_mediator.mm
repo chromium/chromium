@@ -121,7 +121,7 @@
       return item;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (NSString*)primaryAccountEmail {

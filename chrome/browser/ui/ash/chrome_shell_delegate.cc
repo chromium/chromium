@@ -135,8 +135,8 @@ feedback::FeedbackSource ToChromeFeedbackSource(
     case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
       return feedback::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
   }
-  NOTREACHED_NORETURN() << "Unable to retrieve feedback::FeedbackSource due to "
-                           "unknown source type.";
+  NOTREACHED() << "Unable to retrieve feedback::FeedbackSource due to "
+                  "unknown source type.";
 }
 
 }  // namespace

@@ -106,7 +106,7 @@ struct BlockLineClampData {
         return !has_content_after_clamp;
       default:
         // previous_inflow_position_when_clamped shouldn't be set.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

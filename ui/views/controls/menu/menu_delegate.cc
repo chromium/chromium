@@ -103,16 +103,14 @@ ui::mojom::DragOperation MenuDelegate::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     DropPosition* position) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrop, you must override this too";
+  NOTREACHED() << "If you override CanDrop, you must override this too";
 }
 
 views::View::DropCallback MenuDelegate::GetDropCallback(
     MenuItemView* menu,
     DropPosition position,
     const ui::DropTargetEvent& event) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrop, you must override this too";
+  NOTREACHED() << "If you override CanDrop, you must override this too";
 }
 
 bool MenuDelegate::CanDrag(MenuItemView* menu) {
@@ -120,13 +118,11 @@ bool MenuDelegate::CanDrag(MenuItemView* menu) {
 }
 
 void MenuDelegate::WriteDragData(MenuItemView* sender, OSExchangeData* data) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrag, you must override this too.";
+  NOTREACHED() << "If you override CanDrag, you must override this too.";
 }
 
 int MenuDelegate::GetDragOperations(MenuItemView* sender) {
-  NOTREACHED_NORETURN()
-      << "If you override CanDrag, you must override this too.";
+  NOTREACHED() << "If you override CanDrag, you must override this too.";
 }
 
 bool MenuDelegate::ShouldCloseOnDragComplete() {

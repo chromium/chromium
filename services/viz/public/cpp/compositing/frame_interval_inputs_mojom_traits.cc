@@ -21,7 +21,7 @@ EnumTraits<viz::mojom::ContentFrameIntervalType,
     case viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation:
       return viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EnumTraits<viz::mojom::ContentFrameIntervalType,

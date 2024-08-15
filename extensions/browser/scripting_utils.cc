@@ -45,7 +45,7 @@ std::string AddPrefixToDynamicScriptId(const std::string& script_id,
       break;
     case UserScript::Source::kStaticContentScript:
     case UserScript::Source::kWebUIScript:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return prefix + script_id;

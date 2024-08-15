@@ -34,7 +34,7 @@ EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
       return media::mojom::VideoEncodeAcceleratorSupportedRateControlMode::
           kExternalMode;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -59,7 +59,7 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
       *out = media::VideoEncodeAccelerator::kExternalMode;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -214,7 +214,7 @@ bool UnionTraits<media::mojom::OptionalMetadataDataView,
       return data.ReadH265(&out->h265);
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -317,7 +317,7 @@ EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
     case media::VideoEncodeAccelerator::Config::StorageType::kShmem:
       return media::mojom::VideoEncodeAcceleratorConfig_StorageType::kShmem;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -335,7 +335,7 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
           media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -352,7 +352,7 @@ EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
       return media::mojom::VideoEncodeAcceleratorConfig_EncoderType::
           kNoPreference;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -372,7 +372,7 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_EncoderType,
           media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -386,7 +386,7 @@ EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_ContentType,
     case media::VideoEncodeAccelerator::Config::ContentType::kCamera:
       return media::mojom::VideoEncodeAcceleratorConfig_ContentType::kCamera;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -402,7 +402,7 @@ bool EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_ContentType,
       *output = media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -460,7 +460,7 @@ UnionTraits<media::mojom::BitrateDataView, media::Bitrate>::GetTag(
     case media::Bitrate::Mode::kExternal:
       return media::mojom::BitrateDataView::Tag::kExternal;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -476,7 +476,7 @@ bool UnionTraits<media::mojom::BitrateDataView, media::Bitrate>::Read(
       return input.ReadExternal(output);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

@@ -209,7 +209,7 @@ base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForCurrentMode()
     case MemorySaverModeAggressiveness::kAggressive:
       return base::Hours(2);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int MemorySaverModePolicy::GetMaxNumRevisitsForCurrentMode() const {
@@ -221,7 +221,7 @@ int MemorySaverModePolicy::GetMaxNumRevisitsForCurrentMode() const {
     case MemorySaverModeAggressiveness::kAggressive:
       return 5;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace performance_manager::policies

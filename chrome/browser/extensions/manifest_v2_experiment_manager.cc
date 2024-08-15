@@ -58,7 +58,7 @@ const char* GetHistogramManifestLocation(mojom::ManifestLocation location) {
     case mojom::ManifestLocation::kInternal:
       return "Internal";
     case mojom::ManifestLocation::kInvalidLocation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -163,7 +163,7 @@ PrefMap GetExtensionAcknowledgedPrefFor(MV2ExperimentStage experiment_stage) {
   switch (experiment_stage) {
     case MV2ExperimentStage::kNone:
       // There is no notice for this stage, thus it cannot be acknowledged.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case MV2ExperimentStage::kWarning:
       return kMV2DeprecationExtensionWarningAcknowledgedPref;
     case MV2ExperimentStage::kDisableWithReEnable:
@@ -178,7 +178,7 @@ PrefMap GetGlobalNoticeAcknowledgedPrefFor(
   switch (experiment_stage) {
     case MV2ExperimentStage::kNone:
       // There is no notice for this stage, thus it cannot be acknowledged.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case MV2ExperimentStage::kWarning:
       return kMV2DeprecationWarningAcknowledgedGloballyPref;
     case MV2ExperimentStage::kDisableWithReEnable:

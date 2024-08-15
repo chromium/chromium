@@ -1244,7 +1244,7 @@ void AudioContext::ResumeOnPrerenderActivation() {
       StartRendering();
       break;
     case kRunning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case kClosed:
       break;
   }

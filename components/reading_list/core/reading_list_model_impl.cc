@@ -674,7 +674,7 @@ ReadingListModelImpl::GetStorageStateForUma() const {
                  ? StorageStateForUma::kSyncEnabled
                  : StorageStateForUma::kLocalOnly;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string ReadingListModelImpl::GetStorageStateSuffixForUma() const {
@@ -686,7 +686,7 @@ std::string ReadingListModelImpl::GetStorageStateSuffixForUma() const {
     case StorageStateForUma::kSyncEnabled:
       return ".LocalStorageSyncing";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ReadingListModelImpl::StoreLoaded(

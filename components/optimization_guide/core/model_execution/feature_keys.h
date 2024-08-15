@@ -97,7 +97,7 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
         MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
       return ModelBasedCapabilityKey::kFormsPredictions;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      NOTREACHED_NORETURN() << "Invalid feature";
+      NOTREACHED() << "Invalid feature";
   }
 }
 

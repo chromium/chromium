@@ -166,7 +166,7 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
   }
   void OnOldEncryptionDetected(std::unique_ptr<UserContext> user_context,
                                bool has_incomplete_migration) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   ResultCallback on_done_;
@@ -367,7 +367,7 @@ void ProfileLoader::LoginAsKioskAccount() {
               return self->ReturnError(
                   LoginFailureToKioskLaunchError(*auth_failure));
             }
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           // Safe because `this` owns `current_step_`
           base::Unretained(this)));

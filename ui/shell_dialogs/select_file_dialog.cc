@@ -52,7 +52,7 @@ namespace ui {
 
 void SelectFileDialog::Listener::MultiFilesSelected(
     const std::vector<SelectedFileInfo>& files) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SelectFileDialog::FileTypeInfo::FileTypeInfo() = default;

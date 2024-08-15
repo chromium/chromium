@@ -16,7 +16,7 @@ NullCaptureModeSession::NullCaptureModeSession(
 views::Widget* NullCaptureModeSession::GetCaptureModeBarWidget() {
   // The null session will never have a bar widget, so this function should
   // never be called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 aura::Window* NullCaptureModeSession::GetSelectedWindow() const {

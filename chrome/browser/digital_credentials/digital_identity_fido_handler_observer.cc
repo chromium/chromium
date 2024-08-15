@@ -60,7 +60,7 @@ bool DigitalIdentityFidoHandlerObserver::SupportsPIN() const {
 void DigitalIdentityFidoHandlerObserver::CollectPIN(
     CollectPINOptions options,
     base::OnceCallback<void(std::u16string)> provide_pin_cb) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DigitalIdentityFidoHandlerObserver::FinishCollectToken() {}

@@ -66,7 +66,7 @@ bool AXMainNodeAnnotator::HasAXActionToEnableAnnotations() {
 }
 
 ax::mojom::Action AXMainNodeAnnotator::GetAXActionToEnableAnnotations() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AXMainNodeAnnotator::Annotate(const WebDocument& document,

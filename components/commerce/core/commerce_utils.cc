@@ -44,7 +44,7 @@ bool UrlContainsDiscountUtmTag(const GURL& url) {
 
 ParcelTrackingStatus GetParcelTrackingStatusTestData() {
   if (!base::FeatureList::IsEnabled(kParcelTrackingTestData)) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   const std::string param = base::GetFieldTrialParamValueByFeature(

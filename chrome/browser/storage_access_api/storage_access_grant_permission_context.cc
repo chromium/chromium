@@ -83,7 +83,7 @@ bool IsUserDecidedPersistableOutcome(RequestOutcome outcome) {
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -107,7 +107,7 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -126,7 +126,7 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
       return persist ? RequestOutcome::kDeniedByUser
                      : RequestOutcome::kReusedPreviousDecision;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -168,7 +168,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -663,5 +663,5 @@ void StorageAccessGrantPermissionContext::UpdateContentSetting(
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

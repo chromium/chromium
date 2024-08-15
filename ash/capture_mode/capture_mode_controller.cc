@@ -458,7 +458,7 @@ std::unique_ptr<BaseCaptureModeSession> CreateSession(
                                                       active_behavior);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

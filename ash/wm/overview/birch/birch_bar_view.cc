@@ -224,8 +224,8 @@ void BirchBarView::SetState(State state) {
 
 #if DCHECK_IS_ON()
   if (!IsValidStateTransition(state_, state)) {
-    NOTREACHED_NORETURN() << "Transition from state " << state_ << " to state "
-                          << state << " is invalid.";
+    NOTREACHED() << "Transition from state " << state_ << " to state " << state
+                 << " is invalid.";
   }
 #endif
 
@@ -318,7 +318,7 @@ void BirchBarView::SetupChips(const std::vector<raw_ptr<BirchItem>>& items) {
     case State::kReloading:
       break;
     case State::kShuttingDown:
-      NOTREACHED_NORETURN() << "Birch bar cannot be setup while shutting down.";
+      NOTREACHED() << "Birch bar cannot be setup while shutting down.";
   }
 
   // Change relayout reason to setup if new chips are filled in the empty bar.
@@ -616,7 +616,7 @@ void BirchBarView::FadeInChips() {
       animation_duration = kFadeInDurationAfterReloading;
       break;
     case State::kShuttingDown:
-      NOTREACHED_NORETURN() << "Birch bar cannot fade in while shutting down.";
+      NOTREACHED() << "Birch bar cannot fade in while shutting down.";
   }
 
   views::AnimationBuilder animation_builder;
@@ -649,8 +649,7 @@ void BirchBarView::FadeOutChips() {
     case State::kLoadingByUser:
     case State::kLoading:
     case State::kNormal:
-      NOTREACHED_NORETURN()
-          << "Birch bar only fades out on shutting down and reloading";
+      NOTREACHED() << "Birch bar only fades out on shutting down and reloading";
   }
 
   if (!chips_.size()) {

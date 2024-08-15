@@ -90,7 +90,7 @@ void DisableSyncForProfileDeletion(Profile* profile) {
   // This is believed to be unreachable (outside tests) but the stakes are quite
   // high too, so fall back to the legacy logic just in case.
   // TODO(crbug.com/40797392): Remove this code and replace it all with
-  // CHECK_IS_TEST() or NOTREACHED_NORETURN().
+  // CHECK_IS_TEST() or NOTREACHED().
   if (SyncServiceFactory::HasSyncService(profile)) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile);

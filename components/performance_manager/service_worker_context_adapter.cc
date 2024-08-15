@@ -90,7 +90,7 @@ void ServiceWorkerContextAdapterImpl::RunningServiceWorker::
 
 void ServiceWorkerContextAdapterImpl::RunningServiceWorker::
     RenderProcessHostDestroyed(content::RenderProcessHost* host) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // ServiceWorkerContextAdapterImpl ---------------------------------------------

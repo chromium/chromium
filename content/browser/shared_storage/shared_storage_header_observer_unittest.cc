@@ -262,7 +262,7 @@ class SharedStorageHeaderObserverTest
       case TestCaseType::kRenderFrameHostContextNoRenderFrameHost:
         return ContextType::kRenderFrameHostContext;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -345,7 +345,7 @@ class SharedStorageHeaderObserverTest
         }
         return handle_for_null_rfh_.get();
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -509,7 +509,7 @@ class SharedStorageHeaderObserverTest
         default:
           LOG(ERROR)
               << "Encountered unexpectedly deferred shared storage operations";
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       commit_loop.Run();
     }
@@ -595,7 +595,7 @@ auto describe_test_case_type = [](const auto& info) {
     case TestCaseType::kRenderFrameHostContextNoRenderFrameHost:
       return "NullRFH";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 };
 

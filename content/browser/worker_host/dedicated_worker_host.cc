@@ -207,7 +207,7 @@ void DedicatedWorkerHost::RenderProcessHostDestroyed(
   // This is never reached as either RenderProcessExited() or
   // InProcessRendererExiting() is guaranteed to be called before this function
   // and `this` is deleted there.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DedicatedWorkerHost::StartScriptLoad(

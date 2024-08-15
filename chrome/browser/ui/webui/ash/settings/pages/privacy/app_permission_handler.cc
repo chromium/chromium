@@ -126,7 +126,7 @@ void AppPermissionHandler::OpenBrowserPermissionSettings(
     case apps::PermissionType::kStorage:
     case apps::PermissionType::kPrinting:
     case apps::PermissionType::kFileHandling:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(

@@ -62,10 +62,10 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kTitleItem:
       // No need to handle titles.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ui::DialogModelField::kSection:
       // TODO(pbos): Handle nested/multiple sections.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
@@ -349,10 +349,10 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
         break;
       case ui::DialogModelField::kTitleItem:
         // No need to handle titles.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case ui::DialogModelField::kSection:
         // TODO(pbos): Handle nested/multiple sections.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case ui::DialogModelField::kSeparator:
         AddOrUpdateSeparator(field);
         break;
@@ -693,7 +693,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
         return info;
       }
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

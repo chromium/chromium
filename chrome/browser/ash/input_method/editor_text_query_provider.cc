@@ -100,7 +100,7 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
     case manta::MantaStatusCode::kRestrictedCountry:
       return orca::mojom::TextQueryErrorCode::kRestrictedRegion;
     case manta::MantaStatusCode::kOk:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

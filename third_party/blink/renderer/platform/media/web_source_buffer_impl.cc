@@ -252,7 +252,7 @@ WebMediaPlayer::TrackType mediaTrackTypeToBlink(media::MediaTrack::Type type) {
     case media::MediaTrack::Type::kVideo:
       return WebMediaPlayer::kVideoTrack;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WebSourceBufferImpl::InitSegmentReceived(

@@ -50,7 +50,7 @@ base::Value::Dict DescribeNodeWithDescriber(const NodeDataDescriber& describer,
     case NodeTypeEnum::kWorker:
       return describer.DescribeNodeData(WorkerNodeImpl::FromNode(node));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {

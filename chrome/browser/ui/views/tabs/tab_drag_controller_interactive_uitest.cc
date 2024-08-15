@@ -648,7 +648,7 @@ class DetachToBrowserTabDragControllerTest
 #if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::kTouchPress, id, location);
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -669,7 +669,7 @@ class DetachToBrowserTabDragControllerTest
 #if BUILDFLAG(IS_CHROMEOS)
     return SendTouchEventsSync(ui_controls::kTouchMove, 0, location);
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -683,7 +683,7 @@ class DetachToBrowserTabDragControllerTest
     return ui_controls::SendTouchEvents(ui_controls::kTouchMove, 0,
                                         location.x(), location.y());
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -708,7 +708,7 @@ class DetachToBrowserTabDragControllerTest
         ui_controls::kTouchMove, 0, location.x(), location.y(),
         std::move(task));
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -725,7 +725,7 @@ class DetachToBrowserTabDragControllerTest
                  : SendTouchEventsSync(ui_controls::kTouchRelease, id,
                                        gfx::Point());
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -766,7 +766,7 @@ class DetachToBrowserTabDragControllerTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return SendTouchEventsSync(ui_controls::kTouchMove, 0, location);
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 

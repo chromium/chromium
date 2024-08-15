@@ -140,7 +140,7 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
     remote->DispatchGetTextLocationResult(data, rect);
   }
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

@@ -87,7 +87,7 @@ std::string_view SerializeDebugDataType(DebugDataType data_type) {
 
 #undef TYPE_TO_STR
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #define STR_TO_TYPE(name, str) {str, DebugDataType::name},

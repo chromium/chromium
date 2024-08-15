@@ -42,7 +42,7 @@ std::string GetColorModeString(ProtoColorMode color_mode) {
     case lorgnette::MODE_UNSPECIFIED:
     case ProtoColorMode::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoColorMode::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -67,7 +67,7 @@ std::string GetPageSizeString(const ProtoScanRegion& scan_region) {
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetImageFormatString(ProtoImageFormat img_format) {
@@ -78,7 +78,7 @@ std::string GetImageFormatString(ProtoImageFormat img_format) {
       return "jpeg";
     case lorgnette::ImageFormat_INT_MIN_SENTINEL_DO_NOT_USE_:
     case lorgnette::ImageFormat_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

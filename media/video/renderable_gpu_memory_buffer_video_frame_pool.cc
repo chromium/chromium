@@ -198,7 +198,7 @@ gfx::Size GetBufferSizeInPixelsForVideoPixelFormat(
       return {cc::MathUtil::CheckedRoundUp(coded_size.width(), 4),
               cc::MathUtil::CheckedRoundUp(coded_size.height(), 2)};
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

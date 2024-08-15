@@ -86,7 +86,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       // Should not be used for this entry point.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -496,7 +496,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
     case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "CancelPostSignInFlow() is not reachable from this entry point";
   }
 }

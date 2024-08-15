@@ -117,7 +117,7 @@ HostResolverManager::ServiceEndpointRequestImpl::GetEndpointResults() {
     return job_.value()->dns_task_results_manager()->GetCurrentEndpoints();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const std::set<std::string>&
@@ -134,7 +134,7 @@ HostResolverManager::ServiceEndpointRequestImpl::GetDnsAliasResults() {
     return job_.value()->dns_task_results_manager()->GetAliases();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
@@ -149,7 +149,7 @@ bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {
     return job_.value()->dns_task_results_manager()->IsMetadataReady();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ResolveErrorInfo

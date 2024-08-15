@@ -136,7 +136,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
   const auto& commands = commands_stack_[stack_position_];
   switch (GetCommandsType(commands)) {
     case CommandsType::kNone: {
-      NOTREACHED_NORETURN();  // Invariant 2.
+      NOTREACHED();  // Invariant 2.
     }
     case CommandsType::kDraw: {
       EraseCommands result;
@@ -168,7 +168,7 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
   ++stack_position_;
   switch (GetCommandsType(commands)) {
     case CommandsType::kNone: {
-      NOTREACHED_NORETURN();  // Invariant 2.
+      NOTREACHED();  // Invariant 2.
     }
     case CommandsType::kDraw: {
       return GetDrawCommands(commands);

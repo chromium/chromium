@@ -645,7 +645,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return omnibox::kProductChromeRefreshIcon;
 
     case Type::NUM_TYPES:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 #endif

@@ -138,7 +138,7 @@ MediaStreamTrack* MakeTrack(
           v8_scope.GetExecutionContext(), component,
           /*callback=*/base::DoNothing());
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

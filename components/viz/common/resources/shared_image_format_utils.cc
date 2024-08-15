@@ -84,7 +84,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
   } else if (format == SinglePlaneFormat::kRGBA_F16) {
     return kRGBA_F16_SkColorType;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkColorType ToClosestSkColorType(bool gpu_compositing,
@@ -162,7 +162,7 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
     default:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
@@ -295,7 +295,7 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::P010:
       return MultiPlaneFormat::kP010;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

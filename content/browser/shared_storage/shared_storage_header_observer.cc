@@ -215,7 +215,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
       // This is the expected outcome in most cases.
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   CHECK(IsSharedStorageAllowedByPermissionsPolicy(permissions_policy_status));
@@ -494,7 +494,7 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
       // aren't available to requests initiated by service workers.
       [[fallthrough]];
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

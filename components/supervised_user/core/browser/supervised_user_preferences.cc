@@ -50,7 +50,7 @@ struct Family {
           regular_members_.push_back(member);
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
   }

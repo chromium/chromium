@@ -165,7 +165,7 @@ const std::string& GURL::spec() const {
     return spec_;
 
   // TODO(crbug.com/40580068): Make sure this no longer hits before making
-  // NOTREACHED_NORETURN();
+  // NOTREACHED();
   DUMP_WILL_BE_NOTREACHED() << "Trying to get the spec of an invalid URL!";
   return base::EmptyString();
 }

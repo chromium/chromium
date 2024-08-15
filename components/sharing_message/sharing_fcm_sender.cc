@@ -85,7 +85,7 @@ void SharingFCMSender::DoSendUnencryptedMessageToDevice(
     const SharingTargetDeviceInfo& device,
     sync_pb::UnencryptedSharingMessage message,
     SendMessageCallback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void SharingFCMSender::SendMessageToFcmTarget(

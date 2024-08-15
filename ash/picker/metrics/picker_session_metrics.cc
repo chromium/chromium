@@ -165,13 +165,13 @@ cros_events::PickerResultSource GetResultSource(
             return cros_events::PickerResultSource::DRIVE_FILES;
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
             return cros_events::PickerResultSource::UNKNOWN;
@@ -229,13 +229,13 @@ cros_events::PickerResultType GetResultType(
             return cros_events::PickerResultType::DRIVE_FILE;
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
             return cros_events::PickerResultType::UNKNOWN;

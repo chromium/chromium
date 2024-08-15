@@ -79,7 +79,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         seg_string.LookAhead(gen_str(10u));
         break;
       case kOpLast:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     seg_string.UpdateLineNumber();

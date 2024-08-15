@@ -2810,7 +2810,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityForMainFrame() const {
       // (e.g. typing) will starve rendering.
       return TaskPriority::kHighestPriority;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool MainThreadSchedulerImpl::AllPagesFrozen() const {

@@ -89,7 +89,7 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
       // No need to support legacy finished events for newer routines.
       return nullptr;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(

@@ -56,7 +56,7 @@ class SandboxedNetworkListBrowserTest : public ContentBrowserTest {
         lpac_enabled = true;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     std::vector<base::test::FeatureRef> enabled_features;

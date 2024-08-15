@@ -75,7 +75,7 @@ class CORE_EXPORT TextBoxEdge {
       case Type::kEx:
         return Type::kText;
       case Type::kAlphabetic:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

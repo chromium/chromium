@@ -109,7 +109,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
       }
       break;
     case APP_LIST_APP_TYPE_LAST:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

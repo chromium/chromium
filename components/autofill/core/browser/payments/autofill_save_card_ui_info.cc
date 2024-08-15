@@ -54,7 +54,7 @@ static std::u16string GetConfirmButtonText(
                                        ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
                                        : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
@@ -157,7 +157,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
   save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
   save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
   return CreateAutofillSaveCardUiInfo(
       /*is_for_upload=*/false, card, save_card_icon_id, LegalMessageLines(),
@@ -241,7 +241,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD;
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
   return CreateAutofillSaveCardUiInfo(
       /*is_for_upload=*/true, card, save_card_icon_id, legal_message_lines,

@@ -165,7 +165,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     view =
         new PasskeyUpdatedConfirmationView(web_contents, anchor_view, reason);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   g_manage_passwords_bubble_ = view;

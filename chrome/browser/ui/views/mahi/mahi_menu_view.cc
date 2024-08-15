@@ -351,7 +351,7 @@ void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {
       // This function only handles clicks of type 'kSummary',
       // 'kOutline' and `kSettings`. Other click types are not passed
       // here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,
                                 histogram_button_type);

@@ -255,7 +255,7 @@ bool PreviewTab::AcceleratorPressed(const ui::Accelerator& accelerator) {
       preview_zoom_controller_->Zoom(content::PAGE_ZOOM_IN);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return true;

@@ -270,7 +270,7 @@ std::string GeneratePrerenderHistogramSuffix(
     case PreloadingTriggerType::kEmbedder:
       return ".Embedder_" + embedder_suffix;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {

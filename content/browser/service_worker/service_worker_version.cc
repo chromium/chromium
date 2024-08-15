@@ -1282,7 +1282,7 @@ bool ServiceWorkerVersion::IsWarmedUp() const {
       CHECK(warm_up_callbacks_.empty());
       return true;
     case EmbeddedWorkerInstance::StartingPhase::STARTING_PHASE_MAX_VALUE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

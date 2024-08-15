@@ -580,7 +580,7 @@ MediaKeysListenerManagerImpl::GetControllerForSystemMediaControls(
 
   // It's unexpected that any code asks for the controller for a
   // system_media_controls object we don't know about.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

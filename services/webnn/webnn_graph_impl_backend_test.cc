@@ -204,7 +204,7 @@ std::vector<float> GetFloatOutputData(mojo_base::BigBuffer big_buffer,
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -461,7 +461,7 @@ void BuildFusibleOperation(GraphInfoBuilder& builder,
       return;
     default:
       // TODO(crbug.com/345640552): Support fusing gelu.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

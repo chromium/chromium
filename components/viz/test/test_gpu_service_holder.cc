@@ -323,7 +323,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
             gpu_feature_info.enabled_gpu_driver_bug_workarounds));
     CHECK(init_params.dawn_context_provider);
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 

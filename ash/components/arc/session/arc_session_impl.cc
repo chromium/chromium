@@ -144,7 +144,7 @@ void ApplyHostUreadaheadMode(StartParams* params) {
       break;
     }
     default: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

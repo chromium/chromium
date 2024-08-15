@@ -93,7 +93,7 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
   return skipParentApprovalEnabled &&
          permissionExtensionsForSupervisedUsersEnabled;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

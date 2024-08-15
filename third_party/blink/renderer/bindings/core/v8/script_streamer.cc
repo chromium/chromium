@@ -1613,7 +1613,7 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
       SuppressStreaming(NotStreamingReason::kScriptTooSmallBackground);
       return false;
     case MOJO_RESULT_SHOULD_WAIT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
       // Some other error occurred.
       watcher_.reset();

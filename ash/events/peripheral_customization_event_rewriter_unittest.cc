@@ -481,7 +481,7 @@ std::string ConvertToString(const ui::Event& event) {
   if (event.IsKeyEvent()) {
     return ConvertToString(*event.AsKeyEvent());
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::Button GetButton(ui::KeyboardCode key_code) {

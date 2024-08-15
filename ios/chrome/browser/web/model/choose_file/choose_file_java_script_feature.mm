@@ -73,7 +73,7 @@ ChooseFileAccept BucketForChooseFileEvent(int accept_type,
       case 9:
         return ChooseFileAccept::kAppleAcceptMultiple;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   switch (accept_type) {
@@ -98,7 +98,7 @@ ChooseFileAccept BucketForChooseFileEvent(int accept_type,
     case 9:
       return ChooseFileAccept::kAppleAccept;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

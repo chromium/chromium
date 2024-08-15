@@ -207,7 +207,7 @@ const gfx::VectorIcon& GetShortcutKeyIcon() {
       return kCampbellHeroIcon;
     case ui::mojom::MetaKey::kExternalMeta:
     case ui::mojom::MetaKey::kCommand:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

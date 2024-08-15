@@ -1337,7 +1337,7 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 content::ContentBrowserClient::AttributionReportingOsRegistrars
@@ -1385,7 +1385,7 @@ AwContentBrowserClient::GetAttributionReportingOsRegistrars(
               AttributionReportingOsRegistrar::kDisabled};
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 network::mojom::IpProtectionProxyBypassPolicy

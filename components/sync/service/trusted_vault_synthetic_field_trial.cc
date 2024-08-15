@@ -38,7 +38,7 @@ const char* GetGroupTypeName(
     case sync_pb::TrustedVaultAutoUpgradeExperimentGroup::VALIDATION:
       return "Validation";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetGroupName(

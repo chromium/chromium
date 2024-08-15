@@ -216,7 +216,7 @@ void PickerSearchAggregator::HandleSearchSourceResults(
           DeduplicateDriveFilesFromLinks(results, std::move(*links));
           link_drive_dedupe_state_ = std::monostate();
         } else {
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         }
       } else if (section_type == PickerSectionType::kLinks) {
         if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
@@ -226,7 +226,7 @@ void PickerSearchAggregator::HandleSearchSourceResults(
           DeduplicateDriveLinksFromIds(results, std::move(*drive_ids));
           link_drive_dedupe_state_ = std::monostate();
         } else {
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         }
       }
 

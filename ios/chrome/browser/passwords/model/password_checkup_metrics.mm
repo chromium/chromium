@@ -61,7 +61,7 @@ std::string GetHistogramForContext(WarningType context) {
       return base::StrCat(
           {kUserActionWithContextHistogram, ".MutedCompromised"});
     case WarningType::kNoInsecurePasswordsWarning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

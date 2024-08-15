@@ -110,7 +110,7 @@ NetworkChangeNotifierWin::RecomputeCurrentConnectionTypeModern() {
       return ConnectionTypeFromInterfaces();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // This implementation does not return the actual connection type but merely

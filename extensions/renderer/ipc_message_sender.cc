@@ -202,8 +202,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
             case mojom::ContextType::kPrivilegedWebPage:
             case mojom::ContextType::kWebUi:
             case mojom::ContextType::kUntrustedWebUi:
-              NOTREACHED_NORETURN() << "Unexpected Context Encountered: "
-                                    << script_context->GetDebugString();
+              NOTREACHED() << "Unexpected Context Encountered: "
+                           << script_context->GetDebugString();
           }
         } else {
           info->source_endpoint = MessagingEndpoint::ForWebPage();

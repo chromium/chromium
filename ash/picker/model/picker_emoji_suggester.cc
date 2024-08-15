@@ -102,7 +102,7 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
             base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;
       case ui::EmojiPickerCategory::kGifs:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return results;

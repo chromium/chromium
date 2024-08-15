@@ -199,7 +199,7 @@ base::android::BinderStatusOr<void> WritePlatformHandle(
       return out.WriteBinder(handle.TakeBinder());
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -317,14 +317,14 @@ bool ChannelBinder::GetReadPlatformHandles(const void* payload,
                                            std::vector<PlatformHandle>* handles,
                                            bool* deferred) {
   // Never called because we use DispatchBufferPolicy::kUnmanaged.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ChannelBinder::GetReadPlatformHandlesForIpcz(
     size_t num_handles,
     std::vector<PlatformHandle>& handles) {
   // Never called because we use DispatchBufferPolicy::kUnmanaged.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::android::BinderStatusOr<void> ChannelBinder::WriteOrEnqueue(

@@ -7814,7 +7814,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kUnknown:
     case ax::mojom::blink::Role::kWebView:
     case ax::mojom::blink::Role::kWindow:
-      NOTREACHED_NORETURN() << "Role shouldn't occur in Blink: " << this;
+      NOTREACHED() << "Role shouldn't occur in Blink: " << this;
   }
 
   return result;

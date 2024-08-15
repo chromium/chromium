@@ -66,7 +66,7 @@ std::unique_ptr<TabModel> TabCollectionStorage::RemoveTab(TabModel* tab_model) {
       }
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TabCollectionStorage::CloseTab(TabModel* tab) {
@@ -110,7 +110,7 @@ std::unique_ptr<TabCollection> TabCollectionStorage::RemoveCollection(
       }
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TabCollectionStorage::CloseCollection(TabCollection* collection) {

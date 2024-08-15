@@ -77,7 +77,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
   } else if (gaiaID == kSecondaryIdentity2.gaiaID) {
     identity = kSecondaryIdentity2;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   TableViewAccountItem* item =
       [[TableViewAccountItem alloc] initWithType:SettingsItemTypeAccount];

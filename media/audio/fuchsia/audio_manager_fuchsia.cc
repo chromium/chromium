@@ -146,7 +146,7 @@ const char* AudioManagerFuchsia::GetName() {
 AudioOutputStream* AudioManagerFuchsia::MakeLinearOutputStream(
     const AudioParameters& params,
     const LogCallback& log_callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 AudioOutputStream* AudioManagerFuchsia::MakeLowLatencyOutputStream(

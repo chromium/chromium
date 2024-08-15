@@ -296,13 +296,13 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 void ChromeAutofillClientIOS::ShowEditAddressProfileDialog(
     const AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
     const AutofillProfile& profile,
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ChromeAutofillClientIOS::ShowAutofillSuggestions(

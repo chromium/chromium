@@ -80,7 +80,7 @@ void AutofillSnackbarControllerImpl::OnActionClicked() {
       // SnackbarManager.java will dismiss the snackbar after the click.
       break;
     case AutofillSnackbarType::kUnspecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -113,7 +113,7 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT);
     case AutofillSnackbarType::kUnspecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -133,7 +133,7 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT);
     case AutofillSnackbarType::kUnspecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

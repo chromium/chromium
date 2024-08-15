@@ -203,7 +203,7 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
       request[kDataIdOrSizeIndex] = data_id_or_size.value();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Fill unused trailing bytes with random (salt) values.

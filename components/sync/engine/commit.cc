@@ -59,7 +59,7 @@ SyncCommitError GetSyncCommitError(SyncerError syncer_error) {
       return SyncCommitError::kBadServerResponse;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -145,7 +145,7 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
     case blink::mojom::FormControlType::kSelectList:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns true if the given id is one generated for autofill context menu.

@@ -73,7 +73,7 @@ std::string GetPrefNameFromSuggestionType(BirchSuggestionType type) {
       return prefs::kBirchUseCoral;
     case BirchSuggestionType::kExplore:
     case BirchSuggestionType::kUndefined:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

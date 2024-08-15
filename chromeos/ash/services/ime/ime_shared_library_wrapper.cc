@@ -46,7 +46,7 @@ void ImeLoggerBridge(int severity, const char* message) {
     default:
       // There's no LOGGING_VERBOSE level in absl logging. Nothing should reach
       // here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

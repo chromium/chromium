@@ -79,24 +79,24 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer proxy_layer) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void SetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::vector<net::ProxyChain> GetProxyChainList() override {

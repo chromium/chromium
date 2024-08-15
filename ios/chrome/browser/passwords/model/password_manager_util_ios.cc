@@ -20,7 +20,7 @@ bool IsSavingPasswordsToAccountWithNormalEncryption(
     case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace password_manager_util

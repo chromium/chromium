@@ -161,7 +161,7 @@ void RecordUmaSelection(DialogType dialog_type,
 
   switch (source_type) {
     case DesktopMediaList::Type::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case DesktopMediaList::Type::kScreen:
       RecordAction(base::UserMetricsAction("GetDisplayMedia.SelectScreen"));
@@ -241,7 +241,7 @@ void RecordPermissionButtonOpenedAction(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -259,7 +259,7 @@ std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool AreEquivalentTypesForAudioCheckbox(DesktopMediaList::Type lhs,
@@ -313,7 +313,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
     case DesktopMediaList::Type::kCurrentTab:
       return display_surface == blink::mojom::PreferredDisplaySurface::BROWSER;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
@@ -347,7 +347,7 @@ bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 DesktopMediaPickerDialogView::DisplaySurfaceCategory::DisplaySurfaceCategory(
@@ -445,7 +445,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
       case DesktopMediaList::Type::kNone:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case DesktopMediaList::Type::kScreen: {
         const DesktopMediaSourceViewStyle kGenericScreenStyle =
             DesktopMediaSourceViewStyle(
@@ -810,7 +810,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
               : IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO);
     }
     case DesktopMediaList::Type::kWindow:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
       return l10n_util::GetStringUTF16(
@@ -818,7 +818,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<views::View> DesktopMediaPickerDialogView::SetupPane(

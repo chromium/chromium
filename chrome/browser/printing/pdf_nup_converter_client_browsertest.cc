@@ -114,7 +114,7 @@ base::span<const gfx::SizeF> GetExpectedPdfSizes(std::string_view pdf_name) {
     return kSizes;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

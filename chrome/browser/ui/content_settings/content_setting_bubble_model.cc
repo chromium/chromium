@@ -122,7 +122,7 @@ void RecordActionHistogram(ContentSettingsType type,
       break;
     default:
       // Currently only defined and implemented for StorageAccess.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1091,7 +1091,7 @@ void ContentSettingMediaStreamBubbleModel::SetTitle() {
   else if (CameraAccessed())
     title_id = IDS_CAMERA_ACCESSED_TITLE;
   else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   set_title(l10n_util::GetStringUTF16(title_id));
 }
 
@@ -1111,7 +1111,7 @@ void ContentSettingMediaStreamBubbleModel::SetMessage() {
   else if (CameraAccessed())
     message_id = IDS_CAMERA_ACCESSED;
   else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   set_message(l10n_util::GetStringUTF16(message_id));
 }
 
@@ -1357,7 +1357,7 @@ void ContentSettingGeolocationBubbleModel::
   set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
 #else
     // The system-level location permission is not supported on Linux.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
 
     clear_message();

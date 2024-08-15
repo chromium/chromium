@@ -88,7 +88,7 @@ class SublevelManagerTest : public ViewsTestBase,
         test_name += "Activatable";
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     return test_name;
   }

@@ -258,7 +258,7 @@ void PaymentMethodAccessoryControllerImpl::OnFillingTriggered(
     return;
   }
 
-  NOTREACHED_NORETURN() << "Neither fillable value nor known ID.";
+  NOTREACHED() << "Neither fillable value nor known ID.";
 }
 
 void PaymentMethodAccessoryControllerImpl::OnPasskeySelected(

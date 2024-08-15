@@ -155,7 +155,7 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
   content::mojom::sandbox::UtilityConfigPtr sandbox_config;
   if (!content::mojom::sandbox::UtilityConfig::Deserialize(
           delegate_blob.data(), delegate_blob.size(), &sandbox_config)) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   if (!sandbox_config->preload_libraries.empty()) {
     for (const auto& library_path : sandbox_config->preload_libraries) {
@@ -172,7 +172,7 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
         base::wcslcpy(dll_name, library_path.value().c_str(), MAX_PATH);
         base::debug::Alias(dll_name);
         base::debug::Alias(&lib_error);
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
     }
   }

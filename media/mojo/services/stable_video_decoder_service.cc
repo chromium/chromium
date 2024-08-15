@@ -36,7 +36,7 @@ gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(
       return frame_resource->CreateGpuMemoryBufferHandle();
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

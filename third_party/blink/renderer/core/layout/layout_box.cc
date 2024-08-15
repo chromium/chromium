@@ -1997,7 +1997,7 @@ bool LayoutBox::HitTestClippedOutByBorder(
 
 void LayoutBox::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhysicalRect LayoutBox::BackgroundPaintedExtent() const {

@@ -6112,7 +6112,7 @@ TEST_P(QuicSessionPoolTest,
             std::move(socket),
             ToIPEndPoint(session->connection()->peer_address()), true,
             base::BindLambdaForTesting(
-                [](MigrationResult result) { NOTREACHED_NORETURN(); }),
+                [](MigrationResult result) { NOTREACHED(); }),
             /* RV = OK */ 0);
       }),
       socket_ptr, ToIPEndPoint(session->connection()->peer_address()),

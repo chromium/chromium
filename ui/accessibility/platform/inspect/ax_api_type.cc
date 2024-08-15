@@ -30,7 +30,7 @@ static constexpr std::string_view kWinUIAString{"uia"};
 AXApiType::Type::operator std::string_view() const {
   switch (type_) {
     case kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case kAndroid:
       return kAndroidString;
     case kAndroidExternal:
@@ -68,7 +68,7 @@ AXApiType::Type AXApiType::From(const std::string& type_str) {
            {kWinUIAString, kWinUIA}});
   auto it = kTypeToString.find(type_str);
   if (it == kTypeToString.end()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return it->second;
 }

@@ -241,7 +241,7 @@ void RecordPlaylistPlayedLatency(focus_mode_util::SoundType playlist_type,
       break;
     case focus_mode_util::SoundType::kNone:
       // A selected playlist should always have a valid type.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::UmaHistogramCustomCounts(
@@ -259,7 +259,7 @@ focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
     case focus_mode_util::SoundType::kYouTubeMusic:
       return youtube_music_chosen[index];
     case focus_mode_util::SoundType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

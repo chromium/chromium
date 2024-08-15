@@ -386,7 +386,7 @@ void Storage::Write(Priority priority,
               if (!generation_guid_result.has_value()) {
                 // This should never happen. We should always be able to create
                 // a generation guid if one doesn't exist.
-                NOTREACHED_NORETURN();
+                NOTREACHED();
               }
               generation_guid = generation_guid_result.value();
             }

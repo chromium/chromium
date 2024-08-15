@@ -79,7 +79,7 @@ void OnEncodedVideoFrameExtracted(
 #else
         // IsBuiltInVideoCodec(H264) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
 #endif
       case media::VideoCodec::kVP8:
       case media::VideoCodec::kVP9:
@@ -89,7 +89,7 @@ void OnEncodedVideoFrameExtracted(
 #else
         // IsBuiltInVideoCodec(VP8|VP9) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
 #endif
       case media::VideoCodec::kAV1:
 #if BUILDFLAG(ENABLE_AV1_DECODER)
@@ -99,7 +99,7 @@ void OnEncodedVideoFrameExtracted(
 #else
         // IsBuiltInVideoCodec(AV1) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
 #endif
 
       default:

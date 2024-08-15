@@ -84,7 +84,7 @@ WebAuthnCredManDelegate::CredManMode() {
   }
   switch (cred_man_support_.value()) {
     case CredManSupport::NOT_EVALUATED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CredManSupport::DISABLED:
     case CredManSupport::IF_REQUIRED:
       return CredManEnabledMode::kNotEnabled;

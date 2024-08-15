@@ -119,7 +119,7 @@ bool CanCreateAccountStore(const PrefService* pref_service) {
     case UseUpmLocalAndSeparateStoresState::kOn:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   return true;
 #endif

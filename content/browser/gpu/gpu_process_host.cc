@@ -1167,7 +1167,7 @@ std::string GpuProcessHost::GetIsolationKey(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void GpuProcessHost::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,

@@ -225,7 +225,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
     case kInvalid:
-      NOTREACHED_NORETURN() << "Cannot construct invalid value";
+      NOTREACHED() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(source.text_);
       break;
@@ -266,7 +266,7 @@ FragmentItem::FragmentItem(FragmentItem&& source)
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
     case kInvalid:
-      NOTREACHED_NORETURN() << "Cannot construct invalid value";
+      NOTREACHED() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(std::move(source.text_));
       break;
@@ -1232,7 +1232,7 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
   ostream << "{";
   switch (item.Type()) {
     case FragmentItem::kInvalid:
-      NOTREACHED_NORETURN() << "Invalid FragmentItem";
+      NOTREACHED() << "Invalid FragmentItem";
     case FragmentItem::kText:
       ostream << "Text " << item.StartOffset() << "-" << item.EndOffset() << " "
               << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");

@@ -290,7 +290,7 @@ bool PaintShader::HasDiscardableImages(
       }
       return false;
     case Type::kShaderCount:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

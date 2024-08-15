@@ -1011,7 +1011,7 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

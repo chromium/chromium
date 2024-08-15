@@ -91,7 +91,7 @@ std::string AudioDeviceDescription::GetCommunicationsDeviceName() {
   // is deprecated.
   return "";
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

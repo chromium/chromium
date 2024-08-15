@@ -114,7 +114,7 @@ media::VideoPixelFormat CopyOutputRequestFormatToVideoPixelFormat(
     case CopyOutputRequest::ResultFormat::RGBA:
       return media::PIXEL_FORMAT_ARGB;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -126,7 +126,7 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
     case media::PIXEL_FORMAT_ARGB:
       return gfx::ColorSpace::CreateSRGB();
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -141,7 +141,7 @@ gfx::Size GetBufferSizeInPixelsForVideoPixelFormat(
       return {cc::MathUtil::CheckedRoundUp(coded_size.width(), 2),
               cc::MathUtil::CheckedRoundUp(coded_size.height(), 2)};
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -293,7 +293,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
           info->timestamp);
       ASSERT_TRUE(frame);
     } else {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
 
     frame->set_metadata(info->metadata);
@@ -496,7 +496,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
             break;
           }
           default: {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           }
         }
         break;
@@ -508,7 +508,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
         break;
       }
       default: {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
     }
     results_.push_back(base::BindOnce(
@@ -729,7 +729,7 @@ MATCHER_P3(IsLetterboxedFrame, color, content_rect, pixel_format, "") {
                                     content_rect, frame, result_listener);
     }
     default: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

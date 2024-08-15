@@ -129,7 +129,7 @@ constexpr const char* GetHistogramName(SplitHistogramName type) {
     case SplitHistogramName::kTimeToFirstFrame:
       return "Media.TimeToFirstFrame";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 namespace learning = ::media::learning;

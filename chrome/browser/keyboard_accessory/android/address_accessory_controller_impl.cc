@@ -179,16 +179,16 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       return;
     }
     default:
-      NOTREACHED_NORETURN()
-          << "Unhandled selected action: " << static_cast<int>(selected_action);
+      NOTREACHED() << "Unhandled selected action: "
+                   << static_cast<int>(selected_action);
   }
 }
 
 void AddressAccessoryControllerImpl::OnToggleChanged(
     AccessoryAction toggled_action,
     bool enabled) {
-  NOTREACHED_NORETURN() << "Unhandled toggled action: "
-                        << static_cast<int>(toggled_action);
+  NOTREACHED() << "Unhandled toggled action: "
+               << static_cast<int>(toggled_action);
 }
 
 void AddressAccessoryControllerImpl::RegisterPlusProfilesProvider(

@@ -279,7 +279,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kCommerce:
       // Not a switch.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

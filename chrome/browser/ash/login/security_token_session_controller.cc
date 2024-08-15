@@ -105,7 +105,7 @@ std::string SerializeBehaviorValue(
     case SecurityTokenSessionController::Behavior::kLock:
       return std::string(kLockPrefValue);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Checks if `domain` represents a valid domain. Returns false if `domain` is

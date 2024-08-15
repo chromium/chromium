@@ -58,7 +58,7 @@ void ManualFallbackEventLogger::ContextMenuEntryShown(
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -82,7 +82,7 @@ void ManualFallbackEventLogger::ContextMenuEntryAccepted(
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -92,7 +92,7 @@ void ManualFallbackEventLogger::UpdateContextMenuEntryState(
     ContextMenuEntryState& old_state) {
   switch (new_state) {
     case ContextMenuEntryState::kNotShown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ContextMenuEntryState::kShown:
       if (old_state != ContextMenuEntryState::kAccepted) {
         old_state = new_state;
@@ -114,7 +114,7 @@ void ManualFallbackEventLogger::UpdateSuggestionStateForFillingProduct(
                                           SuggestionState& old_state) {
     switch (new_state) {
       case SuggestionState::kNotShown:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case SuggestionState::kShown:
         if (old_state != SuggestionState::kFilled) {
           old_state = new_state;
@@ -143,7 +143,7 @@ void ManualFallbackEventLogger::UpdateSuggestionStateForFillingProduct(
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

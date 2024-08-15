@@ -166,7 +166,7 @@ std::string GetExtraMetricsSuffix(
     case safe_browsing::ThreatSource::UNKNOWN:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace safe_browsing

@@ -101,7 +101,7 @@ std::string PlusAddressNetworkRequestTypeToString(
     case PlusAddressNetworkRequestType::kPreallocate:
       return "Preallocate";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string PlusAddressModalCompletionStatusToString(
@@ -116,7 +116,7 @@ std::string PlusAddressModalCompletionStatusToString(
     case PlusAddressModalCompletionStatus::kConfirmPlusAddressError:
       return "ConfirmError";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace plus_addresses::metrics

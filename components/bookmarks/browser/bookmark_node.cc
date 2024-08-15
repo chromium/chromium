@@ -162,7 +162,7 @@ bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
 
   switch (type) {
     case BookmarkNode::URL:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case BookmarkNode::FOLDER:
       // Managed node.
       return false;
@@ -175,7 +175,7 @@ bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
       // Either MOBILE or OTHER_NODE is visible when empty, but never both.
       return !IsTypeVisibleWhenEmpty(BookmarkNode::OTHER_NODE);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BookmarkPermanentNode::~BookmarkPermanentNode() = default;

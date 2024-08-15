@@ -156,7 +156,7 @@ class TrustedVaultStateNotifiedToCrosapiObserverChecker
                "crosapi observer.";
         return recoverability_state_changed_notified_;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

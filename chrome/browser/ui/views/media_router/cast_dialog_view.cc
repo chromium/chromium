@@ -85,7 +85,7 @@ std::u16string CastDialogView::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -188,7 +188,7 @@ void CastDialogView::ShowAccessCodeCastDialog() {
       cast_mode_set = {MediaCastMode::DESKTOP_MIRROR};
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   AccessCodeCastDialog::Show(

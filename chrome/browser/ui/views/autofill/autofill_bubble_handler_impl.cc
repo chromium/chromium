@@ -174,7 +174,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
     }
     case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -364,7 +364,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
       return bubble;
     }
     case MandatoryReauthBubbleType::kInactive:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

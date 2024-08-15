@@ -377,7 +377,7 @@ size_t OctreeColorQuantizer::FindColorIndexInternal(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void OctreeColorQuantizer::InsertLeafNode(Node* node) {

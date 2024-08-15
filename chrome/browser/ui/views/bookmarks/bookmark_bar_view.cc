@@ -1185,7 +1185,7 @@ void BookmarkBarView::BookmarkModelLoaded(bool ids_reassigned) {
 }
 
 void BookmarkBarView::BookmarkModelBeingDeleted() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BookmarkBarView::BookmarkNodeMoved(const BookmarkNode* old_parent,

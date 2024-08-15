@@ -112,7 +112,7 @@ void FilesInternalsUI::HandleRequest(
     return;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FilesInternalsUI)

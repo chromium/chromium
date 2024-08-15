@@ -235,7 +235,7 @@ std::u16string GetRightClickRewriteNotificationMessage(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK,
           launcher_key_name);
     case SimulateRightClickModifier::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -261,7 +261,7 @@ std::string GetRightClickNotificationId(
     case SimulateRightClickModifier::kSearch:
       return kSearchRightClickRewriteNotificationId;
     case SimulateRightClickModifier::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -336,7 +336,7 @@ std::u16string GetSixPackKeyName(ui::KeyboardCode key_code) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_DOWN);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -358,7 +358,7 @@ std::u16string GetSixPackShortcutUpdatedString(ui::KeyboardCode key_code) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -450,7 +450,7 @@ std::string GetSixPackNotificationId(ui::KeyboardCode key_code, int device_id) {
       notification_id = kSixPackKeyPageDownRewriteNotificationId;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return notification_id + kDelimiter + base::NumberToString(device_id);
 }

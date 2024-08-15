@@ -112,7 +112,7 @@ SignedWebBundleIntegrityBlock ParseIntegrityBlockFromValue(
           *EcdsaP256PublicKey::Create(ecdsa_p256_pk->GetBytestring()),
           signature, attributes_cbor));
     } else {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 

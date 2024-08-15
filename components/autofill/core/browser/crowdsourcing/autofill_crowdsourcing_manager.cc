@@ -196,7 +196,7 @@ std::string GetMetricName(RequestType request_type, std::string_view suffix) {
       case RequestType::kRequestUpload:
         return "Upload";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
   return base::StrCat({"Autofill.", TypeToName(request_type), ".", suffix});
 }
@@ -303,7 +303,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         }
       })");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 size_t CountActiveFieldsInForms(
@@ -519,7 +519,7 @@ std::string GetAPIMethodUrl(RequestType type,
       case RequestType::kRequestUpload:
         return "/v1/forms:vote";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }();
   if (resource_id.empty()) {
     return std::string(api_method_url);

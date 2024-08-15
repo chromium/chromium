@@ -33,7 +33,7 @@ struct EnumTraits<blink::mojom::WebPrinterState, ipp_pstate_t> {
   static blink::mojom::WebPrinterState ToMojom(ipp_pstate_t input);
   static bool FromMojom(blink::mojom::WebPrinterState input,
                         ipp_pstate_t* output) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -45,7 +45,7 @@ struct EnumTraits<blink::mojom::WebPrinterStateReason,
   static bool FromMojom(
       blink::mojom::WebPrinterStateReason input,
       printing::PrinterStatus::PrinterReason::Reason* output) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -63,39 +63,39 @@ struct StructTraits<blink::mojom::WebPrintJobTemplateAttributesDataView,
   // typemap.
   static const std::string& job_name(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static uint32_t copies(const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const blink::mojom::WebPrintingMediaCollectionRequestedPtr& media_col(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const std::optional<std::string>& media_source(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const std::optional<blink::mojom::WebPrintingMultipleDocumentHandling>&
   multiple_document_handling(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const std::optional<blink::mojom::WebPrintingOrientationRequested>&
   orientation_requested(const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const std::optional<gfx::Size>& printer_resolution(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const std::optional<blink::mojom::WebPrintColorMode>& print_color_mode(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   static const std::optional<blink::mojom::WebPrintingSides>& sides(
       const std::unique_ptr<printing::PrintSettings>& ptr) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool Read(blink::mojom::WebPrintJobTemplateAttributesDataView data,

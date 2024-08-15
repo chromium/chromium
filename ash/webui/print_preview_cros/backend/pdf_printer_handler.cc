@@ -25,7 +25,7 @@ namespace {
 class PrintingContextDelegate : public ::printing::PrintingContext::Delegate {
  public:
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { NOTREACHED_NORETURN(); }
+  gfx::NativeView GetParentView() override { NOTREACHED(); }
   std::string GetAppLocale() override {
     // TODO(b/323421684): Fetch application locale.
     return "en-US";

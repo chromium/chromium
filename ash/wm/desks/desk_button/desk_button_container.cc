@@ -203,7 +203,7 @@ std::u16string DeskButtonContainer::GetTitleForView(
   } else if (view == next_desk_button_) {
     return next_desk_button_->GetTitle();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {

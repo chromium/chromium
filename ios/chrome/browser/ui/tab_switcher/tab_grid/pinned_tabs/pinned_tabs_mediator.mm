@@ -314,7 +314,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 }
 
 - (UIDragItem*)dragItemForTabGroupItem:(TabGroupItem*)tabGroupItem {
-  NOTREACHED_NORETURN() << "There is no tab groups in the pinned tabs section";
+  NOTREACHED() << "There is no tab groups in the pinned tabs section";
 }
 
 - (void)dragWillBeginForTabSwitcherItem:(TabSwitcherItem*)item {
@@ -322,7 +322,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)dragWillBeginForTabGroupItem:(TabGroupItem*)item {
-  NOTREACHED_NORETURN() << "There is no tab groups in the pinned tabs section";
+  NOTREACHED() << "There is no tab groups in the pinned tabs section";
 }
 
 - (void)dragSessionDidEnd {
@@ -440,8 +440,8 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 }
 
 - (NSArray<UIDragItem*>*)allSelectedDragItems {
-  NOTREACHED_NORETURN() << "You should not be able to drag and drop multiple "
-                           "items. There is no selection mode in pinned tabs.";
+  NOTREACHED() << "You should not be able to drag and drop multiple "
+                  "items. There is no selection mode in pinned tabs.";
 }
 
 #pragma mark - Private

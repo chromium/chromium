@@ -169,7 +169,7 @@ void AssistantZeroStateView::RunLauncherSearchQuery(
 }
 
 void AssistantZeroStateView::OpenAssistantPage() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BEGIN_METADATA(AssistantZeroStateView)

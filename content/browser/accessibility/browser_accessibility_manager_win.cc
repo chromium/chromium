@@ -184,7 +184,7 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
             return NotificationProcessing_ImportantMostRecent;
         }
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
 
   const base::win::ScopedBstr announcement_bstr(base::UTF8ToWide(announcement));

@@ -192,7 +192,7 @@ void ContentAutofillDriverFactory::RenderFrameHostStateChanged(
       case RFH::kPendingDeletion:  // Handled in RenderFrameDeleted().
         return std::nullopt;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }();
   if (state) {
     SetLifecycleStateAndNotifyObservers(*driver, *state);

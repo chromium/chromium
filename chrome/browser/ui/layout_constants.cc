@@ -66,7 +66,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       //   constants, so instead of spreading the permutation logic here and
       //   elsewhere, it's consolidated in `Layout()` and will be moved back
       //   here once we decide on a permutation.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case LOCATION_BAR_TRAILING_DECORATION_EDGE_PADDING:
       return touch_ui ? 3 : 12;
     case LOCATION_BAR_TRAILING_DECORATION_INNER_PADDING:

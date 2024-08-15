@@ -87,7 +87,7 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
   if (!context_->HasAXObjectCache()) {
     RECORD_ERROR(NoExistingAXObjectCache);
     // TODO(chrishtr): not clear why this can happen.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -448,7 +448,7 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       exponential = true;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Note that we calculate the backoff assuming that we've waited for

@@ -691,7 +691,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   switch (_draggedItemIdentifier.type) {
     case GridItemType::kInactiveTabsButton:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case GridItemType::kTab: {
       [self.dragDropHandler
           dragWillBeginForTabSwitcherItem:_draggedItemIdentifier
@@ -708,7 +708,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       break;
     }
     case GridItemType::kSuggestedActions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -727,7 +727,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   switch (_draggedItemIdentifier.type) {
     case GridItemType::kInactiveTabsButton:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case GridItemType::kTab:
       base::UmaHistogramEnumeration(kUmaGridViewDragDropTabsEvent, dragEvent);
       break;
@@ -735,7 +735,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       base::UmaHistogramEnumeration(kUmaGridViewDragDropGroupsEvent, dragEvent);
       break;
     case GridItemType::kSuggestedActions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Used to let the Taptic Engine return to its idle state.
@@ -775,7 +775,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     _draggedItemIdentifier = draggedItem;
     switch (_draggedItemIdentifier.type) {
       case GridItemType::kInactiveTabsButton:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case GridItemType::kTab:
         dragItem = [self.dragDropHandler
             dragItemForItem:_draggedItemIdentifier.tabSwitcherItem];
@@ -786,7 +786,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
             dragItemForTabGroupItem:_draggedItemIdentifier.tabGroupItem];
         break;
       case GridItemType::kSuggestedActions:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     if (!dragItem) {
       return @[];
@@ -1476,10 +1476,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       if (IsInactiveTabButtonRefactoringEnabled()) {
         return nil;
       } else {
-        NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+        NOTREACHED() << "Should be implemented in a subclass.";
       }
     case TabGridMode::kSelection:
-      NOTREACHED_NORETURN() << "Should not happen.";
+      NOTREACHED() << "Should not happen.";
     case TabGridMode::kSearch:
       registration = _gridHeaderRegistration;
       break;
@@ -1495,7 +1495,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   switch (itemIdentifier.type) {
     case GridItemType::kInactiveTabsButton:
       // Must be handled in the subclasses.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case GridItemType::kTab: {
       UICollectionViewCellRegistration* registration = _gridCellRegistration;
       return [self.collectionView
@@ -1764,7 +1764,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       break;
     }
     case GridItemType::kSuggestedActions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

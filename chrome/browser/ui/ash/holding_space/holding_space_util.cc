@@ -75,7 +75,7 @@ HoldingSpaceFile::FileSystemType ToHoldingSpaceFileSystemType(
       return HoldingSpaceFile::FileSystemType::kUnknown;
     case storage::FileSystemType::kFileSystemInternalTypeEnumStart:
     case storage::FileSystemType::kFileSystemInternalTypeEnumEnd:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

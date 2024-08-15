@@ -24,7 +24,7 @@ blink::mojom::WebFeature ToWebFeature(
       return blink::mojom::WebFeature::
           kSharedStorageWriteFromSellerReportResult;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

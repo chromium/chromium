@@ -165,7 +165,7 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kTextSafety:
       // This should not be called for features that are not on-device.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 // LINT.ThenChange(IsOnDeviceModelEnabled)

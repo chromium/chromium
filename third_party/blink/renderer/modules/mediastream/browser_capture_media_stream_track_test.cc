@@ -88,7 +88,7 @@ class BrowserCaptureMediaStreamTrackTest
             MakeGarbageCollected<RestrictionTarget>(std::move(id_string)),
             v8_scope.GetExceptionState());
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void CheckHistograms(

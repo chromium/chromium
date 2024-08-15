@@ -43,7 +43,7 @@ class EmptyBrowserInterfaceBrokerProxy
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     // `Reset` should only be called on a real `BrowserInterfaceBrokerProxy`.
     // It should never be called on `EmptyBrowserInterfaceBrokerProxy`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void GetInterface(mojo::GenericPendingReceiver receiver) const override {

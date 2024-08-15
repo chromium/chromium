@@ -1708,7 +1708,7 @@ SkColor NativeThemeBase::GetControlColorFromColorProvider(
     default:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void NativeThemeBase::PaintLightenLayer(cc::PaintCanvas* canvas,

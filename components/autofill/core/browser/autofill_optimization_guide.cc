@@ -146,7 +146,7 @@ GetBenefitCategoryForOptimizationType(
     case optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kStreaming;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

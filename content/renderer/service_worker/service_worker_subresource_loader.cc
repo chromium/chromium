@@ -606,7 +606,7 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
         // need to call CommitCompleted here.
         return;
       case FetchResponseFrom::kAutoPreloadHandlingFallback:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   fetch_request_restarted_ = true;
@@ -731,7 +731,7 @@ void ServiceWorkerSubresourceLoader::OnFallback(
           SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
           break;
         case DispatchedPreloadType::kNavigationPreload:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       break;
     case FetchResponseFrom::kServiceWorker:
@@ -863,7 +863,7 @@ void ServiceWorkerSubresourceLoader::StartResponse(
       }
       return;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Cancel the in-flight request processing for the fallback.
@@ -1552,7 +1552,7 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
     case blink::mojom::MatchResult::Tag::kEagerResponse:
       // EagerResponse, which should be used only if `in_related_fetch_event`
       // is set.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

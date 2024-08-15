@@ -150,7 +150,7 @@ crosapi::mojom::DownloadState ConvertToMojoDownloadState(
     case DownloadItem::INTERRUPTED:
       return crosapi::mojom::DownloadState::kInterrupted;
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

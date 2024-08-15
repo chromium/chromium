@@ -206,7 +206,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<SynthesizedAddressComponent> BuildSynthesizedNode(

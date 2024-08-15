@@ -242,7 +242,7 @@ syncer::DataTypeControllerDelegate* GetSavedTabGroupControllerDelegate(
       ->GetSavedTabGroupControllerDelegate()
       .get();
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 }
@@ -260,7 +260,7 @@ syncer::DataTypeControllerDelegate* GetSharedTabGroupControllerDelegate(
       ->GetSharedTabGroupControllerDelegate()
       .get();
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 }

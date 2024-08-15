@@ -47,7 +47,7 @@ std::unique_ptr<WindowHelpBubbleEventRelay> CreateWindowHelpBubbleEventRelay(
 #elif BUILDFLAG(IS_MAC)
   return std::make_unique<WindowHelpBubbleEventRelayMac>(source_widget);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

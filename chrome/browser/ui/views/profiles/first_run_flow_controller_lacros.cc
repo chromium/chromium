@@ -225,8 +225,8 @@ void FirstRunFlowControllerLacros::Init(
 }
 
 void FirstRunFlowControllerLacros::CancelPostSignInFlow() {
-  NOTREACHED_NORETURN();  // The whole Lacros FRE is post-sign-in, it's not
-                          // cancellable.
+  NOTREACHED();  // The whole Lacros FRE is post-sign-in, it's not
+                 // cancellable.
 }
 
 bool FirstRunFlowControllerLacros::PreFinishWithBrowser() {

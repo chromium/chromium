@@ -165,7 +165,7 @@ void SetOneTimeAutoLaunchKioskAppId(PrefService& local_state,
       local_state.CommitPendingWrite();
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash

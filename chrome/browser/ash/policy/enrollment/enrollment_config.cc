@@ -106,7 +106,7 @@ std::string_view ToStringView(EnrollmentConfig::Mode mode) {
     CASE(MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #undef CASE
 }
 
@@ -122,7 +122,7 @@ std::string_view ToStringView(EnrollmentConfig::AuthMechanism auth) {
     CASE(AUTH_MECHANISM_TOKEN_PREFERRED);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #undef CASE
 }
 

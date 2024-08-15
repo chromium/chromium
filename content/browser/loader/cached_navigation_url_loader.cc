@@ -95,7 +95,7 @@ bool CachedNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
 }
 
 void CachedNavigationURLLoader::CancelNavigationTimeout() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

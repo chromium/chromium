@@ -121,7 +121,7 @@ bool ShouldOfferPlusAddressCreationOnForm(
       return base::FeatureList::IsEnabled(
           features::kPlusAddressOfferCreationOnSingleUsernameForms);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<PlusAddressAllocator> CreateAllocator(

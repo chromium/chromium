@@ -123,7 +123,7 @@ double GetChannelProbability(version_info::Channel channel,
     case version_info::Channel::CANARY:
       return params.nonstable_probability;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool DecideIfCollectionIsEnabled(version_info::Channel channel,

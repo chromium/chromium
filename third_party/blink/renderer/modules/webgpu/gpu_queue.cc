@@ -80,7 +80,7 @@ wgpu::TextureFormat SkColorTypeToDawnColorFormat(SkColorType sk_color_type) {
     case SkColorType::kBGRA_8888_SkColorType:
       return wgpu::TextureFormat::BGRA8Unorm;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

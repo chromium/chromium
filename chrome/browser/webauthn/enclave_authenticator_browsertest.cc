@@ -922,7 +922,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     } else if (script_result == "\"IsUVPAA: false\"") {
       return false;
     }
-    NOTREACHED_NORETURN() << "unexpected IsUVPAA result: " << script_result;
+    NOTREACHED() << "unexpected IsUVPAA result: " << script_result;
   }
 
   void SetBiometricsEnabled(bool enabled) {
@@ -3502,16 +3502,16 @@ class BlockingUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
   std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

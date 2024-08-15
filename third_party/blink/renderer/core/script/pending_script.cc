@@ -340,7 +340,7 @@ bool PendingScript::IsControlledByScriptRunner() const {
       return false;
 
     case ScriptSchedulingType::kDeprecatedForceDefer:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "kDeprecatedForceDefer is deprecated and should not be in use";
 
     case ScriptSchedulingType::kInOrder:

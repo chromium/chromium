@@ -383,7 +383,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
         return "persistent-license";
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string IsSupportedByKeySystem(

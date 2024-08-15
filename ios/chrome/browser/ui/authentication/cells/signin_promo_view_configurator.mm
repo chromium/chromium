@@ -143,7 +143,7 @@ using l10n_util::GetNSStringF;
     case SigninPromoViewStyleStandard:
     case SigninPromoViewStyleOnlyButton:
       // This function shouldn't be used for the non-compact promos.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case SigninPromoViewStyleCompactVertical:
     case SigninPromoViewStyleCompactHorizontal:
       [signinPromoView configurePrimaryButtonWithTitle:

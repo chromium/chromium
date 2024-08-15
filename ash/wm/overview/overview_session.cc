@@ -104,7 +104,7 @@ aura::Window* GetWindowForSelection(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // A self-deleting window state observer that runs the given callback when its

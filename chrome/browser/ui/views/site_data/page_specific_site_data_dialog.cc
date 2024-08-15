@@ -69,7 +69,7 @@ int GetContentSettingRowOrder(ContentSetting setting) {
     case CONTENT_SETTING_BLOCK:
       return 2;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

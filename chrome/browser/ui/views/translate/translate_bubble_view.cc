@@ -346,7 +346,7 @@ bool TranslateBubbleView::IsCommandIdChecked(int command_id) const {
     case OptionsMenuItem::ALWAYS_TRANSLATE_LANGUAGE:
       return should_always_translate_;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -402,7 +402,7 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -471,7 +471,7 @@ views::View* TranslateBubbleView::GetCurrentView() const {
     case TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE:
       return advanced_view_target_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TranslateBubbleView::Translate() {

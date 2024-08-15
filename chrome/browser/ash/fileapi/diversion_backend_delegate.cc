@@ -565,7 +565,7 @@ void DiversionBackendDelegate::OnDiversionFinished(
 
         switch (call_site) {
           case OnDiversionFinishedCallSite::kEnsureFileExists:
-            NOTREACHED_NORETURN();
+            NOTREACHED();
 
           case OnDiversionFinishedCallSite::kCopyFileLocal: {
             if (!scoped_fd.is_valid()) {

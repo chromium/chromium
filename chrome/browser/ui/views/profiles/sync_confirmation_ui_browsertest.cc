@@ -173,7 +173,7 @@ class SyncConfirmationStepControllerForTest
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED_NORETURN(); }
+  void OnNavigateBackRequested() override { NOTREACHED(); }
 
   void OnSyncConfirmationLoaded(
       StepSwitchFinishedCallback step_shown_callback) {

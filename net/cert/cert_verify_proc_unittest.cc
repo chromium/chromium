@@ -1143,7 +1143,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
             0xd7, 0x0d, 0x01, 0x01, 0x0b, 0x05, 0x00};
         return kUnknownAlgorithm;
       default:
-        NOTREACHED_NORETURN() << "Unsupported digest algorithm";
+        NOTREACHED() << "Unsupported digest algorithm";
     }
   }
 };

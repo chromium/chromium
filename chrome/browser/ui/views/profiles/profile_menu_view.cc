@@ -733,7 +733,7 @@ void ProfileMenuView::BuildSyncInfo() {
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // There is always an account on ChromeOS.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #else
     // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {

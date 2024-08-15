@@ -147,7 +147,7 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
     EXPECT_EQ("/path*", dictionary_info.match());
     EXPECT_EQ(kTestData.size(), dictionary_info.size());
     EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(
-                           base::BindOnce([](int) { NOTREACHED_NORETURN(); })));
+                           base::BindOnce([](int) { NOTREACHED(); })));
     EXPECT_EQ(kTestData,
               std::string(dictionary_info.dictionary()->data()->data(),
                           dictionary_info.size()));

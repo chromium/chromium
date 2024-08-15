@@ -119,7 +119,7 @@ void SessionRestorationWebStateListObserver::BatchOperationEnded(
 
 void SessionRestorationWebStateListObserver::WebStateListDestroyed(
     WebStateList* web_state_list) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - Private methods

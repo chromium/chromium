@@ -576,7 +576,7 @@ class CapturedSurfaceControllerInterfaceTestBase
             MakeCallbackExpectingResult(run_loop, expected_result));
         return;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  protected:
@@ -926,7 +926,7 @@ class CapturedSurfaceControllerSendWheelClampTest
       case Boundary::kMax:
         return static_cast<int>(std::floor(kMax));
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

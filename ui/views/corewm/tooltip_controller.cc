@@ -125,7 +125,7 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
       return screen_target;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

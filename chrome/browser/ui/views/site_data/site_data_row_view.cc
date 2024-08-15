@@ -77,7 +77,7 @@ std::u16string GetSettingStateString(ContentSetting setting,
     case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
     case CONTENT_SETTING_NUM_SETTINGS:
       // Not supported settings for cookies.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return l10n_util::GetStringUTF16(message_id);

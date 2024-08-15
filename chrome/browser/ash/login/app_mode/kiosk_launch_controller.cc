@@ -255,7 +255,7 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kLacrosDataMigrationStarted);
     CASE(kLacrosBackwardDataMigrationStarted);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #undef CASE
 }
 
@@ -602,7 +602,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
 
   switch (error) {
     case Error::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Error::kCryptohomedNotRunning:
     case Error::kAlreadyMounted:
       // Reboot the device on recoverable cryptohome errors. Do not save error

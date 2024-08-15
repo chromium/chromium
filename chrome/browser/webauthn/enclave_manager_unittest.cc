@@ -409,7 +409,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
       ui_request->entity = std::move(entity);
       ui_request->claimed_pin = std::move(claimed_pin);
       ui_request->save_passkey_callback = base::BindOnce(
-          [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED_NORETURN(); });
+          [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
     }
 
     enclave::EnclaveAuthenticator authenticator(
@@ -1797,7 +1797,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   ui_request->entity = GetTestEntity();
   ui_request->claimed_pin = nullptr;
   ui_request->save_passkey_callback = base::BindOnce(
-      [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED_NORETURN(); });
+      [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
   ui_request->user_verified = true;
   ui_request->uv_key_creation_callback =
       manager_.UserVerifyingKeyCreationCallback();

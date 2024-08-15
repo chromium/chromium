@@ -31,7 +31,7 @@ std::string GetStorageStateSuffixForMetrics(StorageStateForUma storage_state) {
     case StorageStateForUma::kSyncEnabled:
       return std::string(".LocalStorageSyncing");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetStorageFileSuffixForMetrics(StorageFileForUma storage_file) {
@@ -41,7 +41,7 @@ std::string GetStorageFileSuffixForMetrics(StorageFileForUma storage_file) {
     case StorageFileForUma::kAccount:
       return std::string(".Account");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

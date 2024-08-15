@@ -238,7 +238,7 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -259,7 +259,7 @@ MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
     case ui::KeyboardCode::VKEY_MEDIA_PREV_TRACK:
       return MediaSessionAction::kPreviousTrack;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

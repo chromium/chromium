@@ -165,7 +165,7 @@ TEST_F(DiversionFileManagerTest, Writes) {
       [](StoppedReason stopped_reason, const storage::FileSystemURL& url,
          base::ScopedFD scoped_fd, int64_t file_size, base::File::Error error) {
         // We shouldn't get here. We should get to on_explicit_finish instead.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       };
   ASSERT_EQ(StartDivertingResult::kOK,
             dfm->StartDiverting(foo_url, base::Seconds(15),

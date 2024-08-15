@@ -81,7 +81,7 @@ std::u16string CloudProviderToString(CloudProvider provider) {
       return l10n_util::GetStringUTF16(
           IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_ONEDRIVE);
     case CloudProvider::kNotSpecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -233,7 +233,7 @@ int GetResourceId(BubbleIcon icon) {
     case BubbleIcon::kGooglePhotosIcon:
       return IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_120_PNG;
     case BubbleIcon::kNoIcon:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #else
   return IDR_PRODUCT_LOGO_128;

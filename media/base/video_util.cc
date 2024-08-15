@@ -749,7 +749,7 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
     case PIXEL_FORMAT_ARGB:
       return kBGRA_8888_SkColorType;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

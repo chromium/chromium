@@ -39,7 +39,7 @@ void ByteArrayCallbackListener::OnError(JNIEnv* env, jint authRequestError) {
     case static_cast<jint>(AuthRequestError::kOther):
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   std::move(callback_).Run(base::unexpected(
       std::move(static_cast<AuthRequestError>(authRequestError))));

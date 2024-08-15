@@ -172,7 +172,7 @@ bool ExtensibleEnterpriseSSOProvider::SupportsOriginFiltering() {
 void ExtensibleEnterpriseSSOProvider::FetchOrigins(
     FetchOriginsCallback on_fetch_complete) {
   // Origin filtering is nor supported.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ExtensibleEnterpriseSSOProvider::GetData(

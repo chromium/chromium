@@ -20,7 +20,7 @@ std::string_view GetBackgroundTaskTypeSuffixForHistograms(
     case BackgroundTaskType::kSign:
       return ".Sign";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace unexportable_keys

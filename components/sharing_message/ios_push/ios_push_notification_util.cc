@@ -34,7 +34,7 @@ std::string GetIosPushMessageTypeIdForChannel(MessageType message_type,
       return GetSendTabTypeIdForChannel(channel);
     default:
       // Only SEND_TAB_TO_SELF_PUSH_NOTIFICATION is supported by iOS Push.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace sharing_message

@@ -54,7 +54,7 @@ Encryptor::Key::Key(base::span<const uint8_t> key,
   }
 #endif
   if (!algorithm_.has_value()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   switch (*algorithm_) {
@@ -99,7 +99,7 @@ Encryptor::~Encryptor() = default;
 std::vector<uint8_t> Encryptor::Key::Encrypt(
     base::span<const uint8_t> plaintext) const {
   if (!algorithm_.has_value()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   switch (*algorithm_) {
@@ -141,7 +141,7 @@ std::vector<uint8_t> Encryptor::Key::Encrypt(
 std::optional<std::vector<uint8_t>> Encryptor::Key::Decrypt(
     base::span<const uint8_t> ciphertext) const {
   if (!algorithm_.has_value()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   switch (*algorithm_) {
     case mojom::Algorithm::kAES256GCM: {

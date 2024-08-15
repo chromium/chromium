@@ -263,7 +263,7 @@ void CanvasHibernationHandler::Encode(
                        uncompressed_size, "size", compressed_size);
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
     }
   }
@@ -318,7 +318,7 @@ sk_sp<SkImage> CanvasHibernationHandler::GetImage() {
           << "Error: " << ZSTD_getErrorName(uncompressed_size);
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     }
   }

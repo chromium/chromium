@@ -650,9 +650,9 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
   ui::AXTreeUpdate update;
   serializer.MarkSubtreeDirty(manager.GetRoot()->id());
   if (!serializer.SerializeChanges(manager.GetRoot(), &update)) {
-    NOTREACHED_NORETURN() << "Failure to serialize should have already caused "
-                             "the process to crash due to the `crash_on_error` "
-                             "in `AXTreeSerializer` constructor call.";
+    NOTREACHED() << "Failure to serialize should have already caused "
+                    "the process to crash due to the `crash_on_error` "
+                    "in `AXTreeSerializer` constructor call.";
   }
   if (pending_serialized_updates_for_testing_) {
     ui::AXTreeUpdate simplified_update = update;

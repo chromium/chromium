@@ -696,7 +696,7 @@ const char* PipelineImpl::RendererWrapper::GetStateString(State state) {
     case State::kResuming:
       return "kResuming";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PipelineImpl::RendererWrapper::OnDemuxerError(PipelineStatus error) {
@@ -866,7 +866,7 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
           streams, std::move(change_completed_cb));
       break;
     case DemuxerStream::UNKNOWN:  // Fail on unknown type.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

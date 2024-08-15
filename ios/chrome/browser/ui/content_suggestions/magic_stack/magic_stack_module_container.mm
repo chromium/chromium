@@ -575,7 +575,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kParcelTracking:
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -603,7 +603,7 @@ const CGFloat kSeparatorHeight = 0.5;
           base::SysNSStringToUTF16(l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

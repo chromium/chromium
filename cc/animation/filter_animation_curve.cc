@@ -100,7 +100,7 @@ std::unique_ptr<gfx::AnimationCurve> KeyframedFilterAnimationCurve::Clone()
 // do not use timing functions.
 FilterOperations KeyframedFilterAnimationCurve::GetValue(
     base::TimeDelta t) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FilterOperations KeyframedFilterAnimationCurve::GetTransformedValue(

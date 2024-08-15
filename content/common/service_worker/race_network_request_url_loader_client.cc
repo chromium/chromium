@@ -178,7 +178,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       owner_->HandleRedirect(redirect_info, head);
       break;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   redirected_ = true;
 }
@@ -283,7 +283,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
       CommitResponse();
       break;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -342,7 +342,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
                               "RaceNetworkRequest has completed.");
       break;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   write_buffer_manager_for_race_network_request_.ResetProducer();
   forwarding_client_->OnComplete(completion_status_.value());
@@ -645,7 +645,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
     State new_state) {
   switch (new_state) {
     case State::kWaitForBody:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case State::kRedirect:
       CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect)
           << "state_:" << static_cast<int>(state_);
@@ -750,7 +750,7 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::ConvertMojoResultForUMA(
     case MOJO_RESULT_SHOULD_WAIT:
       return MojoResultForUMA::MOJO_RESULT_SHOULD_WAIT;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

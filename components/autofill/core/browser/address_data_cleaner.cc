@@ -44,7 +44,7 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
       case syncer::SyncService::DataTypeDownloadStatus::kError:
         return false;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
   return should_wait(syncer::DataType::AUTOFILL_PROFILE) ||
          should_wait(syncer::DataType::CONTACT_INFO);

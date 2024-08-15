@@ -627,7 +627,7 @@ viz::VideoCaptureSubTarget WebContentsFrameTracker::DeriveSubTarget() const {
       return viz::SubtreeCaptureId(sub_capture_target.token);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

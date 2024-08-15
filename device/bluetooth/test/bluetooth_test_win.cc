@@ -283,7 +283,7 @@ void BluetoothTestWin::StartLowEnergyDiscoverySession() {
 }
 
 BluetoothDevice* BluetoothTestWin::SimulateLowEnergyDevice(int device_ordinal) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(

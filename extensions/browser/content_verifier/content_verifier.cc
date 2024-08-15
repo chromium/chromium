@@ -665,7 +665,7 @@ void ContentVerifier::VerifyFailed(
     switch (file_type) {
       case VerifiedFileType::kNone:
         // We should only consider a file type that should be verified.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case VerifiedFileType::kBackgroundPage:
         histogram_suffix = "BackgroundPage";
         break;

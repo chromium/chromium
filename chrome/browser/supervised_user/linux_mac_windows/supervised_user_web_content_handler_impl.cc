@@ -24,5 +24,5 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const supervised_user::UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
   // Method unsupposted on Desktop.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

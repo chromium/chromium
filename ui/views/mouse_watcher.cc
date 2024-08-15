@@ -53,7 +53,7 @@ class MouseWatcher::Observer : public ui::EventObserver {
         HandleMouseEvent(EventType::kPress);
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

@@ -306,7 +306,7 @@ NSInteger GetDismissedWarningsCount(
                                      base::NumberToString16(numberOfIssues));
 
     case WarningType::kNoInsecurePasswordsWarning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

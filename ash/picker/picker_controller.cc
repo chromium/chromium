@@ -233,7 +233,7 @@ std::u16string TransformText(std::u16string_view text,
     case PickerSearchResult::CaseTransformData::Type::kTitleCase:
       return PickerTransformToTitleCase(text);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void OpenLink(const GURL& url) {
@@ -450,15 +450,9 @@ void PickerController::CloseWidgetThenInsertResultOnNextFocus(
 void PickerController::OpenResult(const PickerSearchResult& result) {
   return std::visit(
       base::Overloaded{
-          [](const PickerSearchResult::TextData& data) {
-            NOTREACHED_NORETURN();
-          },
-          [](const PickerSearchResult::EmojiData& data) {
-            NOTREACHED_NORETURN();
-          },
-          [](const PickerSearchResult::ClipboardData& data) {
-            NOTREACHED_NORETURN();
-          },
+          [](const PickerSearchResult::TextData& data) { NOTREACHED(); },
+          [](const PickerSearchResult::EmojiData& data) { NOTREACHED(); },
+          [](const PickerSearchResult::ClipboardData& data) { NOTREACHED(); },
           [&](const PickerSearchResult::BrowsingHistoryData& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kOpenLink);
@@ -474,15 +468,11 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
                 PickerSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
-          [](const PickerSearchResult::CategoryData& data) {
-            NOTREACHED_NORETURN();
-          },
+          [](const PickerSearchResult::CategoryData& data) { NOTREACHED(); },
           [](const PickerSearchResult::SearchRequestData& data) {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
-          [](const PickerSearchResult::EditorData& data) {
-            NOTREACHED_NORETURN();
-          },
+          [](const PickerSearchResult::EditorData& data) { NOTREACHED(); },
           [&](const PickerSearchResult::NewWindowData& data) {
             session_metrics_->SetOutcome(
                 PickerSessionMetrics::SessionOutcome::kCreate);
@@ -743,7 +733,7 @@ void PickerController::InsertResultOnNextFocus(
                 aura::client::GetFocusClient(widget_->GetNativeView()),
                 data.item_id);
           },
-          [](std::monostate) { NOTREACHED_NORETURN(); },
+          [](std::monostate) { NOTREACHED(); },
       },
       GetInsertionContentForResult(result));
 

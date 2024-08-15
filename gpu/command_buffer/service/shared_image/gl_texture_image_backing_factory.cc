@@ -102,7 +102,7 @@ GLTextureImageBackingFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool GLTextureImageBackingFactory::IsSupported(

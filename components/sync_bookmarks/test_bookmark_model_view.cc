@@ -27,7 +27,7 @@ std::unique_ptr<BookmarkModelView> CreateWrappedView(
       return std::make_unique<BookmarkModelViewUsingAccountNodes>(model);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

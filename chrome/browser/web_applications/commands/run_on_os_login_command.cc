@@ -108,7 +108,7 @@ void RunOnOsLoginCommand::Abort(
   RecordCompletionState(aborted_state);
   switch (aborted_state) {
     case RunOnOsLoginCommandCompletionState::kCommandSystemShutDown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case RunOnOsLoginCommandCompletionState::kNotAllowedByPolicy:
       stop_reason_ = "Setting of run on OS login mode not allowed by policy";
       break;
@@ -116,7 +116,7 @@ void RunOnOsLoginCommand::Abort(
       stop_reason_ = "App is not locally installed";
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   GetMutableDebugValue().Set("Command Stop Reason: ", stop_reason_);
   CompleteAndSelfDestruct(CommandResult::kFailure);

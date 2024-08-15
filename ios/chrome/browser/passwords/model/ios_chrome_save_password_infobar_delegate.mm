@@ -153,7 +153,7 @@ std::string DurationHistogramName(bool is_update,
       return base::StrCat({base_name, ".OnDeletion"});
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Records the infobar duration metric for a given `moment`.

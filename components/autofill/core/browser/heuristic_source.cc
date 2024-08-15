@@ -75,7 +75,7 @@ std::optional<PatternSource> HeuristicSourceToPatternSource(
     case autofill::HeuristicSource::kMachineLearning:
       return std::nullopt;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 HeuristicSource PatternSourceToHeuristicSource(PatternSource source) {
@@ -89,6 +89,6 @@ HeuristicSource PatternSourceToHeuristicSource(PatternSource source) {
       return HeuristicSource::kExperimental;
 #endif
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace autofill

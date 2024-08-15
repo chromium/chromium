@@ -193,7 +193,7 @@ std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() {
       return title_string;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

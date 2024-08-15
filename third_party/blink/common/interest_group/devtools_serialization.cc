@@ -40,7 +40,7 @@ std::string SerializeIntoKey(BuyerReportType report_type) {
     case BuyerReportType::kTotalSignalsFetchLatency:
       return "totalSignalsFetchLatency";
   };
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 using RealTimeReportingType =
@@ -50,7 +50,7 @@ std::string SerializeIntoValue(RealTimeReportingType report_type) {
     case RealTimeReportingType::kDefaultLocalReporting:
       return "default-local-reporting";
   };
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 template <typename T>

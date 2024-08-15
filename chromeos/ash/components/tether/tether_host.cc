@@ -31,7 +31,7 @@ bool operator==(const TetherHost& first, const TetherHost& second) {
            first.presence_device().value() == second.presence_device().value();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const std::string TetherHost::GetDeviceId() const {
@@ -43,7 +43,7 @@ const std::string TetherHost::GetDeviceId() const {
     return presence_device_->GetDeviceIdentityMetadata().device_id();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const std::string TetherHost::GetName() const {
@@ -55,7 +55,7 @@ const std::string TetherHost::GetName() const {
     return remote_device_ref_->name();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const std::string TetherHost::GetTruncatedDeviceIdForLogs() const {

@@ -315,7 +315,7 @@ Registrar ConvertToRegistrar(AttributionReportingOsRegistrar os_registrar) {
     case AttributionReportingOsRegistrar::kOs:
       return Registrar::kOs;
     case AttributionReportingOsRegistrar::kDisabled:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -501,7 +501,7 @@ class AttributionDataHostManagerImpl::RegistrationContext {
       case RegistrationMethod::kNavBackgroundBlinkViaSW:
       case RegistrationMethod::kForegroundBlinkViaSW:
       case RegistrationMethod::kBackgroundBlinkViaSW:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

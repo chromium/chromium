@@ -731,7 +731,7 @@ int OpaqueBrowserFrameView::CalculateCaptionButtonBackgroundXOffset(
     case VIEW_ID_CLOSE_BUTTON:
       return (is_rtl ? 0 : minimize_width + maximize_restore_width);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

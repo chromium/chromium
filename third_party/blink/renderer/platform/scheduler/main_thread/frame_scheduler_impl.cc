@@ -117,7 +117,7 @@ TaskPriority GetLowPriorityAsyncScriptTaskPriority() {
     case features::AsyncScriptPrioritisationType::kBestEffort:
       return TaskPriority::kBestEffortPriority;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

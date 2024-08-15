@@ -530,7 +530,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return ui::ImageModel::FromVectorIcon(
@@ -563,7 +563,7 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
     default:
       // All other content settings types do not represent chosen object
       // permissions.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return ui::ImageModel::FromVectorIcon(

@@ -30,7 +30,7 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
       // The browser process ensures that this path is never reached for this
       // OOP-VD mode.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case media::OOPVDMode::kDisabled:
       break;
   }

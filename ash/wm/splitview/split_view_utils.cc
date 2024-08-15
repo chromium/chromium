@@ -141,7 +141,7 @@ AnimationValues GetAnimationValuesForType(SplitviewAnimationType type) {
                   ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET};
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ApplyAnimationSettings(
@@ -392,7 +392,7 @@ WindowStateType GetWindowStateTypeFromSnapPosition(SnapPosition snap_position) {
     case SnapPosition::kSecondary:
       return WindowStateType::kSecondarySnapped;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -403,7 +403,7 @@ SnapPosition ToSnapPosition(chromeos::WindowStateType type) {
     case WindowStateType::kSecondarySnapped:
       return SnapPosition::kSecondary;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -846,7 +846,7 @@ SnapViewType ToSnapViewType(chromeos::WindowStateType state_type) {
     case chromeos::WindowStateType::kSecondarySnapped:
       return SnapViewType::kSecondary;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

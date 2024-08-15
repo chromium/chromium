@@ -50,7 +50,7 @@ AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
     case COMPANY_NAME:
       return AutofillFieldByFieldFillingTypes::kCompany;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

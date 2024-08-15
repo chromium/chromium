@@ -470,7 +470,7 @@ std::string_view FormControlTypeToString(FormControlType type) {
     case FormControlType::kTextArea:
       return "textarea";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FormControlType StringToFormControlTypeDiscouraged(
@@ -486,7 +486,7 @@ FormControlType StringToFormControlTypeDiscouraged(
   if (fallback) {
     return *fallback;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void SerializeFormFieldData(const FormFieldData& field_data,

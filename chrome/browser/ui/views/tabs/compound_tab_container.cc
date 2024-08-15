@@ -62,17 +62,17 @@ class PinnedTabContainerController final : public TabContainerController {
   }
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override {
-    NOTREACHED_NORETURN();  // Pinned container can't have groups.
+    NOTREACHED();  // Pinned container can't have groups.
   }
 
   std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
-    NOTREACHED_NORETURN();  // Pinned container can't have groups.
+    NOTREACHED();  // Pinned container can't have groups.
   }
 
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const override {
-    NOTREACHED_NORETURN();  // Pinned container can't have groups.
+    NOTREACHED();  // Pinned container can't have groups.
   }
 
   bool CanExtendDragHandle() const override {
@@ -359,7 +359,7 @@ void CompoundTabContainer::SetActiveTab(
 Tab* CompoundTabContainer::RemoveTabFromViewModel(int model_index) {
   // TODO(crbug.com/40882151): This only needs to be implemented in
   // TabContainerImpl.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
@@ -367,7 +367,7 @@ Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
                                              TabPinned pinned) {
   // TODO(crbug.com/40882151): This only needs to be implemented in
   // TabContainerImpl.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void CompoundTabContainer::ReturnTabSlotView(TabSlotView* view) {
@@ -536,13 +536,13 @@ std::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetLeadingElementForZOrdering() const {
   // TODO(crbug.com/40882151): This only needs to be implemented in
   // TabContainerImpl.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 std::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetTrailingElementForZOrdering() const {
   // TODO(crbug.com/40882151): This only needs to be implemented in
   // TabContainerImpl.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
@@ -552,7 +552,7 @@ void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
   // TODO(crbug.com/40882151): This only needs to be implemented in
   // TabContainerImpl.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void CompoundTabContainer::InvalidateIdealBounds() {

@@ -296,7 +296,7 @@ cx_diag::RoutineWaitingReason Convert(
         kWaitingForInteraction:
       return cx_diag::RoutineWaitingReason::kWaitingForInteraction;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_diag::MemtesterTestItemEnum Convert(
@@ -344,7 +344,7 @@ cx_diag::MemtesterTestItemEnum Convert(
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites:
       return cx_diag::MemtesterTestItemEnum::kSixteenBitWrites;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_diag::HardwarePresenceStatus Convert(
@@ -359,7 +359,7 @@ cx_diag::HardwarePresenceStatus Convert(
     case crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured:
       return cx_diag::HardwarePresenceStatus::kNotConfigured;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_diag::NetworkBandwidthRoutineRunningType Convert(
@@ -376,7 +376,7 @@ cx_diag::NetworkBandwidthRoutineRunningType Convert(
         kUpload:
       return cx_diag::NetworkBandwidthRoutineRunningType::kUpload;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_diag::CameraFrameAnalysisIssue Convert(
@@ -398,7 +398,7 @@ cx_diag::CameraFrameAnalysisIssue Convert(
         kLensAreDirty:
       return cx_diag::CameraFrameAnalysisIssue::kLensAreDirty;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_diag::CameraSubtestResult Convert(
@@ -413,7 +413,7 @@ cx_diag::CameraSubtestResult Convert(
     case crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed:
       return cx_diag::CameraSubtestResult::kFailed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace chromeos::converters::routines

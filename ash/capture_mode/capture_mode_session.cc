@@ -403,7 +403,7 @@ gfx::Rect GetHitTestRectForFineTunePosition(
       return gfx::Rect(gfx::Point(vertical_x, vertical_y), vertical_size);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -2663,7 +2663,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
       }
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const bool horizontal =

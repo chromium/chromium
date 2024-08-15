@@ -127,7 +127,7 @@ AttributionScopesSet::FromJSON(base::Value::Dict& reg) {
             return TriggerRegistrationError::kAttributionScopesValueInvalid;
           case AttributionScopesError::kSetTooLong:
           case AttributionScopesError::kScopeTooLong:
-            NOTREACHED_NORETURN();
+            NOTREACHED();
         }
       });
 }

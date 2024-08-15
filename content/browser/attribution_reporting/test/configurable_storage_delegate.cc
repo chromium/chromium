@@ -155,7 +155,7 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
       config_.aggregate_limit.max_reports_per_destination = max;
       break;
     case AttributionReport::Type::kNullAggregatable:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

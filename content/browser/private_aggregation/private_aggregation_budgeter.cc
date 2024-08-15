@@ -751,7 +751,7 @@ bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() {
   switch (storage_status_) {
     case StorageStatus::kPendingInitialization:
     case StorageStatus::kInitializing:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case StorageStatus::kInitializationFailed:
       return false;
     case StorageStatus::kOpen:

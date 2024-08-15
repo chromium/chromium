@@ -1929,7 +1929,7 @@ BrowserAccessibilityManager::CreateBrowserAccessibility(ui::AXNode* node) {
 #if !BUILDFLAG(IS_ANDROID)
   return BrowserAccessibility::Create(this, node);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

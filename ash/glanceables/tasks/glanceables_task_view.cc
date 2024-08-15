@@ -489,7 +489,7 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
 
   switch (state) {
     case TaskTitleViewState::kNotInitialized:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case TaskTitleViewState::kView:
       task_title_button_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskTitleButton>(
@@ -592,7 +592,7 @@ void GlanceablesTaskView::AddExtraContentForEditState() {
 void GlanceablesTaskView::UpdateContentsMargins(TaskTitleViewState state) {
   switch (state) {
     case TaskTitleViewState::kNotInitialized:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case TaskTitleViewState::kView:
       contents_view_->SetProperty(views::kMarginsKey, kContentsMargin);
       task_title_button_->SetProperty(views::kMarginsKey,

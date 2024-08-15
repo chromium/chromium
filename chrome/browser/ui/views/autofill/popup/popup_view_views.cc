@@ -313,7 +313,7 @@ bool PopupViewViews::Show(
         break;
       default:
         // All Compose SuggestionTypes should already be handled.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -747,7 +747,7 @@ PopupViewViews::GetPopupScreenLocation() const {
       case views::BubbleBorder::Arrow::RIGHT_TOP:
         return ArrowPosition::kRightTop;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   views::Border* border = GetWidget()->GetRootView()->GetBorder();

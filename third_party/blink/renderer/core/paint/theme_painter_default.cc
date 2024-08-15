@@ -101,7 +101,7 @@ SkColor GetContrastingColorFor(const Element& element,
       // color-scheme to flicker back and forth when the user interacts with it.
       return color_provider->GetColor(ui::kColorWebNativeControlFill);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

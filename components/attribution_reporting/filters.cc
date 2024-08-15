@@ -145,7 +145,7 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
             case StringSetError::kSetTooLong:
               return FilterValuesError::kListTooLong;
           }
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         });
 
     filter_values.emplace_back(filter, std::move(values).extract());
@@ -382,7 +382,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
       case FilterValuesError::kKeyTooLong:
       case FilterValuesError::kListTooLong:
       case FilterValuesError::kValueTooLong:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
 

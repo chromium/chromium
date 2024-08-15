@@ -527,7 +527,7 @@ double ColorFunctionParser::ResolveColorChannel(
         // Proceed to relative channel value resolution below.
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -551,7 +551,7 @@ double ColorFunctionParser::ResolveAlpha(
         // Proceed to relative channel value resolution below.
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

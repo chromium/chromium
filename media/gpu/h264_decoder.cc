@@ -80,7 +80,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       // Spec H.10.1.1 and H.10.1.2.
       return bit_depth == 8u;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -1844,7 +1844,7 @@ bool H264Decoder::FillH264PictureFromSliceHeader(
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return true;
 }

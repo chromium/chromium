@@ -105,7 +105,7 @@ bool RequestPinView::IsDialogButtonEnabled(ui::DialogButton button) const {
       return true;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 views::View* RequestPinView::GetInitiallyFocusedView() {

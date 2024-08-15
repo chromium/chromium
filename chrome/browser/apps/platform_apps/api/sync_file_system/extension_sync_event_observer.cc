@@ -53,7 +53,7 @@ SyncActionMetrics convertToHistogramEnum(
     case ::sync_file_system::SyncAction::SYNC_ACTION_DELETED:
       return SyncActionMetrics::kDeleted;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

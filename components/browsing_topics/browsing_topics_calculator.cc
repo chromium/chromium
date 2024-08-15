@@ -600,7 +600,7 @@ void BrowsingTopicsCalculator::OnCalculationHanging() {
       status = CalculatorResultStatus::kHangingAfterAnnotationRequested;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   OnCalculateCompleted(EpochTopics(calculation_time_, status));

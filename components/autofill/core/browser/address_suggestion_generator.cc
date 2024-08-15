@@ -568,7 +568,7 @@ std::u16string GetGranularFillingLabels(SuggestionType suggestion_type) {
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillFullEmail:
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

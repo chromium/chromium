@@ -300,7 +300,7 @@ bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
 
   // All new validation logic should be added either before or into the switch
   // above.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(

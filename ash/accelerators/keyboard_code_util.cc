@@ -160,7 +160,7 @@ const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
       return &kCampbellHeroIcon;
     case ui::mojom::MetaKey::kExternalMeta:
     case ui::mojom::MetaKey::kCommand:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

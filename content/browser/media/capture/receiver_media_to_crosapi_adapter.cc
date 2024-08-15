@@ -37,7 +37,7 @@ void ReceiverMediaToCrosapiAdapter::OnNewBuffer(
 void ReceiverMediaToCrosapiAdapter::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "This method is deprecated, use OnFrameReadyInBuffer instead.";
 }
 

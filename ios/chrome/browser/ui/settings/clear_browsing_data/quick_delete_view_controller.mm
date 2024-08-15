@@ -213,7 +213,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return nil;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -475,7 +475,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return browsingDataCell;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns a UIMenu with all supported time ranges for deletion.
@@ -543,7 +543,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       // This value should not be reached since it's not a part of the menu.
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns a view of a trash icon with a red background with vertical padding.

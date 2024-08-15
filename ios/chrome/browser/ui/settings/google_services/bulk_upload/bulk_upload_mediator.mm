@@ -296,7 +296,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     }
     case ReauthenticationResult::kSkipped: {
       // This should not happens since `canReusePreviousAuth` is set to `NO`.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

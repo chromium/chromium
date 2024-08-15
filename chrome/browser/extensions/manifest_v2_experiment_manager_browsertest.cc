@@ -98,7 +98,7 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
     }
   }
 
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "Unknown test name '" << test_name << "'. "
       << "You need to add a new test stage entry into this collection.";
 }
@@ -167,7 +167,7 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
             extensions_features::kExtensionManifestV2DeprecationWarning);
         break;
       case MV2ExperimentStage::kNone:
-        NOTREACHED_NORETURN() << "Unhandled stage.";
+        NOTREACHED() << "Unhandled stage.";
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);

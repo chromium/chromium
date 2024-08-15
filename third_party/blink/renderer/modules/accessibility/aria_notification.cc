@@ -20,7 +20,7 @@ ax::mojom::blink::AriaNotificationInterrupt AsEnum(
     case V8AriaNotifyInterrupt::Enum::kPending:
       return ax::mojom::blink::AriaNotificationInterrupt::kPending;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ax::mojom::blink::AriaNotificationPriority AsEnum(
@@ -31,7 +31,7 @@ ax::mojom::blink::AriaNotificationPriority AsEnum(
     case V8AriaNotifyPriority::Enum::kImportant:
       return ax::mojom::blink::AriaNotificationPriority::kImportant;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

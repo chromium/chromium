@@ -143,6 +143,6 @@ DialogStrings PerformanceInterventionBubble::GetStrings(int count) {
           l10n_util::GetStringUTF16(
               IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3)};
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

@@ -45,8 +45,7 @@ bool VideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
     const base::WeakPtr<Client>& decode_client,
     const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner) {
   // Implementations in the process that VDA runs in must override this.
-  NOTREACHED_NORETURN()
-      << "This may only be called in the same process as VDA impl.";
+  NOTREACHED() << "This may only be called in the same process as VDA impl.";
 }
 
 void VideoDecodeAccelerator::ImportBufferForPicture(

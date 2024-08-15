@@ -102,7 +102,7 @@ UserScript::Source UserScript::GetSourceForScriptID(
 
   // TODO(crbug.com/40927913): Handle gracefully when a new source is handed,
   // specially when user has different Chrome versions.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

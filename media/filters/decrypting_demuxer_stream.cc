@@ -420,7 +420,7 @@ void DecryptingDemuxerStream::InitializeDecoderConfig() {
     }
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   LogMetadata();
 }

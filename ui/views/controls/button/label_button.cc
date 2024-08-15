@@ -477,7 +477,7 @@ ui::NativeTheme::State LabelButton::GetThemeState(
     case STATE_DISABLED:
       return ui::NativeTheme::kDisabled;
     case STATE_COUNT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return ui::NativeTheme::kNormal;
 }

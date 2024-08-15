@@ -121,7 +121,7 @@ CreateReportResult::EventLevel CreateEventLevelResult(
     case EventLevelResult::kNoMatchingTriggerData:
       return CreateReportResult::NoMatchingTriggerData();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CreateReportResult::Aggregatable CreateAggregatableResult(
@@ -170,7 +170,7 @@ CreateReportResult::Aggregatable CreateAggregatableResult(
       return CreateReportResult::ExcessiveAggregatableReports(
           *limits.max_aggregatable_reports_per_source);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -1469,7 +1469,7 @@ class ManualFallbackMetricsTest
         case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
           return "ClassifiedAsTargetFilling";
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }();
 
@@ -1501,7 +1501,7 @@ class ManualFallbackMetricsTest
       case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
         return IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -1524,7 +1524,7 @@ class ManualFallbackMetricsTest
         return form;
       }
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -1540,7 +1540,7 @@ class ManualFallbackMetricsTest
       case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
         return ".Password";
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

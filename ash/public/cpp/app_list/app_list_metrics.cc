@@ -101,7 +101,7 @@ bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
     case AppListShowSource::kWelcomeTour:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,

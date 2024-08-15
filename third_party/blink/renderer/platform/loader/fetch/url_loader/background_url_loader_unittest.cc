@@ -130,7 +130,7 @@ class BackgroundResponseProcessorTestUtil
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       BackgroundResponseProcessor::Client* client) {
     if (expect_maybe_start_processing_response_not_called_) {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
     response_received_ = true;
     if (result_of_maybe_start_processing_response_) {

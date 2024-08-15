@@ -209,7 +209,7 @@ IconAndColor IconAndColorForDownload(const DownloadUIModel& model) {
     case download::DownloadItem::CANCELLED:
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return IconAndColorForDownloadOff();

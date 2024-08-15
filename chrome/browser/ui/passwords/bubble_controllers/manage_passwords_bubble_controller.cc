@@ -111,7 +111,7 @@ std::u16string ManagePasswordsBubbleController::GetTitle() const {
       }
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -166,7 +166,7 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
                  ? SyncState::kActiveWithSyncFeatureEnabled
                  : SyncState::kActiveWithAccountPasswords;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string ManagePasswordsBubbleController::GetPrimaryAccountEmail() {

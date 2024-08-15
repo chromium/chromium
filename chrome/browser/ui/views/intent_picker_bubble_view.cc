@@ -439,7 +439,7 @@ class IntentPickerAppListView
         delta = base::i18n::IsRTL() ? -1 : 1;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     SetSelectedAppIndex(CalculateNextAppIndex(delta), nullptr);

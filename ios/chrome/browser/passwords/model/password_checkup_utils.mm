@@ -174,7 +174,7 @@ std::vector<CredentialUIEntry> GetPasswordsForWarningType(
                             std::mem_fn(&CredentialUIEntry::IsMuted));
       break;
     case WarningType::kNoInsecurePasswordsWarning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return filtered_credentials;

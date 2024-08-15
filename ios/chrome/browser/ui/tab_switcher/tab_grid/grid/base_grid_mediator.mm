@@ -253,7 +253,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)configureToolbarsButtons {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)configureButtonsInSelectionMode:
@@ -283,7 +283,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)displayActiveTab {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)populateConsumerItems {
@@ -1165,19 +1165,19 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)closeAllItems {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)saveAndCloseAllItems {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)undoCloseAllItems {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)discardSavedClosedItems {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)searchItemsWithText:(NSString*)searchText {
@@ -1258,7 +1258,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       case GridItemType::kInactiveTabsButton:
         // Inactive Tabs button is not dragable and not stored in
         // `_selectedEditingItems`.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case GridItemType::kTab: {
         UIDragItem* dragItem =
             [self dragItemForItemWithID:itemID.tabSwitcherItem.identifier];
@@ -1278,7 +1278,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       case GridItemType::kSuggestedActions:
         // Suggested actions items are not dragable and not stored in
         // `_selectedEditingItems`.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return dragItems;
@@ -1695,17 +1695,17 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)setPageAsActive {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)doneButtonTapped:(id)sender {
@@ -1722,7 +1722,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
+  NOTREACHED() << "Should be implemented in a subclass.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {
@@ -1769,7 +1769,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
            .itemsIdentifiers) {
     switch (identifier.type) {
       case GridItemType::kInactiveTabsButton:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case GridItemType::kTab: {
         selectedTabIDs.insert(identifier.tabSwitcherItem.identifier);
         tabCount++;
@@ -1783,7 +1783,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
         break;
       }
       case GridItemType::kSuggestedActions:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -1852,7 +1852,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)closeItemWithIdentifier:(GridItemIdentifier*)identifier {
   switch (identifier.type) {
     case GridItemType::kInactiveTabsButton:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case GridItemType::kTab:
       [self closeItemWithID:identifier.tabSwitcherItem.identifier];
       break;
@@ -1862,7 +1862,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       break;
     }
     case GridItemType::kSuggestedActions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

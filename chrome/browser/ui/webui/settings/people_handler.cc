@@ -259,7 +259,7 @@ ChromeSigninSettingModification ChromeSigninUserChoiceToModification(
     case ChromeSigninUserChoice::kDoNotSignin:
       return ChromeSigninSettingModification::kToDoNotSignin;
     case ChromeSigninUserChoice::kNoChoice:
-      NOTREACHED_NORETURN() << "No choice is not expected as a modification";
+      NOTREACHED() << "No choice is not expected as a modification";
   }
 }
 #endif

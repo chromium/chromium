@@ -867,7 +867,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           // Because the operators are visited in topological order, if this
           // operand is an intermediate operand, it should already be defined as
           // an output operand of the dependent operator.
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 

@@ -7305,7 +7305,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
         case SplitViewDragIndicators::WindowDraggingState::kFromTop:
         case SplitViewDragIndicators::WindowDraggingState::kFromShelf:
         case SplitViewDragIndicators::WindowDraggingState::kFromFloat:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 

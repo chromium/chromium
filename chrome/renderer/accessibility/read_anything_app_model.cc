@@ -844,7 +844,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
       case ax::mojom::Event::kMenuListValueChangedDeprecated:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

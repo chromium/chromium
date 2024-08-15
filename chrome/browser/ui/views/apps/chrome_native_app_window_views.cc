@@ -341,7 +341,7 @@ bool ChromeNativeAppWindowViews::AcceleratorPressed(
           DevToolsOpenedByAction::kInspectorModeShortcut);
       return true;
     default:
-      NOTREACHED_NORETURN() << "Unknown accelerator sent to app window.";
+      NOTREACHED() << "Unknown accelerator sent to app window.";
   }
 }
 

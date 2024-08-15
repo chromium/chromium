@@ -147,7 +147,7 @@ void MahiUiController::Retry(VisibilityState origin_state) {
           MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesReloaded));
       return;
     case VisibilityState::kError:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

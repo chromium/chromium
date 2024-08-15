@@ -653,7 +653,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
           manifest_version_counts = &unpacked_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kInvalidLocation:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       base::UmaHistogramExactLinear(location_histogram_name,
                                     extension->manifest_version(),

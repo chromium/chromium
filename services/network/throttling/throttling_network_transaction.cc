@@ -310,7 +310,7 @@ void ThrottlingNetworkTransaction::SetModifyRequestHeadersCallback(
 void ThrottlingNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
     base::RepeatingCallback<bool()> callback) {
   // This method should not be called for this class.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ThrottlingNetworkTransaction::ResumeNetworkStart() {

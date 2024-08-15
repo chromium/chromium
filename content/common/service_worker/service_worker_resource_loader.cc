@@ -24,7 +24,7 @@ void ServiceWorkerResourceLoader::SetCommitResponsibility(
       fetch_response_from);
   switch (fetch_response_from) {
     case FetchResponseFrom::kNoResponseYet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // kSubresourceLoaderIsHandlingRedirect is called only from subresources.
       CHECK(!IsMainResourceLoader());

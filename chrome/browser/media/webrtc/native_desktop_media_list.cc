@@ -191,7 +191,7 @@ content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 content::DesktopMediaID::Id GetUpdatedWindowId(

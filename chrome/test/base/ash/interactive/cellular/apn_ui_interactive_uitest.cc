@@ -228,7 +228,7 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
           SelectCheckbox(settings::cellular::ApnDialogAttachCheckbox()));
     }
     // APN type is required.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep SelectCheckbox(

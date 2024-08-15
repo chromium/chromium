@@ -23,5 +23,5 @@ std::string_view DefaultBrowserSettingsPageSourceToString(
       return "TipsNotification";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

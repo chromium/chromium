@@ -483,7 +483,7 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
     case IbanSupportedCountry::kXK:
       return 20;
     case IbanSupportedCountry::kUnsupported:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -74,7 +74,7 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
     case InsetsMetric::INSETS_ICON_BUTTON:
       return gfx::Insets(2);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int LayoutProvider::GetDistanceMetric(int metric) const {
@@ -137,9 +137,9 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 4;
     case VIEWS_DISTANCE_END:
     case VIEWS_DISTANCE_MAX:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const TypographyProvider& LayoutProvider::GetTypographyProvider() const {

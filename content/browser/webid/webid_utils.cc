@@ -320,7 +320,7 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kSuccess: {
       // Should not be called with success, as we should not add a console
       // message for success.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

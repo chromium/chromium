@@ -1509,7 +1509,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
         break;
       }
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     input_buf.SetPlaneBytesUsed(i, bytesused);

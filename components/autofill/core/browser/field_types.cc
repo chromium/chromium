@@ -275,7 +275,7 @@ std::string_view FieldTypeToStringView(FieldType type) {
   if (it != kFieldTypeToTypeName->end()) {
     return it->second;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string FieldTypeToString(FieldType type) {
@@ -457,7 +457,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case MAX_VALID_FIELD_TYPE:
       return "";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group) {
@@ -595,7 +595,7 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case MAX_VALID_FIELD_TYPE:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
@@ -673,7 +673,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kUnrecognized:
       return FieldTypeGroup::kNoGroup;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
@@ -814,7 +814,7 @@ FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kUnrecognized:
       return UNKNOWN_TYPE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill

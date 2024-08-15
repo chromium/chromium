@@ -179,7 +179,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
           } else if (d3d_version == D3D11VideoDecoder::D3DVersion::kD3D12) {
             return d3d12_device;
           }
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         },
         d3d11_device_, d3d12_device_);
   }

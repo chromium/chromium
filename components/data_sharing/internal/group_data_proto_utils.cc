@@ -23,7 +23,7 @@ data_sharing_pb::MemberRole MemberRoleToProto(const MemberRole& member_role) {
     case MemberRole::kUnknown:
       return data_sharing_pb::MEMBER_ROLE_UNSPECIFIED;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 MemberRole MemberRoleFromProto(const data_sharing_pb::MemberRole& member_role) {
@@ -37,7 +37,7 @@ MemberRole MemberRoleFromProto(const data_sharing_pb::MemberRole& member_role) {
     case data_sharing_pb::MEMBER_ROLE_UNSPECIFIED:
       return MemberRole::kUnknown;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 data_sharing_pb::GroupMember GroupMemberToProto(

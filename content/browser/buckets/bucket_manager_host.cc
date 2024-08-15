@@ -202,7 +202,7 @@ void BucketManagerHost::DidGetBucket(
         case storage::QuotaError::kNone:
         case storage::QuotaError::kEntryExistsError:
         case storage::QuotaError::kFileOperationError:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         case storage::QuotaError::kNotFound:
         case storage::QuotaError::kDatabaseError:
         case storage::QuotaError::kDatabaseDisabled:

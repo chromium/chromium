@@ -161,7 +161,7 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
       return model;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

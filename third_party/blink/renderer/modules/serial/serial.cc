@@ -70,7 +70,7 @@ bool ShouldBlockSerialServiceCall(LocalDOMWindow* window,
     security_origin = static_cast<WorkerGlobalScope*>(context)
                           ->top_level_frame_security_origin();
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   if (security_origin->IsOpaque()) {

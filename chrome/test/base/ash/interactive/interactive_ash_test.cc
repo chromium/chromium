@@ -322,7 +322,7 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
     network_list = ash::settings::vpn::VpnNetworksList();
   } else {
     // Unsupported Network pattern.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   return Steps(NavigateSettingsToInternetPage(element_id),

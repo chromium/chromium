@@ -236,7 +236,7 @@ void RecordHistogramsSilentOnboardingOnStartup(PrefService* pref_service) {
     }
     case TrackingProtectionOnboardingStatus::kRequested: {
       // kRequested isn't applicable when silent onboarding.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
@@ -256,9 +256,9 @@ TrackingProtectionOnboarding::NoticeType GetRequiredModeBSilentOnboardingNotice(
     case TrackingProtectionOnboardingStatus::kEligible:
       return TrackingProtectionOnboarding::NoticeType::kModeBSilentOnboarding;
     case TrackingProtectionOnboardingStatus::kRequested:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordSilentOnboardingMarkEligibleHistogram(bool result) {
@@ -639,7 +639,7 @@ TrackingProtectionOnboarding::GetSilentOnboardingStatus() const {
     case TrackingProtectionOnboardingStatus::kEligible:
       return SilentOnboardingStatus::kEligible;
     case TrackingProtectionOnboardingStatus::kRequested:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case TrackingProtectionOnboardingStatus::kOnboarded:
       return SilentOnboardingStatus::kOnboarded;
   }

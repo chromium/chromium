@@ -103,7 +103,7 @@ class BadgeView : public views::ImageView {
             kSyncPausedCircleIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_NONE:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     SizeToPreferredSize();
   }

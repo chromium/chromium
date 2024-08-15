@@ -398,7 +398,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
     switch (context) {
       case ListShownContext::kCachedList:
         // Cached list should always considered as successfully fetched.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case ListShownContext::kInitialList: {
         if (GetTasksClient()->GetCachedTasksInTaskList(task_list_id)) {
           // Notify users the last updated time of the tasks with the cached

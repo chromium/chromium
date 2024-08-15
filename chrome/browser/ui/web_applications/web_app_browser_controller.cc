@@ -267,7 +267,7 @@ bool WebAppBrowserController::IsProfileMenuButtonVisible() const {
   return AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id()).size() >
          1;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

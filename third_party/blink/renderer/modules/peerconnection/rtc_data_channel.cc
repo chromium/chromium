@@ -457,7 +457,7 @@ void RTCDataChannel::setBinaryType(const String& binary_type,
     binary_type_ = kBinaryTypeBlob;
     return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool RTCDataChannel::ValidateSendLength(uint64_t length,

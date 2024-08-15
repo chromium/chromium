@@ -193,7 +193,7 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
         metrics.ascent = font_metrics.FixedXHeight(baseline_type);
         break;
       case TextBoxEdge::Type::kAlphabetic:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -213,7 +213,7 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
         break;
       case TextBoxEdge::Type::kCap:
       case TextBoxEdge::Type::kEx:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

@@ -137,7 +137,7 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
         // Need to show the upgrade promo, to show the history sync opt-in.
         break;
       case HistorySyncSkipReason::kNotSignedIn:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case HistorySyncSkipReason::kAlreadyOptedIn:
       case HistorySyncSkipReason::kSyncForbiddenByPolicies:
       case HistorySyncSkipReason::kDeclinedTooOften:
@@ -292,7 +292,7 @@ Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
     case SystemIdentityCapabilityResult::kUnknown:
       return Tribool::kUnknown;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace signin

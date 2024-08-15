@@ -204,7 +204,7 @@ FlossDBusClient::BtifStatusToConnectErrorCode(
     FlossDBusClient::BtifStatus status) {
   switch (status) {
     case BtifStatus::kSuccess:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case BtifStatus::kFail:
       return device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED;
     case BtifStatus::kNotReady:

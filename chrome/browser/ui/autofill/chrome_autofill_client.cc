@@ -519,7 +519,7 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
       /*on_user_decision_callback=*/std::move(on_user_decision_callback));
 #else
   // Edit address profile dialog is only available is desktop.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
@@ -537,7 +537,7 @@ void ChromeAutofillClient::ShowDeleteAddressProfileDialog(
       /*delete_dialog_callback=*/std::move(delete_dialog_callback));
 #else
   // Delete address profile dialog is only available is desktop.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

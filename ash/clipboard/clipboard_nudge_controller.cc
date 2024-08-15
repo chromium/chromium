@@ -129,7 +129,7 @@ const char* GetCappedNudgeShownCountPrefKey(ClipboardNudgeType type) {
       return kShownCountDuplicateCopyNudge;
     case kScreenshotNotificationNudge:
     case kZeroStateNudge:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -400,7 +400,7 @@ void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
       base::UmaHistogramBoolean(kClipboardHistoryZeroStateNudgeShowCount, true);
       break;
     case ClipboardNudgeType::kScreenshotNotificationNudge:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ClipboardNudgeType::kDuplicateCopyNudge:
       CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
       duplicate_copy_nudge_recorder_.OnNudgeShown();

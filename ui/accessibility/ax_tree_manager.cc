@@ -264,12 +264,12 @@ AXTreeManager::~AXTreeManager() {
 
 std::unique_ptr<AXTree> AXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
   if (!tree) {
-    NOTREACHED_NORETURN()
+    NOTREACHED()
         << "Attempting to set a new tree, but no tree has been provided.";
   }
 
   if (tree->GetAXTreeID().type() == ax::mojom::AXTreeIDType::kUnknown) {
-    NOTREACHED_NORETURN() << "Invalid tree ID.\n" << tree->ToString();
+    NOTREACHED() << "Invalid tree ID.\n" << tree->ToString();
   }
 
   if (ax_tree_) {

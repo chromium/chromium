@@ -560,7 +560,7 @@ View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
       more_content_bottom_thickness_ = thickness;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   UpdateOverflowIndicatorVisibility(CurrentOffset());

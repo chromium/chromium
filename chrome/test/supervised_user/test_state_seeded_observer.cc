@@ -63,7 +63,7 @@ std::string GetToggleAbbrev(FamilyLinkToggleType toggle) {
     case FamilyLinkToggleType::kCookiesToggle:
       return "COOKIES";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

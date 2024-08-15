@@ -8735,7 +8735,7 @@ const CSSValue* TextBoxEdge::CSSValueFromComputedStyleInternal(
         break;
       case kAuto:
       case kText:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

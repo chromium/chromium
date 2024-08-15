@@ -464,7 +464,7 @@ void ScreenshotManagerCapturer::CaptureSource(
     case DesktopMediaList::Type::kNone:
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -670,7 +670,7 @@ bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
     case DesktopMediaList::Type::kNone:
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return true;
@@ -1033,5 +1033,5 @@ std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
   if (@available(macOS 13.2, *)) {
     return std::make_unique<ThumbnailCapturerMac>(type);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

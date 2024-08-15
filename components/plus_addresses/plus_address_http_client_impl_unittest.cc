@@ -265,7 +265,7 @@ class PlusAddressCreationRequests
     if (GetParam() == PlusAddressNetworkRequestType::kCreate) {
       return kFullCreateEndpoint;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   void MakeCreationRequest(const PlusProfile& profile,
                            PlusAddressRequestCallback callback) {

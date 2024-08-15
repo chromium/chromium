@@ -947,7 +947,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
                     mechanism_is_transport(mech,
                                            AuthenticatorTransport::kInternal));
           default:
-            NOTREACHED_NORETURN();
+            NOTREACHED();
             return false;
         }
       });
@@ -1058,7 +1058,7 @@ void AuthenticatorRequestDialogController::OnBleStatusKnown(
       return;
     case BleStatus::kPendingPermissionRequest:
       // This should have been handled by EnsureBleAdapterIsPoweredAndContinue.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -147,7 +147,7 @@ ShouldShowAction ShouldShowCredManReentryAction(
     case FocusedFieldType::kUnknown:
       return ShouldShowAction(false);
   }
-  NOTREACHED_NORETURN() << "Showing undefined for " << focused_field_type;
+  NOTREACHED() << "Showing undefined for " << focused_field_type;
 }
 
 std::string GetOriginFromPlusProfile(

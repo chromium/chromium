@@ -74,7 +74,7 @@ bool IsCustomPassphraseEnabled(
     case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string_view GetCustomPassphraseSuffix(bool custom_passphrase_enabled) {

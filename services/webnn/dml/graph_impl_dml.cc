@@ -125,7 +125,7 @@ OperandDataType DmlDataTypeToOperand(DML_TENSOR_DATA_TYPE type) {
     case DML_TENSOR_DATA_TYPE_UINT32:
       return OperandDataType::kUint32;
     default:
-      NOTREACHED_NORETURN() << "[WebNN] This data type is not supported.";
+      NOTREACHED() << "[WebNN] This data type is not supported.";
   }
 }
 
@@ -152,7 +152,7 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
     case mojom::Reduce::Kind::kSumSquare:
       return DML_REDUCE_FUNCTION_SUM_SQUARE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void CheckInputDataTypeForReduce(mojom::Reduce::Kind kind,
@@ -446,7 +446,7 @@ uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
     default:
       LOG(ERROR) << "[WebNN] The data type must be one of the floating point "
                     "data types.";
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   CHECK(graph_info->constant_id_to_buffer_map
@@ -570,7 +570,7 @@ struct ActivationOperatorDesc {
       return {DML_OPERATOR_ACTIVATION_TANH,
               &absl::get<DML_ACTIVATION_TANH_OPERATOR_DESC>(desc)};
     } else {
-      NOTREACHED_NORETURN() << "The activation type is not supported.";
+      NOTREACHED() << "The activation type is not supported.";
     }
   }
 };
@@ -730,7 +730,7 @@ ActivationOperatorDesc CreateOperatorDescForFusibleActivation(
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
     default:
-      NOTREACHED_NORETURN() << "The operation is not a fusible activation.";
+      NOTREACHED() << "The operation is not a fusible activation.";
   }
 }
 
@@ -2032,7 +2032,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     }
     default:
       LOG(ERROR) << "[WebNN] Invalid Pool2d operator type";
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(

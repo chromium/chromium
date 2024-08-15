@@ -26,7 +26,7 @@ EnumTraits<media::mojom::ResolutionChangePolicy,
     case media::ResolutionChangePolicy::ANY_WITHIN_LIMIT:
       return media::mojom::ResolutionChangePolicy::ANY_WITHIN_LIMIT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -45,7 +45,7 @@ bool EnumTraits<media::mojom::ResolutionChangePolicy,
       *output = media::ResolutionChangePolicy::ANY_WITHIN_LIMIT;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -60,7 +60,7 @@ media::mojom::PowerLineFrequency EnumTraits<
     case media::PowerLineFrequency::k60Hz:
       return media::mojom::PowerLineFrequency::HZ_60;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -78,7 +78,7 @@ bool EnumTraits<media::mojom::PowerLineFrequency, media::PowerLineFrequency>::
       *output = media::PowerLineFrequency::k60Hz;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -169,7 +169,7 @@ EnumTraits<media::mojom::VideoCapturePixelFormat,
     case media::VideoPixelFormat::PIXEL_FORMAT_P410LE:
       return media::mojom::VideoCapturePixelFormat::P410LE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -302,7 +302,7 @@ bool EnumTraits<media::mojom::VideoCapturePixelFormat,
       *output = media::PIXEL_FORMAT_P410LE;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -318,7 +318,7 @@ EnumTraits<media::mojom::VideoCaptureBufferType,
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
       return media::mojom::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -332,7 +332,7 @@ bool EnumTraits<media::mojom::VideoCaptureBufferType,
       return true;
     case media::mojom::VideoCaptureBufferType::
         kSharedMemoryViaRawFileDescriptor_DEPRECATED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case media::mojom::VideoCaptureBufferType::kMailboxHolder:
       *output = media::VideoCaptureBufferType::kMailboxHolder;
       return true;
@@ -340,7 +340,7 @@ bool EnumTraits<media::mojom::VideoCaptureBufferType,
       *output = media::VideoCaptureBufferType::kGpuMemoryBuffer;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -831,7 +831,7 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kWebRtcStartCaptureFailed:
       return media::mojom::VideoCaptureError::kWebRtcStartCaptureFailed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1492,7 +1492,7 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
       *output = media::VideoCaptureError::kWebRtcStartCaptureFailed;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1598,7 +1598,7 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
     case media::VideoCaptureFrameDropReason::kPostProcessingFailed:
       return media::mojom::VideoCaptureFrameDropReason::kPostProcessingFailed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1747,7 +1747,7 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
       *output = media::VideoCaptureFrameDropReason::kPostProcessingFailed;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1762,9 +1762,9 @@ EnumTraits<media::mojom::VideoFacingMode, media::VideoFacingMode>::ToMojom(
     case media::VideoFacingMode::MEDIA_VIDEO_FACING_ENVIRONMENT:
       return media::mojom::VideoFacingMode::ENVIRONMENT;
     case media::VideoFacingMode::NUM_MEDIA_VIDEO_FACING_MODES:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1782,7 +1782,7 @@ bool EnumTraits<media::mojom::VideoFacingMode, media::VideoFacingMode>::
       *output = media::VideoFacingMode::MEDIA_VIDEO_FACING_ENVIRONMENT;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1819,7 +1819,7 @@ EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::ToMojom(
     case media::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE:
       return media::mojom::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1834,7 +1834,7 @@ media::mojom::CameraAvailability EnumTraits<
       return media::mojom::CameraAvailability::
           kUnavailableExclusivelyUsedByOtherApplication;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1885,7 +1885,7 @@ bool EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi>::
       *output = media::VideoCaptureApi::WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1902,7 +1902,7 @@ bool EnumTraits<media::mojom::CameraAvailability, media::CameraAvailability>::
           kUnavailableExclusivelyUsedByOtherApplication;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1916,7 +1916,7 @@ media::mojom::VideoCaptureTransportType EnumTraits<
     case media::VideoCaptureTransportType::OTHER_TRANSPORT:
       return media::mojom::VideoCaptureTransportType::OTHER_TRANSPORT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1932,7 +1932,7 @@ bool EnumTraits<media::mojom::VideoCaptureTransportType,
       *output = media::VideoCaptureTransportType::OTHER_TRANSPORT;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

@@ -258,7 +258,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
       case EnrollmentStatus::kNone:
         return false;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }();
 

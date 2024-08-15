@@ -775,7 +775,7 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
     case CreditCard::RecordType::kVirtualCard:
       // Should not happen since virtual cards and full server cards are not
       // persisted.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   if (!candidate_server_card) {
     return false;

@@ -1287,7 +1287,7 @@ int32_t SharedContextState::GetMaxTextureSize() const {
                            ->vk_physical_device_properties()
                            .limits.maxImageDimension2D;
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   } else {
 #if BUILDFLAG(SKIA_USE_DAWN)

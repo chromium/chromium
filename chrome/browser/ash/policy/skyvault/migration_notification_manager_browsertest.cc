@@ -44,7 +44,7 @@ class MigrationNotificationManagerTest
       case CloudProvider::kOneDrive:
         return "one_drive";
       case CloudProvider::kNotSpecified:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

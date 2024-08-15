@@ -321,7 +321,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
       case DelayType::Unscheduled:
         return "Unscheduled";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returns `std::nullopt` if any of the following are true:

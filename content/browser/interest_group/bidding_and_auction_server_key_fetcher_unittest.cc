@@ -790,7 +790,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
       case 2:
         return url::Origin::Create(GURL(kCoordinator2));
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string GetURL() {
@@ -802,7 +802,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
       case 2:
         return kCoordinator2KeyURL;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

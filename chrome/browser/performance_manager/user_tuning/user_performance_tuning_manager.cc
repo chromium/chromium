@@ -66,7 +66,7 @@ class MemorySaverModeDelegateImpl
                   memory_saver_mode_policy->OnMemorySaverModeChanged(true);
                   return;
               }
-              NOTREACHED_NORETURN();
+              NOTREACHED();
             },
             state));
   }

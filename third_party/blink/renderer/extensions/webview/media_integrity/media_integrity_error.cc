@@ -24,7 +24,7 @@ String GetErrorMessageForName(V8MediaIntegrityErrorName::Enum name) {
     case V8MediaIntegrityErrorName::Enum::kTokenProviderInvalid:
       return "Token provider invalid.";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 V8MediaIntegrityErrorName::Enum MojomToV8Enum(
@@ -42,7 +42,7 @@ V8MediaIntegrityErrorName::Enum MojomToV8Enum(
     case mojom::blink::WebViewMediaIntegrityErrorCode::kTokenProviderInvalid:
       return V8MediaIntegrityErrorName::Enum::kTokenProviderInvalid;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace
 

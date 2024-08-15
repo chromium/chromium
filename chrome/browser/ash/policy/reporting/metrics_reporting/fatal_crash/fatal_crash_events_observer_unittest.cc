@@ -313,7 +313,7 @@ TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
       expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_CHROME;
       break;
     default:  // Crash types that are not tested but should be tested.
-      NOTREACHED_NORETURN() << "Encountered untested crash type " << type();
+      NOTREACHED() << "Encountered untested crash type " << type();
   }
   EXPECT_EQ(fatal_crash_telemetry.type(), expected_crash_type);
 }

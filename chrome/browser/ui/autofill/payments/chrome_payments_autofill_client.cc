@@ -806,7 +806,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
       delegate, std::move(cards_to_suggest), std::move(suggestions));
 #else
   // Touch To Fill is not supported on Desktop.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
@@ -819,7 +819,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
       delegate, std::move(ibans_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

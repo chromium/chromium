@@ -87,7 +87,7 @@ openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::AudioCodec codec) {
     case media::AudioCodec::kAAC:
       return openscreen::cast::AudioCodec::kAac;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -104,7 +104,7 @@ openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::VideoCodec codec) {
     case media::VideoCodec::kAV1:
       return openscreen::cast::VideoCodec::kAv1;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -118,7 +118,7 @@ AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec) {
     case openscreen::cast::AudioCodec::kAac:
       return AudioCodec::kAAC;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec) {
@@ -137,7 +137,7 @@ VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec) {
     case openscreen::cast::VideoCodec::kHevc:
       return VideoCodec::kHEVC;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address) {

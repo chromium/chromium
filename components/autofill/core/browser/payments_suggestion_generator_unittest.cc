@@ -340,7 +340,7 @@ class AutofillCreditCardBenefitsLabelTest
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
     } else {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
 
     expected_benefit_text_ = l10n_util::GetStringFUTF16(

@@ -506,7 +506,7 @@ const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
     case ScriptStreamer::NotStreamingReason::kDidntTryToStartStreaming:
     case ScriptStreamer::NotStreamingReason::kAlreadyLoaded:
     case ScriptStreamer::NotStreamingReason::kInvalid:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

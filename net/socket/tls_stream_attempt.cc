@@ -84,7 +84,7 @@ int TlsStreamAttempt::DoLoop(int rv) {
     next_state_ = State::kNone;
     switch (state) {
       case State::kNone:
-        NOTREACHED_NORETURN() << "Invalid state";
+        NOTREACHED() << "Invalid state";
       case State::kTcpAttempt:
         rv = DoTcpAttempt();
         break;

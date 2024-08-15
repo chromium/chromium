@@ -249,8 +249,7 @@ GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
       return url;
     }
   }
-  NOTREACHED_NORETURN()
-      << "Supplied url_spec is not routed in this test fixture.";
+  NOTREACHED() << "Supplied url_spec is not routed in this test fixture.";
 }
 
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest() = default;

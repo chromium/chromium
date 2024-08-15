@@ -133,7 +133,7 @@ std::vector<attribution_internals::mojom::WebUISourcePtr> ToWebUISources(
           attributability = Attributability::kReachedEventLevelAttributionLimit;
           break;
         case StoredSource::ActiveState::kInactive:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 

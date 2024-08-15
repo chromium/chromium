@@ -149,7 +149,7 @@ const CGFloat kInitialDetentHeight = 350;
       [self.mediator configureDiscoverPageData];
       break;
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

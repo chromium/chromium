@@ -76,7 +76,7 @@ base::FilePath GetComponentBinaryPath() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
   return screen_ai::GetComponentBinaryPathForTests();
 #else
-  NOTREACHED_NORETURN() << "Test library is used on a not-suppported platform.";
+  NOTREACHED() << "Test library is used on a not-suppported platform.";
 #endif
 }
 

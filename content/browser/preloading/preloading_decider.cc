@@ -121,8 +121,8 @@ class PreloadingDecider::BehaviorConfig {
                preloading_predictor::kPreloadingHeuristicsMLModel) {
       return ml_model_eagerness_;
     } else {
-      NOTREACHED_NORETURN() << "unexpected predictor " << predictor.name()
-                            << "/" << predictor.ukm_value();
+      NOTREACHED() << "unexpected predictor " << predictor.name() << "/"
+                   << predictor.ukm_value();
     }
   }
 
@@ -143,8 +143,8 @@ class PreloadingDecider::BehaviorConfig {
           return ml_model_prerender_moderate_threshold_;
       }
     } else {
-      NOTREACHED_NORETURN() << "unexpected predictor " << predictor.name()
-                            << "/" << predictor.ukm_value();
+      NOTREACHED() << "unexpected predictor " << predictor.name() << "/"
+                   << predictor.ukm_value();
     }
   }
 

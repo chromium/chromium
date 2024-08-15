@@ -49,7 +49,7 @@ bool IsAttribution(RateLimitTable::Scope scope) {
       return true;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 struct DestinationLimitRecord {

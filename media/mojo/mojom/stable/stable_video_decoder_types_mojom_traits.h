@@ -25,7 +25,7 @@ struct EnumTraits<media::stable::mojom::CdmContextEvent,
         return media::stable::mojom::CdmContextEvent::kHardwareContextReset;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(media::stable::mojom::CdmContextEvent input,
@@ -38,7 +38,7 @@ struct EnumTraits<media::stable::mojom::CdmContextEvent,
         *output = ::media::CdmContext::Event::kHardwareContextReset;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -84,7 +84,7 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         return media::stable::mojom::ColorSpacePrimaryID::kEBU_3213_E;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -145,7 +145,7 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -209,7 +209,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         return media::stable::mojom::ColorSpaceTransferID::kScrgbLinear80Nits;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -297,7 +297,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -331,7 +331,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceMatrixID,
         return media::stable::mojom::ColorSpaceMatrixID::kGBR;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -376,7 +376,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceMatrixID,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -396,7 +396,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceRangeID,
         return media::stable::mojom::ColorSpaceRangeID::kDerived;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -418,7 +418,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceRangeID,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -561,7 +561,7 @@ struct EnumTraits<media::stable::mojom::DecryptStatus,
         return media::stable::mojom::DecryptStatus::kFailure;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(media::stable::mojom::DecryptStatus input,
@@ -577,7 +577,7 @@ struct EnumTraits<media::stable::mojom::DecryptStatus,
         *output = ::media::Decryptor::Status::kError;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -595,7 +595,7 @@ struct EnumTraits<media::stable::mojom::EncryptionScheme,
         return media::stable::mojom::EncryptionScheme::kCbcs;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -614,7 +614,7 @@ struct EnumTraits<media::stable::mojom::EncryptionScheme,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -648,7 +648,7 @@ struct EnumTraits<media::stable::mojom::MediaLogRecord_Type,
         return media::stable::mojom::MediaLogRecord_Type::kMediaStatus;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -670,7 +670,7 @@ struct EnumTraits<media::stable::mojom::MediaLogRecord_Type,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -798,7 +798,7 @@ struct EnumTraits<media::stable::mojom::VideoCodec, ::media::VideoCodec> {
         return media::stable::mojom::VideoCodec::kAV1;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -841,7 +841,7 @@ struct EnumTraits<media::stable::mojom::VideoCodec, ::media::VideoCodec> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -979,7 +979,7 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
             kVVCProfileMain16444Still;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -1158,7 +1158,7 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -1225,10 +1225,10 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
       case ::media::VideoDecoderType::kOutOfProcess:
       case ::media::VideoDecoderType::kVideoToolbox:
         // Only decoders used on CrOS are supported.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -1253,7 +1253,7 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -1360,7 +1360,7 @@ struct EnumTraits<media::stable::mojom::VideoPixelFormat,
         return media::stable::mojom::VideoPixelFormat::kPixelFormatNV12A;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -1493,7 +1493,7 @@ struct EnumTraits<media::stable::mojom::VideoPixelFormat,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -1512,7 +1512,7 @@ struct EnumTraits<media::stable::mojom::WaitingReason, media::WaitingReason> {
         return media::stable::mojom::WaitingReason::kSecureSurfaceLost;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -1534,7 +1534,7 @@ struct EnumTraits<media::stable::mojom::WaitingReason, media::WaitingReason> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

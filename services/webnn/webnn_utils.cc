@@ -23,7 +23,7 @@ std::string OpKindToString(mojom::Conv2d::Kind kind) {
     case mojom::Conv2d::Kind::kTransposed:
       return ops::kConvTranspose2d;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::Pool2d::Kind kind) {
@@ -147,7 +147,7 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
     case mojom::Operation::Tag::kWhere:
       return ops::kWhere;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
@@ -157,7 +157,7 @@ std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
     case mojom::ArgMinMax::Kind::kMax:
       return ops::kArgMax;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {

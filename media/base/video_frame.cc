@@ -187,7 +187,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
           break;
       }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Checks if |source_format| can be wrapped into a |target_format| frame.
@@ -1235,7 +1235,7 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_UNKNOWN:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

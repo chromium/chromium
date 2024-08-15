@@ -366,7 +366,7 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::
           UseErrorUnexpectedContentDictionaryHeader;
     case SharedDictionaryError::kWriteErrorAlreadyRegistered:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case SharedDictionaryError::kWriteErrorCossOriginNoCorsRequest:
       return SharedDictionaryErrorEnum::WriteErrorCossOriginNoCorsRequest;
     case SharedDictionaryError::kWriteErrorDisallowedBySettings:

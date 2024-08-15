@@ -354,7 +354,7 @@ Suggestion GetCardSuggestion(const std::string& network,
     last_four = "0005";
     expiration_date = "04/10";
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return GenerateSuggestionFromCardDetails(network, icon, last_four,
                                            expiration_date, nickname, type);

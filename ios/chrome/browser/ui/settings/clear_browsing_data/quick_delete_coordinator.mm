@@ -116,7 +116,7 @@
     base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
                                   MyActivityNavigation::kTopLevel);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   id<ApplicationCommands> handler = HandlerForProtocol(

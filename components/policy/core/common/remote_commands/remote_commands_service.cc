@@ -175,9 +175,8 @@ std::string RemoteCommandsService::GetMetricNameExecutedRemoteCommand(
       return base::StringPrintf(kMetricCBCMRemoteCommandExecutedTemplate,
                                 command);
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED_NORETURN()
-          << "Unexpected instance of remote commands service with "
-             "device local account scope.";
+      NOTREACHED() << "Unexpected instance of remote commands service with "
+                      "device local account scope.";
   }
 }
 

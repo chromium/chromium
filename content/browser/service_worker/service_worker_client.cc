@@ -833,7 +833,7 @@ void ServiceWorkerClient::SetExecutionReady() {
     case ClientPhase::kExecutionReady:
     case ClientPhase::kResponseNotCommitted:
       // Invalid state transition.
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "ServiceWorkerClient::SetExecutionReady() called on ClientPhase "
           << static_cast<int>(client_phase_);
   }
@@ -866,8 +866,8 @@ void ServiceWorkerClient::TransitionToClientPhase(ClientPhase new_phase) {
       break;
     case ClientPhase::kExecutionReady:
     case ClientPhase::kResponseNotCommitted:
-      NOTREACHED_NORETURN()
-          << "Invalid transition from " << static_cast<int>(client_phase_);
+      NOTREACHED() << "Invalid transition from "
+                   << static_cast<int>(client_phase_);
   }
   client_phase_ = new_phase;
 }

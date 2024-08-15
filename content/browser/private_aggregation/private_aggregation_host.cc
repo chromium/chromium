@@ -125,7 +125,7 @@ void RecordNumberOfContributionMergeKeysHistogram(
           num_merge_keys_sent_or_truncated);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

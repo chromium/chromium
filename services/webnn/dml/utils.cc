@@ -95,7 +95,7 @@ uint64_t CalculateDMLBufferTensorSize(
       element_size = 8;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Calculate the total size of the tensor in bytes. It should be rounded up to

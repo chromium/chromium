@@ -96,9 +96,9 @@ std::string ConvertInitDataType(EmeInitDataType init_data_type) {
     case EmeInitDataType::KEYIDS:
       return "keyids";
     case EmeInitDataType::UNKNOWN:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Convert CdmSessionType to MediaDrmKeyType supported by MediaDrm.
@@ -126,7 +126,7 @@ CdmMessageType GetMessageType(RequestType request_type) {
       return CdmMessageType::LICENSE_RELEASE;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
@@ -160,7 +160,7 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
       return CdmKeyInformation::EXPIRED;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class KeySystemManager {

@@ -786,7 +786,7 @@ class LateLinkingDevice : public authenticator::Transaction {
           }
 
           case MessageType::kJSON:
-            NOTREACHED_NORETURN();
+            NOTREACHED();
 
           case MessageType::kShutdown:
             state_ = State::kShutdownReceived;

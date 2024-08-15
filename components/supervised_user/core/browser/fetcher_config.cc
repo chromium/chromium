@@ -150,7 +150,7 @@ std::string FetcherConfig::GetHttpMethod() const {
     case Method::kPost:
       return net::HttpRequestHeaders::kPostMethod;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -227,7 +227,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       accessibilityIdentifier = kAccountMenuSignoutButtonId;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   // If the function has not returned yet. This cell contains only text.
 

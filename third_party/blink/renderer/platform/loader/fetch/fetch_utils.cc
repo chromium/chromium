@@ -255,7 +255,7 @@ void FetchUtils::LogFetchKeepAliveRequestMetric(
     case mojom::blink::RequestContextType::WORKER:
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
     case mojom::blink::RequestContextType::XSLT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   std::string_view request_state_name;
@@ -323,7 +323,7 @@ void FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(
     case mojom::blink::ResourceType::kNavigationPreloadMainFrame:
     case mojom::blink::ResourceType::kNavigationPreloadSubFrame:
     case mojom::blink::ResourceType::kJson:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(

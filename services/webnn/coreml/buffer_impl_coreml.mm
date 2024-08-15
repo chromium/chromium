@@ -25,7 +25,7 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
       if (__builtin_available(macOS 12, *)) {
         return MLMultiArrayDataTypeFloat16;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case OperandDataType::kInt32:
       return MLMultiArrayDataTypeInt32;
     case OperandDataType::kUint32:
@@ -34,7 +34,7 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
       // Unsupported data types for MLMultiArrays in CoreML.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -917,7 +917,7 @@ ExtensionFunction::ResponseAction AutofillPrivateGetLocalCardFunction::Run() {
     // This Autofill private API is only available on desktop systems and
     // IsPaymentMethodsMandatoryReauthEnabled() ensures that it's only enabled
     // for MacOS and Windows.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else {
     ReturnCreditCard();

@@ -102,7 +102,7 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
 
     case user_education::FeaturePromoSpecification::PromoType::kUnspecified:
       // Should never get here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // All IPH block all other IPH.

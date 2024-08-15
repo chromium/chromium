@@ -181,7 +181,7 @@ VideoChromaSampling VideoPixelFormatToChromaSampling(VideoPixelFormat format) {
     case PIXEL_FORMAT_MJPEG:
       return VideoChromaSampling::kUnknown;
   }
-  NOTREACHED_NORETURN() << "Invalid VideoPixelFormat provided: " << format;
+  NOTREACHED() << "Invalid VideoPixelFormat provided: " << format;
 }
 
 bool IsYuvPlanar(VideoPixelFormat format) {
@@ -384,7 +384,7 @@ size_t BitDepth(VideoPixelFormat format) {
     case PIXEL_FORMAT_RGBAF16:
       return 16;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace media

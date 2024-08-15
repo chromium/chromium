@@ -136,7 +136,7 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
 #else
-        NOTREACHED_NORETURN();
+        NOTREACHED();
 #endif
       case extensions::mojom::HostID::HostType::kControlledFrameEmbedder:
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -148,7 +148,7 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
 #else
-        NOTREACHED_NORETURN();
+        NOTREACHED();
 #endif
       case extensions::mojom::HostID::HostType::kExtensions:
         NOTREACHED_IN_MIGRATION();

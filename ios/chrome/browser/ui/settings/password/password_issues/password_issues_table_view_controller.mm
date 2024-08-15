@@ -358,7 +358,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (sectionIdentifier) {
     case SectionIdentifierHeader:
       // This section always has a header.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case SectionIdentifierDismissedCredentialsButton:
       // Spacing to last password issue.

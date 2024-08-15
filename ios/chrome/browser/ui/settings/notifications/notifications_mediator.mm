@@ -401,7 +401,7 @@
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
       // Not a switch.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

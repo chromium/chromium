@@ -741,7 +741,7 @@ PasswordStoreAndroidBackend::GetRetryCallbackForOperation(
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
     case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

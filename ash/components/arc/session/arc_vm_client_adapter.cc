@@ -555,7 +555,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_DISABLED);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   request.set_use_gki(base::FeatureList::IsEnabled(kArcVmGki));

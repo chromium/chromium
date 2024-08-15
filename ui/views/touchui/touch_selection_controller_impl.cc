@@ -142,8 +142,7 @@ gfx::Image* GetHandleImage(gfx::SelectionBound::Type bound_type) {
     case gfx::SelectionBound::RIGHT:
       return GetRightHandleImage();
     default:
-      NOTREACHED_NORETURN()
-          << "Invalid touch handle bound type: " << bound_type;
+      NOTREACHED() << "Invalid touch handle bound type: " << bound_type;
   }
 }
 
@@ -161,8 +160,7 @@ ui::ImageModel GetHandleVectorIcon(gfx::SelectionBound::Type bound_type) {
       icon = &ui::kTextSelectionHandleRightIcon;
       break;
     default:
-      NOTREACHED_NORETURN()
-          << "Invalid touch handle bound type: " << bound_type;
+      NOTREACHED() << "Invalid touch handle bound type: " << bound_type;
   }
   return ui::ImageModel::FromVectorIcon(*icon,
                                         /*color_id=*/ui::kColorSysPrimary);
@@ -203,7 +201,7 @@ gfx::Rect GetSelectionWidgetBounds(const gfx::SelectionBound& bound) {
       widget_left = bound.edge_start_rounded().x() - widget_width / 2;
       break;
     default:
-      NOTREACHED_NORETURN() << "Undefined bound type.";
+      NOTREACHED() << "Undefined bound type.";
   }
   return gfx::Rect(widget_left, bound.edge_start_rounded().y(), widget_width,
                    widget_height);

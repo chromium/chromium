@@ -177,7 +177,7 @@ SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
       return color_provider.GetColor(kInactiveColorIds[hovered][frame_active]);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

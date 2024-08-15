@@ -39,7 +39,7 @@ int AttributionResolverDelegate::GetMaxReportsPerDestination(
     case attribution_reporting::mojom::ReportType::kAggregatableAttribution:
       return config_.aggregate_limit.max_reports_per_destination;
     case attribution_reporting::mojom::ReportType::kNullAggregatable:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

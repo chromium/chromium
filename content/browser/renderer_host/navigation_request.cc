@@ -2876,7 +2876,7 @@ void NavigationRequest::
         return;
       case GetFrameHostForNavigationFailed::kIntentionalDefer:
         // We will not defer RFH creation for requests without a URL loader
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -4588,7 +4588,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
           return;
         case GetFrameHostForNavigationFailed::kIntentionalDefer:
           // We only defer RFH creation when the navigation is not started yet.
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 
@@ -5054,7 +5054,7 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
         return;
       case GetFrameHostForNavigationFailed::kIntentionalDefer:
         // We only defer RFH creation when the navigation is not started yet.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -10809,8 +10809,7 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
 
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
     case blink::mojom::NavigationType::SAME_DOCUMENT:
-      NOTREACHED_NORETURN()
-          << "Same-document navigations shouldn't fire pageswap";
+      NOTREACHED() << "Same-document navigations shouldn't fire pageswap";
   }
 
   return page_swap_event_params;

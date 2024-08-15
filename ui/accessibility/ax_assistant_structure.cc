@@ -455,7 +455,7 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
       return kAXTextViewClassname;
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
       return kAXViewClassname;
   }

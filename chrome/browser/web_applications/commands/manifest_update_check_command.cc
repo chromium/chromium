@@ -588,7 +588,7 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
       case ManifestUpdateCheckResult::kCancelledDueToMainFrameNavigation:
         return CommandResult::kFailure;
       case ManifestUpdateCheckResult::kSystemShutdown:
-        NOTREACHED_NORETURN() << "This should be handled by OnShutdown()";
+        NOTREACHED() << "This should be handled by OnShutdown()";
     }
   }();
 

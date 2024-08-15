@@ -663,7 +663,7 @@ void NativeWidgetMac::Show(ui::WindowShowState show_state,
       NOTIMPLEMENTED();
       break;
     case ui::SHOW_STATE_END:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   auto window_state = WindowVisibilityState::kShowAndActivateWindow;
   if (show_state == ui::SHOW_STATE_INACTIVE) {

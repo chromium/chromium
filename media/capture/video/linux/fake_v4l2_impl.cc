@@ -680,7 +680,7 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
   }
 
   // Invalid |request|.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // We ignore |start| in this implementation

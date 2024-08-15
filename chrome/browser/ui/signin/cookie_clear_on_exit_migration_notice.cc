@@ -170,6 +170,6 @@ void ShowCookieClearOnExitMigrationNotice(
 
   chrome::ShowBrowserModal(&browser, dialog_builder.Build());
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }

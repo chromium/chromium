@@ -772,7 +772,7 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
     iban->set_record_type(Iban::RecordType::kLocalIban);
   } else {
     // Support for server IBANs isn't available yet on Android.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

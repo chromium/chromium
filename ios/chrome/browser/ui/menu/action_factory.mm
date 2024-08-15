@@ -452,7 +452,7 @@
          "outside the Tab Groups experiment.";
 
   if (groups.size() == 0) {
-    NOTREACHED_NORETURN() << "Groups cannot be empty.";
+    NOTREACHED() << "Groups cannot be empty.";
   }
 
   NSArray<UIMenuElement*>* groupsMenu = [self groupsMenuForGroups:groups

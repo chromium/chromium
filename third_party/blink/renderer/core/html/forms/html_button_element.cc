@@ -98,7 +98,7 @@ const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
       break;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool HTMLButtonElement::IsPresentationAttribute(

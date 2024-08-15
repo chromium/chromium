@@ -393,7 +393,7 @@ INSTANTIATE_TEST_SUITE_P(
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return "NEW_BACKGROUND_TAB";
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     });
 

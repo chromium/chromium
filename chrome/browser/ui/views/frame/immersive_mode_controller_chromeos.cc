@@ -47,7 +47,7 @@ ToImmersiveFullscreenControllerAnimateReveal(
     case ImmersiveModeController::ANIMATE_REVEAL_NO:
       return chromeos::ImmersiveFullscreenController::ANIMATE_REVEAL_NO;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class ImmersiveRevealedLockChromeos : public ImmersiveRevealedLock {

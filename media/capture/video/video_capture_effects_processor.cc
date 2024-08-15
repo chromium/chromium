@@ -64,7 +64,7 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
           std::move(shared_image_set));
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

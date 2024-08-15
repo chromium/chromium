@@ -599,7 +599,7 @@ bool FileIOTest::IsResult(const TestStep& test_step) {
     case ACTION_CLOSE:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {

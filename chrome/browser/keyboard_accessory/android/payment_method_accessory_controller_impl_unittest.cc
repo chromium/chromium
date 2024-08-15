@@ -245,7 +245,7 @@ class PaymentMethodAccessoryControllerCardUnmaskTest
       }
       case CreditCard::RecordType::kFullServerCard:
         // Full server cards are never unmasked, so they are not tested.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

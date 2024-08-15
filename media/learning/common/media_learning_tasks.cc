@@ -89,7 +89,7 @@ const LearningTask& MediaLearningTasks::Get(const char* task_name) {
   if (strcmp(task_name, tasknames::kConsecutiveNNRs) == 0)
     return GetConsecutiveNNRsTask();
 
-  NOTREACHED_NORETURN() << " Unknown learning task:" << task_name;
+  NOTREACHED() << " Unknown learning task:" << task_name;
 }
 
 // static

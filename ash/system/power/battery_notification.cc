@@ -226,7 +226,7 @@ void HandlePowerNotificationButtonClick(
       break;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -166,7 +166,7 @@ using base::UserMetricsAction;
     case kStepsCompleted:
       break;
   }
-  NOTREACHED_NORETURN() << static_cast<int>(type);
+  NOTREACHED() << static_cast<int>(type);
 }
 
 // Calls the completion callback with the given `result` and a

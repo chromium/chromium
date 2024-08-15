@@ -95,7 +95,7 @@ String ExceptionMessages::AddContextToMessage(const ExceptionContext& context,
     case v8::ExceptionContext::kUnknown:
       return m;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 String ExceptionMessages::FailedToConvertJSValue(const char* type) {

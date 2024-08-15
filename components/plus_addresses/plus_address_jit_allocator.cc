@@ -63,7 +63,7 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
       return;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PlusAddressJitAllocator::IsRefreshingSupported(

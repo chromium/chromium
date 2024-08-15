@@ -1349,7 +1349,7 @@ class FetchLaterManager::DeferredLoader final
                           WebFeature::kFetchLaterInvokeStateActivated);
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     };
     invoke_state_ = state;
     fetch_later_result_->SetActivated(state == InvokeState::ACTIVATED);

@@ -54,7 +54,7 @@ class UnifiedConsentServiceTest : public testing::Test {
       case SyncState::kSignedInWithHistoryAndNoPassphrase:
         return "kSignedInWithHistoryAndNoPassphrase";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   UnifiedConsentServiceTest() {

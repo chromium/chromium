@@ -144,7 +144,7 @@ void DownloadDangerPromptViews::InvokeActionForTesting(Action action) {
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -190,7 +190,7 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DOWNLOAD_CHANGES_SETTINGS,
                                         filename);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

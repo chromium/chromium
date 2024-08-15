@@ -146,7 +146,7 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
     case PolicyFetchReason::kUserRequest:
       return Request::USER_REQUEST;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 em::PolicyValidationReportRequest::ValidationResultType

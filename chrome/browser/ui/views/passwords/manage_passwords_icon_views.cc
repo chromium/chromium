@@ -167,7 +167,7 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_TOOLTIP_KEYCHAIN_ERROR);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(

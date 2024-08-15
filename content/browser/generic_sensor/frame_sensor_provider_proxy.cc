@@ -45,7 +45,7 @@ SensorTypeToPermissionsPolicyFeatures(SensorType type) {
       return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
               blink::mojom::PermissionsPolicyFeature::kGyroscope};
     default:
-      NOTREACHED_NORETURN() << "Unknown sensor type " << type;
+      NOTREACHED() << "Unknown sensor type " << type;
   }
 }
 

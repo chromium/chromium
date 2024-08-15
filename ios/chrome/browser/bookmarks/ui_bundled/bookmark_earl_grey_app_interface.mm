@@ -78,7 +78,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
     case BookmarkStorageType::kAccount:
       return model->account_mobile_node();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -523,7 +523,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         return gfx::Point(window_center_point.x() - x_offset,
                           window_center_point.y() + y_offset);
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

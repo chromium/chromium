@@ -27,7 +27,7 @@ ui::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
 
     case views::Button::STATE_COUNT:
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -124,7 +124,7 @@ views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(
     case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return close_button();
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -115,7 +115,7 @@ StructTraits<os_crypt_async::mojom::KeyDataView,
   if (in.algorithm_) {
     return *in.algorithm_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

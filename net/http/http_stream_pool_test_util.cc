@@ -100,7 +100,7 @@ FakeServiceEndpointResolver::CreateRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -109,7 +109,7 @@ FakeServiceEndpointResolver::CreateRequest(
     const NetworkAnonymizationKey& network_anonymization_key,
     const NetLogWithSource& net_log,
     const std::optional<ResolveHostParameters>& optional_parameters) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<HostResolver::ServiceEndpointRequest>

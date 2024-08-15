@@ -115,7 +115,7 @@ void BlindSignMessageAndroidImpl::SendRequest(
       break;
     }
     case quiche::BlindSignMessageRequestType::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

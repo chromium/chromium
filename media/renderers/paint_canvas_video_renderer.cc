@@ -341,7 +341,7 @@ const libyuv::YuvConstants* GetYuvContantsForColorSpace(SkYUVColorSpace cs) {
       // GBR, YCgCo equivalent support.
       return &YUV_MATRIX(libyuv::kYuvI601Constants);
     case kIdentity_SkYUVColorSpace:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
 }
 
@@ -1210,7 +1210,7 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   const int scale = 1 << (24 - video_frame->BitDepth());
   scoped_refptr<VideoFrame> ret = VideoFrame::CreateFrame(

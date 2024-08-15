@@ -130,7 +130,7 @@ void SetFetchDestinationFromModuleType(
     case ModuleType::kInvalid:
       // ModuleTreeLinker checks that the module type is valid
       // before creating ModuleScriptFetchRequest objects.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

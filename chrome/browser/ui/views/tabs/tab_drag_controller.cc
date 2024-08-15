@@ -523,7 +523,7 @@ TabDragController::Liveness TabDragController::Init(
                            kVariableTimer);
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

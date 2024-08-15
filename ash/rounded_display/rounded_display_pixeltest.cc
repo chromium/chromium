@@ -38,7 +38,7 @@ std::string ToDisplaySpecRotationString(display::Display::Rotation rotation) {
       return "/l";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string ToDisplaySpecDeviceScaleFactorString(int scale_factor) {

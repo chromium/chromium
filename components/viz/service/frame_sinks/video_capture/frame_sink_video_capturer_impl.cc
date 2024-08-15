@@ -123,14 +123,14 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
         case mojom::BufferFormatPreference::kDefault:
           return std::make_unique<SharedMemoryVideoFramePool>(capacity);
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
     case media::PIXEL_FORMAT_NV12:
       return std::make_unique<GpuMemoryBufferVideoFramePool>(
           capacity, format, gfx::ColorSpace::CreateREC709(), context_provider);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -144,7 +144,7 @@ CopyOutputRequest::ResultFormat VideoPixelFormatToCopyOutputRequestFormat(
     case media::PIXEL_FORMAT_ARGB:
       return CopyOutputRequest::ResultFormat::RGBA;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

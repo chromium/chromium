@@ -213,7 +213,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
       break;
     default:
       // Other suggestion types are not supported.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -289,7 +289,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       break;
     default:
       // Other suggestion types are not supported.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   autofill_client_->HideAutofillSuggestions(
       autofill::SuggestionHidingReason::kAcceptSuggestion);
@@ -298,7 +298,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
 void PasswordManualFallbackFlow::DidPerformButtonActionForSuggestion(
     const Suggestion& suggestion) {
   // Button actions do currently not exist for password entries.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PasswordManualFallbackFlow::RemoveSuggestion(

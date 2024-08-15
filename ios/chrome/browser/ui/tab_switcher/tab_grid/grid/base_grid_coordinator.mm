@@ -70,11 +70,11 @@
 }
 
 - (BaseGridMediator*)mediator {
-  NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
+  NOTREACHED() << "This should be implemented in subclasses.";
 }
 
 - (BaseGridViewController*)gridViewController {
-  NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
+  NOTREACHED() << "This should be implemented in subclasses.";
 }
 
 - (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup {
@@ -95,7 +95,7 @@
 }
 
 - (LegacyGridTransitionLayout*)transitionLayout {
-  NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
+  NOTREACHED() << "This should be implemented in subclasses.";
 }
 
 - (BOOL)isSelectedCellVisible {

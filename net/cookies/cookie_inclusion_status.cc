@@ -370,7 +370,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       reason = "ExemptionScheme";
       break;
     case ExemptionReason::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
   base::StrAppend(&out, {reason});
 

@@ -379,7 +379,7 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -398,7 +398,7 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

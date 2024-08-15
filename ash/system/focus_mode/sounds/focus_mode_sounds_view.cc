@@ -238,7 +238,7 @@ void FocusModeSoundsView::OnPlaylistStateChanged() {
       }
       break;
     case focus_mode_util::SoundType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

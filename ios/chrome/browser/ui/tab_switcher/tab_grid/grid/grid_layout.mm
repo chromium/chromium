@@ -454,7 +454,7 @@ NSCollectionLayoutSection* SuggestedActionsSection(
     return SuggestedActionsSection(layoutEnvironment, self.sectionInsets);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 @end

@@ -416,7 +416,7 @@ void BidirectionalStream::OnQuicBroken() {}
 void BidirectionalStream::OnSwitchesToHttpStreamPool(
     HttpStreamKey stream_key,
     quic::ParsedQuicVersion quic_version) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BidirectionalStream::NotifyFailed(int error) {

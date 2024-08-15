@@ -329,7 +329,7 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
     case TipsNotificationType::kOmniboxPosition:
       return ShouldSendOmniboxPosition();
     case TipsNotificationType::kError:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -89,7 +89,7 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
                       /*icon=*/gfx::ImageSkia(),
                       /*url=*/GURL()};
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

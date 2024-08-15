@@ -1902,7 +1902,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       uri_file_path = base::StrCat({"file:", db_file_path, "?exclusive=true"});
     }
 #else
-    NOTREACHED_NORETURN()
+    NOTREACHED()
         << "exclusive_database_file_lock is only supported on Windows.";
 #endif  // BUILDFLAG(IS_WIN)
   }

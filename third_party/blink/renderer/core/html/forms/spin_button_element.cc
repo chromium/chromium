@@ -244,7 +244,7 @@ void SpinButtonElement::CalculateUpDownStateByMouseLocation(Event& event) {
       up_down_state_ = (local.y() < box->Size().height / 2) ? kUp : kDown;
       break;
     case PhysicalDirection::kDown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PhysicalDirection::kLeft:
       up_down_state_ = (local.x() < box->Size().width / 2) ? kUp : kDown;
       break;

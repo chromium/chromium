@@ -47,7 +47,7 @@ ProfilePickerFeaturePromoController::GetAcceleratorProvider() const {
 }
 
 std::u16string ProfilePickerFeaturePromoController::GetBodyIconAltText() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const base::Feature*
@@ -63,7 +63,7 @@ ProfilePickerFeaturePromoController::GetScreenReaderPromptPromoEventName()
 
 std::u16string
 ProfilePickerFeaturePromoController::GetTutorialScreenReaderHint() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string

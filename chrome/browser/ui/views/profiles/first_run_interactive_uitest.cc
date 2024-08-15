@@ -132,7 +132,7 @@ std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
     case SyncButtonsFeatureConfig::kDeadlined:
       return ::signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -145,7 +145,7 @@ std::optional<::signin_metrics::SyncButtonsType> ExpectedButtonShownMetric(
     case SyncButtonsFeatureConfig::kDeadlined:
       return ::signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

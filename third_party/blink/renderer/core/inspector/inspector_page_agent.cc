@@ -154,7 +154,7 @@ String NavigationPolicyToProtocol(NavigationPolicy policy) {
     case kNavigationPolicyPictureInPicture:
       return DispositionEnum::NewWindow;
     case kNavigationPolicyLinkPreview:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return DispositionEnum::CurrentTab;
 }

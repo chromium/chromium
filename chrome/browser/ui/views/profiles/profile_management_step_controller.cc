@@ -280,7 +280,7 @@ class FinishFlowAndRunInBrowserStepController
 
   void OnNavigateBackRequested() override {
     // Do nothing, navigating back is not allowed.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:
@@ -348,7 +348,7 @@ class SearchEngineChoiceStepController
 
   void OnNavigateBackRequested() override {
     // Do nothing, navigating back is not allowed.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

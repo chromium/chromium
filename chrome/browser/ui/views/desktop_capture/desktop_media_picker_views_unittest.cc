@@ -98,7 +98,7 @@ DesktopMediaID::Type GetSourceIdType(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       return DesktopMediaID::Type::TYPE_NONE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
@@ -114,7 +114,7 @@ std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
     case DesktopMediaList::Type::kNone:
       return "None";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 struct PickerConfiguration {

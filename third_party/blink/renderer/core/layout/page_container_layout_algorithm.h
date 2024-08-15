@@ -54,7 +54,7 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   const LayoutResult* Layout();
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Return the outgoing break token from the fragmentainer (page area).

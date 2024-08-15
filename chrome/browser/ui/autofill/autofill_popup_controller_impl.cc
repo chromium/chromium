@@ -526,7 +526,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
           AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory();
           break;
         case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       break;
     case FillingProduct::kAutocomplete:

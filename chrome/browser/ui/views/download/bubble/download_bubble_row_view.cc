@@ -333,7 +333,7 @@ bool DownloadBubbleRowView::StartLoadFileIcon() {
   }
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS the LookupIconFromFilepath() call should always succeed.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   im->LoadIcon(file_path, icon_loader_size, current_scale_,
                base::BindOnce(&DownloadBubbleRowView::OnFileIconLoaded,
@@ -1040,7 +1040,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
           IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY,
           info_->model()->GetFileNameToReportUser().LossyDisplayName());
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1084,7 +1084,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
           IDS_DOWNLOAD_BUBBLE_OPEN_MAIN_BUTTON_ACCESSIBILITY,
           info_->model()->GetFileNameToReportUser().LossyDisplayName());
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -195,7 +195,7 @@ enum class SignInHistorySyncStep {
     case SignInHistorySyncStep::kCompleted:
       break;
   }
-  NOTREACHED_NORETURN() << base::SysNSStringToUTF8([self description]);
+  NOTREACHED() << base::SysNSStringToUTF8([self description]);
 }
 
 // Stops the child coordinator and prepares the next step to present.
@@ -228,7 +228,7 @@ enum class SignInHistorySyncStep {
     case SignInHistorySyncStep::kCompleted:
       break;
   }
-  NOTREACHED_NORETURN() << base::SysNSStringToUTF8([self description]);
+  NOTREACHED() << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - NSObject

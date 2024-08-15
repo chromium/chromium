@@ -474,7 +474,7 @@ WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
     return WebFrameLoadType::kBackForward;
   if (navigation_type == "reload")
     return WebFrameLoadType::kReload;
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void NavigateEvent::ProcessScrollBehavior() {

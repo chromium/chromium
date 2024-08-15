@@ -115,9 +115,7 @@ class MockIpProtectionConfigGetter : public IpProtectionConfigGetter {
     expected_try_get_auth_token_calls_.pop_front();
   }
 
-  void GetProxyList(GetProxyListCallback callback) override {
-    NOTREACHED_NORETURN();
-  }
+  void GetProxyList(GetProxyListCallback callback) override { NOTREACHED(); }
 
  protected:
   std::deque<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;

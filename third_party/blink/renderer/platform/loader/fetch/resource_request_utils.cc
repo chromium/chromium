@@ -111,7 +111,7 @@ bool ShouldLoadIncremental(ResourceType type) {
     case ResourceType::kDictionary:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(

@@ -1055,7 +1055,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
         break;
 
       case EnclaveUserVerificationMethod::kUnsatisfiable:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -1243,7 +1243,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
                          enclave_manager_->GetWeakPtr(), base::DoNothing());
       break;
     case EnclaveUserVerificationMethod::kUnsatisfiable:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   switch (request_type_) {

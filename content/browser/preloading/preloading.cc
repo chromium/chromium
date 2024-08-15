@@ -27,7 +27,7 @@ std::string_view PreloadingTypeToString(PreloadingType type) {
     case PreloadingType::kLinkPreview:
       return "LinkPreview";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PreloadingPredictor GetPredictorForPreloadingTriggerType(
@@ -49,7 +49,7 @@ PreloadingPredictor GetPredictorForPreloadingTriggerType(
       // Revisit if needed.
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

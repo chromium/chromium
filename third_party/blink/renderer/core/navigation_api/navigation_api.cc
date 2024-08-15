@@ -113,7 +113,7 @@ String DetermineNavigationType(WebFrameLoadType type) {
     case WebFrameLoadType::kReplaceCurrentItem:
       return "replace";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 NavigationApi::NavigationApi(LocalDOMWindow* window)

@@ -188,7 +188,7 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {

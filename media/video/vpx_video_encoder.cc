@@ -277,7 +277,7 @@ std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
       }
       break;
     default:
-      NOTREACHED_NORETURN();  // Checked during Initialize().
+      NOTREACHED();  // Checked during Initialize().
   }
   return std::nullopt;
 }
@@ -420,7 +420,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       codec_config_.g_input_bit_depth = 10;
       break;
     default:
-      NOTREACHED_NORETURN();  // Enforced via a profile check above.
+      NOTREACHED();  // Enforced via a profile check above.
   }
 
   auto status = SetUpVpxConfig(options, profile_, &codec_config_);
@@ -678,7 +678,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       break;
 
     default:
-      NOTREACHED_NORETURN();  // Checked during Initialize().
+      NOTREACHED();  // Checked during Initialize().
   }
 
   // Use zero as a timestamp, so encoder will not use it for rate control.

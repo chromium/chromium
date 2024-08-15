@@ -2240,7 +2240,7 @@ FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -2264,7 +2264,7 @@ bool IsCheckable(FormControlType form_control_type) {
     case FormControlType::kTextArea:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {

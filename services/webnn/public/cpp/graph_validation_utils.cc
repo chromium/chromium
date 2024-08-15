@@ -489,7 +489,7 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
       outputs.push_back(*std::move(split_descriptor));
     }
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   return outputs;
@@ -1181,7 +1181,7 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
     output_shape[axes[0]] = sizes[0];
     output_shape[axes[1]] = sizes[1];
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   return OperandDescriptor::Create(input.data_type(), output_shape);

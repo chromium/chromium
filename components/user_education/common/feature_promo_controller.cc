@@ -907,7 +907,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
     case FeaturePromoSpecification::PromoType::kLegacy:
       break;
     case FeaturePromoSpecification::PromoType::kRotating:
-      NOTREACHED_NORETURN() << "Not implemented; should never reach this code.";
+      NOTREACHED() << "Not implemented; should never reach this code.";
   }
 
   bool had_screen_reader_promo = false;

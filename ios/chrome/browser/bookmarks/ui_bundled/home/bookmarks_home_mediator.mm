@@ -100,7 +100,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     case BookmarksBatchUploadSectionIdentifier:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 @interface BookmarksHomeMediator () <AccountSettingsPresenter,

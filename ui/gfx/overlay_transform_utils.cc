@@ -111,7 +111,7 @@ OverlayTransform OverlayTransformsConcat(OverlayTransform t1,
       case OVERLAY_TRANSFORM_INVALID:
         break;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
 
   DecomposedOverlayTransform decomposed1 = decompose(t1);
@@ -151,7 +151,7 @@ OverlayTransform OverlayTransformsConcat(OverlayTransform t1,
                  : OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace gfx

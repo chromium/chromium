@@ -306,7 +306,7 @@ NSString* BannerImageName(bool landscape) {
     case ItemIdentifierPriceTracking:
       return self.priceTrackingItem;
     case ItemIdentifierTipsNotificationsFooter:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

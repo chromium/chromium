@@ -228,7 +228,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         adapter_creation_result;
     switch (options->device) {
       case mojom::CreateContextOptions::Device::kCpu:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case mojom::CreateContextOptions::Device::kGpu:
         adapter_creation_result =
             GetDmlGpuAdapter(shared_context_state_.get(), gpu_feature_info_);

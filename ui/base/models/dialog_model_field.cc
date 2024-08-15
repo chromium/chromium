@@ -359,7 +359,7 @@ DialogModelField* DialogModelSection::GetFieldByUniqueId(ElementIdentifier id) {
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 DialogModelCheckbox* DialogModelSection::GetCheckboxByUniqueId(

@@ -83,19 +83,19 @@
 }
 
 - (void)saveAndCloseAllItems {
-  NOTREACHED_NORETURN() << "Incognito tabs should not be saved before closing.";
+  NOTREACHED() << "Incognito tabs should not be saved before closing.";
 }
 
 - (void)undoCloseAllItems {
-  NOTREACHED_NORETURN() << "Incognito tabs are not saved before closing.";
+  NOTREACHED() << "Incognito tabs are not saved before closing.";
 }
 
 - (void)discardSavedClosedItems {
-  NOTREACHED_NORETURN() << "Incognito tabs cannot be saved.";
+  NOTREACHED() << "Incognito tabs cannot be saved.";
 }
 
 - (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID {
-  NOTREACHED_NORETURN() << "Should not be called in incognito.";
+  NOTREACHED() << "Should not be called in incognito.";
 }
 
 #pragma mark - TabGridPageMutator

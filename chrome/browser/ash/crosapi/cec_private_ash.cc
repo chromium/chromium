@@ -31,7 +31,7 @@ PowerState ConvertCecServiceClientPowerState(
       return PowerState::kUnknown;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

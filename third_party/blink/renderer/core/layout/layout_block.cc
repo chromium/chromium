@@ -345,7 +345,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayoutBlock::InvalidatePaint(

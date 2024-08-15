@@ -480,7 +480,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type) {
       case FillingProduct::kNone:
         // `kMerchantPromoCode` and `kCompose` cases are currently not available
         // on iOS. Also, there shouldn't be suggestions of type `kNone`.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     // VoiceOver message setup with

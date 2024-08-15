@@ -107,7 +107,7 @@ tabs::TabModel* UnpinnedTabCollection::GetTabAtIndexRecursive(size_t index) {
     }
     direct_child_index++;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void UnpinnedTabCollection::AppendTab(std::unique_ptr<TabModel> tab_model) {

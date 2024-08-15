@@ -93,7 +93,7 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -1380,7 +1380,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       return frameView;
     }
     case PromoStyleImageType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

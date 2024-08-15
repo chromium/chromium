@@ -306,7 +306,7 @@ void PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 void PrinterQuery::SetClientId(PrintBackendServiceManager::ClientId client_id) {
   // Only supposed to be called for `PrinterQueryOop` objects.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif
 

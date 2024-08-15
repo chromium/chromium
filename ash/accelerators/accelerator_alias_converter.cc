@@ -232,7 +232,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
     case ui::VKEY_NEXT:
       return settings->six_pack_key_remappings->page_down;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

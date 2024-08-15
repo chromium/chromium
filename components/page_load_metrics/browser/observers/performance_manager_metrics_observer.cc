@@ -154,9 +154,9 @@ const char* GetVisibilitySuffix(Visibility visibility) {
     case Visibility::kMixed:
       return ".MixedBGFG";
     case Visibility::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

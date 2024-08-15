@@ -92,7 +92,7 @@ bool IsMaxBytesAllowed(
     case SourceRegistrationTimeConfig::kInclude:
       return max_bytes.IsDefault();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsValid(SourceRegistrationTimeConfig source_registration_time_config,

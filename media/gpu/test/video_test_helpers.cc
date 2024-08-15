@@ -166,7 +166,7 @@ std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
       codec == VideoCodec::kAV1) {
     return std::make_unique<EncodedDataHelperIVF>(std::move(stream), codec);
   }
-  NOTREACHED_NORETURN() << "Unsupported codec " << GetCodecName(codec);
+  NOTREACHED() << "Unsupported codec " << GetCodecName(codec);
 }
 
 // static

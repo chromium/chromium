@@ -144,7 +144,7 @@ class PLATFORM_EXPORT CanvasResource
   // attached to the resource.
   // NOTE: Valid to call only if UsesClientSharedImage() is true.
   virtual scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // A CanvasResource is not thread-safe and does not allow concurrent usage

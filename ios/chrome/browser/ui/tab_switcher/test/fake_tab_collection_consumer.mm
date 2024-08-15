@@ -40,7 +40,7 @@
   for (GridItemIdentifier* item in items) {
     switch (item.type) {
       case GridItemType::kInactiveTabsButton:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case GridItemType::kTab:
         _items.push_back(item.tabSwitcherItem.identifier);
         break;
@@ -48,7 +48,7 @@
         _groups.push_back(item.tabGroupItem.tabGroup);
         break;
       case GridItemType::kSuggestedActions:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

@@ -414,7 +414,7 @@ SinginInterceptSupervisionState CapabilityToSupervisionState(
       return SinginInterceptSupervisionState::kUnknownSupervision;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void MaybeRecordSupervisedUserStateMetrics(
@@ -1238,7 +1238,7 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
                                                     processed_result);
       break;
     case SigninInterceptionResult::kAcceptedWithExistingProfile:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "Those results are not expected within the Chrome Signin Bubble.";
     case SigninInterceptionResult::kAccepted:
       RecordChromeSigninNumberOfDismissesForAccount(account_info.gaia,

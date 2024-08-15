@@ -39,7 +39,7 @@ bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
     case UseUpmLocalAndSeparateStoresState::kOn:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsGmsCoreUpdateRequired(const PrefService* pref_service,

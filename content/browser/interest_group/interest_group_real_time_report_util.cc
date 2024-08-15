@@ -75,7 +75,7 @@ std::optional<int32_t> SampleContributions(
   }
 
   // If `contributions` is not empty, one should have be chosen and returned.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::map<url::Origin, std::vector<uint8_t>>

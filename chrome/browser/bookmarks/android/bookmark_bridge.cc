@@ -521,7 +521,7 @@ const BookmarkNode* BookmarkBridge::GetCorrespondingAccountFolder(
                : nullptr;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(JNIEnv* env) {
@@ -1727,7 +1727,7 @@ ReadingListManager* BookmarkBridge::GetReadingListManagerFromParentNode(
     return local_or_syncable_reading_list_manager_.get();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BookmarkBridge::ReadingListModelLoaded(const ReadingListModel* model) {

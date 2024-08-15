@@ -633,7 +633,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
                                    void* in_buffer,
                                    UInt32* out_size) {
     // This class only does writing.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // The AudioFile write callback function. Appends the data to the encoder's
@@ -659,7 +659,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // The AudioFile getsize callback function.
   static SInt64 FileGetSizeCallback(void* in_encoder) {
     // This class only does writing.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // The AudioFile setsize callback function.

@@ -235,7 +235,7 @@ std::string ToString(Interaction interaction) {
     case Interaction::kSettingsApp:
       return "SettingsApp";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // These strings are persisted to logs. These string values should never be
@@ -261,7 +261,7 @@ std::string ToString(Step step) {
     case Step::kStatusArea:
       return "StatusArea";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash::welcome_tour_metrics

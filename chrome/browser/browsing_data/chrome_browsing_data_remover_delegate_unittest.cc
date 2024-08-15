@@ -1026,7 +1026,7 @@ class MockReportingService : public net::ReportingService {
 
   void SetEnterpriseReportingEndpoints(
       const base::flat_map<std::string, GURL>& endpoints) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void SendReportsAndRemoveSource(
@@ -4945,7 +4945,7 @@ class ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest
             content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
             GetMetadata());
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 };

@@ -332,7 +332,7 @@ bool Progress::IsError() const {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool InProgress(const Stage stage) {
@@ -353,7 +353,7 @@ bool InProgress(const Stage stage) {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool IsPaused(const Stage stage) {
@@ -374,7 +374,7 @@ bool IsPaused(const Stage stage) {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool IsPausedOrInProgress(const Stage stage) {
@@ -395,7 +395,7 @@ bool IsPausedOrInProgress(const Stage stage) {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool IsSuccessfulDocsOfflineEnablement(DocsOfflineEnableStatus status) {

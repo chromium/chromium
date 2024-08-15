@@ -66,7 +66,7 @@ const gfx::Insets GetDeleteButtonMargins(
 
   switch (display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       return ClipboardHistoryViews::kTextItemDeleteButtonMargins;
@@ -237,7 +237,7 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
   std::unique_ptr<ClipboardHistoryItemView> item_view;
   switch (display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       item_view = std::make_unique<ClipboardHistoryTextItemView>(

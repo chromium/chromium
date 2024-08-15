@@ -118,7 +118,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // LINT.IfChange(ConvertModelAvailabilityCheckResultToDebugString)
@@ -166,7 +166,7 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
         kNoModelAdaptationNotAvailable:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 // LINT.ThenChange(//third_party/blink/public/mojom/ai_manager.mojom:ModelAvailabilityCheckResult)
 

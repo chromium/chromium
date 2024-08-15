@@ -286,7 +286,7 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
       case mojom::CorsError::kInvalidAllowCredentials:
         return mojom::CorsError::kPreflightInvalidAllowCredentials;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   cors_result.error().cors_error =

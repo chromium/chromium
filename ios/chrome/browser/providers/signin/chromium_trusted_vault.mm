@@ -56,21 +56,21 @@ void ChromiumTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     const std::string& security_domain_path,
     KeyFetchedCallback completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ChromiumTrustedVaultClientBackend::MarkLocalKeysAsStale(
     id<SystemIdentity> identity,
     const std::string& security_domain_path,
     base::OnceClosure completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ChromiumTrustedVaultClientBackend::GetDegradedRecoverabilityStatus(
     id<SystemIdentity> identity,
     const std::string& security_domain_path,
     base::OnceCallback<void(bool)> completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 TrustedVaultClientBackend::CancelDialogCallback
@@ -79,7 +79,7 @@ ChromiumTrustedVaultClientBackend::Reauthentication(
     const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 TrustedVaultClientBackend::CancelDialogCallback
@@ -88,7 +88,7 @@ ChromiumTrustedVaultClientBackend::FixDegradedRecoverability(
     const std::string& security_domain_path,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ChromiumTrustedVaultClientBackend::ClearLocalData(
@@ -101,7 +101,7 @@ void ChromiumTrustedVaultClientBackend::ClearLocalData(
 void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
     GetPublicKeyCallback completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // anonymous namespace

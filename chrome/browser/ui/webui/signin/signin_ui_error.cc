@@ -168,6 +168,6 @@ ReauthUIErrorMessages GetReauthUIErrorMessages(ReauthUIError error,
               l10n_util::GetStringUTF16(
                   IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY)};
     case ReauthUIError::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

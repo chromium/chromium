@@ -828,7 +828,7 @@ bool BaseRenderingContext2D::ExtractColorFromV8StringAndUpdateCache(
           return true;
         case ColorParseResult::kColorMix:
           // ParseColorOrCurrentColor() never returns kColorMix.
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         case ColorParseResult::kParseFailed:
           return false;
       }

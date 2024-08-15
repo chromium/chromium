@@ -529,7 +529,7 @@ binder_status_t SupportsBinderBase::OnIBinderTransact(AIBinder* binder,
   }
 
   // If binder NDK is unsupported, nobody will be calling this method.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace internal

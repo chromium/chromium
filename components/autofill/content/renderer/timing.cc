@@ -54,7 +54,7 @@ std::string_view CallSiteToString(CallTimerState::CallSite call_site) {
     case kUpdateLastInteractedElement:
       return "UpdateLastInteractedElement";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace
 

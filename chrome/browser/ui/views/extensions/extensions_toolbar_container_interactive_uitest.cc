@@ -119,7 +119,7 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
     action->OnMouseEvent(&click_up_event);
   }
 
-  void ShowUi(const std::string& name) override { NOTREACHED_NORETURN(); }
+  void ShowUi(const std::string& name) override { NOTREACHED(); }
 
   void RemoveExtension(ExtensionRemovalMethod method,
                        const std::string& extension_id) {

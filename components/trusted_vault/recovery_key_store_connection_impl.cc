@@ -55,7 +55,7 @@ void ProcessUpdateVaultResponseResponse(
       return;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

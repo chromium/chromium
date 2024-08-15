@@ -759,7 +759,7 @@ std::string GetDesktopFileContentsForUrlShortcut(
   g_key_file_free(key_file);
   return output_buffer;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return std::string();
 #endif
 }

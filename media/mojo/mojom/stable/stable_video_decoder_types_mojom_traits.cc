@@ -1403,7 +1403,7 @@ bool StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
       return false;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

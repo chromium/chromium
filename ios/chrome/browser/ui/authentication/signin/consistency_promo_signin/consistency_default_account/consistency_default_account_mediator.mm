@@ -156,7 +156,7 @@ NSString* GetPromoLabelString(
       // generic default that fits all entry points.
       return nil;
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

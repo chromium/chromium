@@ -81,7 +81,7 @@ void EventBasedLogManager::MaybeAddAllEventObservers() {
       case ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED:
         continue;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

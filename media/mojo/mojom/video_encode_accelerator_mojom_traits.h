@@ -162,7 +162,7 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
     } else if (metadata.h265) {
       return media::mojom::OptionalMetadataDataView::Tag::kH265;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {

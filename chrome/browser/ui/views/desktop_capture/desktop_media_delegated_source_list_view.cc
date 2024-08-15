@@ -30,7 +30,7 @@ std::u16string GetMessageText(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string GetButtonText(DesktopMediaList::Type type) {
@@ -46,7 +46,7 @@ std::u16string GetButtonText(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

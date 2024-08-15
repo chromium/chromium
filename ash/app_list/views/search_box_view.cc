@@ -236,7 +236,7 @@ std::u16string GetCategoryMenuItemTooltip(
       tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP;
       break;
     case AppListSearchControlCategory::kCannotToggle:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(tooltip_id);
 }
@@ -402,7 +402,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
         break;
       case AppListSearchControlCategory::kCannotToggle:
         // There shouldn't be a "Cannot toggle" option.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     // Toggle the checkbox icon.

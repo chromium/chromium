@@ -128,7 +128,7 @@ bool IsMediaTypeAllowed(AllowedScreenCaptureLevel allowed_capture_level,
                         content::DesktopMediaID::Type media_type) {
   switch (media_type) {
     case content::DesktopMediaID::TYPE_NONE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case content::DesktopMediaID::TYPE_SCREEN:
       return allowed_capture_level >= AllowedScreenCaptureLevel::kDesktop;
     case content::DesktopMediaID::TYPE_WINDOW:

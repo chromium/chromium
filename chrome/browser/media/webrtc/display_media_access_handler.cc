@@ -254,7 +254,7 @@ void DisplayMediaAccessHandler::HandleRequest(
     }
     BypassMediaSelectionDialog(web_contents, request, std::move(callback));
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

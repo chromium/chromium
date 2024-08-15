@@ -1604,7 +1604,7 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
         }
         break;
       case FragmentItem::kInvalid:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

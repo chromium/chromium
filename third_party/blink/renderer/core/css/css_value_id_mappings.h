@@ -472,7 +472,7 @@ inline TextBoxEdge::Type CssValueIDToPlatformEnum(CSSValueID id) {
     case CSSValueID::kAlphabetic:
       return TextBoxEdge::Type::kAlphabetic;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

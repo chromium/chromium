@@ -262,7 +262,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
       // Only the Service-based device launcher is supported for device capture
       // from cameras etc.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
     case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
       start_capture_closure = base::BindOnce(
@@ -432,7 +432,7 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
         std::move(done_cb).Run();
         return;
       case State::READY_TO_LAUNCH:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -450,7 +450,7 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
       std::move(done_cb).Run();
       return;
     case State::READY_TO_LAUNCH:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

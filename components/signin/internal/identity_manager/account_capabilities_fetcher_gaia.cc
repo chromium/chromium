@@ -31,7 +31,7 @@ std::string_view ToUmaToken(
     case AccountCapabilitiesFetcher::FetchPriority::kBackground:
       return "Background";
   }
-  NOTREACHED_NORETURN() << "Unknown priority: " << static_cast<int>(priority);
+  NOTREACHED() << "Unknown priority: " << static_cast<int>(priority);
 }
 
 std::string_view ToUmaToken(

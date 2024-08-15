@@ -86,7 +86,7 @@ class CalendarApiRequestsTest : public testing::Test {
       return test_util::CreateHttpResponseFromFile(
           test_util::GetTestFilePath("calendar/calendar_list.json"));
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

@@ -129,7 +129,7 @@ void AccessTokenFetcher::VerifyScopeAccess() {
         break;
 
       case OAuth2ScopeRestriction::kPrivilegedOAuth2Consumer:
-        NOTREACHED_NORETURN() << base::StringPrintf(
+        NOTREACHED() << base::StringPrintf(
             "You are attempting to access a privileged scope '%s' without the "
             "required access, please file a bug for access at "
             "https://bugs.chromium.org/p/chromium/issues/"

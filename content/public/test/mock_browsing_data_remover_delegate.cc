@@ -156,7 +156,7 @@ std::ostream& operator<<(
         origin_mode_string = "kOriginInAllContexts";
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     os << "    origin mode: " << origin_mode_string << "\n";
 

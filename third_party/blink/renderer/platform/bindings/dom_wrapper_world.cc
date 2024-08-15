@@ -265,7 +265,7 @@ std::optional<int> DOMWrapperWorld::GenerateWorldIdForType(
     case WorldType::kIsolated:
       // This function should not be called for IsolatedWorld because an
       // identifier for the world is given from out of DOMWrapperWorld.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case WorldType::kInspectorIsolated: {
       DCHECK(IsMainThread());
       static int next_devtools_isolated_world_id =
@@ -284,7 +284,7 @@ std::optional<int> DOMWrapperWorld::GenerateWorldIdForType(
       return next_world_id++;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

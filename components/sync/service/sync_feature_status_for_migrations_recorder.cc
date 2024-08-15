@@ -141,7 +141,7 @@ SyncFeatureStatusForMigrationsRecorder::DetermineSyncFeatureStatus(
       return SyncFeatureStatusForSyncToSigninMigration::kActive;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace syncer

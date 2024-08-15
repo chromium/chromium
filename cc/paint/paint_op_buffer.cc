@@ -440,7 +440,7 @@ const PaintOp& PaintOpBuffer::GetOpAtForTesting(size_t index) const {
     }
     --index;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace cc

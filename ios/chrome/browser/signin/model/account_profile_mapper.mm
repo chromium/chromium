@@ -168,7 +168,7 @@ AccountProfileMapper::ProcessIdentitiesForProfile(
     case AccountProfileMapper::IteratorResult::kInterruptIteration:
       return SystemIdentityManager::IteratorResult::kInterruptIteration;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool AccountProfileMapper::CheckIdentityProfile(

@@ -946,7 +946,7 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
     case BrowsingDataModel::StorageType::kCdmStorage:
       return true;
     case BrowsingDataModel::StorageType::kExtendedDelegateRange:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

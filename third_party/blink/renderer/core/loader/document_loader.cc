@@ -2609,7 +2609,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
         case net::StorageAccessApiStatus::kAccessViaAPI:
           return true;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
@@ -2651,7 +2651,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
                                 case net::StorageAccessApiStatus::kAccessViaAPI:
                                   return true;
                               }
-                              NOTREACHED_NORETURN();
+                              NOTREACHED();
                             }());
   base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
                             inherited_has_storage_access);

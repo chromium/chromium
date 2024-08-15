@@ -297,7 +297,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
         self.selectedReadItemCount++;
         break;
       case kSectionIdentifierSignInPromo:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     // Open the URL.
@@ -327,7 +327,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
         self.selectedReadItemCount--;
         break;
       case kSectionIdentifierSignInPromo:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

@@ -455,8 +455,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
       }
     }
 
-    NOTREACHED_NORETURN()
-        << "|index| should be less than the unignored child count.";
+    NOTREACHED() << "|index| should be less than the unignored child count.";
   }
 
   // Our widget might have child widgets. If this is a root view, include those

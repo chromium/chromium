@@ -89,7 +89,7 @@ void BirchChipLoaderView::AddAnimationToBuilder(
           .SetOpacity(loader_layer, 0.0f);
       return;
     case Type::kNone:
-      NOTREACHED_NORETURN() << "Please set a loading type for birch bar loader";
+      NOTREACHED() << "Please set a loading type for birch bar loader";
   }
 }
 

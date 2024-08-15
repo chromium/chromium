@@ -192,7 +192,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             return item_view;
           },
           [&](const PickerSearchResult::EmojiData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [&](const PickerSearchResult::ClipboardData& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
@@ -216,7 +216,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                                            available_width);
                 break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
-                NOTREACHED_NORETURN();
+                NOTREACHED();
             }
             if (icon) {
               item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -414,7 +414,7 @@ PickerItemView* PickerSectionView::AddItem(
     return AddItemWithSubmenu(std::unique_ptr<PickerItemWithSubmenuView>(
         views::AsViewClass<PickerItemWithSubmenuView>(item.release())));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PickerItemView* PickerSectionView::AddResult(

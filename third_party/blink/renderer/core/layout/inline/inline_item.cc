@@ -183,7 +183,7 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
     case kRubyLinePlaceholder:
       return "RubyLinePlaceholder";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,

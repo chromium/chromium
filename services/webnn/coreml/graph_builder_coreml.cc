@@ -345,7 +345,7 @@ OperandDataType MILDataTypeToOperandType(
     case CoreML::Specification::MILSpec::DataType::UINT8:
       return OperandDataType::kUint8;
     default:
-      NOTREACHED_NORETURN() << "Unsupported data type.";
+      NOTREACHED() << "Unsupported data type.";
   }
 }
 
@@ -367,7 +367,7 @@ std::string_view MilDataTypeToString(
     case CoreML::Specification::MILSpec::DataType::BOOL:
       return "bool";
     default:
-      NOTREACHED_NORETURN() << "Unsupported data type.";
+      NOTREACHED() << "Unsupported data type.";
   }
 }
 
@@ -1790,7 +1790,7 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
           negative_one_value = CreateScalarImmediateValue<int32_t>(-1);
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       return AddOperationForElementwiseBinary(
           /*lhs_operand_id=*/input_operand_id,
@@ -2313,7 +2313,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
     switch (operation.kind) {
       case mojom::Pool2d::Kind::kAveragePool2d:
       case mojom::Pool2d::Kind::kL2Pool2d:
-        NOTREACHED_NORETURN() << "Invalid input datatype.";
+        NOTREACHED() << "Invalid input datatype.";
       case mojom::Pool2d::Kind::kMaxPool2d:
         return NewNotSupportedError(NotSupportedInputArgumentTypeError(
             ops::kMaxPool2d,
@@ -2798,7 +2798,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8: {
-      NOTREACHED_NORETURN() << "Unsupported data type.";
+      NOTREACHED() << "Unsupported data type.";
     }
   }
   return base::ok();
@@ -2878,7 +2878,7 @@ GraphBuilderCoreml::PopulateFeatureDescription(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
-        NOTREACHED_NORETURN() << "Unsupported input data type";
+      NOTREACHED() << "Unsupported input data type";
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers

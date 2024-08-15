@@ -208,7 +208,7 @@ bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
     case CompositedPaintStatus::kNeedsRepaint:
       // The compositing decision must be resolved by the time this check is
       // called. See FragmentPaintPropertyTreeBuilder::UpdateClipPathClip.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

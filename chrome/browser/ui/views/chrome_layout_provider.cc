@@ -163,7 +163,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ChromeLayoutProvider::GetSnappedDialogWidth(int min_width) const {

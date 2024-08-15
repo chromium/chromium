@@ -373,7 +373,7 @@ cc::YUVSubsampling CrabbyAVIFImageDecoder::GetYUVSubsampling() const {
     case crabbyavif::AVIF_PIXEL_FORMAT_COUNT:
       break;
   }
-  NOTREACHED_NORETURN() << "Invalid YUV format: " << avif_yuv_format_;
+  NOTREACHED() << "Invalid YUV format: " << avif_yuv_format_;
 }
 
 gfx::Size CrabbyAVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {

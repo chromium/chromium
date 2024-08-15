@@ -375,7 +375,7 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
       case WorkerNode::WorkerType::kService:
         return blink::ServiceWorkerToken();
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }();
   auto worker_node = CreateNode<WorkerNodeImpl>(
       worker_type, process_.get(), /*browser_context_id=*/std::string(),

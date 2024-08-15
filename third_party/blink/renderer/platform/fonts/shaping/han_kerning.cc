@@ -170,7 +170,7 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
       return font_data.is_quote_fullwidth ? CharType::kClose
                                           : CharType::kCloseNarrow;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool HanKerning::MayApply(StringView text) {

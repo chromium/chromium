@@ -1651,7 +1651,7 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
           //
           // See
           // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         } else {
           return "prefetch;prerender";
         }
@@ -1659,7 +1659,7 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
       case PreloadingType::kPreconnect:
       case PreloadingType::kNoStatePrefetch:
       case PreloadingType::kLinkPreview:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     // Note that the `PreloadingAttempt` is null means that the initiating

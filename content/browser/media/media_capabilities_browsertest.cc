@@ -161,7 +161,7 @@ class MediaCapabilitiesTestWithConfigType
       case ConfigType::kWebRtc:
         return kWebRtcString;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

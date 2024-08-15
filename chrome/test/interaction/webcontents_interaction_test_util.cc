@@ -100,8 +100,7 @@ WebContentsInteractionTestUtil::StateChange ValidateAndInferStateChange(
       } else if (has_where) {
         configuration.type = Type::kExists;
       } else {
-        NOTREACHED_NORETURN()
-            << "Unable to infer StateChange type - " << configuration;
+        NOTREACHED() << "Unable to infer StateChange type - " << configuration;
       }
       break;
     case Type::kExists:
@@ -156,7 +155,7 @@ std::string GetStateChangeQuery(
   using Type = WebContentsInteractionTestUtil::StateChange::Type;
   switch (configuration.type) {
     case Type::kAuto:
-      NOTREACHED_NORETURN() << "Auto type should already have been inferred.";
+      NOTREACHED() << "Auto type should already have been inferred.";
     case Type::kExists:
       return GetExistsQuery(
           /* on_not_found = */ "false",
@@ -811,7 +810,7 @@ base::Value WebContentsInteractionTestUtil::Evaluate(
       *error_message = result.error;
       return base::Value();
     } else {
-      NOTREACHED_NORETURN() << "Uncaught JS exception: " << result.error;
+      NOTREACHED() << "Uncaught JS exception: " << result.error;
     }
   }
 

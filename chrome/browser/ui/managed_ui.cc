@@ -412,7 +412,7 @@ std::u16string GetManagementBubbleTitle(Profile* profile) {
           base::UTF8ToUTF16(*GetAccountManagerIdentity(profile)));
     case SUPERVISED:
     case NOT_MANAGED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 #endif

@@ -579,7 +579,7 @@ void MediaItemUIUpdatedView::MediaActionButtonPressed(views::Button* button) {
           MediaItemUIUpdatedViewAction::kExitPictureInPicture);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Make the screen reader announce the button text for accessibility since

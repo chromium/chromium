@@ -206,9 +206,9 @@ std::string BatchingMediaLog::MediaEventToMessageString(
     }
     case media::MediaLogRecord::Type::kMediaPropertyChange:
     case media::MediaLogRecord::Type::kMediaEventTriggered:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BatchingMediaLog::SendQueuedMediaEvents() {

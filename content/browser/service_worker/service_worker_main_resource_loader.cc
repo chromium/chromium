@@ -796,7 +796,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
         break;
       case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       case FetchResponseFrom::kAutoPreloadHandlingFallback:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -831,7 +831,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
           ->CommitAndCompleteResponseIfDataTransferFinished();
       return;
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Cancel the in-flight request processing for the fallback.

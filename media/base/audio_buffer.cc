@@ -276,7 +276,7 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
                channel_data_.back() + data_size_per_channel);
     }
   } else {
-    NOTREACHED_NORETURN() << sample_format;
+    NOTREACHED() << sample_format;
   }
 }
 

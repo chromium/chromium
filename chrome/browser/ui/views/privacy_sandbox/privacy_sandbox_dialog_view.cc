@@ -47,7 +47,7 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
       return base_url.Resolve(
           chrome::kChromeUIPrivacySandboxDialogNoticeRestrictedPath);
     case PrivacySandboxService::PromptType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -59,7 +59,7 @@ int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
     case PrivacySandboxService::PromptType::kM1NoticeRestricted:
       return kM1DialogWidth;
     case PrivacySandboxService::PromptType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

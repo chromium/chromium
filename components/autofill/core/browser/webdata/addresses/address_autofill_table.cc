@@ -326,7 +326,7 @@ std::string_view GetProfileMetadataTable(AutofillProfile::Source source) {
     case AutofillProfile::Source::kAccount:
       return kContactInfoTable;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 std::string_view GetProfileTypeTokensTable(AutofillProfile::Source source) {
   switch (source) {
@@ -335,7 +335,7 @@ std::string_view GetProfileTypeTokensTable(AutofillProfile::Source source) {
     case AutofillProfile::Source::kAccount:
       return kContactInfoTypeTokensTable;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Insert the `profile`'s metadata into `GetProfileMetadataTable()`, returning

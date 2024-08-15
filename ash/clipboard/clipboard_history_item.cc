@@ -61,7 +61,7 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
   std::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       break;

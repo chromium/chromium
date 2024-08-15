@@ -1803,7 +1803,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       break;
     case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   UIView* baseView = self.baseViewController.view;
   while (potentialGridContainer.superview != baseView) {
@@ -1825,7 +1825,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       break;
     case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   if (potentialAnimationContainer) {
     return potentialAnimationContainer.frame;

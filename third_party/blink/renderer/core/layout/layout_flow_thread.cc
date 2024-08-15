@@ -199,7 +199,7 @@ void LayoutFlowThread::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   // NGBoxFragmentPainter traverses a physical fragment tree, and doesn't call
   // Paint() for LayoutFlowThread.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
@@ -217,7 +217,7 @@ RecalcScrollableOverflowResult LayoutFlowThread::RecalcScrollableOverflow() {
   NOT_DESTROYED();
   // RecalcScrollableOverflow() traverses a physical fragment tree. So it's not
   // called for LayoutFlowThread, which has no physical fragments.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayoutFlowThread::GenerateColumnSetIntervalTree() {

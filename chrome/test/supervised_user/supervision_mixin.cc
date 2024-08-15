@@ -224,7 +224,7 @@ std::string SignInModeAsString(SupervisionMixin::SignInMode sign_in_mode) {
     case SupervisionMixin::SignInMode::kSupervised:
       return "Supervised";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

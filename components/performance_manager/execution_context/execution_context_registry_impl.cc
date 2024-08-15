@@ -34,23 +34,23 @@ class DummyExecutionContextForLookup : public ExecutionContext {
 
   // ExecutionContext implementation:
 
-  ExecutionContextType GetType() const override { NOTREACHED_NORETURN(); }
+  ExecutionContextType GetType() const override { NOTREACHED(); }
 
   blink::ExecutionContextToken GetToken() const override { return *token_; }
 
-  Graph* GetGraph() const override { NOTREACHED_NORETURN(); }
+  Graph* GetGraph() const override { NOTREACHED(); }
 
-  const GURL& GetUrl() const override { NOTREACHED_NORETURN(); }
+  const GURL& GetUrl() const override { NOTREACHED(); }
 
-  const ProcessNode* GetProcessNode() const override { NOTREACHED_NORETURN(); }
+  const ProcessNode* GetProcessNode() const override { NOTREACHED(); }
 
   const PriorityAndReason& GetPriorityAndReason() const override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
-  const FrameNode* GetFrameNode() const override { NOTREACHED_NORETURN(); }
+  const FrameNode* GetFrameNode() const override { NOTREACHED(); }
 
-  const WorkerNode* GetWorkerNode() const override { NOTREACHED_NORETURN(); }
+  const WorkerNode* GetWorkerNode() const override { NOTREACHED(); }
 
  private:
   const raw_ref<const blink::ExecutionContextToken> token_;

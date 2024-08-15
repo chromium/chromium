@@ -29,7 +29,7 @@ CdmFileAdapter::Status ConvertStatus(cdm::FileIOClient::Status status) {
       return CdmFileAdapter::Status::kError;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

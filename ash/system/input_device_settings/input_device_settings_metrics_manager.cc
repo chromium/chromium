@@ -187,7 +187,7 @@ std::string GetModifierKeyName(ui::mojom::ModifierKey modifier_key) {
       return modifier.key_name;
     }
   }
-  NOTREACHED_NORETURN() << "MODIFIER KEY: " << (int)modifier_key;
+  NOTREACHED() << "MODIFIER KEY: " << (int)modifier_key;
 }
 
 int GetNumberOfNonDefaultRemappings(
@@ -239,7 +239,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackKeyModifier(
     case ui::VKEY_NEXT:
       return keyboard.settings->six_pack_key_remappings->page_down;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 std::string GetSixPackKeyMetricName(const std::string& prefix,
@@ -267,7 +267,7 @@ std::string GetSixPackKeyMetricName(const std::string& prefix,
       key_name = "PageDown";
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return base::StrCat({prefix, "SixPackKeys.", key_name,
                        is_initial_value ? ".Initial" : ".Changed"});

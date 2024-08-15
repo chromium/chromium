@@ -1307,7 +1307,7 @@ bool IndexedDBBackingStore::ShouldSyncOnCommit(
     blink::mojom::IDBTransactionDurability durability) {
   switch (durability) {
     case blink::mojom::IDBTransactionDurability::Default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case blink::mojom::IDBTransactionDurability::Strict:
       return true;
     case blink::mojom::IDBTransactionDurability::Relaxed:

@@ -282,7 +282,7 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
       return false;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     default:
       return false;
@@ -294,7 +294,7 @@ void RenderViewContextMenuViews::ExecuteCommand(int command_id,
   switch (command_id) {
     case IDC_WRITING_DIRECTION_DEFAULT:
       // WebKit's current behavior is for this menu item to always be disabled.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case IDC_WRITING_DIRECTION_RTL:
     case IDC_WRITING_DIRECTION_LTR: {

@@ -1503,7 +1503,7 @@ std::string ToString(std::optional<WebAppSpecifics_UserDisplayMode> udm) {
     case WebAppSpecifics_UserDisplayMode_STANDALONE:
       return "standalone";
     case WebAppSpecifics_UserDisplayMode_TABBED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1517,7 +1517,7 @@ std::string ToString(std::optional<UserDisplayMode> udm) {
     case UserDisplayMode::kStandalone:
       return "standalone";
     case UserDisplayMode::kTabbed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace

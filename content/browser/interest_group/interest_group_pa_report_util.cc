@@ -66,7 +66,7 @@ std::optional<double> GetBaseValue(
       }
       return std::nullopt;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns contribution's bucket calculated from `base`, and `bucket_obj`'s

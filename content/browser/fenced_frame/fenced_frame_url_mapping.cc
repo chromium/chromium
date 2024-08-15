@@ -49,7 +49,7 @@ int AdSizeToPixels(double size, blink::AdSize::LengthUnit unit) {
       return static_cast<int>(size / 100.0 * screen_height);
     }
     case blink::AdSize::LengthUnit::kInvalid:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

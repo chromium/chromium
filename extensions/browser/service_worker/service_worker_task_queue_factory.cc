@@ -47,7 +47,7 @@ ServiceWorkerTaskQueueFactory::BuildServiceInstanceForBrowserContext(
           extensions_features::kUseNewServiceWorkerTaskQueue)) {
     // TODO(crbug.com/40276609): Insert new task queue once
     // ServiceWorkerTaskQueue is an abstract class.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   } else {
     task_queue = std::make_unique<ServiceWorkerTaskQueue>(context);
   }

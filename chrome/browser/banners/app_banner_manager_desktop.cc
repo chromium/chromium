@@ -121,7 +121,7 @@ void AppBannerManagerDesktop::DoNativeAppInstallableCheck(
     const GURL& validated_url,
     const blink::mojom::Manifest& manifest,
     NativeCheckCallback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AppBannerManagerDesktop::OnWebAppInstallableCheckedNoErrors(

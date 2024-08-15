@@ -97,12 +97,12 @@ bool V4L2GpuMemoryBufferTracker::IsReusableForFormat(
 
 std::unique_ptr<VideoCaptureBufferHandle>
 V4L2GpuMemoryBufferTracker::GetMemoryMappedAccess() {
-  NOTREACHED_NORETURN() << "Unsupported operation";
+  NOTREACHED() << "Unsupported operation";
 }
 
 base::UnsafeSharedMemoryRegion
 V4L2GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
-  NOTREACHED_NORETURN() << "Unsupported operation";
+  NOTREACHED() << "Unsupported operation";
 }
 
 gfx::GpuMemoryBufferHandle
@@ -118,7 +118,7 @@ uint32_t V4L2GpuMemoryBufferTracker::GetMemorySizeInBytes() {
   if (shared_image_->format() == viz::MultiPlaneFormat::kNV12) {
     return shared_image_->format().EstimatedSizeInBytes(shared_image_->size());
   }
-  NOTREACHED_NORETURN() << "Unsupported shared image format";
+  NOTREACHED() << "Unsupported shared image format";
 }
 
 void V4L2GpuMemoryBufferTracker::OnContextLost() {

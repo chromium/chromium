@@ -488,7 +488,7 @@ static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
       return state == ui::SHOW_STATE_DEFAULT ||
              state == ui::SHOW_STATE_INACTIVE || state == ui::SHOW_STATE_NORMAL;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

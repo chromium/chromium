@@ -71,7 +71,7 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
                      &paask_status)) {
     local_device_info_->set_paask_info(std::move(*info));
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // This check is required to ensure user's who toggle UMA have their

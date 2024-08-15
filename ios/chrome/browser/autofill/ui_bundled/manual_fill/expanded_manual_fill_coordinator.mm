@@ -148,7 +148,7 @@ using manual_fill::ManualFillDataType;
       [self showAddressManualFillingOptions];
       break;
     case ManualFillDataType::kOther:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

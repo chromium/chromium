@@ -54,7 +54,7 @@ std::string QuicSocketDataProvider::Expectation::TypeToString(
     case Expectation::Type::PAUSE:
       return "PAUSE";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void QuicSocketDataProvider::Expectation::Consume() {

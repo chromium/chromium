@@ -49,7 +49,7 @@ const char* PrefNameForItem(SetUpListItemType type) {
     case SetUpListItemType::kNotifications:
       return kNotificationsItemState;
     case SetUpListItemType::kAllSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

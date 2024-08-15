@@ -61,7 +61,7 @@ bool GetIsItemComplete(SetUpListItemType type,
     }
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

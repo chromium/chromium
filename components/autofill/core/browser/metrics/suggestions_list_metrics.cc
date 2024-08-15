@@ -64,7 +64,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -99,7 +99,7 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kPredictionImprovements:
     case FillingProduct::kMerchantPromoCode:
       // It is NOTREACHED because all other types should be handled separately.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::RecordAction(base::UserMetricsAction("Autofill_SelectedSuggestion"));

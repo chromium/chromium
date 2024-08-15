@@ -226,11 +226,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
   switch (status) {
     case PrerenderFinalStatus::kActivated:
     case PrerenderFinalStatus::kDestroyed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kLowEndDevice:
       return PreloadingEligibility::kLowMemory;
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
       return PreloadingEligibility::kHttpOrHttpsOnly;
     case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
@@ -252,11 +252,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kUaChangeRequiresReload:
     case PrerenderFinalStatus::kBlockedByClient:
     case PrerenderFinalStatus::kMixedContent:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kTriggerBackgrounded:
       return PreloadingEligibility::kHidden;
     case PrerenderFinalStatus::kMemoryLimitExceeded:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kDataSaverEnabled:
       return PreloadingEligibility::kDataSaverEnabled;
     case PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl:
@@ -266,7 +266,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kStartFailed:
     case PrerenderFinalStatus::kTimeoutBackgrounded:
     case PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation:
       return PreloadingEligibility::kCrossOrigin;
     case PrerenderFinalStatus::
@@ -282,13 +282,13 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessCrashed:
     case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled:
     case PrerenderFinalStatus::kActivationFramePolicyNotCompatible:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPreloadingDisabled:
       return PreloadingEligibility::kPreloadingDisabled;
     case PrerenderFinalStatus::kBatterySaverEnabled:
       return PreloadingEligibility::kBatterySaverEnabled;
     case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
       return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
@@ -297,11 +297,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
         kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
     case PrerenderFinalStatus::
         kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kMemoryPressureOnTrigger:
       return PreloadingEligibility::kMemoryPressure;
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
@@ -309,7 +309,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
     case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
     case PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl:
     case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
@@ -319,12 +319,12 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
     case PrerenderFinalStatus::kWindowClosed:
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kSlowNetwork:
       return PreloadingEligibility::kSlowNetwork;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Represents a contract and ensures that the given prerender attempt is started
@@ -608,7 +608,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
             PrerenderFinalStatus::kPreloadingUnsupportedByWebContents);
         return RenderFrameHost::kNoFrameTreeNodeId;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     // Don't prerender when the initiator is in the background and its type is

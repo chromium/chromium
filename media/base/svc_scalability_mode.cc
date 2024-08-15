@@ -154,6 +154,6 @@ const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
     case SVCScalabilityMode::kL3T3h:
       return "L3T3h";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace media

@@ -160,7 +160,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return nil;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -274,11 +274,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)deletionInProgress {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)deletionFinished {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - Private

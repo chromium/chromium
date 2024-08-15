@@ -87,7 +87,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
                            : ColorProviderKey::ColorMode::kLight;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   key.contrast_mode = UserHasContrastPreference()
                           ? ColorProviderKey::ContrastMode::kHigh
@@ -435,7 +435,7 @@ SkColor4f NativeTheme::GetScrollbarThumbColor(
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
   // A native theme using solid color scrollbar thumb must override this method.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ui

@@ -77,7 +77,7 @@ std::ostream& operator<<(std::ostream& os,
       os << "kParentPermissionFailed";
       return os;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -237,7 +237,7 @@ class ParentPermissionDialogViewTest
       harness_.ShowUi(test_extension_.get(), browser());
       return;
     } else {
-      NOTREACHED_NORETURN() << "Check the suffix of the test name.";
+      NOTREACHED() << "Check the suffix of the test name.";
     }
   }
 

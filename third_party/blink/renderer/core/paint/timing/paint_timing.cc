@@ -329,7 +329,7 @@ void PaintTiming::ReportPresentationTime(
       SetFirstImagePaintPresentation(timestamp);
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

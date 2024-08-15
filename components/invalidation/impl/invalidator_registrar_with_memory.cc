@@ -138,7 +138,7 @@ InvalidatorRegistrarWithMemory::~InvalidatorRegistrarWithMemory() {
                << DumpRegisteredHandlersToTopics(
                       registered_handler_to_topics_map_)
                << ".";
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

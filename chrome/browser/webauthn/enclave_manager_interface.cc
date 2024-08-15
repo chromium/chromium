@@ -7,5 +7,5 @@
 #include "base/notreached.h"
 
 EnclaveManager* EnclaveManagerInterface::GetEnclaveManager() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

@@ -62,7 +62,7 @@ constexpr const char* GetMaxTouchPointsHistogramName(
     case PointerDigitizerType::kTouchPad:
       return "Input.Digitizer.MaxTouchPoints.TouchPad";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordPointerDigitizerTypeMaxTouchPoints(const PointerDevice& device) {
@@ -110,7 +110,7 @@ void SequencedWndProcHandler(UINT message, WPARAM wparam, LPARAM lparam) {
       break;
 #endif  // BUILDFLAG(USE_BLINK)
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

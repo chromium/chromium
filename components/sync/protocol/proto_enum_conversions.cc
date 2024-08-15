@@ -728,7 +728,7 @@ const char* ProtoEnumToString(sync_pb::WebApkIconInfo::Purpose purpose) {
     ENUM_CASE(sync_pb::WebApkIconInfo, MASKABLE);
     ENUM_CASE(sync_pb::WebApkIconInfo, MONOCHROME);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose) {

@@ -74,7 +74,7 @@ void ShellBluetoothChooserIOS::OnDialogFinished(DialogClosedState state,
       event_handler_.Run(BluetoothChooserEvent::SELECTED, device_id);
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

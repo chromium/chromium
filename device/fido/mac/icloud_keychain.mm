@@ -274,7 +274,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     return FidoTransportProtocol::kInternal;
   }
 
-  void GetTouch(base::OnceClosure callback) override { NOTREACHED_NORETURN(); }
+  void GetTouch(base::OnceClosure callback) override { NOTREACHED(); }
 
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -502,7 +502,7 @@ std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
     return std::make_unique<Discovery>(window);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<bool> HasPermission() {

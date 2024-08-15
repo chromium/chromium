@@ -93,7 +93,7 @@ PipelineStatus MediaEngineErrorToPipelineStatus(
     case MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED:
       return DEMUXER_ERROR_COULD_NOT_OPEN;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

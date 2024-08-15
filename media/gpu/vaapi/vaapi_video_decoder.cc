@@ -938,11 +938,11 @@ bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
 }
 
 bool VaapiVideoDecoder::CanReadWithoutStalling() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int VaapiVideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoDecoderType VaapiVideoDecoder::GetDecoderType() const {

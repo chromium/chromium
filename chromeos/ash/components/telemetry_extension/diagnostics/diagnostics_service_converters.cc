@@ -167,7 +167,7 @@ crosapi::mojom::DiagnosticsRoutineUserMessageEnum Convert(
       return crosapi::mojom::DiagnosticsRoutineUserMessageEnum::
           kPressPowerButton;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
@@ -200,7 +200,7 @@ crosapi::mojom::DiagnosticsRoutineStatusEnum Convert(
     case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kNotRun:
       return crosapi::mojom::DiagnosticsRoutineStatusEnum::kNotRun;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
@@ -217,7 +217,7 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
     case crosapi::mojom::DiagnosticsRoutineCommandEnum::kRemove:
       return cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
@@ -230,7 +230,7 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
     case crosapi::mojom::DiagnosticsAcPowerStatusEnum::kDisconnected:
       return cros_healthd::mojom::AcPowerStatusEnum::kDisconnected;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
@@ -243,7 +243,7 @@ cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
     case crosapi::mojom::DiagnosticsNvmeSelfTestTypeEnum::kLongSelfTest:
       return cros_healthd::mojom::NvmeSelfTestTypeEnum::kLongSelfTest;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
@@ -257,7 +257,7 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
       // Fall-through to not-supported case.
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash::converters::diagnostics

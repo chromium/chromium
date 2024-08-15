@@ -2201,7 +2201,7 @@ void NetworkContext::PreconnectSockets(
     case mojom::CredentialsMode::kSameOrigin:
       // Not yet implemented. If you need this credentials mode please update
       // this branch to set the correct request_info fields.
-      NOTREACHED_NORETURN() << "kSameOrigin not yet implemented";
+      NOTREACHED() << "kSameOrigin not yet implemented";
 
     case mojom::CredentialsMode::kInclude:
       request_info.load_flags = net::LOAD_NORMAL;

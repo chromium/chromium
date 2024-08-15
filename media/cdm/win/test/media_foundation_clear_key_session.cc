@@ -55,7 +55,7 @@ media::CdmSessionType ToCdmSessionType(MF_MEDIAKEYSESSION_TYPE session_type) {
       return media::CdmSessionType::kPersistentLicense;
     case MF_MEDIAKEYSESSION_TYPE_PERSISTENT_RELEASE_MESSAGE:
     case MF_MEDIAKEYSESSION_TYPE_PERSISTENT_USAGE_RECORD:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

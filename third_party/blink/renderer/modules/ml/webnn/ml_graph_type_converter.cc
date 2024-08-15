@@ -663,7 +663,7 @@ std::optional<String> SerializeConv2dOperation(
     filter_permutation = GetConvTranspose2DFilterPermutation(
         context_properties.input_operand_layout, options->filterLayout());
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   if (filter_permutation) {

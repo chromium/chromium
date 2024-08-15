@@ -335,7 +335,7 @@ int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
 
   switch (dictionary_status_) {
     case DictionaryStatus::kNoDictionary:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DictionaryStatus::kReading:
       CHECK(!pending_read_task_);
       pending_read_task_ =

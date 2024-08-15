@@ -4607,7 +4607,7 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 
 SVGLayoutResult LayoutObject::UpdateSVGLayout(const SVGLayoutInfo&) {
   NOT_DESTROYED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::RectF LayoutObject::ObjectBoundingBox() const {

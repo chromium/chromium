@@ -2138,7 +2138,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         GetDidSwapBuffersCompleteCallback());
     return !!output_device_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 
 #elif BUILDFLAG(IS_WIN)
   scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
@@ -2194,16 +2194,16 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 
 #else  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||
        // BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 #else   // BUILDFLAG(SKIA_USE_DAWN)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
 bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
 #if !BUILDFLAG(IS_APPLE)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   if (dependency_->IsOffscreen()) {
     output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(

@@ -206,7 +206,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
       break;
     case mojom::ChannelType::kConnect:
       // connect() calls aren't handled by the OneTimeMessageHandler.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   ipc_sender->SendOpenMessageChannel(

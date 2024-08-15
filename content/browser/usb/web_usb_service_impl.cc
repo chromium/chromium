@@ -151,7 +151,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
           weak_factory_.GetWeakPtr());
     }
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 }

@@ -764,7 +764,7 @@ class HTMLFastPathParser {
         return {Span{}, ScanEscapedText()};
     };
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
     return {};
   }
 #endif  // VECTORIZE_SCANNING

@@ -48,7 +48,7 @@ bool DataTypeSyncBridge::SupportsUniquePositions() const {
 sync_pb::UniquePosition DataTypeSyncBridge::GetUniquePosition(
     const sync_pb::EntitySpecifics& specifics) const {
   CHECK(SupportsUniquePositions());
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "GetUniquePosition() must be implemented to support unique positions.";
 }
 

@@ -627,7 +627,7 @@ bool AllowRemoveClearVideoQuadCandidatesWhenMoving(
                force_overlay_for_auto_hdr);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

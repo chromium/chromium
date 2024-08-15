@@ -711,7 +711,7 @@ TEST_F(PlatformSensorReaderTestWinrt, ReadingChangedCallbackAndPostTask) {
         ABI::Windows::Devices::Sensors::ILightSensor*,
         ABI::Windows::Devices::Sensors::ILightSensorReadingChangedEventArgs*)
         override {
-      NOTREACHED_NORETURN() << "This function should not have been reached";
+      NOTREACHED() << "This function should not have been reached";
     }
   };
 

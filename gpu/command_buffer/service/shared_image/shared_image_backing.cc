@@ -65,7 +65,7 @@ const char* BackingTypeToString(SharedImageBackingType type) {
     case SharedImageBackingType::kWrappedGraphiteTexture:
       return "WrappedGraphiteTexture";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -221,7 +221,7 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
       // handled here on addition.
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>

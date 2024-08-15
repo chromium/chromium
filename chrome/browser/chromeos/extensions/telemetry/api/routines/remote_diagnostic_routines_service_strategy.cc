@@ -81,7 +81,7 @@ RemoteDiagnosticRoutineServiceStrategy::Create() {
   }
   return std::make_unique<RemoteDiagnosticRoutineServiceStrategyLacros>();
 #else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

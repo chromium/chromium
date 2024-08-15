@@ -1215,7 +1215,7 @@ DrawResult SingleThreadProxy::ScheduledActionDrawForced() {
 }
 
 void SingleThreadProxy::ScheduledActionUpdateDisplayTree() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void SingleThreadProxy::ScheduledActionCommit() {
