@@ -11913,7 +11913,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"allow-fpmcu-beta-firmware",
      flag_descriptions::kAllowFpmcuBetaFirmwareName,
-     flag_descriptions::kAllowFpmcuBetaFirmwareDescription, kOsCrOSOwnerOnly,
+     flag_descriptions::kAllowFpmcuBetaFirmwareDescription, kOsCrOS,
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootAllowFpmcuBetaFirmware")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
