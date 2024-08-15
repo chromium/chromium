@@ -375,7 +375,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       int number_of_days_to_report,
       DomainMetricBitmaskType metric_type_bitmask);
 
-  // Gets unique domains (eLTD+1) visited within the time range
+  // Gets unique domains (eTLD+1) visited within the time range
   // [`begin_time`, `end_time`) for local and synced visits sorted in
   // reverse-chronological order.
   DomainsVisitedResult GetUniqueDomainsVisited(base::Time begin_time,

@@ -432,7 +432,7 @@ class HistoryService : public KeyedService,
                           DomainDiversityCallback callback,
                           base::CancelableTaskTracker* tracker);
 
-  // Returns, via a callback, unique domains (eLTD+1) visited within the time
+  // Returns, via a callback, unique domains (eTLD+1) visited within the time
   // range [`begin_time`, `end_time`) for local and synced visits sorted in
   // reverse-chronological order.
   using GetUniqueDomainsVisitedCallback =
