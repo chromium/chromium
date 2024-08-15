@@ -96,7 +96,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabId = 1;
         mOnItemClickedCallback =
                 TabGroupContextMenuCoordinator.getMenuItemClickedCallback(
-                        mTabGroupModelFilter, mActionConfirmationManager, mTabCreator);
+                        mTabGroupModelFilter,
+                        mActionConfirmationManager,
+                        mTabCreator,
+                        /* isTabGroupSyncEnabled= */ true);
         mTabGroupContextMenuCoordinator =
                 new TabGroupContextMenuCoordinator(
                         mTabModelSupplier,

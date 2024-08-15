@@ -47,6 +47,7 @@ public class TabUiUtils {
      *     actions.
      * @param tabId The ID of one of the tabs in the tab group.
      * @param hideTabGroups Whether to hide or delete the tab group.
+     * @param isSyncEnabled Whether the Tab Group Sync flag is enabled.
      * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
      */
     public static void closeTabGroup(
@@ -54,13 +55,14 @@ public class TabUiUtils {
             ActionConfirmationManager actionConfirmationManager,
             int tabId,
             boolean hideTabGroups,
+            boolean isSyncEnabled,
             @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         boolean isIncognito = filter.isIncognitoBranded();
 
-        if (hideTabGroups || isIncognito) {
+        if (hideTabGroups || isIncognito || !isSyncEnabled) {
             filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
             Callback.runNullSafe(didCloseCallback, true);
         } else {
@@ -98,18 +100,20 @@ public class TabUiUtils {
      * @param actionConfirmationManager The {@link ActionConfirmationManager} to use to confirm
      *     actions.
      * @param tabId The ID of one of the tabs in the tab group.
+     * @param isSyncEnabled Whether the Tab Group Sync flag is enabled.
      */
     public static void ungroupTabGroup(
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
-            int tabId) {
+            int tabId,
+            boolean isSyncEnabled) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
         boolean isIncognito = filter.getTabModel().isIncognito();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
 
-        if (isIncognito) {
+        if (isIncognito || !isSyncEnabled) {
             for (Tab tab : tabs) {
                 filter.moveTabOutOfGroup(tab.getId());
             }

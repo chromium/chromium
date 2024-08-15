@@ -2965,6 +2965,7 @@ class TabListMediator {
 
     @VisibleForTesting
     void onMenuItemClicked(@IdRes int menuId, int tabId) {
+        boolean isSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
         if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
             boolean hideTabGroups = menuId == R.id.close_tab;
             if (hideTabGroups) {
@@ -2978,6 +2979,7 @@ class TabListMediator {
                     mActionConfirmationManager,
                     tabId,
                     hideTabGroups,
+                    isSyncEnabled,
                     getMaybeUnsetShrinkCloseAnimationCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
@@ -2987,7 +2989,8 @@ class TabListMediator {
             TabUiUtils.ungroupTabGroup(
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
-                    tabId);
+                    tabId,
+                    isSyncEnabled);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(

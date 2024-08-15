@@ -69,7 +69,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         super(
                 R.layout.tab_strip_group_menu_layout,
                 getMenuItemClickedCallback(
-                        tabGroupModelFilter, actionConfirmationManager, tabCreator),
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabCreator,
+                        isTabGroupSyncEnabled),
                 tabModelSupplier,
                 isTabGroupSyncEnabled,
                 /* identityManager= */ null,
@@ -87,16 +90,22 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     static OnItemClickedCallback getMenuItemClickedCallback(
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
-            TabCreator tabCreator) {
+            TabCreator tabCreator,
+            boolean isTabGroupSyncEnabled) {
         return (menuId, tabId) -> {
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
-                TabUiUtils.ungroupTabGroup(tabGroupModelFilter, actionConfirmationManager, tabId);
+                TabUiUtils.ungroupTabGroup(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabId,
+                        isTabGroupSyncEnabled);
             } else if (menuId == org.chromium.chrome.R.id.close_tab) {
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
                         actionConfirmationManager,
                         tabId,
                         /* hideTabGroups= */ true,
+                        isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
             } else if (menuId == org.chromium.chrome.R.id.delete_tab) {
                 TabUiUtils.closeTabGroup(
@@ -104,6 +113,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         actionConfirmationManager,
                         tabId,
                         /* hideTabGroups= */ false,
+                        isTabGroupSyncEnabled,
                         /* didCloseCallback= */ null);
             } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
                 TabUiUtils.openNtpInGroup(

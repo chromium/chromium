@@ -189,6 +189,7 @@ public class TabGridDialogMediator
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
     private String mCurrentGroupModifiedTitle;
+    private Profile mProfile;
     private @Nullable CollaborationActivityMessageCardViewModel mCollaborationActivityPropertyModel;
     private DataSharingTabManager mDataSharingTabManager;
 
@@ -224,6 +225,13 @@ public class TabGridDialogMediator
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
         mActionConfirmationManager = actionConfirmationManager;
         mDataSharingTabManager = dataSharingTabManager;
+        mProfile =
+                mCurrentTabModelFilterSupplier
+                        .get()
+                        .getTabModel()
+                        .getProfile()
+                        .getOriginalProfile();
+
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -872,6 +880,7 @@ public class TabGridDialogMediator
                     mActionConfirmationManager,
                     tabId,
                     hideTabGroups,
+                    TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile),
                     /* didCloseCallback= */ null);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGridDialogMenu.DeleteShared");
@@ -890,18 +899,16 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        Profile profile = tabModel.getProfile().getOriginalProfile();
-        boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+        boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
 
         IdentityManager identityManager = null;
         TabGroupSyncService tabGroupSyncService = null;
         DataSharingService dataSharingService = null;
         if (isTabGroupSyncEnabled
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
-            identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
-            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-            dataSharingService = DataSharingServiceFactory.getForProfile(profile);
+            identityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+            tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mProfile);
+            dataSharingService = DataSharingServiceFactory.getForProfile(mProfile);
         }
         if (mTabGridDialogMenuCoordinator == null) {
             mTabGridDialogMenuCoordinator =

@@ -96,7 +96,12 @@ public class TabUiUtilsUnitTest {
         when(mFilter.isIncognitoBranded()).thenReturn(true);
 
         TabUiUtils.closeTabGroup(
-                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                mActionConfirmationManager,
+                TAB_ID,
+                hideTabGroups,
+                /* isSyncEnabled= */ true,
+                mDidCloseTabsCallback);
 
         verify(mFilter)
                 .closeTabs(
@@ -111,7 +116,12 @@ public class TabUiUtilsUnitTest {
         boolean hideTabGroups = true;
 
         TabUiUtils.closeTabGroup(
-                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                mActionConfirmationManager,
+                TAB_ID,
+                hideTabGroups,
+                /* isSyncEnabled= */ true,
+                mDidCloseTabsCallback);
 
         verify(mFilter)
                 .closeTabs(TabClosureParams.closeTabs(mTabsToClose).hideTabGroups(true).build());
@@ -128,7 +138,12 @@ public class TabUiUtilsUnitTest {
                 .processDeleteGroupAttempt(any());
 
         TabUiUtils.closeTabGroup(
-                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                mActionConfirmationManager,
+                TAB_ID,
+                hideTabGroups,
+                /* isSyncEnabled= */ true,
+                mDidCloseTabsCallback);
 
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         verify(mFilter)
@@ -150,7 +165,12 @@ public class TabUiUtilsUnitTest {
                 .processDeleteGroupAttempt(any());
 
         TabUiUtils.closeTabGroup(
-                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                mActionConfirmationManager,
+                TAB_ID,
+                hideTabGroups,
+                /* isSyncEnabled= */ true,
+                mDidCloseTabsCallback);
 
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         verify(mFilter)
@@ -171,7 +191,12 @@ public class TabUiUtilsUnitTest {
                 .processDeleteGroupAttempt(any());
 
         TabUiUtils.closeTabGroup(
-                mFilter, mActionConfirmationManager, TAB_ID, hideTabGroups, mDidCloseTabsCallback);
+                mFilter,
+                mActionConfirmationManager,
+                TAB_ID,
+                hideTabGroups,
+                /* isSyncEnabled= */ true,
+                mDidCloseTabsCallback);
 
         verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
         verify(mFilter, never()).closeTabs(any());
