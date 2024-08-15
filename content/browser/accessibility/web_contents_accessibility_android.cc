@@ -22,6 +22,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
+#include "base/types/fixed_array.h"
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
@@ -1527,7 +1528,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
   float dip_scale = 1 / root_manager->device_scale_factor();
 
   gfx::Rect object_bounds = node->GetUnclippedRootFrameBoundsRect();
-  int coords[4 * len];
+  base::FixedArray<int> coords(4 * len);
   for (int i = 0; i < len; i++) {
     gfx::Rect char_bounds = node->GetUnclippedRootFrameInnerTextRangeBoundsRect(
         start + i, start + i + 1);
@@ -1541,7 +1542,7 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
     coords[4 * i + 2] = char_bounds.right();
     coords[4 * i + 3] = char_bounds.bottom();
   }
-  return base::android::ToJavaIntArray(env, coords,
+  return base::android::ToJavaIntArray(env, coords.data(),
                                        static_cast<size_t>(4 * len));
 }
 
