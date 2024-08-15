@@ -75,6 +75,7 @@ class ASH_EXPORT GlanceablesTasksView
   };
 
   // GlanceablesTimeManagementBubbleView:
+  void OnHeaderIconPressed() override;
   void OnFooterButtonPressed() override;
   void SelectedListChanged() override;
   void AnimateResize(ResizeAnimation::Type resize_type) override;

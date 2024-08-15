@@ -5,6 +5,9 @@
 #ifndef ASH_GLANCEABLES_COMMON_GLANCEABLES_TIME_MANAGEMENT_BUBBLE_VIEW_H_
 #define ASH_GLANCEABLES_COMMON_GLANCEABLES_TIME_MANAGEMENT_BUBBLE_VIEW_H_
 
+#include <memory>
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/style/counter_expand_button.h"
@@ -14,6 +17,10 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace ash {
 
@@ -45,9 +52,23 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                                       bool expand_by_overscroll) = 0;
   };
 
-  GlanceablesTimeManagementBubbleView(
-      Context context,
-      std::unique_ptr<ui::ComboboxModel> combobox_model);
+  struct InitParams {
+    InitParams();
+    InitParams(InitParams&& other);
+    ~InitParams();
+
+    Context context;
+    std::unique_ptr<ui::ComboboxModel> combobox_model;
+    std::u16string combobox_tooltip;
+    int expand_button_tooltip_id = 0;
+    int collapse_button_tooltip_id = 0;
+    std::u16string footer_title;
+    std::u16string footer_tooltip;
+    raw_ptr<const gfx::VectorIcon> header_icon = nullptr;
+    int header_icon_tooltip_id = 0;
+  };
+
+  explicit GlanceablesTimeManagementBubbleView(InitParams params);
   GlanceablesTimeManagementBubbleView(
       const GlanceablesTimeManagementBubbleView&) = delete;
   GlanceablesTimeManagementBubbleView& operator=(
@@ -138,6 +159,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
     const int end_height_;
   };
 
+  // Handles press on the header icon button in `header_view_`.
+  virtual void OnHeaderIconPressed() = 0;
+
   // Handles press on the "See all" button in `GlanceablesListFooterView`.
   virtual void OnFooterButtonPressed() = 0;
 
@@ -168,7 +192,6 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
                         views::Button::PressedCallback callback,
                         GlanceablesErrorMessageView::ButtonActionType type);
 
-  views::FlexLayoutView* header_view() { return header_view_; }
   Combobox* combobox_view() { return combobox_view_; }
   GlanceablesExpandButton* expand_button() { return expand_button_; }
   GlanceablesProgressBarView* progress_bar() { return progress_bar_; }

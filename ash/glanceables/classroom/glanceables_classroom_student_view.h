@@ -65,21 +65,16 @@ class ASH_EXPORT GlanceablesClassroomStudentView
 
  private:
   // GlanceablesTimeManagementBubbleView:
+  void OnHeaderIconPressed() override;
   void OnFooterButtonPressed() override;
   void SelectedListChanged() override;
   void AnimateResize(ResizeAnimation::Type resize_type) override;
-
-  // Triggers classroom bubble resize animation to new preferred size, if an
-  // animation is required.
 
   // Opens classroom url.
   void OpenUrl(const GURL& url) const;
 
   // Called when an item view is pressed/clicked on.
   void OnItemViewPressed(bool initial_list_selected, const GURL& url);
-
-  // Called when the header icon is pressed/clicked on.
-  void OnHeaderIconPressed();
 
   // Handle switching between assignment lists.
   void SelectedAssignmentListChanged(bool initial_update);

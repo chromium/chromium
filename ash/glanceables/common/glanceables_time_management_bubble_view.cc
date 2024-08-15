@@ -10,6 +10,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/style/combobox.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -36,6 +37,8 @@ constexpr int kTotalInteriorMargin = 12;
 constexpr int kSpaceForFocusRing = 4;
 constexpr int kInteriorGlanceableBubbleMargin =
     kTotalInteriorMargin - kSpaceForFocusRing;
+
+constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 
 constexpr int kScrollViewBottomMargin = 12;
 constexpr int kListViewBetweenChildSpacing = 4;
@@ -125,10 +128,15 @@ int GlanceablesTimeManagementBubbleView::ResizeAnimation::GetCurrentHeight()
       end_height_);
 }
 
+GlanceablesTimeManagementBubbleView::InitParams::InitParams() = default;
+GlanceablesTimeManagementBubbleView::InitParams::InitParams(
+    InitParams&& other) = default;
+GlanceablesTimeManagementBubbleView::InitParams::~InitParams() = default;
+
 GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
-    Context context,
-    std::unique_ptr<ui::ComboboxModel> combobox_model)
-    : context_(context), combobox_model_(std::move(combobox_model)) {
+    InitParams params)
+    : context_(params.context),
+      combobox_model_(std::move(params.combobox_model)) {
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   UpdateInteriorMargin();
@@ -156,7 +164,21 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
 
+  auto* const header_icon = header_view_->AddChildViewAt(
+      std::make_unique<IconButton>(
+          base::BindRepeating(
+              &GlanceablesTimeManagementBubbleView::OnHeaderIconPressed,
+              base::Unretained(this)),
+          IconButton::Type::kSmall, params.header_icon,
+          params.header_icon_tooltip_id),
+      0);
+  header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
+  header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
+  header_icon->SetID(
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
+
   CreateComboBoxView();
+  combobox_view_->SetTooltipText(params.combobox_tooltip);
 
   auto text_on_combobox =
       combobox_view_->GetTextForRow(GetComboboxSelectedIndex());
@@ -182,6 +204,10 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
       std::make_unique<GlanceablesExpandButton>());
   expand_button_->SetID(base::to_underlying(
       GlanceablesViewId::kTimeManagementBubbleExpandButton));
+  expand_button_->SetExpandedStateTooltipStringId(
+      params.expand_button_tooltip_id);
+  expand_button_->SetCollapsedStateTooltipStringId(
+      params.collapse_button_tooltip_id);
   // This is only set visible when both Tasks and Classroom exist, where the
   // elevated background is created in that case.
   expand_button_->SetVisible(false);
@@ -193,7 +219,7 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
   content_scroll_view_ =
-      AddChildView(std::make_unique<GlanceablesContentsScrollView>(context));
+      AddChildView(std::make_unique<GlanceablesContentsScrollView>(context_));
 
   auto* const list_view = content_scroll_view_->SetContents(
       views::Builder<views::BoxLayoutView>()
@@ -221,6 +247,8 @@ GlanceablesTimeManagementBubbleView::GlanceablesTimeManagementBubbleView(
       base::to_underlying(GlanceablesViewId::kTimeManagementBubbleListFooter));
   list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
   list_footer_view_->SetVisible(false);
+  list_footer_view_->SetTitleText(params.footer_title);
+  list_footer_view_->SetSeeAllAccessibleName(params.footer_tooltip);
 }
 
 GlanceablesTimeManagementBubbleView::~GlanceablesTimeManagementBubbleView() =

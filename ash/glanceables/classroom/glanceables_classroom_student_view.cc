@@ -103,7 +103,6 @@ constexpr char kCollapseAnimationSmoothnessHistogramName[] =
 constexpr size_t kMaxAssignments = 100;
 
 constexpr auto kEmptyListLabelMargins = gfx::Insets::TLBR(24, 0, 32, 0);
-constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
 constexpr auto kFooterMargins = gfx::Insets::TLBR(12, 2, 0, 0);
 
 std::u16string GetAssignmentListName(size_t index) {
@@ -144,34 +143,32 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
   }
 };
 
+GlanceablesClassroomStudentView::InitParams CreateInitParamsForClassroom() {
+  GlanceablesClassroomStudentView::InitParams init_params;
+  init_params.context = GlanceablesClassroomStudentView::Context::kClassroom;
+  init_params.combobox_model =
+      std::make_unique<ClassroomStudentComboboxModel>();
+  init_params.combobox_tooltip = l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME);
+  init_params.expand_button_tooltip_id =
+      IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP;
+  init_params.collapse_button_tooltip_id =
+      IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP;
+  init_params.footer_title = l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_ASSIGNMENTS_LABEL);
+  init_params.footer_tooltip = l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME);
+  init_params.header_icon = &kGlanceablesClassroomIcon;
+  init_params.header_icon_tooltip_id =
+      IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME;
+  return init_params;
+}
+
 }  // namespace
 
 GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
-    : GlanceablesTimeManagementBubbleView(
-          Context::kClassroom,
-          std::make_unique<ClassroomStudentComboboxModel>()),
+    : GlanceablesTimeManagementBubbleView(CreateInitParamsForClassroom()),
       shown_time_(base::Time::Now()) {
-  auto* const header_icon = header_view()->AddChildViewAt(
-      std::make_unique<IconButton>(
-          base::BindRepeating(
-              &GlanceablesClassroomStudentView::OnHeaderIconPressed,
-              base::Unretained(this)),
-          IconButton::Type::kSmall, &kGlanceablesClassroomIcon,
-          IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME),
-      0);
-  header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
-  header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
-  header_icon->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
-
-  combobox_view()->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
-
-  expand_button()->SetExpandedStateTooltipStringId(
-      IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP);
-  expand_button()->SetCollapsedStateTooltipStringId(
-      IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
-
   const auto* const typography_provider = TypographyProvider::Get();
   empty_list_label_ = content_scroll_view()->contents()->AddChildView(
       views::Builder<views::Label>()
@@ -184,11 +181,6 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
           .SetID(base::to_underlying(
               GlanceablesViewId::kClassroomBubbleEmptyListLabel))
           .Build());
-
-  list_footer_view()->SetTitleText(l10n_util::GetStringUTF16(
-      IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_ASSIGNMENTS_LABEL));
-  list_footer_view()->SetSeeAllAccessibleName(l10n_util::GetStringUTF16(
-      IDS_GLANCEABLES_CLASSROOM_SEE_ALL_BUTTON_ACCESSIBLE_NAME));
 
   SelectedAssignmentListChanged(/*initial_update=*/true);
 }
@@ -397,26 +389,25 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   empty_list_label_->SetVisible(is_list_empty);
 
   bool should_show_footer_view;
-    should_show_footer_view = assignments.size() >= kMaxAssignments;
-    list_footer_view()->SetVisible(should_show_footer_view);
-    list_footer_view()->SetProperty(views::kMarginsKey, kFooterMargins);
+  should_show_footer_view = assignments.size() >= kMaxAssignments;
+  list_footer_view()->SetVisible(should_show_footer_view);
+  list_footer_view()->SetProperty(views::kMarginsKey, kFooterMargins);
 
-    items_container_view()->GetViewAccessibility().SetName(
-        l10n_util::GetStringFUTF16(
-            IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME,
-            list_name));
-    items_container_view()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kChildrenChanged,
-        /*send_native_event=*/true);
+  items_container_view()->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(
+          IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
+  items_container_view()->NotifyAccessibilityEvent(
+      ax::mojom::Event::kChildrenChanged,
+      /*send_native_event=*/true);
 
-    if (old_preferred_size != GetPreferredSize()) {
-      PreferredSizeChanged();
+  if (old_preferred_size != GetPreferredSize()) {
+    PreferredSizeChanged();
 
-      if (!initial_update) {
-        GetWidget()->LayoutRootViewIfNecessary();
-        ScrollViewToVisible();
-      }
+    if (!initial_update) {
+      GetWidget()->LayoutRootViewIfNecessary();
+      ScrollViewToVisible();
     }
+  }
 
   auto* controller = Shell::Get()->glanceables_controller();
 

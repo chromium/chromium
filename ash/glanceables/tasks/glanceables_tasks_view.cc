@@ -67,8 +67,6 @@
 namespace ash {
 namespace {
 
-constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
-
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
 
@@ -87,6 +85,29 @@ constexpr char kCollapseAnimationSmoothnessHistogramName[] =
     "Ash.Glanceables.TimeManagement.Tasks.Collapse.AnimationSmoothness";
 constexpr char kChildResizingAnimationSmoothnessHistogramName[] =
     "Ash.Glanceables.TimeManagement.Tasks.ChildResizing.AnimationSmoothness";
+
+// Returns the InitParams for constructor.
+GlanceablesTasksView::InitParams CreateInitParamsForTasks(
+    const ui::ListModel<api::TaskList>* task_lists) {
+  GlanceablesTasksView::InitParams init_params;
+  init_params.context = GlanceablesTasksView::Context::kTasks;
+  init_params.combobox_model =
+      std::make_unique<GlanceablesTasksComboboxModel>(task_lists);
+  init_params.combobox_tooltip = l10n_util::GetStringFUTF16(
+      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME, u"");
+  init_params.expand_button_tooltip_id =
+      IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP;
+  init_params.collapse_button_tooltip_id =
+      IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP;
+  init_params.footer_title = l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL);
+  init_params.footer_tooltip = l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME);
+  init_params.header_icon = &kGlanceablesTasksIcon;
+  init_params.header_icon_tooltip_id =
+      IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME;
+  return init_params;
+}
 
 api::TasksClient* GetTasksClient() {
   return Shell::Get()->glanceables_controller()->GetTasksClient();
@@ -149,20 +170,11 @@ END_METADATA
 
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
-    : GlanceablesTimeManagementBubbleView(
-          Context::kTasks,
-          std::make_unique<GlanceablesTasksComboboxModel>(task_lists)),
+    : GlanceablesTimeManagementBubbleView(CreateInitParamsForTasks(task_lists)),
       shown_time_(base::Time::Now()) {
+  // Caches the combobox model pointer for later model updates.
   tasks_combobox_model_ =
       static_cast<GlanceablesTasksComboboxModel*>(combobox_model());
-  // Assign a default value for tooltip and accessible text.
-  combobox_view()->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME, u""));
-
-  expand_button()->SetExpandedStateTooltipStringId(
-      IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP);
-  expand_button()->SetCollapsedStateTooltipStringId(
-      IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
 
   add_new_task_button_ = content_scroll_view()->contents()->AddChildViewAt(
       std::make_unique<AddNewTaskButton>(
@@ -171,25 +183,6 @@ GlanceablesTasksView::GlanceablesTasksView(
       0);
   // Hide `add_new_task_button_` until the initial task list update.
   add_new_task_button_->SetVisible(false);
-
-  auto* const header_icon = header_view()->AddChildViewAt(
-      std::make_unique<IconButton>(
-          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
-                              base::Unretained(this),
-                              TasksLaunchSource::kHeaderButton,
-                              GURL(kTasksManagementPage)),
-          IconButton::Type::kSmall, &kGlanceablesTasksIcon,
-          IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME),
-      0);
-  header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
-  header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
-  header_icon->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
-
-  list_footer_view()->SetTitleText(l10n_util::GetStringUTF16(
-      IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL));
-  list_footer_view()->SetSeeAllAccessibleName(l10n_util::GetStringUTF16(
-      IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME));
 
   const auto* active_task_list = GetActiveTaskList();
   auto* tasks =
@@ -287,6 +280,11 @@ void GlanceablesTasksView::UpdateTaskLists(
       base::BindOnce(&GlanceablesTasksView::UpdateTasksInTaskList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
                      active_task_list->title, ListShownContext::kInitialList));
+}
+
+void GlanceablesTasksView::OnHeaderIconPressed() {
+  ActionButtonPressed(TasksLaunchSource::kHeaderButton,
+                      GURL(kTasksManagementPage));
 }
 
 void GlanceablesTasksView::OnFooterButtonPressed() {
