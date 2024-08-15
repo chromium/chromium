@@ -22,9 +22,9 @@ bool ScopedTempFile::FileExists() const {
   return base::PathExists(path_);
 }
 
-int ScopedTempFile::Write(const std::string& str) {
+bool ScopedTempFile::Write(const std::string& str) {
   CHECK(FileExists());
-  return base::WriteFile(path_, str.c_str(), str.size());
+  return base::WriteFile(path_, str);
 }
 
 std::string ScopedTempFile::Read() const {
