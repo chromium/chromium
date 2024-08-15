@@ -205,6 +205,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // both main and compositor thread queues have been processed.
   void FlushEventQueuesForTesting(base::OnceClosure done_callback);
 
+  void DispatchEventOnInputThreadForTesting(
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      mojom::blink::WidgetInputHandler::DispatchEventCallback callback);
+
   base::WeakPtr<WidgetInputHandlerManager> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

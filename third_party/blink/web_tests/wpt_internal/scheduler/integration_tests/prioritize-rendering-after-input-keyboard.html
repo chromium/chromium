@@ -1,0 +1,50 @@
+<!doctype html>
+<title>Blink Scheduler Prioritize Rendering After Input - Keyboard</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<h1>Test Page</h1>
+<textarea id="text" autofocus></textarea>
+
+<script>
+'use strict';
+
+window.onload = () => {
+  promise_test(async t => {
+    const eventCountDuringRafAfterInput = await new Promise(async resolve => {
+      const MAX_EVENTS = 20;
+      let eventCount = 0;
+
+      const inputFrameCallback = () => {
+        resolve(eventCount);
+        // Prevent any more input events from running.
+        eventCount = MAX_EVENTS;
+      }
+
+      document.getElementById('text').addEventListener('keypress', () => {
+        if (eventCount >= MAX_EVENTS) {
+          return;
+        }
+        ++eventCount;
+        requestAnimationFrame(inputFrameCallback);
+        window.eventSender.keyDownAsync('A');
+        spin(30);
+      });
+
+      await requestAnimationFramePromise();
+      await scheduler.yield();
+
+      window.eventSender.keyDownAsync('A');
+    });
+
+    // This should typically be 3: the first input event, the one scheduled early
+    // in the event handler (which races frame being scheduled), and the one
+    // scheduled from the second input, which will run at the start of the
+    // BeginMainFrame. Without the prioritize rendering after input policy, this
+    // will be 20, so this suffices as a regression test.
+    assert_less_than_equal(eventCountDuringRafAfterInput, 5);
+  }, 'Test that keyboard input does not starve rendering');
+};
+
+</script>

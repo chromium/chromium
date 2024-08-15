@@ -5121,4 +5121,12 @@ bool WebFrameWidgetImpl::WillBeDestroyed() const {
   return widget_base_->WillBeDestroyed();
 }
 
+void WebFrameWidgetImpl::DispatchNonBlockingEventForTesting(
+    std::unique_ptr<WebCoalescedInputEvent> event) {
+  widget_base_->widget_input_handler_manager()
+      ->DispatchEventOnInputThreadForTesting(
+          std::move(event),
+          mojom::blink::WidgetInputHandler::DispatchEventCallback());
+}
+
 }  // namespace blink

@@ -146,6 +146,10 @@ class WebWidget {
   virtual void ProcessInputEventSynchronouslyForTesting(
       const WebCoalescedInputEvent&) = 0;
 
+  // Dispatches the input event asynchronously, without blocking.
+  virtual void DispatchNonBlockingEventForTesting(
+      std::unique_ptr<WebCoalescedInputEvent> event) = 0;
+
   virtual void DidOverscrollForTesting(
       const gfx::Vector2dF& overscroll_delta,
       const gfx::Vector2dF& accumulated_overscroll,
