@@ -1,12 +1,26 @@
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter rewriter
     getter summarizer
     getter writer
     method canCreateTextSession
     method constructor
     method createTextSession
     method textModelInfo
+interface AIRewriter
+    attribute @@toStringTag
+    getter length
+    getter sharedContext
+    getter tone
+    method constructor
+    method destroy
+    method rewrite
+    method rewriteStreaming
+interface AIRewriterFactory
+    attribute @@toStringTag
+    method constructor
+    method create
 interface AISummarizer
     attribute @@toStringTag
     method constructor

@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="SessionType">
+  <variant name="Rewrite" summary="AI rewrite session"/>
   <variant name="Text" summary="AI text session"/>
   <variant name="Write" summary="AI write session"/>
 </variants>

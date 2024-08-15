@@ -443,6 +443,8 @@ source_set("browser") {
     "aggregation_service/report_scheduler_timer.h",
     "ai/echo_ai_manager_impl.cc",
     "ai/echo_ai_manager_impl.h",
+    "ai/echo_ai_rewriter.cc",
+    "ai/echo_ai_rewriter.h",
     "ai/echo_ai_text_session.cc",
     "ai/echo_ai_text_session.h",
     "ai/echo_ai_writer.cc",

@@ -50,6 +50,12 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       const std::optional<std::string>& shared_context,
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
       override;
+  void CreateRewriter(
+      const std::optional<std::string>& shared_context,
+      blink::mojom::AIRewriterTone tone,
+      blink::mojom::AIRewriterLength length,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client)
+      override;
 
   mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
 };

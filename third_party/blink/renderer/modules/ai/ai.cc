@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_rewriter_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -40,6 +41,7 @@ void AI::Trace(Visitor* visitor) const {
   visitor->Trace(text_session_factory_);
   visitor->Trace(ai_summarizer_factory_);
   visitor->Trace(ai_writer_factory_);
+  visitor->Trace(ai_rewriter_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -175,6 +177,13 @@ AIWriterFactory* AI::writer() {
     ai_writer_factory_ = MakeGarbageCollected<AIWriterFactory>(this);
   }
   return ai_writer_factory_.Get();
+}
+
+AIRewriterFactory* AI::rewriter() {
+  if (!ai_rewriter_factory_) {
+    ai_rewriter_factory_ = MakeGarbageCollected<AIRewriterFactory>(this);
+  }
+  return ai_rewriter_factory_.Get();
 }
 
 }  // namespace blink

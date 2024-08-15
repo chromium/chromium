@@ -56,6 +56,12 @@ class AIManagerKeyedService : public KeyedService,
       const std::optional<std::string>& shared_context,
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
       override;
+  void CreateRewriter(
+      const std::optional<std::string>& shared_context,
+      blink::mojom::AIRewriterTone tone,
+      blink::mojom::AIRewriterLength length,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client)
+      override;
 
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);

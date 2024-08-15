@@ -6,12 +6,26 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
 [Worker] interface AI
 [Worker]     attribute @@toStringTag
+[Worker]     getter rewriter
 [Worker]     getter summarizer
 [Worker]     getter writer
 [Worker]     method canCreateTextSession
 [Worker]     method constructor
 [Worker]     method createTextSession
 [Worker]     method textModelInfo
+[Worker] interface AIRewriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     getter sharedContext
+[Worker]     getter tone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method rewrite
+[Worker]     method rewriteStreaming
+[Worker] interface AIRewriterFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method create
 [Worker] interface AISummarizer
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

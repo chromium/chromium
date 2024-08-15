@@ -15,7 +15,8 @@ class AIMetrics {
   enum class AISessionType {
     kText = 0,
     kWrite = 1,
-    kMaxValue = kWrite,
+    kRewrite = 2,
+    kMaxValue = kRewrite,
   };
 
   // This class contains all the model execution API supported.

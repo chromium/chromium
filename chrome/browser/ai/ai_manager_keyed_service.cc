@@ -204,6 +204,15 @@ void AIManagerKeyedService::CreateWriter(
   NOTIMPLEMENTED();
 }
 
+void AIManagerKeyedService::CreateRewriter(
+    const std::optional<std::string>& shared_context,
+    blink::mojom::AIRewriterTone tone,
+    blink::mojom::AIRewriterLength length,
+    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
+  // TODO(crbug.com/358214322): Implement this.
+  NOTIMPLEMENTED();
+}
+
 void AIManagerKeyedService::
     CanOptimizationGuideKeyedServiceCreateGenericSession(
         CanCreateTextSessionCallback callback) {

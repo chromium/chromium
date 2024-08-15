@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "content/browser/ai/echo_ai_rewriter.h"
 #include "content/browser/ai/echo_ai_text_session.h"
 #include "content/browser/ai/echo_ai_writer.h"
 #include "content/public/browser/browser_context.h"
@@ -61,6 +62,19 @@ void EchoAIManagerImpl::CreateWriter(
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIWriter>(),
                               writer.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(std::move(writer));
+}
+
+void EchoAIManagerImpl::CreateRewriter(
+    const std::optional<std::string>& shared_context,
+    blink::mojom::AIRewriterTone tone,
+    blink::mojom::AIRewriterLength length,
+    mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client) {
+  mojo::Remote<blink::mojom::AIManagerCreateRewriterClient> client_remote(
+      std::move(client));
+  mojo::PendingRemote<::blink::mojom::AIRewriter> rewriter;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIRewriter>(),
+                              rewriter.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(rewriter));
 }
 
 }  // namespace content
