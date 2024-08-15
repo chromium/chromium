@@ -5,7 +5,9 @@
 #ifndef ASH_AUTH_VIEWS_AUTH_COMMON_H_
 #define ASH_AUTH_VIEWS_AUTH_COMMON_H_
 
+#include "ash/style/typography.h"
 #include "base/containers/enum_set.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
 
@@ -16,6 +18,12 @@ enum class AuthInputType { kPassword = 0, kPin = 1, kMaxValue = kPin };
 
 using AuthFactorSet =
     base::EnumSet<AuthInputType, AuthInputType::kPassword, AuthInputType::kPin>;
+
+// The text width is the kActiveSessionAuthViewWidthDp -
+// 2 X 32 dp margin.
+inline constexpr int kTextLineWidthDp = 322 - 2 * 32;
+inline constexpr ui::ColorId kTextColorId = cros_tokens::kCrosSysOnSurface;
+inline constexpr TypographyToken kTextFont = TypographyToken::kCrosAnnotation1;
 
 }  // namespace ash
 #endif  // ASH_AUTH_VIEWS_AUTH_COMMON_H_

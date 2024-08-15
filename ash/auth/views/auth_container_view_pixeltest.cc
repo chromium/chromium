@@ -58,10 +58,13 @@ class AuthContainerPixelTest : public AshTestBase {
 
     test_api_password_ = std::make_unique<AuthInputRowView::TestApi>(
         test_api_->GetPasswordView());
+    test_api_pin_status_ =
+        std::make_unique<PinStatusView::TestApi>(test_api_->GetPinStatusView());
 
     // At start the the password is visible and the pin is hidden.
     CHECK(test_api_password_->GetView()->GetVisible());
     CHECK(!test_api_pin_container_->GetView()->GetVisible());
+    CHECK(!test_api_pin_status_->GetView()->GetVisible());
     CHECK(test_api_->GetSwitchButton()->GetVisible());
 
     // Test the views in day mode.
@@ -73,6 +76,7 @@ class AuthContainerPixelTest : public AshTestBase {
     test_api_pin_keyboard_.reset();
     test_api_pin_container_.reset();
     test_api_password_.reset();
+    test_api_pin_status_.reset();
     test_api_.reset();
     container_view_ = nullptr;
     widget_.reset();
@@ -84,6 +88,7 @@ class AuthContainerPixelTest : public AshTestBase {
   std::unique_ptr<PinKeyboardView::TestApi> test_api_pin_keyboard_;
   std::unique_ptr<PinContainerView::TestApi> test_api_pin_container_;
   std::unique_ptr<AuthInputRowView::TestApi> test_api_password_;
+  std::unique_ptr<PinStatusView::TestApi> test_api_pin_status_;
   std::unique_ptr<AuthContainerView::TestApi> test_api_;
   raw_ptr<AuthContainerView> container_view_ = nullptr;
 };
@@ -115,6 +120,25 @@ TEST_F(AuthContainerPixelTest, PasswordOnlyTest) {
   // Turn off the PIN factor availability.
   test_api_->GetView()->SetHasPin(false);
 
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "PasswordOnly", /*revision_number=*/0, container_view_));
+}
+
+// Verify the password only UI with a PIN status.
+TEST_F(AuthContainerPixelTest, PinStatusTest) {
+  // For better visibility
+  container_view_->SetBackground(
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysBaseElevated));
+
+  // Turn off the PIN factor availability.
+  test_api_->GetView()->SetHasPin(false);
+
+  const std::u16string status_message = u"Too many failed attempts.";
+  test_api_->GetView()->SetPinStatus(status_message);
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "SetPinStatus", /*revision_number=*/0, container_view_));
+
+  test_api_->GetView()->SetPinStatus(u"");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "PasswordOnly", /*revision_number=*/0, container_view_));
 }

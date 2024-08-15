@@ -373,6 +373,8 @@ component("ash") {
     "auth/views/pin_keyboard_input_bridge.h",
     "auth/views/pin_keyboard_view.cc",
     "auth/views/pin_keyboard_view.h",
+    "auth/views/pin_status_view.cc",
+    "auth/views/pin_status_view.h",
     "autotest_private_api_utils.cc",
     "birch/birch_client.h",
     "birch/birch_coral_provider.cc",
