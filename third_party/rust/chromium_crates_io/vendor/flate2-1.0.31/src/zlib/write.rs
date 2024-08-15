@@ -4,7 +4,7 @@ use std::io::prelude::*;
 use crate::zio;
 use crate::{Compress, Decompress};
 
-/// A DEFLATE encoder, or compressor.
+/// A ZLIB encoder, or compressor.
 ///
 /// This structure implements a [`Write`] interface and takes a stream of
 /// uncompressed data, writing the compressed data to the wrapped writer.
@@ -16,30 +16,39 @@ use crate::{Compress, Decompress};
 /// ```
 /// use std::io::prelude::*;
 /// use flate2::Compression;
-/// use flate2::write::DeflateEncoder;
+/// use flate2::write::ZlibEncoder;
 ///
-/// // Vec<u8> implements Write to print the compressed bytes of sample string
-/// # fn main() {
+/// // Vec<u8> implements Write, assigning the compressed bytes of sample string
 ///
-/// let mut e = DeflateEncoder::new(Vec::new(), Compression::default());
-/// e.write_all(b"Hello World").unwrap();
-/// println!("{:?}", e.finish().unwrap());
+/// # fn zlib_encoding() -> std::io::Result<()> {
+/// let mut e = ZlibEncoder::new(Vec::new(), Compression::default());
+/// e.write_all(b"Hello World")?;
+/// let compressed = e.finish()?;
+/// # Ok(())
 /// # }
 /// ```
 #[derive(Debug)]
-pub struct DeflateEncoder<W: Write> {
+pub struct ZlibEncoder<W: Write> {
     inner: zio::Writer<W, Compress>,
 }
 
-impl<W: Write> DeflateEncoder<W> {
+impl<W: Write> ZlibEncoder<W> {
     /// Creates a new encoder which will write compressed data to the stream
     /// given at the given compression level.
     ///
     /// When this encoder is dropped or unwrapped the final pieces of data will
     /// be flushed.
-    pub fn new(w: W, level: crate::Compression) -> DeflateEncoder<W> {
-        DeflateEncoder {
-            inner: zio::Writer::new(w, Compress::new(level, false)),
+    pub fn new(w: W, level: crate::Compression) -> ZlibEncoder<W> {
+        ZlibEncoder {
+            inner: zio::Writer::new(w, Compress::new(level, true)),
+        }
+    }
+
+    /// Creates a new encoder which will write compressed data to the stream
+    /// `w` with the given `compression` settings.
+    pub fn new_with_compress(w: W, compression: Compress) -> ZlibEncoder<W> {
+        ZlibEncoder {
+            inner: zio::Writer::new(w, compression),
         }
     }
 
@@ -60,8 +69,7 @@ impl<W: Write> DeflateEncoder<W> {
     /// stream for another.
     ///
     /// This function will finish encoding the current stream into the current
-    /// output stream before swapping out the two output streams. If the stream
-    /// cannot be finished an error is returned.
+    /// output stream before swapping out the two output streams.
     ///
     /// After the current stream has been finished, this will reset the internal
     /// state of this encoder and replace the output stream with the one
@@ -151,7 +159,7 @@ impl<W: Write> DeflateEncoder<W> {
     }
 }
 
-impl<W: Write> Write for DeflateEncoder<W> {
+impl<W: Write> Write for ZlibEncoder<W> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.inner.write(buf)
     }
@@ -161,18 +169,22 @@ impl<W: Write> Write for DeflateEncoder<W> {
     }
 }
 
-impl<W: Read + Write> Read for DeflateEncoder<W> {
+impl<W: Read + Write> Read for ZlibEncoder<W> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        self.inner.get_mut().read(buf)
+        self.get_mut().read(buf)
     }
 }
 
-/// A DEFLATE decoder, or decompressor.
+/// A ZLIB decoder, or decompressor.
 ///
 /// This structure implements a [`Write`] and will emit a stream of decompressed
 /// data when fed a stream of compressed data.
 ///
-/// [`Write`]: https://doc.rust-lang.org/std/io/trait.Read.html
+/// After decoding a single member of the ZLIB data this writer will return the number of bytes up to
+/// to the end of the ZLIB member and subsequent writes will return Ok(0) allowing the caller to
+/// handle any data following the ZLIB member.
+///
+/// [`Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
 ///
 /// # Examples
 ///
@@ -180,39 +192,52 @@ impl<W: Read + Write> Read for DeflateEncoder<W> {
 /// use std::io::prelude::*;
 /// use std::io;
 /// # use flate2::Compression;
-/// # use flate2::write::DeflateEncoder;
-/// use flate2::write::DeflateDecoder;
+/// # use flate2::write::ZlibEncoder;
+/// use flate2::write::ZlibDecoder;
 ///
 /// # fn main() {
-/// #    let mut e = DeflateEncoder::new(Vec::new(), Compression::default());
+/// #    let mut e = ZlibEncoder::new(Vec::new(), Compression::default());
 /// #    e.write_all(b"Hello World").unwrap();
 /// #    let bytes = e.finish().unwrap();
-/// #    println!("{}", decode_writer(bytes).unwrap());
+/// #    println!("{}", decode_reader(bytes).unwrap());
 /// # }
-/// // Uncompresses a Deflate Encoded vector of bytes and returns a string or error
+/// #
+/// // Uncompresses a Zlib Encoded vector of bytes and returns a string or error
 /// // Here Vec<u8> implements Write
-/// fn decode_writer(bytes: Vec<u8>) -> io::Result<String> {
+///
+/// fn decode_reader(bytes: Vec<u8>) -> io::Result<String> {
 ///    let mut writer = Vec::new();
-///    let mut deflater = DeflateDecoder::new(writer);
-///    deflater.write_all(&bytes[..])?;
-///    writer = deflater.finish()?;
+///    let mut z = ZlibDecoder::new(writer);
+///    z.write_all(&bytes[..])?;
+///    writer = z.finish()?;
 ///    let return_string = String::from_utf8(writer).expect("String parsing error");
 ///    Ok(return_string)
 /// }
 /// ```
 #[derive(Debug)]
-pub struct DeflateDecoder<W: Write> {
+pub struct ZlibDecoder<W: Write> {
     inner: zio::Writer<W, Decompress>,
 }
 
-impl<W: Write> DeflateDecoder<W> {
+impl<W: Write> ZlibDecoder<W> {
     /// Creates a new decoder which will write uncompressed data to the stream.
     ///
-    /// When this encoder is dropped or unwrapped the final pieces of data will
+    /// When this decoder is dropped or unwrapped the final pieces of data will
     /// be flushed.
-    pub fn new(w: W) -> DeflateDecoder<W> {
-        DeflateDecoder {
-            inner: zio::Writer::new(w, Decompress::new(false)),
+    pub fn new(w: W) -> ZlibDecoder<W> {
+        ZlibDecoder {
+            inner: zio::Writer::new(w, Decompress::new(true)),
+        }
+    }
+
+    /// Creates a new decoder which will write uncompressed data to the stream `w`
+    /// using the given `decompression` settings.
+    ///
+    /// When this decoder is dropped or unwrapped the final pieces of data will
+    /// be flushed.
+    pub fn new_with_decompress(w: W, decompression: Decompress) -> ZlibDecoder<W> {
+        ZlibDecoder {
+            inner: zio::Writer::new(w, decompression),
         }
     }
 
@@ -232,21 +257,18 @@ impl<W: Write> DeflateDecoder<W> {
     /// Resets the state of this decoder entirely, swapping out the output
     /// stream for another.
     ///
-    /// This function will finish encoding the current stream into the current
-    /// output stream before swapping out the two output streams.
-    ///
-    /// This will then reset the internal state of this decoder and replace the
+    /// This will reset the internal state of this decoder and replace the
     /// output stream with the one provided, returning the previous output
     /// stream. Future data written to this decoder will be decompressed into
     /// the output stream `w`.
     ///
     /// # Errors
     ///
-    /// This function will perform I/O to finish the stream, and if that I/O
-    /// returns an error then that will be returned from this function.
+    /// This function will perform I/O to complete this stream, and any I/O
+    /// errors which occur will be returned from this function.
     pub fn reset(&mut self, w: W) -> io::Result<W> {
         self.inner.finish()?;
-        self.inner.data = Decompress::new(false);
+        self.inner.data = Decompress::new(true);
         Ok(self.inner.replace(w))
     }
 
@@ -263,8 +285,8 @@ impl<W: Write> DeflateDecoder<W> {
     ///
     /// # Errors
     ///
-    /// This function will perform I/O to finish the stream, returning any
-    /// errors which happen.
+    /// This function will perform I/O to complete this stream, and any I/O
+    /// errors which occur will be returned from this function.
     pub fn try_finish(&mut self) -> io::Result<()> {
         self.inner.finish()
     }
@@ -305,7 +327,7 @@ impl<W: Write> DeflateDecoder<W> {
     }
 }
 
-impl<W: Write> Write for DeflateDecoder<W> {
+impl<W: Write> Write for ZlibDecoder<W> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.inner.write(buf)
     }
@@ -315,7 +337,7 @@ impl<W: Write> Write for DeflateDecoder<W> {
     }
 }
 
-impl<W: Read + Write> Read for DeflateDecoder<W> {
+impl<W: Read + Write> Read for ZlibDecoder<W> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         self.inner.get_mut().read(buf)
     }
@@ -332,12 +354,12 @@ mod tests {
         Hello World Hello World Hello World Hello World Hello World \
         Hello World Hello World Hello World Hello World Hello World";
 
-    // DeflateDecoder consumes one zlib archive and then returns 0 for subsequent writes, allowing any
+    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent writes, allowing any
     // additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let compressed = {
-            let mut e = DeflateEncoder::new(Vec::new(), Compression::default());
+            let mut e = ZlibEncoder::new(Vec::new(), Compression::default());
             e.write(STR.as_ref()).unwrap();
             let mut b = e.finish().unwrap();
             b.push(b'x');
@@ -345,7 +367,7 @@ mod tests {
         };
 
         let mut writer = Vec::new();
-        let mut decoder = DeflateDecoder::new(writer);
+        let mut decoder = ZlibDecoder::new(writer);
         let mut consumed_bytes = 0;
         loop {
             let n = decoder.write(&compressed[consumed_bytes..]).unwrap();

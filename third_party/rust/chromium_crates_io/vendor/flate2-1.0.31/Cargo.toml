@@ -12,11 +12,17 @@
 [package]
 edition = "2018"
 name = "flate2"
-version = "1.0.30"
+version = "1.0.31"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
 ]
+build = false
+exclude = [".*"]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = """
 DEFLATE compression and decompression exposed as Read/BufRead/Write streams.
 Supports miniz_oxide and multiple zlib implementations. Supports zlib, gzip,
@@ -46,6 +52,118 @@ rustdoc-args = [
     "docsrs",
 ]
 
+[lib]
+name = "flate2"
+path = "src/lib.rs"
+
+[[example]]
+name = "compress_file"
+path = "examples/compress_file.rs"
+
+[[example]]
+name = "decompress_file"
+path = "examples/decompress_file.rs"
+
+[[example]]
+name = "deflatedecoder-bufread"
+path = "examples/deflatedecoder-bufread.rs"
+
+[[example]]
+name = "deflatedecoder-read"
+path = "examples/deflatedecoder-read.rs"
+
+[[example]]
+name = "deflatedecoder-write"
+path = "examples/deflatedecoder-write.rs"
+
+[[example]]
+name = "deflateencoder-bufread"
+path = "examples/deflateencoder-bufread.rs"
+
+[[example]]
+name = "deflateencoder-read"
+path = "examples/deflateencoder-read.rs"
+
+[[example]]
+name = "deflateencoder-write"
+path = "examples/deflateencoder-write.rs"
+
+[[example]]
+name = "gzbuilder"
+path = "examples/gzbuilder.rs"
+
+[[example]]
+name = "gzdecoder-bufread"
+path = "examples/gzdecoder-bufread.rs"
+
+[[example]]
+name = "gzdecoder-read"
+path = "examples/gzdecoder-read.rs"
+
+[[example]]
+name = "gzdecoder-write"
+path = "examples/gzdecoder-write.rs"
+
+[[example]]
+name = "gzencoder-bufread"
+path = "examples/gzencoder-bufread.rs"
+
+[[example]]
+name = "gzencoder-read"
+path = "examples/gzencoder-read.rs"
+
+[[example]]
+name = "gzencoder-write"
+path = "examples/gzencoder-write.rs"
+
+[[example]]
+name = "gzmultidecoder-bufread"
+path = "examples/gzmultidecoder-bufread.rs"
+
+[[example]]
+name = "gzmultidecoder-read"
+path = "examples/gzmultidecoder-read.rs"
+
+[[example]]
+name = "zlibdecoder-bufread"
+path = "examples/zlibdecoder-bufread.rs"
+
+[[example]]
+name = "zlibdecoder-read"
+path = "examples/zlibdecoder-read.rs"
+
+[[example]]
+name = "zlibdecoder-write"
+path = "examples/zlibdecoder-write.rs"
+
+[[example]]
+name = "zlibencoder-bufread"
+path = "examples/zlibencoder-bufread.rs"
+
+[[example]]
+name = "zlibencoder-read"
+path = "examples/zlibencoder-read.rs"
+
+[[example]]
+name = "zlibencoder-write"
+path = "examples/zlibencoder-write.rs"
+
+[[test]]
+name = "early-flush"
+path = "tests/early-flush.rs"
+
+[[test]]
+name = "empty-read"
+path = "tests/empty-read.rs"
+
+[[test]]
+name = "gunzip"
+path = "tests/gunzip.rs"
+
+[[test]]
+name = "zero-write"
+path = "tests/zero-write.rs"
+
 [dependencies.cloudflare-zlib-sys]
 version = "0.3.0"
 optional = true
@@ -58,7 +176,7 @@ version = "1.1.8"
 optional = true
 
 [dependencies.libz-rs-sys]
-version = "0.1.1"
+version = "0.2.1"
 features = [
     "std",
     "rust-allocator",
@@ -118,7 +236,7 @@ zlib-rs = [
     "libz-rs-sys",
 ]
 
-[target."cfg(all(target_arch = \"wasm32\", not(target_os = \"emscripten\")))".dependencies.miniz_oxide]
+[target.'cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))'.dependencies.miniz_oxide]
 version = "0.7.1"
 features = ["with-alloc"]
 default-features = false

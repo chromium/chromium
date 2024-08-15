@@ -811,6 +811,19 @@ All hits of `'\bfs\b'` are in comments, or example code, or test code
 There were no hits of `-i cipher`, `-i crypto`, `'\bnet\b'`.
 '''
 
+[[audits.flate2]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.30 -> 1.0.31"
+notes = """
+Only benign changes:
+
+* Comment-only changes in `.rs` files
+* Also changing dependency version in `Cargo.toml`, but this is for `any_zlib`
+  feature which is not used in Chromium (i.e. this is a *partial* audit - see
+  the previous audit notes for 1.0.30)
+"""
+
 [[audits.font-types]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

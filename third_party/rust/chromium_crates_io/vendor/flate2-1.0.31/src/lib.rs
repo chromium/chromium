@@ -77,7 +77,7 @@
 //!
 //! The [`MultiGzDecoder`] on the other hand will decode all members of a `gzip` file
 //! into one consecutive stream of bytes, which hides the underlying *members* entirely.
-//! If a file contains contains non-gzip data after the gzip data, MultiGzDecoder will
+//! If a file contains non-gzip data after the gzip data, MultiGzDecoder will
 //! emit an error after decoding the gzip data. This behavior matches the `gzip`,
 //! `gunzip`, and `zcat` command line tools.
 //!

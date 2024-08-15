@@ -123,6 +123,12 @@ impl<W: Read + Write> Write for DeflateEncoder<W> {
 /// This structure implements a [`Read`] interface. When read from, it reads
 /// compressed data from the underlying [`Read`] and provides the uncompressed data.
 ///
+/// After reading a single member of the DEFLATE data this reader will return
+/// Ok(0) even if there are more bytes available in the underlying reader.
+/// `DeflateDecoder` may have read additional bytes past the end of the DEFLATE data.
+/// If you need the following bytes, wrap the `Reader` in a `std::io::BufReader`
+/// and use `bufread::DeflateDecoder` instead.
+///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 ///
 /// # Examples
