@@ -3065,6 +3065,8 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
   window_features->has_width = web_window_features.width_set;
   window_features->has_height = web_window_features.height_set;
   window_features->is_popup = web_window_features.is_popup;
+  window_features->is_partitioned_popin =
+      web_window_features.is_partitioned_popin;
   local_main_frame_host_remote_->ShowCreatedWindow(
       opener_frame_token, NavigationPolicyToDisposition(policy),
       std::move(window_features), opened_by_user_gesture,

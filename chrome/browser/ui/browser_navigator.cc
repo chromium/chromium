@@ -577,6 +577,13 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
   DCHECK(params->initiating_profile);
 
+  // If the created window is a partitioned popin, a valid source exists, and
+  // the disposition is NEW_POPUP then the resulting popup should be tab-modal.
+  // See: https://explainers-by-googlers.github.io/partitioned-popins/
+  params->is_tab_modal_popup |=
+      params->window_features.is_partitioned_popin && params->source_contents &&
+      params->disposition == WindowOpenDisposition::NEW_POPUP;
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (params->initiating_profile->IsOffTheRecord() &&
       params->initiating_profile->GetOTRProfileID().IsCaptivePortal() &&

@@ -95,8 +95,9 @@ class ExternalProtocolHandlerDelegate
 
 class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
  public:
-  BrowserNavigatorIwaTest() {
+  void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
