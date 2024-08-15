@@ -252,6 +252,8 @@ public abstract class TabGroupOverflowMenuCoordinator {
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();
 
+    // TODO(crbug.com/357878838): Pass the activity through constructor and setup test to test this
+    // method
     protected void createAndShowMenu(View anchorView, int tabId, @NonNull Activity activity) {
         assert mMenuHolder == null;
         boolean isIncognito = mTabModelSupplier.get().isIncognitoBranded();
@@ -270,9 +272,12 @@ public abstract class TabGroupOverflowMenuCoordinator {
         mMenuHolder.show();
     }
 
+    protected void onMenuDismissed() {}
+
     private void onDismiss(OverflowMenuHolder menuHolder) {
         assert mMenuHolder == menuHolder;
         mMenuHolder = null;
+        onMenuDismissed();
     }
 
     private void configureMenuItems(ModelList modelList, boolean isIncognito, int tabId) {

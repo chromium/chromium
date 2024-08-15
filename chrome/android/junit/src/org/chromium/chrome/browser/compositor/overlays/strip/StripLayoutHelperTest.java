@@ -1828,7 +1828,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
 
         // Verify tab group context menu is showing.
-        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt(), any());
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt());
     }
 
     @Test

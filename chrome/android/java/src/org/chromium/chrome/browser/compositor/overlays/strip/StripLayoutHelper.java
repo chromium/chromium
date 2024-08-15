@@ -1967,10 +1967,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                             mTabGroupModelFilter,
                             mActionConfirmationManager,
                             mTabCreator,
+                            mWindowAndroid,
                             TabGroupSyncFeatures.isTabGroupSyncEnabled(mModel.getProfile()));
         }
-        mTabGroupContextMenuCoordinator.showMenu(
-                tabView, groupTitle.getRootId(), mWindowAndroid.getActivity().get());
+        mTabGroupContextMenuCoordinator.showMenu(tabView, groupTitle.getRootId());
     }
 
     private void startDragOrReorderTab(long time, float x, float y, StripLayoutTab clickedTab) {

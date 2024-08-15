@@ -4,19 +4,15 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.EditText;
 
 import androidx.annotation.DimenRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.android.material.textfield.TextInputEditText;
-
 import org.chromium.base.supplier.Supplier;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -27,13 +23,15 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.C
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -45,11 +43,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * responsible for creating a list of menu items, setting up the menu and displaying the menu.
  */
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    private TabGroupVisualDataTextInputLayout mTabGroupTextInputLayout;
+    private View mContentView;
+    private EditText mGroupTitleEditText;
     private ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
     private int mGroupRootId;
     private Context mContext;
+    private WindowAndroid mWindowAndroid;
+    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /**
      * @param tabModelSupplier The supplier of the tab model.
@@ -63,6 +64,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             TabGroupModelFilter tabGroupModelFilter,
             ActionConfirmationManager actionConfirmationManager,
             TabCreator tabCreator,
+            WindowAndroid windowAndroid,
             boolean isTabGroupSyncEnabled) {
         super(
                 R.layout.tab_strip_group_menu_layout,
@@ -74,6 +76,11 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 /* tabGroupSyncService= */ null,
                 /* dataSharingService= */ null);
         mTabGroupModelFilter = tabGroupModelFilter;
+        mWindowAndroid = windowAndroid;
+        mKeyboardVisibilityListener =
+                isHiding -> {
+                    updateTabGroupTitle();
+                };
     }
 
     @VisibleForTesting
@@ -105,66 +112,25 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         };
     }
 
-    // TODO(crbug.com/357878838): Pass the activity through constructor and make it a class
-    // variable and try to test the real `createAndShowMenu` method and remove the `IS_FOR_TEST`
-    // check.
     /**
      * Show the context menu of the tab group.
      *
      * @param anchorView The anchor {@link View} of the context menu.
      * @param rootId The root id of the interacting tab group.
-     * @param activity The current activity.
      */
-    protected void showMenu(View anchorView, int rootId, @NonNull Activity activity) {
-        if (!BuildConfig.IS_FOR_TEST) {
-            mGroupRootId = rootId;
-            createAndShowMenu(anchorView, rootId, activity);
-        }
+    protected void showMenu(View anchorView, int rootId) {
+        mGroupRootId = rootId;
+        createAndShowMenu(anchorView, rootId, mWindowAndroid.getActivity().get());
     }
 
     @Override
     protected void buildCustomView(View contentView, boolean isIncognito) {
+        mContentView = contentView;
         mContext = contentView.getContext();
 
-        // TODO(crbug.com/354255648): Implement afterTextChangedListener to validate input and
-        // update tab group title.
-        mTabGroupTextInputLayout = contentView.findViewById(R.id.tab_group_title);
-        TextInputEditText titleInputText = contentView.findViewById(R.id.title_input_text);
+        buildTitleEditor();
 
-        // TODO(crbug.com/355483736): Confirm the final horizontal padding for the menu and update
-        // if necessary.
-        // Set horizontal padding to custom view to match list items.
-        int horizontalPadding =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
-
-        // InputEditText has automatic 4dp horizontal padding; subtract this when adding paddings to
-        // TextInputLayout to align hint text and stroke with the rest of the views.
-        mTabGroupTextInputLayout.setPadding(
-                horizontalPadding - titleInputText.getPaddingLeft(),
-                0,
-                horizontalPadding - titleInputText.getPaddingRight(),
-                0);
-
-        // TODO(crbug.com/357104424): Consider create ColorPickerCoordinator once during the first
-        // call, and reuse it for subsequent calls.
-        mColorPickerCoordinator =
-                new ColorPickerCoordinator(
-                        mContext,
-                        ColorPickerUtils.getTabGroupColorIdList(),
-                        ((ViewStub) contentView.findViewById(R.id.color_picker_stub)).inflate(),
-                        ColorPickerType.TAB_GROUP,
-                        isIncognito,
-                        ColorPickerLayoutType.DYNAMIC,
-                        this::updateTabGroupColor);
-        mColorPickerCoordinator
-                .getContainerView()
-                .setPadding(horizontalPadding, 0, horizontalPadding, 0);
-
-        // The color picker should select the current color of the tab group when it is displayed.
-        @TabGroupColorId
-        int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
-        mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
+        buildColorEditor(isIncognito);
     }
 
     @Override
@@ -234,6 +200,14 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @Override
+    protected void onMenuDismissed() {
+        updateTabGroupTitle();
+        mWindowAndroid
+                .getKeyboardDelegate()
+                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+    }
+
+    @Override
     protected @DimenRes int getMenuWidth() {
         return R.dimen.tab_strip_group_context_menu_max_width;
     }
@@ -243,11 +217,86 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor);
     }
 
-    protected TabGroupVisualDataTextInputLayout getTabGroupTextInputLayoutForTesting() {
-        return mTabGroupTextInputLayout;
+    @VisibleForTesting
+    void updateTabGroupTitle() {
+        String newTitle = mGroupTitleEditText.getText().toString();
+        TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle);
+        if (mTabGroupModelFilter.getTabGroupTitle(mGroupRootId) == null) {
+            setEditTextToDefaultGroupTitle();
+        }
     }
 
-    protected ColorPickerCoordinator getColorPickerCoordinatorForTesting() {
+    private void setEditTextToDefaultGroupTitle() {
+        String defaultTitle =
+                TabGroupTitleEditor.getDefaultTitle(
+                        mContext, mTabGroupModelFilter.getRelatedTabCountForRootId(mGroupRootId));
+        mGroupTitleEditText.setText(defaultTitle);
+    }
+
+    // TODO(crbug.com/358689769): Enable live editing and updating of the group title by
+    // implementing a `TextWatcher`.
+    private void buildTitleEditor() {
+        // TODO:(crbug.com/359622287): Set incognito color with ColorStateList for title editor.
+        mGroupTitleEditText = mContentView.findViewById(R.id.tab_group_title);
+        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
+
+        // Set the initial text to the existing group title, defaulting to "N tabs" if no title name
+        // is set.
+        if (curGroupTitle == null || curGroupTitle.isEmpty()) {
+            setEditTextToDefaultGroupTitle();
+        } else {
+            mGroupTitleEditText.setText(curGroupTitle);
+        }
+
+        // Add listener to group title EditText to update group title when keyboard starts hiding.
+        mWindowAndroid
+                .getKeyboardDelegate()
+                .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+    }
+
+    private void buildColorEditor(boolean isIncognito) {
+        // TODO(crbug.com/359941567): Refactor layout to use uniform padding in xml and remove
+        // custom padding here.
+        // Set horizontal padding to custom view to match list items.
+        int horizontalPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
+
+        // TODO(crbug.com/357104424): Consider create ColorPickerCoordinator once during the first
+        // call, and reuse it for subsequent calls.
+        mColorPickerCoordinator =
+                new ColorPickerCoordinator(
+                        mContext,
+                        ColorPickerUtils.getTabGroupColorIdList(),
+                        ((ViewStub) mContentView.findViewById(R.id.color_picker_stub)).inflate(),
+                        ColorPickerType.TAB_GROUP,
+                        isIncognito,
+                        ColorPickerLayoutType.DYNAMIC,
+                        this::updateTabGroupColor);
+        mColorPickerCoordinator
+                .getContainerView()
+                .setPadding(horizontalPadding, 0, horizontalPadding, 0);
+
+        // The color picker should select the current color of the tab group when it is displayed.
+        @TabGroupColorId
+        int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
+        mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
+    }
+
+    EditText getGroupTitleEditTextForTesting() {
+        return mGroupTitleEditText;
+    }
+
+    ColorPickerCoordinator getColorPickerCoordinatorForTesting() {
         return mColorPickerCoordinator;
+    }
+
+    KeyboardVisibilityDelegate.KeyboardVisibilityListener
+            getKeyboardVisibilityListenerForTesting() {
+        return mKeyboardVisibilityListener;
+    }
+
+    void setGroupRootIdForTesting(int id) {
+        mGroupRootId = id;
     }
 }

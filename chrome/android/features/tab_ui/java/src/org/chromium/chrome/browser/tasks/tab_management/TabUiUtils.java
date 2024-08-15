@@ -92,22 +92,6 @@ public class TabUiUtils {
     }
 
     /**
-     * Update the tab group color.
-     *
-     * @param filter The {@link TabGroupModelFilter} to act on.
-     * @param rootId The root id of the interacting tab group.
-     * @param newGroupColor The new group color being assigned to the tab group.
-     */
-    public static void updateTabGroupColor(
-            TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
-        int curGroupColor = filter.getTabGroupColor(rootId);
-        boolean didChangeColor = curGroupColor != newGroupColor;
-        if (didChangeColor) {
-            filter.setTabGroupColor(rootId, newGroupColor);
-        }
-    }
-
-    /**
      * Ungroups a tab group and maybe shows a confirmation dialog.
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
@@ -150,6 +134,40 @@ public class TabUiUtils {
                     };
 
             actionConfirmationManager.processUngroupAttempt(onResult);
+        }
+    }
+
+    /**
+     * Update the tab group color.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param rootId The root id of the interacting tab group.
+     * @param newGroupColor The new group color being assigned to the tab group.
+     */
+    public static void updateTabGroupColor(
+            TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
+        int curGroupColor = filter.getTabGroupColor(rootId);
+        if (curGroupColor != newGroupColor) {
+            filter.setTabGroupColor(rootId, newGroupColor);
+        }
+    }
+
+    /**
+     * Update the tab group title.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param rootId The root id of the interacting tab group.
+     * @param newGroupTitle The new group title being assigned to the tab group.
+     */
+    public static void updateTabGroupTitle(
+            TabGroupModelFilter filter, int rootId, String newGroupTitle) {
+        if (newGroupTitle == null || newGroupTitle.isEmpty()) {
+            filter.deleteTabGroupTitle(rootId);
+            return;
+        }
+        String curGroupTitle = filter.getTabGroupTitle(rootId);
+        if (!newGroupTitle.equals(curGroupTitle)) {
+            filter.setTabGroupTitle(rootId, newGroupTitle);
         }
     }
 

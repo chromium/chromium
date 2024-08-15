@@ -13,6 +13,12 @@ found in the LICENSE file.
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
 
+    <style name="TabStripGroupContextMenuTitleTheme">
+        <item name="colorControlNormal">@macro/default_icon_color</item>
+        <item name="colorControlActivated">@macro/default_control_color_active</item>
+        <item name="colorControlHighlight">@macro/default_control_color_active</item>
+    </style>
+
     <style name="DialogShareButton">
         <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
         <item name="android:drawableTint">@macro/default_icon_color_accent1</item>
