@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './realbox_match.js';
-import './realbox_dropdown_shared_style.css.js';
+import './searchbox_match.js';
+import './searchbox_dropdown_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
@@ -12,9 +12,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import {getTemplate} from './realbox_dropdown.html.js';
-import type {RealboxMatchElement} from './realbox_match.js';
+import {RealboxBrowserProxy} from './searchbox_browser_proxy.js';
+import {getTemplate} from './searchbox_dropdown.html.js';
+import type {RealboxMatchElement} from './searchbox_match.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './searchbox.mojom-webui.js';
 import {RenderType, SelectionLineState, SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';

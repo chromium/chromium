@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './realbox_icon.js';
-import './realbox_action.js';
-import './realbox_dropdown_shared_style.css.js';
+import './searchbox_icon.js';
+import './searchbox_action.js';
+import './searchbox_dropdown_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
@@ -14,9 +14,9 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
-import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import type {RealboxIconElement} from './realbox_icon.js';
-import {getTemplate} from './realbox_match.html.js';
+import {RealboxBrowserProxy} from './searchbox_browser_proxy.js';
+import type {RealboxIconElement} from './searchbox_icon.js';
+import {getTemplate} from './searchbox_match.html.js';
 import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './searchbox.mojom-webui.js';
 import {SelectionLineState} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from './utils.js';

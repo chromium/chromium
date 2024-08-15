@@ -8,7 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './realbox_action.html.js';
+import {getTemplate} from './searchbox_action.html.js';
 import type {Action} from './searchbox.mojom-webui.js';
 import {decodeString16} from './utils.js';
 

@@ -5,7 +5,7 @@
 import './iframe.js';
 import './logo.js';
 import './strings.m.js';
-import 'chrome://resources/cr_components/searchbox/realbox.js';
+import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/searchbox/realbox_dropdown.js';
+import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import './strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import {RealboxBrowserProxy} from '//resources/cr_components/searchbox/realbox_browser_proxy.js';
-import type {RealboxDropdownElement} from '//resources/cr_components/searchbox/realbox_dropdown.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/searchbox/searchbox.mojom-webui.js';
+import {RealboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
+import type {RealboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assert} from '//resources/js/assert.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

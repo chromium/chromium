@@ -8,11 +8,11 @@ assert(!is_android && !is_ios)
 
 build_webui_tests("build") {
   files = [
-    "realbox_lens_test.ts",
-    "realbox_match_test.ts",
-    "realbox_test_utils.ts",
-    "realbox_test.ts",
-    "test_realbox_browser_proxy.ts",
+    "searchbox_lens_test.ts",
+    "searchbox_match_test.ts",
+    "searchbox_test_utils.ts",
+    "searchbox_test.ts",
+    "test_searchbox_browser_proxy.ts",
   ]
 
   ts_tsconfig_base = "tsconfig_base.json"

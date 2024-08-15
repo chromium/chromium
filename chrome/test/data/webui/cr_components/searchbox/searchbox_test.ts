@@ -18,8 +18,8 @@ import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createAutocompleteMatch} from './realbox_test_utils.js';
-import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
+import {assertStyle, createAutocompleteMatch} from './searchbox_test_utils.js';
+import {TestRealboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 enum Attributes {
   SELECTED = 'selected',

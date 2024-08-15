@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './realbox_thumbnail.html.js';
+import {getTemplate} from './searchbox_thumbnail.html.js';
 
 const ThumbnailElementBase = I18nMixin(PolymerElement);
 

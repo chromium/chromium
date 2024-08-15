@@ -14,7 +14,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
+import {TestRealboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 function createAutocompleteMatch(): AutocompleteMatch {
   return {

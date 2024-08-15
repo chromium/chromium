@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './realbox_dropdown.js';
-import './realbox_icon.js';
-import './realbox_thumbnail.js';
+import './searchbox_dropdown.js';
+import './searchbox_icon.js';
+import './searchbox_thumbnail.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
@@ -15,10 +15,10 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
-import {getTemplate} from './realbox.html.js';
-import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
-import type {RealboxDropdownElement} from './realbox_dropdown.js';
-import type {RealboxIconElement} from './realbox_icon.js';
+import {getTemplate} from './searchbox.html.js';
+import {RealboxBrowserProxy} from './searchbox_browser_proxy.js';
+import type {RealboxDropdownElement} from './searchbox_dropdown.js';
+import type {RealboxIconElement} from './searchbox_icon.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
 import {SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoString16} from './utils.js';
