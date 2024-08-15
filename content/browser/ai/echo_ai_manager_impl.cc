@@ -5,25 +5,28 @@
 #include "content/browser/ai/echo_ai_manager_impl.h"
 
 #include "base/no_destructor.h"
+#include "base/supports_user_data.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_text_session.h"
 #include "content/browser/ai/echo_ai_writer.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
-EchoAIManagerImpl::EchoAIManagerImpl(content::BrowserContext* browser_context) {
-}
+EchoAIManagerImpl::EchoAIManagerImpl(content::BrowserContext* browser_context,
+                                     ReceiverContext context) {}
 
 EchoAIManagerImpl::~EchoAIManagerImpl() = default;
 
 // static
 void EchoAIManagerImpl::Create(
     content::BrowserContext* browser_context,
+    ReceiverContext context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  static base::NoDestructor<EchoAIManagerImpl> ai(browser_context);
-  ai->receivers_.Add(ai.get(), std::move(receiver));
+  static base::NoDestructor<EchoAIManagerImpl> ai(browser_context, context);
+  ai->receivers_.Add(ai.get(), std::move(receiver), context);
 }
 
 void EchoAIManagerImpl::CanCreateTextSession(

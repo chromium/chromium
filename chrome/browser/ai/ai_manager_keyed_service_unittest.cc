@@ -4,36 +4,130 @@
 
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
+#include "chrome/browser/ai/ai_text_session.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 
-using ::testing::AtMost;
-using ::testing::NiceMock;
+using testing::_;
+using testing::An;
+using testing::AtMost;
+using testing::Invoke;
+using testing::NiceMock;
+using testing::Return;
+namespace {
+
+class MockSupportsUserData : public base::SupportsUserData {};
+
+class MockSession
+    : public optimization_guide::OptimizationGuideModelExecutor::Session {
+ public:
+  MOCK_METHOD(void,
+              AddContext,
+              (const google::protobuf::MessageLite& request_metadata));
+  MOCK_METHOD(
+      void,
+      Score,
+      (const std::string& text,
+       optimization_guide::OptimizationGuideModelScoreCallback callback));
+  MOCK_METHOD(
+      void,
+      ExecuteModel,
+      (const google::protobuf::MessageLite& request_metadata,
+       optimization_guide::
+           OptimizationGuideModelExecutionResultStreamingCallback callback));
+  MOCK_METHOD(
+      void,
+      GetSizeInTokens,
+      (const std::string& text,
+       optimization_guide::OptimizationGuideModelSizeInTokenCallback callback));
+};
+
+// A wrapper that passes through calls to the underlying MockSession. Allows for
+// easily mocking calls with a single session object.
+class MockSessionWrapper
+    : public optimization_guide::OptimizationGuideModelExecutor::Session {
+ public:
+  explicit MockSessionWrapper(MockSession& session) : session_(session) {}
+
+  void AddContext(
+      const google::protobuf::MessageLite& request_metadata) override {
+    session_->AddContext(request_metadata);
+  }
+  void Score(const std::string& text,
+             optimization_guide::OptimizationGuideModelScoreCallback callback)
+      override {
+    std::move(callback).Run(std::nullopt);
+  }
+  void ExecuteModel(
+      const google::protobuf::MessageLite& request_metadata,
+      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+          callback) override {
+    session_->ExecuteModel(request_metadata, std::move(callback));
+  }
+  void GetSizeInTokens(
+      const std::string& text,
+      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
+      override {
+    session_->GetSizeInTokens(text, std::move(callback));
+  }
+
+ private:
+  raw_ref<MockSession> session_;
+};
+
+}  // namespace
 
 class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-
-    // Setting up MockOptimizationGuideKeyedService.
-    OptimizationGuideKeyedServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            profile(),
-            base::BindRepeating([](content::BrowserContext* context)
-                                    -> std::unique_ptr<KeyedService> {
-              return std::make_unique<
-                  NiceMock<MockOptimizationGuideKeyedService>>();
-            }));
+    SetUpOptimizationGuide();
   }
 
-  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
+  void TearDown() override {
+    mock_optimization_guide_keyed_service_ = nullptr;
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  MockSupportsUserData* mock_host() { return &mock_host_; }
+
+ private:
+  void SetUpOptimizationGuide() {
+    mock_optimization_guide_keyed_service_ =
+        static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
+            OptimizationGuideKeyedServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    profile(),
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<
+                          NiceMock<MockOptimizationGuideKeyedService>>();
+                    })));
+
+    ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+        .WillByDefault(
+            [&] { return std::make_unique<MockSessionWrapper>(session_); });
+  }
+
+  raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
+      mock_optimization_guide_keyed_service_;
+  testing::NiceMock<MockSession> session_;
+  MockSupportsUserData mock_host_;
 };
 
 // Tests that involve invalid on-device model file paths should not crash when
@@ -46,10 +140,9 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
 
   base::MockCallback<blink::mojom::AIManager::CanCreateTextSessionCallback>
       callback;
-  EXPECT_CALL(callback, Run(testing::_))
+  EXPECT_CALL(callback, Run(_))
       .Times(AtMost(1))
-      .WillOnce(testing::Invoke([&](blink::mojom::ModelAvailabilityCheckResult
-                                        result) {
+      .WillOnce(Invoke([&](blink::mojom::ModelAvailabilityCheckResult result) {
         EXPECT_EQ(
             result,
             blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled);
@@ -65,4 +158,44 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
   DeleteContents();
 
   task_environment()->RunUntilIdle();
+}
+
+// Tests the `AITextSessionSet`'s behavior of managing the lifetime of
+// `AITextSession`s.
+TEST_F(AIManagerKeyedServiceTest, AITextSessionSet) {
+  base::MockCallback<blink::mojom::AIManager::CreateTextSessionCallback>
+      callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(_))
+      .Times(AtMost(1))
+      .WillOnce(Invoke([&](bool result) {
+        EXPECT_TRUE(result);
+        run_loop.Quit();
+      }));
+
+  AIManagerKeyedService* ai_manager =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
+          main_rfh()->GetBrowserContext());
+
+  mojo::Remote<blink::mojom::AIManager> mock_remote;
+  mojo::Remote<blink::mojom::AITextSession> mock_session;
+  ai_manager->AddReceiver(mock_remote.BindNewPipeAndPassReceiver(),
+                          mock_host());
+  // Initially the `AITextSessionSet` is empty.
+  base::WeakPtr<AITextSessionSet> sessions =
+      AITextSessionSet::GetFromContext(mock_host())->GetWeakPtrForTesting();
+  ASSERT_EQ(0u, sessions->GetSessionSetSizeForTesting());
+
+  // After creating one `AITextSession`, the `AITextSessionSet` contains 1
+  // element.
+  mock_remote->CreateTextSession(mock_session.BindNewPipeAndPassReceiver(),
+                                 nullptr, std::nullopt, callback.Get());
+  run_loop.Run();
+  ASSERT_EQ(1u, sessions->GetSessionSetSizeForTesting());
+
+  // After resetting the session, the `AITextSessionSet` becomes empty again and
+  // should be removed from the context.
+  mock_session.reset();
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(sessions);
 }

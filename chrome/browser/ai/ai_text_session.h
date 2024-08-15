@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
@@ -56,11 +57,22 @@ class AITextSession : public blink::mojom::AITextSession {
     std::deque<ContextItem> context_items_;
   };
 
+  // The `AITextSession` will be owned by the `AITextSessionSet` which is bound
+  // to the `BucketContext`. However, the `disconnect_handler` should be set to
+  // properly remove the `AITextSession` from `AITextSessionSet` in case the
+  // connection is closed before the `BucketContext` is destroyed.
+
+  // The ownership chain of the relevant class is:
+  // `BucketContext` (via `SupportsUserData` or `DocumentUserData`) --owns-->
+  // `AITextSessionSet` --owns-->
+  // `AITextSession` (implements blink::mojom::AITextSession) --owns-->
+  // `mojo::Receiver<blink::mojom::AITextSession>`
   AITextSession(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       std::optional<optimization_guide::SamplingParams> sampling_params,
       base::WeakPtr<content::BrowserContext> browser_context,
+      mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
       const std::optional<const Context>& context = std::nullopt);
   AITextSession(const AITextSession&) = delete;
   AITextSession& operator=(const AITextSession&) = delete;
@@ -77,6 +89,7 @@ class AITextSession : public blink::mojom::AITextSession {
 
   void SetSystemPrompt(std::string system_prompt,
                        base::OnceCallback<void(bool)> callback);
+  void SetDisconnectHandler(base::OnceClosure disconnect_handler);
 
  private:
   void ModelExecutionCallback(
@@ -106,6 +119,8 @@ class AITextSession : public blink::mojom::AITextSession {
   base::WeakPtr<content::BrowserContext> browser_context_;
   // Holds all the input and output from the previous prompt.
   std::unique_ptr<Context> context_;
+
+  mojo::Receiver<blink::mojom::AITextSession> receiver_;
 
   base::WeakPtrFactory<AITextSession> weak_ptr_factory_{this};
 };

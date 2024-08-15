@@ -10,6 +10,8 @@ source_set("ai") {
     "ai_manager_keyed_service_factory.h",
     "ai_text_session.cc",
     "ai_text_session.h",
+    "ai_text_session_set.cc",
+    "ai_text_session_set.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

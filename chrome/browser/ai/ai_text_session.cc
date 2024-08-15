@@ -20,7 +20,6 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace {
@@ -81,10 +80,12 @@ AITextSession::AITextSession(
         session,
     std::optional<optimization_guide::SamplingParams> sampling_params,
     base::WeakPtr<content::BrowserContext> browser_context,
+    mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
       sampling_params_(sampling_params),
-      browser_context_(browser_context) {
+      browser_context_(browser_context),
+      receiver_(this, std::move(receiver)) {
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
     context_ = std::make_unique<Context>(context.value());
@@ -107,6 +108,10 @@ void AITextSession::SetSystemPrompt(std::string system_prompt,
       base::BindOnce(&AITextSession::InitializeContextWithSystemPrompt,
                      weak_ptr_factory_.GetWeakPtr(), system_prompt,
                      std::move(callback)));
+}
+
+void AITextSession::SetDisconnectHandler(base::OnceClosure disconnect_handler) {
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
 }
 
 blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(

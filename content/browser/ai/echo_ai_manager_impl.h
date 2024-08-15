@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -17,18 +18,23 @@ namespace content {
 // only echoes back the prompt text used for testing.
 class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
+  using ReceiverContext =
+      std::variant<RenderFrameHost*, base::SupportsUserData*>;
+
   EchoAIManagerImpl(const EchoAIManagerImpl&) = delete;
   EchoAIManagerImpl& operator=(const EchoAIManagerImpl&) = delete;
 
   ~EchoAIManagerImpl() override;
 
   static void Create(content::BrowserContext* browser_context,
+                     ReceiverContext context,
                      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend base::NoDestructor<EchoAIManagerImpl>;
 
-  explicit EchoAIManagerImpl(content::BrowserContext* browser_context);
+  EchoAIManagerImpl(content::BrowserContext* browser_context,
+                    ReceiverContext context);
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
@@ -45,7 +51,7 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
       override;
 
-  mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
+  mojo::ReceiverSet<blink::mojom::AIManager, ReceiverContext> receivers_;
 };
 
 }  // namespace content
