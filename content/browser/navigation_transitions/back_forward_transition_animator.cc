@@ -4,6 +4,7 @@
 
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -1065,11 +1066,7 @@ void BackForwardTransitionAnimator::ProcessState() {
 
       // Move the screenshot to the very top, so we can cross-fade from the
       // screenshot (top) into the active page (bottom).
-      CHECK(screenshot_layer_->parent());
-      screenshot_layer_->RemoveFromParent();
-      animation_manager_->web_contents_view_android()
-          ->AddScreenshotLayerForNavigationTransitions(
-              screenshot_layer_.get(), /*screenshot_layer_on_top=*/true);
+      InsertLayersInOrder();
 
       InitializeEffectForCrossfadeAnimation();
 
@@ -1138,20 +1135,8 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
   screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
 
-  // Insert a new `cc::slim::UIResourceLayer` into the existing layer tree.
-  //
-  // `WebContentsViewAndroid::view_->GetLayer()`
-  //            |
-  //            |- `old_surface_clone_` (only set during the invoke animation).
-  //            |- `parent_for_web_page_widgets_` (RWHVAndroid, Overscroll etc).
-  //            |
-  //            |- `NavigationEntryScreenshot`
-
-  bool screenshot_on_top_of_web_page =
-      nav_direction_ == NavigationDirection::kForward;
-  animation_manager_->web_contents_view_android()
-      ->AddScreenshotLayerForNavigationTransitions(
-          screenshot_layer_.get(), screenshot_on_top_of_web_page);
+  // This inserts the screenshot layer into the layer tree.
+  InsertLayersInOrder();
 
   // Set up `effect_`.
   InitializeEffectForGestureProgressAnimation();
@@ -1264,8 +1249,29 @@ BackForwardTransitionAnimator::ComputedAnimationValues
 BackForwardTransitionAnimator::ComputeAnimationValues(
     const PhysicsModel::Result& result) {
   ComputedAnimationValues values;
-  values.live_page_offset = result.foreground_offset_physical;
-  values.screenshot_offset = result.background_offset_physical;
+
+  values.progress =
+      std::abs(result.foreground_offset_physical) / GetViewportWidthPx();
+
+  if (nav_direction_ == NavigationDirection::kForward) {
+    // The physics model assumes the background comes in from slightly outside
+    // the viewport. But in forward navigations the live page is in the
+    // background, it starts fully in the viewport, and moves slightly
+    // offscreen. So shift the live page so that it starts in the viewport.
+    float start_from_origin =
+        -PhysicsModel::kScreenshotInitialPositionRatio * GetViewportWidthPx();
+    values.live_page_offset =
+        result.background_offset_physical + start_from_origin;
+    // The physics model assumes the foreground starts fully in the viewport and
+    // slides out. In a forward navigation the foreground is the screenshot and
+    // comes from fully out of the viewport so offset it by the viewport width
+    // to make it animate from fully out to fully in.
+    values.screenshot_offset =
+        result.foreground_offset_physical - GetViewportWidthPx();
+  } else {
+    values.live_page_offset = result.foreground_offset_physical;
+    values.screenshot_offset = result.background_offset_physical;
+  }
 
   // Swipes from the right edge will travel in the opposite direction.
   if (initiating_edge_ == SwipeEdge::RIGHT) {
@@ -1273,14 +1279,6 @@ BackForwardTransitionAnimator::ComputeAnimationValues(
     values.screenshot_offset *= -1;
   }
 
-  // TODO(b/331778101) for forward navigations, the background and foreground
-  // should be swapped. Also, progress computation assumes the current page is
-  // moving but this will be flipped for forward navigations.
-  values.progress = std::abs(values.live_page_offset) /
-                    animation_manager_->web_contents_view_android()
-                        ->GetNativeView()
-                        ->GetPhysicalBackingSize()
-                        .width();
   CHECK_GE(values.progress, 0.f);
   CHECK_LE(values.progress, 1.f);
 
@@ -1359,13 +1357,9 @@ void BackForwardTransitionAnimator::CloneOldSurfaceLayer(
   old_surface_clone_->SetBounds(old_surface_layer->bounds());
   old_surface_clone_->SetTransform(old_surface_layer->transform());
   old_surface_clone_->SetIsDrawable(true);
-  auto* parent_for_web_widgets = animation_manager_->web_contents_view_android()
-                                     ->parent_for_web_page_widgets();
-  CHECK_EQ(animation_manager_->web_contents_view_android()
-               ->GetNativeView()
-               ->GetLayer(),
-           parent_for_web_widgets->parent());
-  parent_for_web_widgets->parent()->AddChild(old_surface_clone_);
+
+  // Inserts the clone layer into the layer tree.
+  InsertLayersInOrder();
 }
 
 // TODO(crbug.com/350750205): Refactor this function and
@@ -1432,6 +1426,92 @@ void BackForwardTransitionAnimator::StartInputSuppression() {
                                   ->web_contents()
                                   ->IgnoreInputEvents(
                                       /*audit_callback=*/std::nullopt));
+}
+
+void BackForwardTransitionAnimator::InsertLayersInOrder() {
+  // The layer order when navigating backwards (successive lines decrease in
+  // z-order):
+  //
+  //   WebContentsViewAndroid::view_->GetLayer()
+  //      |- old_surface_clone_ (only set during the invoke animation).
+  //      |- parent_for_web_page_widgets_ (RWHVAndroid, Overscroll etc).
+  //      |-   progress_bar_ (child of screenshot_layer_,
+  //                          only during invoke animation)
+  //      |-   screenshot_scrim_ (child of screenshot_layer_)
+  //      |- screenshot_layer_
+  //
+  // And when navigating forwards:
+  //
+  //   WebContentsViewAndroid::view_->GetLayer()
+  //      |-   progress_bar_
+  //      |-   screenshot_scrim_
+  //      |- screenshot_layer_
+  //      |- old_surface_clone_
+  //      |- parent_for_web_page_widgets_
+  //
+  // Finally, in both cases -- when the navigation is about to complete -- the
+  // screenshot layer is placed over top of the new live page so that the cross
+  // fade animation can smoothly transition to the live page:
+  //
+  //   WebContentsViewAndroid::view_->GetLayer()
+  //      |-   screenshot_scrim_
+  //      |- screenshot_layer_
+  //      |- parent_for_web_page_widgets_
+
+  // This class' layers are removed and reinserted relative to the
+  // parent_for_web_page_widgets layer to ensure the ordering is always
+  // up-to-date after this call. Remove both layers first, before any
+  // re-inserting, to avoid having to bookkeep the changing
+  // web_page_widgets_index.
+  CHECK(screenshot_layer_);
+  if (screenshot_layer_->parent()) {
+    screenshot_layer_->RemoveFromParent();
+  }
+  if (old_surface_clone_) {
+    if (old_surface_clone_->parent()) {
+      old_surface_clone_->RemoveFromParent();
+    }
+  }
+
+  cc::slim::Layer* parent_layer =
+      animation_manager_->web_contents_view_android()
+          ->parent_for_web_page_widgets()
+          ->parent();
+  const std::vector<scoped_refptr<cc::slim::Layer>> layers =
+      parent_layer->children();
+  auto itr =
+      base::ranges::find(layers, animation_manager_->web_contents_view_android()
+                                     ->parent_for_web_page_widgets());
+  CHECK(itr != layers.end());
+  std::ptrdiff_t web_page_widgets_index = std::distance(layers.begin(), itr);
+
+  // The screenshot layer is shown below the live web page when navigating
+  // backwards and above it when navigating forwards. The screenshot is always
+  // on top when cross-fading.
+  bool screenshot_on_top = nav_direction_ == NavigationDirection::kForward ||
+                           state_ == State::kDisplayingCrossFadeAnimation;
+  std::ptrdiff_t screenshot_index =
+      screenshot_on_top ? web_page_widgets_index + 1 : web_page_widgets_index;
+  parent_layer->InsertChild(screenshot_layer_.get(), screenshot_index);
+
+  if (!screenshot_on_top) {
+    ++web_page_widgets_index;
+  }
+
+  // The old page clone is used only when the old live page is swapped out so
+  // may be null at other times.
+  if (old_surface_clone_) {
+    // The clone is no longer needed when cross-fading - the screenshot layer
+    // must always be on top at this time.
+    CHECK_NE(state_, State::kDisplayingCrossFadeAnimation);
+
+    // Since the clone represents the old live page it must maintain the
+    // ordering relative to the screenshot noted above but must also be shown
+    // above the live web page layer. Since the web page widget is already
+    // ordered relative to the screenshot, order it directly on top of it.
+    parent_layer->InsertChild(old_surface_clone_.get(),
+                              web_page_widgets_index + 1);
+  }
 }
 
 }  // namespace content

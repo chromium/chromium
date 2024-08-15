@@ -100,10 +100,14 @@ static constexpr float kFloatTolerance = 0.001f;
 // produce one frame: the frame for the final position.
 constexpr base::TimeDelta kLongDurationBetweenFrames = base::Seconds(99);
 
-enum class DSFMode {
-  kOne,
-  kFractional,
-};
+// Test parameter to run tests either with default device-scale-factor==1 or a
+// fractional (1.333) device scale factor.
+enum class DSFMode { kOne, kFractional };
+
+// Test parameter to run tests with UI laid out both left to right and right
+// to left, the latter forces the back-edge to be flipped (i.e. right edge
+// uses an animated gesture).
+enum class UILayoutDirection { kLTR, kRTL };
 
 static constexpr gfx::Transform kIdentityTransform;
 
@@ -562,7 +566,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
 // edge also force the UI to use an RTL direction.
 class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
     : public BackForwardTransitionAnimationManagerBrowserTest,
-      public WithParamInterface<std::tuple<SwipeEdge, DSFMode>> {
+      public WithParamInterface<std::tuple<UILayoutDirection, DSFMode>> {
  public:
   BackForwardTransitionAnimationManagerBothEdgeBrowserTest() {
     scoped_feature_list_.Reset();
@@ -577,7 +581,7 @@ class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
       default;
 
   void SetUp() override {
-    if (GetSwipeEdge() == SwipeEdge::RIGHT) {
+    if (GetUILayoutDirection() == UILayoutDirection::kRTL) {
       l10n_util::SetRtlForTesting(true);
     }
 
@@ -588,8 +592,26 @@ class BackForwardTransitionAnimationManagerBothEdgeBrowserTest
     }
   }
 
-  SwipeEdge GetSwipeEdge() const { return std::get<0>(GetParam()); }
+  UILayoutDirection GetUILayoutDirection() const {
+    return std::get<0>(GetParam());
+  }
   DSFMode GetDSFMode() const { return std::get<1>(GetParam()); }
+
+  SwipeEdge BackEdge() const {
+    if (GetUILayoutDirection() == UILayoutDirection::kRTL) {
+      return SwipeEdge::RIGHT;
+    }
+
+    return SwipeEdge::LEFT;
+  }
+
+  SwipeEdge ForwardEdge() const {
+    if (GetUILayoutDirection() == UILayoutDirection::kRTL) {
+      return SwipeEdge::LEFT;
+    }
+
+    return SwipeEdge::RIGHT;
+  }
 };
 
 // Simulates the gesture sequence: start, 30%, 60%, 90%, 60%, 30%, 60%, 90% and
@@ -599,8 +621,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   ASSERT_FALSE(GetAnimator());
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
   ASSERT_TRUE(GetAnimator());
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
@@ -639,8 +661,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   ASSERT_FALSE(GetAnimator());
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
   ASSERT_TRUE(GetAnimator());
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
@@ -674,8 +696,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   ASSERT_FALSE(GetAnimator());
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
 
   // The gesture should have created and attached a screenshot layer with a
   // child scrim layer, under the live page.
@@ -684,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   // In a back navigation, the screenshot starts off-screen in the direction the
   // swipe is coming from and moves to the viewport origin. Therefore we expect
   // it to be at `(1-progress) * initial_position` at all times.
-  float initial_position = GetSwipeEdge() == SwipeEdge::LEFT
+  float initial_position = BackEdge() == SwipeEdge::LEFT
                                ? PhysicsModel::kScreenshotInitialPositionRatio
                                : -PhysicsModel::kScreenshotInitialPositionRatio;
 
@@ -728,6 +750,80 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
                        GetScreenshotLayer()->transform());
 }
 
+// Tests the translation of the screenshot and the fade of the scrim as the
+// gesture is progressed in both directions in a forward navigation.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
+                       TestScreenshotTransformScrimColorForwardNavigation) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  // The test starts off with the session history: [red&, green*]. Add an entry
+  // and navigate back so we have entries in both directions:
+  // [red&, green*, blue&].
+  {
+    ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+    WaitForCopyableViewInWebContents(web_contents());
+
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+  }
+
+  ASSERT_FALSE(GetAnimator());
+  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          ForwardEdge(), NavType::kForward);
+
+  // In a forward navigation, the screenshot starts off-screen at the viewport
+  // edge where the gesture is initiated. It in the direction of the swipe over
+  // a distance defined by the commit pending ratio.
+  float start_position = ForwardEdge() == SwipeEdge::RIGHT ? 1 : -1;
+  float total_distance = ForwardEdge() == SwipeEdge::RIGHT
+                             ? -PhysicsModel::kTargetCommitPendingRatio
+                             : PhysicsModel::kTargetCommitPendingRatio;
+
+  EXPECT_X_TRANSLATION(0, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.3,
+                       GetScreenshotLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6,
+                       GetScreenshotLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.9,
+                       GetScreenshotLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6,
+                       GetScreenshotLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.3,
+                       GetScreenshotLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.6,
+                       GetScreenshotLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
+  EXPECT_X_TRANSLATION(start_position + total_distance * 0.9,
+                       GetScreenshotLayer()->transform());
+}
+
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
                        DarkModeScrim) {
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
@@ -743,8 +839,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   const SkColor4f kDMScrimColorAt60 = {0, 0, 0, kScrimColorAt60.fA * 2};
   const SkColor4f kDMScrimColorAt90 = {0, 0, 0, kScrimColorAt90.fA * 2};
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
   ASSERT_TRUE(GetScrimLayer());
   EXPECT_TRUE(
       ColorsNear(kDMScrimColorAtStart, GetScrimLayer()->background_color()));
@@ -777,13 +873,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   ASSERT_FALSE(GetAnimator());
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
 
   // In a back navigation, the live page starts off at the viewport origin and
   // moves in the direction of the swipe to a maximum defined by the "commit
   // pending ratio" of the viewport width.
-  float final_position = GetSwipeEdge() == SwipeEdge::LEFT
+  float final_position = BackEdge() == SwipeEdge::LEFT
                              ? PhysicsModel::kTargetCommitPendingRatio
                              : -PhysicsModel::kTargetCommitPendingRatio;
 
@@ -811,14 +907,148 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
 }
 
+// Tests the translation of the live page as the gesture is progressed in both
+// directions in a back navigation.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
+                       TestLivePageTransformForwardNavigation) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  // The test starts off with the session history: [red&, green*]. Add an entry
+  // and navigate back so we have entries in both directions:
+  // [red&, green*, blue&].
+  {
+    ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+    WaitForCopyableViewInWebContents(web_contents());
+
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+  }
+
+  ASSERT_FALSE(GetAnimator());
+  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          ForwardEdge(), NavType::kForward);
+
+  // In a forward navigation, the live page starts off at the viewport origin
+  // and moves in the direction of the swipe the same amount as the screenshot
+  // in a back navigation.
+  float final_position = ForwardEdge() == SwipeEdge::RIGHT
+                             ? PhysicsModel::kScreenshotInitialPositionRatio
+                             : -PhysicsModel::kScreenshotInitialPositionRatio;
+
+  EXPECT_X_TRANSLATION(0, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_X_TRANSLATION(final_position * 0.3, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+  EXPECT_X_TRANSLATION(final_position * 0.3, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  EXPECT_X_TRANSLATION(final_position * 0.6, GetLivePageLayer()->transform());
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+  EXPECT_X_TRANSLATION(final_position * 0.9, GetLivePageLayer()->transform());
+}
+
+// Tests a forward navigation creates the expected layers and puts them in the
+// correct z-order.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
+                       TestLayerOrderForwardNavigation) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  // The test starts off with the session history: [red&, green*]. Add an entry
+  // and navigate back so we have entries in both directions:
+  // [red&, green*, blue&].
+  {
+    ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+    WaitForCopyableViewInWebContents(web_contents());
+
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+  }
+
+  ASSERT_FALSE(GetAnimator());
+  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          ForwardEdge(), NavType::kForward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
+
+  // A screenshot layer with a scrim should have been added. In a forward
+  // navigation, the screenshot must appear on top of the live page.
+  ASSERT_EQ("[LivePage,Screenshot[Scrim]]", ChildrenInOrder(*GetViewLayer()));
+
+  // Prevent completing the invoke animation but trigger and finish the
+  // navigation. This simulates the case where the new renderer commits while
+  // the invoke animation is playing.
+  {
+    GetAnimator()->PauseAnimationAtDisplayingInvokeAnimation();
+    TestNavigationManager forward_to_blue(web_contents(), BlueURL());
+    GetAnimationManager()->OnGestureInvoked();
+    ASSERT_TRUE(forward_to_blue.WaitForNavigationFinished());
+    EXPECT_STATE_EQ(kDisplayingInvokeAnimation, GetAnimator()->state());
+
+    // A clone of the old page should be inserted under the screenshot but
+    // above the current live page.
+    ASSERT_EQ("[LivePage,OldSurfaceClone,Screenshot[Scrim]]",
+              ChildrenInOrder(*GetViewLayer()));
+  }
+
+  // Make sure the new renderer has submitted a new frame and let the invoke
+  // animation finish.
+  {
+    TestFuture<void> did_invoke;
+    GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
+    GetAnimator()->UnpauseAnimation();
+    ASSERT_TRUE(did_invoke.Wait());
+
+    // A clone of the old page should be removed. The screenshot should remain
+    // on top of the live page.
+    ASSERT_EQ("[LivePage,Screenshot[Scrim]]", ChildrenInOrder(*GetViewLayer()));
+  }
+
+  // Let the transition play to completion. The screenshot layers should all be
+  // removed and the animator complete successfully.
+  {
+    TestFuture<AnimatorState> destroyed;
+    GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+    ASSERT_TRUE(destroyed.Wait());
+    EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+
+    ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+  }
+}
+
 // Verify transforms of screenshot and live layers at the end of a cancel
 // animation.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
                        TestLayerTransformsAfterCancelBack) {
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
+
   // Only a screenshot layer with a scrim should have been added, under the live
   // page.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
@@ -847,9 +1077,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   ASSERT_TRUE(did_cancel.Wait());
 
   float expected_screenshot_ratio =
-      GetSwipeEdge() == SwipeEdge::RIGHT
-          ? -PhysicsModel::kScreenshotInitialPositionRatio
-          : PhysicsModel::kScreenshotInitialPositionRatio;
+      BackEdge() == SwipeEdge::LEFT
+          ? PhysicsModel::kScreenshotInitialPositionRatio
+          : -PhysicsModel::kScreenshotInitialPositionRatio;
   EXPECT_X_TRANSLATION(expected_screenshot_ratio, actual_screenshot_transform);
   EXPECT_X_TRANSLATION(0, actual_live_transform);
   EXPECT_EQ("[Screenshot[Scrim],LivePage]", actual_child_layers);
@@ -870,8 +1100,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
 
   // A screenshot layer should have been added, with the live page on top.
   EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
@@ -890,7 +1120,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   // The live page should be fully offscreen in the direction of the swipe. The
   // screenshot should be at the origin.
-  float live_page_offset = GetSwipeEdge() == SwipeEdge::LEFT ? 1.f : -1.f;
+  float live_page_offset = BackEdge() == SwipeEdge::LEFT ? 1.f : -1.f;
   EXPECT_X_TRANSLATION(live_page_offset, GetLivePageLayer()->transform());
   EXPECT_X_TRANSLATION(0, GetScreenshotLayer()->transform());
 
@@ -909,8 +1139,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          GetSwipeEdge(), NavType::kBackward);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
+                                          NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
 
   TestFuture<void> did_cross_fade;
@@ -996,14 +1226,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
-    Combine(Values(SwipeEdge::LEFT, SwipeEdge::RIGHT),
+    Combine(Values(UILayoutDirection::kLTR, UILayoutDirection::kRTL),
             Values(DSFMode::kOne, DSFMode::kFractional)),
     [](const TestParamInfo<
         BackForwardTransitionAnimationManagerBothEdgeBrowserTest::ParamType>&
            info) {
       return base::StrCat(
-          {std::get<0>(info.param) == SwipeEdge::LEFT ? "LeftEdge"
-                                                      : "RightEdge",
+          {std::get<0>(info.param) == UILayoutDirection::kLTR ? "LTR" : "RTL",
            std::get<1>(info.param) == DSFMode::kOne ? "" : "FractionalDSF"});
     });
 

@@ -317,6 +317,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   void StartInputSuppression();
 
+  void InsertLayersInOrder();
+
   const BackForwardTransitionAnimationManager::NavigationDirection
       nav_direction_;
 

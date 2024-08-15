@@ -4,6 +4,7 @@
 
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/gfx/animation/animation.h"
 
@@ -31,10 +32,20 @@ bool BackForwardTransitionAnimationManager::ShouldAnimateNavigationTransition(
           ? ui::BackGestureEventSwipeEdge::RIGHT
           : ui::BackGestureEventSwipeEdge::LEFT;
 
-  // Currently we only have approved UX for the history back navigation on the
-  // back edge (left in LTR), in both gesture mode and 3-button mode.
-  if (navigation_direction != NavigationDirection::kBackward ||
-      edge != semantic_back_edge) {
+  bool is_back = navigation_direction == NavigationDirection::kBackward;
+  bool from_semantic_back_edge = edge == semantic_back_edge;
+
+  // If navigating forward, the swipe must come from the semantic forward
+  // direction (back can come from either direction in gestural navigation
+  // mode).
+  CHECK(is_back || !from_semantic_back_edge);
+
+  // We allow back animations from the back edge and forward animations from the
+  // forward edge but disallow animations from an opposing edge (e.g. in three
+  // button mode where both edges navigate back, in a left-to-right UI we don't
+  // animate the back navigation that occurs from the right edge because
+  // "semantically" that edge is forward).
+  if (is_back != from_semantic_back_edge) {
     return false;
   }
 

@@ -145,20 +145,6 @@ class WebContentsViewAndroid : public WebContentsView,
     device_orientation_ = orientation;
   }
 
-  // Insert `screenshot_layer` into the layer tree, as a *direct* sibling of
-  // `parent_for_web_page_widgets_`.
-  //
-  // `screenshot_layer_on_top` controls the position of `screenshot_layer`:
-  // `true` means the screenshot will be placed right above
-  // `parent_for_web_page_widgets_`; `false` means right below it.
-  //
-  // TODO(crbug.com/40283503): The boolean might not be enough if
-  // `parent_for_web_page_widgets_` has more siblings, and we need finer control
-  // of the position.
-  void AddScreenshotLayerForNavigationTransitions(
-      scoped_refptr<cc::slim::Layer> screenshot_layer,
-      bool screenshot_layer_on_top);
-
   // See the block comments above `parent_for_web_page_widgets_` for the
   // hierarchies of layers and native views. The callers can operate upon all
   // the web widgets and the web page via this getter.
