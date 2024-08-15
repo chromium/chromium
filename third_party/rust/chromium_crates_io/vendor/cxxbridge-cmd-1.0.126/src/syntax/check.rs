@@ -555,9 +555,8 @@ fn check_mut_return_restriction(cx: &mut Check, efn: &ExternFn) {
         if receiver.mutable {
             return;
         }
-        let resolve = match cx.types.try_resolve(&receiver.ty) {
-            Some(resolve) => resolve,
-            None => return,
+        let Some(resolve) = cx.types.try_resolve(&receiver.ty) else {
+            return;
         };
         if !resolve.generics.lifetimes.is_empty() {
             return;

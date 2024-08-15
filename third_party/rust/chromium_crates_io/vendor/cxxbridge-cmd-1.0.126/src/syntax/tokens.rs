@@ -13,7 +13,7 @@ impl ToTokens for Type {
             Type::Ident(ident) => {
                 if ident.rust == Char {
                     let span = ident.rust.span();
-                    tokens.extend(quote_spanned!(span=> ::cxx::private::));
+                    tokens.extend(quote_spanned!(span=> ::cxx::core::ffi::));
                 } else if ident.rust == CxxString {
                     let span = ident.rust.span();
                     tokens.extend(quote_spanned!(span=> ::cxx::));

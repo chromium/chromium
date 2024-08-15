@@ -21,9 +21,8 @@ impl Errors {
 
     pub(crate) fn propagate(&mut self) -> Result<()> {
         let mut iter = self.errors.drain(..);
-        let mut all_errors = match iter.next() {
-            Some(err) => err,
-            None => return Ok(()),
+        let Some(mut all_errors) = iter.next() else {
+            return Ok(());
         };
         for err in iter {
             all_errors.combine(err);

@@ -171,9 +171,8 @@ impl<'a> Types<'a> {
         }
 
         for ty in &all {
-            let impl_key = match ty.impl_key() {
-                Some(impl_key) => impl_key,
-                None => continue,
+            let Some(impl_key) = ty.impl_key() else {
+                continue;
             };
             let implicit_impl = match impl_key {
                 ImplKey::RustBox(ident)

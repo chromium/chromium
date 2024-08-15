@@ -57,6 +57,7 @@ chrome/browser/lacros 2 1
 chrome/browser/mac 7 1
 chrome/browser/metrics 4 2
 chrome/browser/password_manager 1 1
+chrome/browser/predictors 1 1
 chrome/browser/prefs 1 1
 chrome/browser/privacy 1 1
 chrome/browser/resources/chromeos/network_ui/third_party 1 1
@@ -212,7 +213,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 4 2
+infra 5 3
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -304,6 +305,7 @@ third_party/afl/src/docs 11 2
 third_party/afl/src/llvm_mode 1 1
 third_party/afl/src/qemu_mode 1 1
 third_party/android_build_tools/compose_compiler 1 1
+third_party/android_build_tools/gradle_wrapper 1 1
 third_party/android_build_tools/json 1 1
 third_party/android_deps_autorolled 1 1
 third_party/android_deps/buildSrc/src/main/groovy 36 2

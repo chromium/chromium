@@ -655,6 +655,17 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.123 -> 1.0.124"
 notes = "No changes except to dependencies"
 
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.124 -> 1.0.126"
+notes = """
+Only minor changes:
+
+* Using `let Some(foo) = ... else { ... }` pattern in a few places.
+* Exposing an extra constructor for `rust::Slice`.
+"""
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
