@@ -423,6 +423,14 @@ bool HttpStreamPool::Job::IsStalledByPoolLimit() {
   }
 }
 
+void HttpStreamPool::Job::OnRequiredHttp11() {
+  if (spdy_session_) {
+    spdy_session_.reset();
+    is_failing_ = true;
+    error_to_notify_ = ERR_HTTP_1_1_REQUIRED;
+  }
+}
+
 void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
   CHECK(!quic_task_result_.has_value());
   quic_task_result_ = rv;
@@ -987,7 +995,9 @@ void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
 }
 
 void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
+  // TODO(crbug.com/346835898): Handle `spdy_session_` becaming unavailable.
   CHECK(spdy_session_);
+  CHECK(spdy_session_->IsAvailable());
   CHECK(!is_canceling_requests_);
   CHECK(!is_failing_);
 

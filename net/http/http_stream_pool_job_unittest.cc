@@ -1651,6 +1651,147 @@ TEST_F(HttpStreamPoolJobTest, SpdyCreateSessionFail) {
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_HTTP2_PROTOCOL_ERROR)));
 }
 
+TEST_F(HttpStreamPoolJobTest, RequireHttp11AfterSpdySessionCreated) {
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto h2_data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(h2_data.get());
+  auto h2_ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  h2_ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(h2_ssl.get());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination).RequestStream(pool());
+  HttpStreamKey stream_key = requester1.GetStreamKey();
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  // Disable HTTP/2.
+  http_server_properties()->SetHTTP11Required(
+      stream_key.destination(), stream_key.network_anonymization_key());
+  // At this point, the SPDY session is still available because it becomes
+  // unavailable after the next request is made.
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  // Request a stream again. The second request fails because the first request
+  // is still alive and the corresponding job is still alive. The existing SPDY
+  // session should become unavailable.
+  StreamRequester requester2;
+  requester2.set_destination(kDefaultDestination).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester2.result(), Optional(IsError(ERR_HTTP_1_1_REQUIRED)));
+  ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+}
+
+TEST_F(HttpStreamPoolJobTest,
+       RequireHttp11AfterSpdySessionCreatedRequestDestroyed) {
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto h2_data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(h2_data.get());
+  auto h2_ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  h2_ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(h2_ssl.get());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination).RequestStream(pool());
+  HttpStreamKey stream_key = requester1.GetStreamKey();
+  RunUntilIdle();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  // Disable HTTP/2.
+  http_server_properties()->SetHTTP11Required(
+      stream_key.destination(), stream_key.network_anonymization_key());
+  // At this point, the SPDY session is still available because it becomes
+  // unavailable after the next request is made.
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  // Destroy the first request.
+  requester1.CancelRequest();
+
+  // Request a stream again. The second request should succeed using HTTP/1.1.
+  // The existing SPDY session should become unavailable.
+  auto h1_data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(h1_data.get());
+  SSLSocketDataProvider h1_ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&h1_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester2;
+  requester2.set_destination(kDefaultDestination).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+}
+
+TEST_F(HttpStreamPoolJobTest, PreconnectRequireHttp11AfterSpdySessionCreated) {
+  const MockWrite writes[] = {MockWrite(ASYNC, OK, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto h2_data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(h2_data.get());
+  auto h2_ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  h2_ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(h2_ssl.get());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  Preconnector preconnector1(kDefaultDestination);
+  HttpStreamKey stream_key = preconnector1.GetStreamKey();
+  preconnector1.Preconnect(pool());
+  RunUntilIdle();
+  EXPECT_THAT(preconnector1.result(), Optional(IsOk()));
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  // Disable HTTP/2.
+  http_server_properties()->SetHTTP11Required(
+      stream_key.destination(), stream_key.network_anonymization_key());
+
+  // Preconnect again. The existing SPDY session should become unavailable.
+
+  auto h1_data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(h1_data.get());
+  SSLSocketDataProvider h1_ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&h1_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  Preconnector preconnector2(kDefaultDestination);
+  int rv = preconnector2.Preconnect(pool());
+  EXPECT_THAT(rv, IsError(ERR_HTTP_1_1_REQUIRED));
+  RunUntilIdle();
+  ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+}
+
 TEST_F(HttpStreamPoolJobTest, SpdyReachedPoolLimit) {
   constexpr size_t kMaxPerGroup = 1;
   constexpr size_t kMaxPerPool = 2;

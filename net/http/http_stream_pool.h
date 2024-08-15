@@ -188,6 +188,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
 
+  Group* GetGroup(const HttpStreamKey& stream_key);
+
   // Searches for a group that has the highest priority pending request and
   // hasn't reached reach the `max_stream_socket_per_group()` limit. Returns
   // nullptr if no such group is found.
@@ -196,6 +198,12 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Closes one idle stream from an arbitrary group. Returns true if it closed a
   // stream.
   bool CloseOneIdleStreamSocket();
+
+  base::WeakPtr<SpdySession> FindAvailableSpdySession(
+      const HttpStreamKey& stream_key,
+      const SpdySessionKey& spdy_session_key,
+      bool enable_ip_based_pooling,
+      const NetLogWithSource& net_log = NetLogWithSource());
 
   std::unique_ptr<HttpStreamRequest> CreatePooledStreamRequest(
       HttpStreamRequest::Delegate* delegate,

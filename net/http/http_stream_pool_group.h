@@ -141,6 +141,10 @@ class HttpStreamPool::Group {
   // Cancels all on-going requests.
   void CancelRequests(int error);
 
+  // Called when the server required HTTP/1.1. Clears the current SPDY session
+  // if exists.
+  void OnRequiredHttp11();
+
   // Called when the in-flight job has completed.
   void OnJobComplete();
 

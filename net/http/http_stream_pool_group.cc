@@ -271,6 +271,12 @@ void HttpStreamPool::Group::CancelRequests(int error) {
   }
 }
 
+void HttpStreamPool::Group::OnRequiredHttp11() {
+  if (in_flight_job_) {
+    in_flight_job_->OnRequiredHttp11();
+  }
+}
+
 void HttpStreamPool::Group::OnJobComplete() {
   CHECK(in_flight_job_);
   in_flight_job_.reset();

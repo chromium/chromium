@@ -133,6 +133,10 @@ class HttpStreamPool::Job
   // Returns true when `this` is blocked by the pool's stream limit.
   bool IsStalledByPoolLimit();
 
+  // Called when the server required HTTP/1.1. Clears the current SPDY session
+  // if exists. Subsequent requests will fail while `this` is alive.
+  void OnRequiredHttp11();
+
   // Called when the QuicTask owned by `this` is completed.
   void OnQuicTaskComplete(int rv);
 

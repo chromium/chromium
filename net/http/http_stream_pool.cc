@@ -157,10 +157,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
   }
 
   SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
-  base::WeakPtr<SpdySession> spdy_session =
-      http_network_session()->spdy_session_pool()->FindAvailableSession(
-          spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
-          net_log);
+  base::WeakPtr<SpdySession> spdy_session = FindAvailableSpdySession(
+      stream_key, spdy_session_key, enable_ip_based_pooling, net_log);
   if (spdy_session) {
     auto http_stream = std::make_unique<SpdyHttpStream>(
         spdy_session, net_log.source(),
@@ -187,10 +185,19 @@ int HttpStreamPool::Preconnect(const HttpStreamKey& stream_key,
                                 /*enable_alternative_services=*/true)) {
     return OK;
   }
+
   SpdySessionKey spdy_session_key = stream_key.ToSpdySessionKey();
-  if (http_network_session()->spdy_session_pool()->HasAvailableSession(
-          spdy_session_key, /*is_websocket=*/false)) {
+  bool had_spdy_session =
+      http_network_session()->spdy_session_pool()->HasAvailableSession(
+          spdy_session_key, /*is_websocket=*/false);
+  if (FindAvailableSpdySession(stream_key, spdy_session_key,
+                               /*enable_ip_based_pooling=*/true)) {
     return OK;
+  }
+  if (had_spdy_session) {
+    // We had a SPDY session but the server required HTTP/1.1. The session is
+    // going away right now.
+    return ERR_HTTP_1_1_REQUIRED;
   }
 
   return GetOrCreateGroup(stream_key)
@@ -334,6 +341,12 @@ HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
   return *it->second;
 }
 
+HttpStreamPool::Group* HttpStreamPool::GetGroup(
+    const HttpStreamKey& stream_key) {
+  auto it = groups_.find(stream_key);
+  return it == groups_.end() ? nullptr : it->second.get();
+}
+
 HttpStreamPool::Group* HttpStreamPool::FindHighestStalledGroup() {
   Group* highest_stalled_group = nullptr;
   std::optional<RequestPriority> highest_priority;
@@ -364,6 +377,28 @@ bool HttpStreamPool::CloseOneIdleStreamSocket() {
     }
   }
   NOTREACHED();
+}
+
+base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
+    const HttpStreamKey& stream_key,
+    const SpdySessionKey& spdy_session_key,
+    bool enable_ip_based_pooling,
+    const NetLogWithSource& net_log) {
+  base::WeakPtr<SpdySession> spdy_session =
+      http_network_session()->spdy_session_pool()->FindAvailableSession(
+          spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,
+          net_log);
+  if (spdy_session) {
+    if (RequiresHTTP11(stream_key)) {
+      spdy_session->MakeUnavailable();
+      Group* group = GetGroup(stream_key);
+      if (group) {
+        group->OnRequiredHttp11();
+      }
+      return nullptr;
+    }
+  }
+  return spdy_session;
 }
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::CreatePooledStreamRequest(
