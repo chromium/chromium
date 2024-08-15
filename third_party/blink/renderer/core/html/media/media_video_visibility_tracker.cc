@@ -696,8 +696,6 @@ void MediaVideoVisibilityTracker::ComputeAreaOccludedByViewport(
 
 void MediaVideoVisibilityTracker::MaybeComputeVisibility(
     ShouldReportVisibility should_report_visibility) {
-  occlusion_state_ = {};
-
   if (!tracker_attached_to_document_ ||
       !tracker_attached_to_document_->GetFrame()->View() ||
       !VideoElement().GetLayoutObject()) {
@@ -714,6 +712,9 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
     // If we have a pending visibility request, run it now with the cached
     // `meets_visibility_threshold_` value.
     if (request_visibility_callback_) {
+      RecordVideoOcclusionState(VideoElement(), occlusion_state_,
+                                meets_visibility_threshold_,
+                                visibility_threshold_);
       std::move(request_visibility_callback_).Run(meets_visibility_threshold_);
     }
     return;
@@ -722,6 +723,7 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration");
 
+  occlusion_state_ = {};
   ComputeAreaOccludedByViewport(
       *tracker_attached_to_document_->GetFrame()->View());
 
