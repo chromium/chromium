@@ -5067,6 +5067,9 @@ interface HTMLSelectListElement : HTMLElement
     setter name
     setter required
     setter value
+interface HTMLSelectedOptionElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLSlotElement : HTMLElement
     attribute @@toStringTag
     getter name

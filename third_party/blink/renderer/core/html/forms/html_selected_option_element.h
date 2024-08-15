@@ -12,6 +12,8 @@ namespace blink {
 class HTMLOptionElement;
 
 class HTMLSelectedOptionElement : public HTMLElement {
+  DEFINE_WRAPPERTYPEINFO();
+
  public:
   explicit HTMLSelectedOptionElement(Document&);
 

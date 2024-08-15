@@ -256,8 +256,8 @@ class CORE_EXPORT HTMLSelectElement final
   SelectAutofillPreviewElement* GetAutofillPreviewElement() const;
 
   // Getter and setter for the selectedoptionelement attribute
-  Element* selectedOptionElement() const;
-  void setSelectedOptionElement(Element*);
+  HTMLSelectedOptionElement* selectedOptionElement() const;
+  void setSelectedOptionElement(HTMLSelectedOptionElement*);
 
   void DefaultEventHandler(Event&) override;
   bool SupportsFocus(UpdateBehavior update_behavior) const override;

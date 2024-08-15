@@ -1774,18 +1774,16 @@ void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
   HTMLDivElement::Trace(visitor);
 }
 
-Element* HTMLSelectElement::selectedOptionElement() const {
+HTMLSelectedOptionElement* HTMLSelectElement::selectedOptionElement() const {
   CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
   return DynamicTo<HTMLSelectedOptionElement>(
       GetElementAttribute(html_names::kSelectedoptionelementAttr));
 }
 
-void HTMLSelectElement::setSelectedOptionElement(Element* element) {
+void HTMLSelectElement::setSelectedOptionElement(
+    HTMLSelectedOptionElement* new_selectedoption) {
   CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-  HTMLSelectedOptionElement* old_selectedoption =
-      DynamicTo<HTMLSelectedOptionElement>(selectedOptionElement());
-  HTMLSelectedOptionElement* new_selectedoption =
-      DynamicTo<HTMLSelectedOptionElement>(element);
+  auto* old_selectedoption = selectedOptionElement();
   if (new_selectedoption) {
     SetElementAttribute(html_names::kSelectedoptionelementAttr,
                         new_selectedoption);
@@ -1807,8 +1805,7 @@ HeapHashSet<Member<HTMLSelectedOptionElement>>
 HTMLSelectElement::TargetSelectedOptions() const {
   HeapHashSet<Member<HTMLSelectedOptionElement>> selectedoptions =
       descendant_selectedoptions_;
-  if (auto* attr_selectedoption =
-          DynamicTo<HTMLSelectedOptionElement>(selectedOptionElement())) {
+  if (auto* attr_selectedoption = selectedOptionElement()) {
     selectedoptions.insert(attr_selectedoption);
   }
   return selectedoptions;
