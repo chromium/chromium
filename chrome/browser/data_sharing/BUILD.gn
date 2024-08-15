@@ -155,6 +155,26 @@ if (is_android) {
     }
   }
 
+  android_library("delegate_public_impl_java") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingSDKDelegateImpl.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUIDelegateImpl.java",
+    ]
+    deps = [
+      ":delegate_java",
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+  }
+
   robolectric_library("junit") {
     sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManagerUnitTest.java" ]
     deps = [
