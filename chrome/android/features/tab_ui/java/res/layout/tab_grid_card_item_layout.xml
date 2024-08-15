@@ -66,6 +66,8 @@ found in the LICENSE file.
                 app:cornerRadiusTopEnd="@dimen/tab_grid_card_thumbnail_corner_radius_top"
                 app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
                 app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
+
+            <!-- Legacy layout for price cards. To be removed in favor of tab_card_label. -->
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box_outer"
                 android:layout_below="@id/tab_title"
@@ -74,6 +76,16 @@ found in the LICENSE file.
                 android:layout_height="56dp"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"/>
+
+            <!-- New layout for labels including activity updates and price cards. -->
+            <ViewStub
+                android:id="@+id/tab_card_label_stub"
+                android:inflatedId="@+id/tab_card_label"
+                android:layout="@layout/tab_card_label_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/tab_card_label_height"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="11dp"/>
         </RelativeLayout>
 
         <!--
