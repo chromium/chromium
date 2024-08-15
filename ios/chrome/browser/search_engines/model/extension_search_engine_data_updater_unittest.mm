@@ -96,7 +96,8 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddGoogleSearchEngine) {
       std::string_view(), std::string_view(), std::string_view(),
       std::string_view(), std::string_view(), std::string_view(),
       std::string_view(), {}, std::string_view(), std::string_view(),
-      std::u16string_view(), base::Value::List(), false, false, 0);
+      std::u16string_view(), base::Value::List(), false, false, 0,
+      base::span<TemplateURLData::RegulatoryExtension>());
   TemplateURL google_template_url(google_template_url_data);
 
   template_url_service()->SetUserSelectedDefaultSearchProvider(

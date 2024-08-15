@@ -366,8 +366,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringPiece(engine.encoding), image_search_branding_label,
       alternate_urls,
       ToStringPiece(engine.preconnect_to_search_url) == "ALLOWED",
-      ToStringPiece(engine.prefetch_likely_navigations) == "ALLOWED",
-      engine.id);
+      ToStringPiece(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
+      base::span<const TemplateURLData::RegulatoryExtension>(
+          engine.regulatory_extensions, engine.regulatory_extensions_size));
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
@@ -522,7 +523,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         std::move(search_intent_params), favicon_url, encoding,
         image_search_branding_label, *alternate_urls,
         preconnect_to_search_url.compare("ALLOWED") == 0,
-        prefetch_likely_navigations.compare("ALLOWED") == 0, *id);
+        prefetch_likely_navigations.compare("ALLOWED") == 0, *id,
+        base::span<const TemplateURLData::RegulatoryExtension>());
   }
   return nullptr;
 }
