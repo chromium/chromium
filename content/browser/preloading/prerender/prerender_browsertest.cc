@@ -1024,7 +1024,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(observer.wait_for_headers_start_reason().value(),
             PrerenderHost::WaitingForHeadersStartedReason::kWithTimeout);
   EXPECT_EQ(observer.wait_for_headers_finish_reason().value(),
-            PrerenderHost::WaitingForHeadersFinishedReason::kHeadersReceived);
+            PrerenderHost::WaitingForHeadersFinishedReason::
+                kNoVarySearchHeaderReceived);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
+      PrerenderHost::WaitingForHeadersFinishedReason::
+          kNoVarySearchHeaderReceived,
+      1);
 }
 
 // Test that the timer is enabled and cleared appropriately when navigating to
@@ -1131,6 +1138,10 @@ IN_PROC_BROWSER_TEST_F(
             PrerenderHost::WaitingForHeadersStartedReason::kWithTimeout);
   EXPECT_EQ(observer.wait_for_headers_finish_reason().value(),
             PrerenderHost::WaitingForHeadersFinishedReason::kTimeoutElapsed);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.WaitingForHeadersFinishedReason.SpeculationRule",
+      PrerenderHost::WaitingForHeadersFinishedReason::kTimeoutElapsed, 1);
 }
 
 // Test that activation is successful when navigating to an inexact URL

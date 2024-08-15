@@ -93,12 +93,22 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   enum class WaitingForHeadersStartedReason { kWithoutTimeout, kWithTimeout };
 
   // Reasons blocking navigation while waiting for headers finished.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(WaitingForHeadersFinishedReason)
   enum class WaitingForHeadersFinishedReason {
-    kHeadersReceived,
-    kHostDestroyed,
-    kTimeoutElapsed,
-    kMaybeNavigationCancelled
+    kNoVarySearchHeaderReceived = 0,
+    kNoVarySearchHeaderNotReceived = 1,
+    kNoVarySearchHeaderParseFailed = 2,
+    kHostDestroyed = 3,
+    kTimeoutElapsed = 4,
+    kMaybeNavigationCancelled = 5,
+
+    kMaxValue = kMaybeNavigationCancelled,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderWaitingForHeadersFinishedReason)
 
   // Observes a triggered prerender. Note that the observer should overlive the
   // prerender host instance, or be removed properly upon destruction.
@@ -357,6 +367,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   const std::optional<net::HttpNoVarySearchData>& no_vary_search() const {
     return no_vary_search_;
   }
+  const std::optional<network::mojom::NoVarySearchParseError>&
+  no_vary_search_parse_error() const {
+    return no_vary_search_parse_error_;
+  }
 
   const std::optional<net::HttpNoVarySearchData>& no_vary_search_expected()
       const {
@@ -403,7 +417,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const blink::mojom::CommonNavigationParams& potential_activation,
       bool allow_initiator_and_transition_mismatch);
 
-  void SetNoVarySearch(net::HttpNoVarySearchData no_vary_search);
+  void MaybeSetNoVarySearch(network::mojom::NoVarySearchWithParseError&
+                                no_vary_search_with_parse_error);
 
   const PrerenderAttributes attributes_;
 
@@ -464,6 +479,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // No-Vary-Search header information for the main frame of the prerendered
   // page.
   std::optional<net::HttpNoVarySearchData> no_vary_search_;
+  std::optional<network::mojom::NoVarySearchParseError>
+      no_vary_search_parse_error_;
 
   // True if headers were received.
   bool were_headers_received_ = false;

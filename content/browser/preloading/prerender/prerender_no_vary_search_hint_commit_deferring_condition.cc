@@ -194,9 +194,14 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   // associated prerender's headers.
   if (waiting_on_headers_) {
     waiting_on_headers_ = false;
-    prerender_host.OnWaitingForHeadersFinished(
-        GetNavigationHandle(),
-        PrerenderHost::WaitingForHeadersFinishedReason::kHeadersReceived);
+    using FinishedReason = PrerenderHost::WaitingForHeadersFinishedReason;
+    auto reason = FinishedReason::kNoVarySearchHeaderNotReceived;
+    if (prerender_host.no_vary_search_parse_error().has_value()) {
+      reason = FinishedReason::kNoVarySearchHeaderParseFailed;
+    } else if (prerender_host.no_vary_search().has_value()) {
+      reason = FinishedReason::kNoVarySearchHeaderReceived;
+    }
+    prerender_host.OnWaitingForHeadersFinished(GetNavigationHandle(), reason);
   }
 
   // We don't need the timer anymore.
