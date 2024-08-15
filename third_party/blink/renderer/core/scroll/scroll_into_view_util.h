@@ -21,9 +21,9 @@ namespace blink {
 class LayoutBox;
 class LayoutObject;
 class LayoutView;
-class ComputedStyle;
 struct PhysicalRect;
 class ScrollableArea;
+class ComputedStyle;
 class ScrollIntoViewOptions;
 
 namespace scroll_into_view_util {
@@ -56,12 +56,11 @@ void ConvertParamsToParentFrame(mojom::blink::ScrollIntoViewParamsPtr& params,
                                 const LayoutView& dest_frame);
 
 // Returns the scroll offset the scroller needs to scroll to in order to put
-// |expose_rect| (relative to the scroll origin of the scrollable area) into
-// |scrollable_area|'s visible scroll snapport rect aligned by |align_x| and
-// |align_y|.
+// |local_expose_rect| into |scrollable_area|'s visible scroll snapport rect
+// aligned by |align_x| and |align_y|.
 ScrollOffset GetScrollOffsetToExpose(
     const ScrollableArea& scrollable_area,
-    const PhysicalRect& expose_rect,
+    const PhysicalRect& local_expose_rect,
     const PhysicalBoxStrut& expose_scroll_margin,
     const mojom::blink::ScrollAlignment& align_x,
     const mojom::blink::ScrollAlignment& align_y);

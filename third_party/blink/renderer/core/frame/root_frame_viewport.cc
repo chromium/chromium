@@ -359,17 +359,21 @@ ScrollOffset RootFrameViewport::ClampToUserScrollableOffset(
   return scroll_offset;
 }
 
+PhysicalOffset RootFrameViewport::LocalToScrollOriginOffset() const {
+  if (GetLayoutBox() &&
+      RuntimeEnabledFeatures::ScrollIntoViewRootFrameViewportBugFixEnabled()) {
+    return LayoutViewport().LocalToScrollOriginOffset();
+  }
+  return PhysicalOffset::FromVector2dFFloor(LayoutViewport().GetScrollOffset());
+}
+
 PhysicalRect RootFrameViewport::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
     const PhysicalBoxStrut& scroll_margin,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  PhysicalRect rect_in_document = rect_in_absolute;
-  rect_in_document.Move(
-      PhysicalOffset::FromVector2dFFloor(LayoutViewport().GetScrollOffset()));
-
   ScrollOffset new_scroll_offset =
       ClampScrollOffset(scroll_into_view_util::GetScrollOffsetToExpose(
-          *this, rect_in_document, scroll_margin, *params->align_x.get(),
+          *this, rect_in_absolute, scroll_margin, *params->align_x.get(),
           *params->align_y.get()));
   if (params->type == mojom::blink::ScrollType::kUser)
     new_scroll_offset = ClampToUserScrollableOffset(new_scroll_offset);
@@ -408,9 +412,7 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
   // version correctly computes what the rect will be when the sequence is
   // executed) and we can't just adjust by `new_scroll_offset` since, to get to
   // absolute coordinates, we must offset by only the layout viewport's scroll.
-  rect_in_document.Move(
-      -PhysicalOffset::FromVector2dFRound(LayoutViewport().GetScrollOffset()));
-  return rect_in_document;
+  return rect_in_absolute;
 }
 
 void RootFrameViewport::UpdateScrollOffset(

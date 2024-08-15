@@ -3154,7 +3154,6 @@ void LayoutBox::UpdateScrollMarkerControlsAfterScroll() const {
             : 0;
     PhysicalRect rect_to_scroll = AbsoluteToLocalRect(
         target_box->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
-    rect_to_scroll.Move(scroll_offset);
     rect_to_scroll.Expand(scroll_margin);
     ScrollOffset target_scroll_offset =
         scroll_into_view_util::GetScrollOffsetToExpose(

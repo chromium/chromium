@@ -157,6 +157,8 @@ class RootLayoutViewportStub : public ScrollableAreaStub {
     return ret;
   }
 
+  PhysicalOffset LocalToScrollOriginOffset() const override { return {}; }
+
  private:
   int VisibleWidth() const override { return viewport_size_.width(); }
   int VisibleHeight() const override { return viewport_size_.height(); }
@@ -173,6 +175,8 @@ class VisualViewportStub : public ScrollableAreaStub {
         ContentsSize() - gfx::ScaleToFlooredSize(ViewportSize(), 1 / scale_);
     return ScrollOffset(diff.width(), diff.height());
   }
+
+  PhysicalOffset LocalToScrollOriginOffset() const override { return {}; }
 
   void SetScale(float scale) { scale_ = scale; }
 

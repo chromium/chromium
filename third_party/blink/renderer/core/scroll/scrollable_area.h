@@ -164,6 +164,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const PhysicalBoxStrut& scroll_margin,
       const mojom::blink::ScrollIntoViewParamsPtr&);
 
+  virtual PhysicalOffset LocalToScrollOriginOffset() const = 0;
+
   static bool ScrollBehaviorFromString(const String&,
                                        mojom::blink::ScrollBehavior&);
 

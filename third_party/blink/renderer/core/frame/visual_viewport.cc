@@ -788,6 +788,10 @@ bool VisualViewport::SetScrollOffset(
                          ScrollCallback());
 }
 
+PhysicalOffset VisualViewport::LocalToScrollOriginOffset() const {
+  return {};
+}
+
 PhysicalRect VisualViewport::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
     const PhysicalBoxStrut& scroll_margin,

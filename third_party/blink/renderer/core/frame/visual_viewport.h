@@ -147,6 +147,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   float Scale() const { return scale_; }
   bool IsPinchGestureActive() const { return is_pinch_gesture_active_; }
 
+  PhysicalOffset LocalToScrollOriginOffset() const final;
+
   // Convert the given rect in the main LocalFrameView's coordinates into a rect
   // in the viewport. The given and returned rects are in CSS pixels, meaning
   // scale isn't applied.
