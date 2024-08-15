@@ -115,7 +115,6 @@ interface CanvasRenderingContext2D {
     void drawFocusIfNeeded(Element element);
     void drawFocusIfNeeded(Path2D path, Element element);
 
-    [RuntimeEnabled=Canvas2dScrollPathIntoView] void scrollPathIntoView(optional Path2D path);
     void clip(optional CanvasFillRule winding);
     void clip(Path2D path, optional CanvasFillRule winding);
     [HighEntropy] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);

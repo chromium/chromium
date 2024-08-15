@@ -1403,7 +1403,6 @@ interface CanvasRenderingContext2D
     method roundRect
     method save
     method scale
-    method scrollPathIntoView
     method setLineDash
     method setTransform
     method stroke

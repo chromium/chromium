@@ -138,9 +138,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool ShouldAntialias() const;
   void SetShouldAntialias(bool) override;
 
-  void scrollPathIntoView();
-  void scrollPathIntoView(Path2D*);
-
   void clearRect(double x, double y, double width, double height);
   void ClearRect(double x, double y, double width, double height) override {
     clearRect(x, y, width, height);

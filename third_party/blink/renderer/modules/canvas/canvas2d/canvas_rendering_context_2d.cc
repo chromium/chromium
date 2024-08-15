@@ -322,14 +322,6 @@ void CanvasRenderingContext2D::SetShouldAntialias(bool do_aa) {
   GetState().SetShouldAntialias(do_aa);
 }
 
-void CanvasRenderingContext2D::scrollPathIntoView() {
-  ScrollPathIntoViewInternal(GetPath());
-}
-
-void CanvasRenderingContext2D::scrollPathIntoView(Path2D* path2d) {
-  ScrollPathIntoViewInternal(path2d->GetPath());
-}
-
 void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
   if (!IsTransformInvertible() || path.IsEmpty()) [[unlikely]] {
     return;

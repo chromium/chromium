@@ -703,7 +703,6 @@ external/wpt/html/canvas/element/manual/the-canvas-state/2d.zero.size.canvas.htm
 external/wpt/html/canvas/element/path-objects/2d.path.arc.angle.2.html
 external/wpt/html/canvas/element/pixel-manipulation/2d.imageData.get.range.html
 external/wpt/html/canvas/element/reset/2d.reset.basic.html
-external/wpt/html/canvas/element/scroll/2d.scrollPathIntoView.basic.html
 external/wpt/html/canvas/element/shadows/2d.shadow.image.scale.html
 external/wpt/html/canvas/element/text-styles/2d.text.draw.space.collapse.end.html
 external/wpt/html/canvas/element/the-canvas-state/2d.state.saverestore.strokeStyle.html

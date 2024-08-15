@@ -642,10 +642,6 @@
       status: "test",
     },
     {
-      name: "Canvas2dScrollPathIntoView",
-      status: "experimental",
-    },
-    {
       name: "CanvasFloatingPoint",
       status: "experimental",
     },
