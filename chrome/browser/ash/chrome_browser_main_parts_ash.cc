@@ -105,6 +105,7 @@
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
 #include "chrome/browser/ash/external_metrics/external_metrics.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
+#include "chrome/browser/ash/lobster/lobster_client_factory_impl.h"
 #include "chrome/browser/ash/locale/startup_settings_cache.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/logging/logging.h"
@@ -1311,6 +1312,11 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     login_screen_extensions_storage_cleaner_ =
         std::make_unique<LoginScreenExtensionsStorageCleaner>();
 
+    if (auto* lobster_controller = Shell::Get()->lobster_controller()) {
+      lobster_client_factory_ =
+          std::make_unique<LobsterClientFactoryImpl>(lobster_controller);
+    }
+
     ash::ShillManagerClient::Get()->SetProperty(
         shill::kEnableRFC8925Property,
         base::Value(base::FeatureList::IsEnabled(features::kEnableRFC8925)),
@@ -1567,6 +1573,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Destroy the CrosUsb detector so it stops trying to reconnect to the
   // UsbDeviceManager
   cros_usb_detector_.reset();
+
+  lobster_client_factory_.reset();
 
   // We should remove observers attached to D-Bus clients before
   // DBusThreadManager is shut down.

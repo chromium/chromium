@@ -404,11 +404,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
         picker_controller, user_manager::UserManager::Get());
   }
 
-  if (auto* lobster_controller = ash::Shell::Get()->lobster_controller()) {
-    lobster_client_factory_ =
-        std::make_unique<LobsterClientFactoryImpl>(lobster_controller);
-  }
-
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
