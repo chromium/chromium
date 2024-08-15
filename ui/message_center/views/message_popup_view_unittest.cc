@@ -58,11 +58,13 @@ class MockMessagePopupView : public MessagePopupView {
       : MessagePopupView(message_view, popup_collection, false) {}
 
   ~MockMessagePopupView() override = default;
+
+  void Close() override { delete this; }
 };
 
 MessagePopupView* MockMessagePopupCollection::CreatePopup(
     const Notification& notification) {
-  auto* message_view = new TestMessageView(notification);
+  TestMessageView* message_view = new TestMessageView(notification);
   auto* popup = new MockMessagePopupView(this, message_view);
   return popup;
 }
@@ -105,18 +107,14 @@ class MessagePopupViewTest : public views::ViewsTestBase {
   std::unique_ptr<Notification> notification_ = nullptr;
 };
 
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_AccessibleAttributes DISABLED_AccessibleAttributes
-#else
-#define MAYBE_AccessibleAttributes AccessibleAttributes
-#endif
-TEST_F(MessagePopupViewTest, MAYBE_AccessibleAttributes) {
+TEST_F(MessagePopupViewTest, AccessibleAttributes) {
   MockMessagePopupCollection popup_collection;
   MessagePopupView* popup = popup_collection.CreatePopup(GetNotification());
 
   ui::AXNodeData data;
   popup->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kAlertDialog);
+  popup->Close();
 }
 
 }  // namespace message_center
