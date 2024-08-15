@@ -44,7 +44,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "battery_saver_plus_legacy.icon",
     "battery_saver_plus_outline.icon",
     "battery_saver_plus_outline_legacy.icon",
-    "birch_favicon_error.icon",
+    "birch_chrome_backup.icon",
     "birch_secondary_icon_audio.icon",
     "birch_secondary_icon_desktop.icon",
     "birch_secondary_icon_landscape.icon",

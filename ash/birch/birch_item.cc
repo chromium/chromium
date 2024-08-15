@@ -193,7 +193,7 @@ std::string SecondaryIconTypeToString(SecondaryIconType type) {
 }
 
 const ui::ImageModel GetChromeBackupIcon() {
-  return ui::ImageModel::FromVectorIcon(kBirchFaviconErrorIcon);
+  return ui::ImageModel::FromVectorIcon(kBirchChromeBackupIcon);
 }
 
 }  // namespace
