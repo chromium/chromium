@@ -6,6 +6,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 interface AI
     attribute @@toStringTag
     getter summarizer
+    getter writer
     method canCreateTextSession
     method constructor
     method createTextSession
@@ -32,6 +33,17 @@ interface AITextSession
     method destroy
     method prompt
     method promptStreaming
+interface AIWriter
+    attribute @@toStringTag
+    getter sharedContext
+    method constructor
+    method destroy
+    method write
+    method writeStreaming
+interface AIWriterFactory
+    attribute @@toStringTag
+    method constructor
+    method create
 interface AbortController
     attribute @@toStringTag
     getter signal

@@ -199,6 +199,13 @@ void AIManagerKeyedService::GetTextModelInfo(
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 
+void AIManagerKeyedService::CreateWriter(
+    const std::optional<std::string>& shared_context,
+    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
+  // TODO(crbug.com/357967382): Implement this.
+  NOTIMPLEMENTED();
+}
+
 void AIManagerKeyedService::
     CanOptimizationGuideKeyedServiceCreateGenericSession(
         CanCreateTextSessionCallback callback) {

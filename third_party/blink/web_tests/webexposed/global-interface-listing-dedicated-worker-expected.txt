@@ -7,6 +7,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface AI
 [Worker]     attribute @@toStringTag
 [Worker]     getter summarizer
+[Worker]     getter writer
 [Worker]     method canCreateTextSession
 [Worker]     method constructor
 [Worker]     method createTextSession
@@ -33,6 +34,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method prompt
 [Worker]     method promptStreaming
+[Worker] interface AIWriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter sharedContext
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method write
+[Worker]     method writeStreaming
+[Worker] interface AIWriterFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method create
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal

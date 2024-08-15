@@ -7,6 +7,8 @@
 #include "base/no_destructor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/browser/ai/echo_ai_text_session.h"
+#include "content/browser/ai/echo_ai_writer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -45,6 +47,17 @@ void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
       optimization_guide::features::GetOnDeviceModelMaxTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
+}
+
+void EchoAIManagerImpl::CreateWriter(
+    const std::optional<std::string>& shared_context,
+    mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client) {
+  mojo::Remote<blink::mojom::AIManagerCreateWriterClient> client_remote(
+      std::move(client));
+  mojo::PendingRemote<blink::mojom::AIWriter> writer;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIWriter>(),
+                              writer.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(writer));
 }
 
 }  // namespace content

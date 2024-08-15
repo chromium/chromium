@@ -24,6 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SessionType">
   <variant name="Text" summary="AI text session"/>
+  <variant name="Write" summary="AI write session"/>
 </variants>
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"

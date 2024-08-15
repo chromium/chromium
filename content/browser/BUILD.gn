@@ -445,6 +445,8 @@ source_set("browser") {
     "ai/echo_ai_manager_impl.h",
     "ai/echo_ai_text_session.cc",
     "ai/echo_ai_text_session.h",
+    "ai/echo_ai_writer.cc",
+    "ai/echo_ai_writer.h",
     "attribution_reporting/aggregatable_attribution_utils.cc",
     "attribution_reporting/aggregatable_attribution_utils.h",
     "attribution_reporting/aggregatable_debug_rate_limit_table.cc",

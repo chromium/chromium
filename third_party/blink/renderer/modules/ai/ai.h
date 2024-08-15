@@ -22,6 +22,7 @@
 namespace blink {
 class AITextSession;
 class V8AIModelAvailability;
+class AIWriterFactory;
 
 // The class that manages the exposed model APIs that load model assets and
 // create AITextSession.
@@ -46,13 +47,17 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
                                                ExceptionState& exception_state);
   AISummarizerFactory* summarizer();
 
- private:
-  HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
+  AIWriterFactory* writer();
 
+  HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
+
+ private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
   Member<AITextSessionFactory> text_session_factory_;
   Member<AISummarizerFactory> ai_summarizer_factory_;
+  Member<AIWriterFactory> ai_writer_factory_;
 };
 
 }  // namespace blink

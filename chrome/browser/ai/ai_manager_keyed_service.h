@@ -50,6 +50,10 @@ class AIManagerKeyedService : public KeyedService,
       const std::optional<std::string>& system_prompt,
       CreateTextSessionCallback callback) override;
   void GetTextModelInfo(GetTextModelInfoCallback callback) override;
+  void CreateWriter(
+      const std::optional<std::string>& shared_context,
+      mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client)
+      override;
 
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);

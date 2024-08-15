@@ -313,6 +313,11 @@
       base_feature: "EnableAISummarizationAPI",
     },
     {
+      name: "AIWriterAPI",
+      status: "test",
+      base_feature: "EnableAIWriterAPI",
+    },
+    {
       name: "AllowContentInitiatedDataUrlNavigations",
       base_feature: "none",
     },
@@ -591,7 +596,7 @@
       base_feature: "EnableBuiltInAIAPI",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["AIPromptAPI", "AISummarizationAPI"]
+      implied_by: ["AIPromptAPI", "AISummarizationAPI", "AIWriterAPI"]
     },
     {
       // Bypasses the enforcement of the Page Embedded Permission Control

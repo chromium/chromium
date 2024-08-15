@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
+#include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -38,6 +39,7 @@ void AI::Trace(Visitor* visitor) const {
   visitor->Trace(ai_remote_);
   visitor->Trace(text_session_factory_);
   visitor->Trace(ai_summarizer_factory_);
+  visitor->Trace(ai_writer_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -48,6 +50,10 @@ HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
     }
   }
   return ai_remote_;
+}
+
+scoped_refptr<base::SequencedTaskRunner> AI::GetTaskRunner() {
+  return task_runner_;
 }
 
 ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
@@ -162,6 +168,13 @@ AISummarizerFactory* AI::summarizer() {
         GetExecutionContext(), task_runner_);
   }
   return ai_summarizer_factory_.Get();
+}
+
+AIWriterFactory* AI::writer() {
+  if (!ai_writer_factory_) {
+    ai_writer_factory_ = MakeGarbageCollected<AIWriterFactory>(this);
+  }
+  return ai_writer_factory_.Get();
 }
 
 }  // namespace blink

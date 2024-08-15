@@ -42,4 +42,10 @@ interface AI {
     RuntimeEnabled=AISummarizationAPI
   ]
   readonly attribute AISummarizerFactory summarizer;
+
+  [
+    // TODO(crbug.com/357967382): Add `Measure`
+    RuntimeEnabled=AIWriterAPI
+  ]
+  readonly attribute AIWriterFactory writer;
 };

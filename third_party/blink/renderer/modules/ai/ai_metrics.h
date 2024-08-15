@@ -14,7 +14,8 @@ class AIMetrics {
   // This class contains all the supported session types.
   enum class AISessionType {
     kText = 0,
-    kMaxValue = kText,
+    kWrite = 1,
+    kMaxValue = kWrite,
   };
 
   // This class contains all the model execution API supported.
