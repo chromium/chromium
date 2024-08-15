@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/quick_answers/ui/loading_view.h"
 
+#include "chrome/browser/ui/quick_answers/ui/typography.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,10 +23,9 @@ constexpr int kItemSpacing = 4;
 LoadingView::LoadingView() {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  SetDefault(views::kMarginsKey, gfx::Insets::VH(kItemSpacing, 0));
   SetCollapseMargins(true);
 
-  first_line_label_.SetView(AddChildView(
+  first_line_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetEnabledColorId(ui::kColorLabelForeground)
           // Default is `ALIGN_CENTER`. See `Label::Init`.
@@ -35,9 +35,11 @@ LoadingView::LoadingView() {
               views::kFlexBehaviorKey,
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kPreferred))
-          .Build()));
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(0, 0, kItemSpacing, 0))
+          .Build());
 
-  AddChildView(
+  second_line_label_ = AddChildView(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_LOADING))
           .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
@@ -47,19 +49,24 @@ LoadingView::LoadingView() {
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kPreferred))
           .Build());
+
+  SetDesign(Design::kCurrent);
 }
 
 void LoadingView::SetFirstLineText(const std::u16string& first_line_text) {
-  views::Label* label = AsViewClass<views::Label>(first_line_label_.view());
-  CHECK(label);
-  label->SetText(first_line_text);
+  first_line_label_->SetText(first_line_text);
 }
 
 std::u16string LoadingView::GetFirstLineText() const {
-  const views::Label* label =
-      AsViewClass<views::Label>(first_line_label_.view());
-  CHECK(label);
-  return label->GetText();
+  return first_line_label_->GetText();
+}
+
+void LoadingView::SetDesign(Design design) {
+  first_line_label_->SetFontList(GetFirstLineFontList(design));
+  first_line_label_->SetLineHeight(GetFirstLineHeight(design));
+
+  second_line_label_->SetFontList(GetSecondLineFontList(design));
+  second_line_label_->SetLineHeight(GetSecondLineHeight(design));
 }
 
 BEGIN_METADATA(LoadingView)

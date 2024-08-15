@@ -298,6 +298,15 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Report this query
       </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_DEFINITION" desc="Header text shown in a definition result card">
+        Define
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_TRANSLATION" desc="Header text shown in a translation result card">
+        Translate
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_UNIT_CONVERSION" desc="Header text shown in a unit conversion result card">
+        Convert
+      </message>
 
       <!-- Rich Answers -->
       <message name="IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the settings-button in Quick-Answers related views.">

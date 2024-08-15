@@ -7,13 +7,22 @@
 
 namespace quick_answers {
 
-// TODO(b/340628526): Merge `quick_answers::IntentType` and
-// `QuickAnswersView::Intent` to this `Intent`. Each is used for slightly
-// different purposes.
+// TODO(b/340628526): Merge `quick_answers::IntentType` to this `Intent`. Each
+// is used for slightly different purposes.
 enum class Intent {
   kDefinition,
   kTranslation,
   kUnitConversion,
+};
+
+// An enum used to switch design of Quick Answers UI.
+enum class Design {
+  // Currently active UI.
+  kCurrent,
+  // Refreshed Quick Answers UI.
+  kRefresh,
+  // Design used if Quick Answers is shown as part of Magic Boost.
+  kMagicBoost,
 };
 
 }  // namespace quick_answers

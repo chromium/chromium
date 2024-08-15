@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -44,8 +45,7 @@ constexpr char kTranslatedText[] = "Translated text";
 constexpr gfx::Rect kContextMenuRectNarrow = {100, 100, 100, 200};
 constexpr gfx::Rect kContextMenuRectWide = {100, 100, 300, 200};
 
-using PixelTestParam =
-    std::tuple<bool, bool, bool, QuickAnswersView::Design, bool>;
+using PixelTestParam = std::tuple<bool, bool, bool, Design, bool>;
 
 bool IsDarkMode(const PixelTestParam& pixel_test_param) {
   return std::get<0>(pixel_test_param);
@@ -59,7 +59,7 @@ bool IsNarrowLayout(const PixelTestParam& pixel_test_param) {
   return std::get<2>(pixel_test_param);
 }
 
-QuickAnswersView::Design GetDesign(const PixelTestParam& pixel_test_param) {
+Design GetDesign(const PixelTestParam& pixel_test_param) {
   return std::get<3>(pixel_test_param);
 }
 
@@ -82,11 +82,11 @@ std::string GetNarrowLayoutParamValue(const PixelTestParam& pixel_test_param) {
 std::optional<std::string> MaybeGetDesignParamValue(
     const PixelTestParam& pixel_test_param) {
   switch (GetDesign(pixel_test_param)) {
-    case QuickAnswersView::Design::kCurrent:
+    case Design::kCurrent:
       return std::nullopt;
-    case QuickAnswersView::Design::kRefresh:
+    case Design::kRefresh:
       return "Refresh";
-    case QuickAnswersView::Design::kMagicBoost:
+    case Design::kMagicBoost:
       return "MagicBoost";
   }
 
@@ -174,8 +174,7 @@ class QuickAnswersPixelTestBase
   }
 
  protected:
-  void CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent intent) {
+  void CreateAndShowQuickAnswersViewForLoading(Intent intent) {
     QuickAnswersUiController* quick_answers_ui_controller =
         GetQuickAnswersUiController();
     ASSERT_TRUE(quick_answers_ui_controller);
@@ -256,9 +255,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
-                     testing::Values(QuickAnswersView::Design::kCurrent,
-                                     QuickAnswersView::Design::kRefresh,
-                                     QuickAnswersView::Design::kMagicBoost),
+                     testing::Values(Design::kCurrent,
+                                     Design::kRefresh,
+                                     Design::kMagicBoost),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -270,9 +269,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Values(false),
-                     testing::Values(QuickAnswersView::Design::kCurrent,
-                                     QuickAnswersView::Design::kRefresh,
-                                     QuickAnswersView::Design::kMagicBoost),
+                     testing::Values(Design::kCurrent,
+                                     Design::kRefresh,
+                                     Design::kMagicBoost),
                      /*is_internal=*/testing::Values(true)),
     &GenerateParamName);
 
@@ -284,7 +283,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Bool(),
-                     testing::Values(QuickAnswersView::Design::kRefresh),
+                     testing::Values(Design::kRefresh),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -292,8 +291,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Loading) {
   // Spread intent types between tests to have better UI test coverage.
-  CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent::kTranslation);
+  CreateAndShowQuickAnswersViewForLoading(Intent::kTranslation);
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("Loading", GetParam()),
@@ -302,8 +300,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Loading) {
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Result) {
   // Spread intent types between tests to have better UI test coverage.
-  CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent::kDefinition);
+  CreateAndShowQuickAnswersViewForLoading(Intent::kDefinition);
 
   StructuredResult structured_result;
   structured_result.definition_result = std::make_unique<DefinitionResult>();
@@ -322,8 +319,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Result) {
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Retry) {
   // Spread intent types between tests to have better UI test coverage.
-  CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent::kUnitConversion);
+  CreateAndShowQuickAnswersViewForLoading(Intent::kUnitConversion);
 
   GetQuickAnswersUiController()->ShowRetry();
 
@@ -332,12 +328,12 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Retry) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
-  QuickAnswersView::Design design = GetDesign(GetParam());
-  if (design == QuickAnswersView::Design::kMagicBoost) {
+  Design design = GetDesign(GetParam());
+  if (design == Design::kMagicBoost) {
     GTEST_SKIP()
         << "User consent is handled by MagicBoost UI if MagicBoost is on";
   }
-  if (design == QuickAnswersView::Design::kRefresh) {
+  if (design == Design::kRefresh) {
     GTEST_SKIP() << "TODO(b/340628664): Implement kRefreshed UserConsentView.";
   }
 
@@ -351,8 +347,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestInternal, InternalUi) {
-  CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent::kDefinition);
+  CreateAndShowQuickAnswersViewForLoading(Intent::kDefinition);
 
   StructuredResult structured_result;
   structured_result.definition_result = std::make_unique<DefinitionResult>();
@@ -371,8 +366,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestInternal, InternalUi) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultView, ElidePrimaryText) {
-  CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent::kTranslation);
+  CreateAndShowQuickAnswersViewForLoading(Intent::kTranslation);
 
   // Translation result uses sub text.
   StructuredResult structured_result;
@@ -390,8 +384,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultView, ElidePrimaryText) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultView, NoSubText) {
-  CreateAndShowQuickAnswersViewForLoading(
-      QuickAnswersView::Intent::kDefinition);
+  CreateAndShowQuickAnswersViewForLoading(Intent::kDefinition);
 
   // No-result case has no sub text.
   StructuredResult structured_result;

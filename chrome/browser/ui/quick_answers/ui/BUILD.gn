@@ -21,6 +21,8 @@ source_set("loading_view") {
     "loading_view.h",
   ]
   deps = [
+    ":typography",
+    "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/strings:strings_grit",
     "//ui/base/metadata",
     "//ui/views",
@@ -33,7 +35,9 @@ source_set("result_view") {
     "result_view.h",
   ]
   deps = [
+    ":typography",
     "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/strings:strings_grit",
     "//ui/base/metadata",
     "//ui/views",
@@ -47,10 +51,25 @@ source_set("retry_view") {
     "retry_view.h",
   ]
   deps = [
+    ":typography",
     "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/strings:strings_grit",
     "//ui/base/metadata",
     "//ui/views",
     "//ui/views/controls/webview",
+  ]
+}
+
+source_set("typography") {
+  sources = [
+    "typography.cc",
+    "typography.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/quick_answers/public/cpp:constants",
+    "//ui/gfx",
   ]
 }

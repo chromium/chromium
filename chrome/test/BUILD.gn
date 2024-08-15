@@ -3327,6 +3327,7 @@ if (!is_android) {
         "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos/ash/components/standalone_browser",
         "//chromeos/components/kiosk:test_support",
+        "//chromeos/components/quick_answers/public/cpp:constants",
         "//components/component_updater/ash:test_support",
         "//components/user_manager:test_support",
         "//mojo/public/cpp/test_support:test_utils",
