@@ -236,10 +236,12 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
 
 }  // namespace
 
-class FileSystemAccessObserverObservationTest : public testing::Test {
+class FileSystemAccessObserverObservationTest
+    : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    RenderViewHostTestHarness::SetUp();
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -260,10 +262,12 @@ class FileSystemAccessObserverObservationTest : public testing::Test {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     manager_.reset();
 
-    task_environment_.RunUntilIdle();
+    task_environment()->RunUntilIdle();
     EXPECT_TRUE(temp_dir_.Delete());
 
     chrome_blob_context_.reset();
+
+    RenderViewHostTestHarness::TearDown();
   }
 
   scoped_refptr<storage::FileSystemContext>& file_system_context() {
@@ -275,6 +279,21 @@ class FileSystemAccessObserverObservationTest : public testing::Test {
 
     manager_->watcher_manager().RegisterSource(&source);
     EXPECT_TRUE(manager_->watcher_manager().HasSourceForTesting(&source));
+  }
+
+  void EnterBFCache() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+    rfh->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  }
+
+  void ExitBFCache() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+    rfh->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
   }
 
   base::FilePath CreateFile() {
@@ -303,7 +322,7 @@ class FileSystemAccessObserverObservationTest : public testing::Test {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return std::make_unique<FileSystemAccessFileHandleImpl>(
-        manager_.get(), kBindingContext, file_url,
+        manager_.get(), GetBindingContext(), file_url,
         FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
                                                        allow_grant_));
   }
@@ -317,24 +336,30 @@ class FileSystemAccessObserverObservationTest : public testing::Test {
 
     FakeObserver fake_observer(std::move(observer));
 
-    manager_->watcher_manager().BindObserverHost(kBindingContext,
+    RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(main_rfh());
+
+    auto bf_cache_context = FileSystemAccessManagerImpl::BindingContext(
+        kTestStorageKey, kTestURL, rfh->GetAssociatedRenderFrameHostId());
+
+    manager_->watcher_manager().BindObserverHost(bf_cache_context,
                                                  std::move(host_receiver));
     return fake_observer;
   }
 
  private:
+  FileSystemAccessManagerImpl::BindingContext GetBindingContext() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return FileSystemAccessManagerImpl::BindingContext(
+        kTestStorageKey, kTestURL,
+        web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const GURL kTestURL = GURL("https://example.com/test");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
-  const int kProcessId = 1;
-  const int kFrameRoutingId = 2;
-  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
-  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
-      kTestStorageKey, kTestURL, kFrameId};
-
-  BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -380,6 +405,49 @@ TEST_F(FileSystemAccessObserverObservationTest,
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
   EXPECT_TRUE(observation.EventsReceivedMatches({}));
+}
+
+TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
+  base::FilePath file_path = CreateFile();
+  storage::FileSystemURL file_url = CreateFileSystemURL(
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
+      CreateFileHandle(file_url);
+
+  FileSystemAccessWatchScope scope =
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
+
+  FakeChangeSource source(scope, file_system_context());
+  RegisterChangeSource(source);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation = observer.Observe(file_handle, false);
+
+  // Will receive changes before entering BFCache.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}}}));
+
+  // No event is emitted just for entering the BFCache.
+  EnterBFCache();
+  ExitBFCache();
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+
+  // No events are emitted while in BFCache.
+  EnterBFCache();
+  source.SignalChange();
+  source.SignalChange();
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+
+  // If we receive an event while in BFCache, a single unknown event is emitted
+  // after exiting BFCache.
+  ExitBFCache();
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kUnknown, MojoFilePathType::kFile, {}}}));
 }
 
 }  // namespace content
