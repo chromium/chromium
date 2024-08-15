@@ -159,16 +159,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.BackingStore.ConsistencyError"
-    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="2024-07-28">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Methods that encountered consistency errors. Such errors probably point to a
-    bug in our code.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.BackingStore.DeleteDatabaseStatus"
     enum="LevelDBStatus" expires_after="never">
 <!-- expires-never: indexeddb heartbeat metric; used for chirp alerts (go/chrome-indexeddb-heartbeat) -->
@@ -266,24 +256,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.BackingStore.ReadError"
-    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="2024-07-28">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Methods that encountered leveldb errors while trying to read from disk.
-  </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.BackingStore.WriteError"
-    enum="IDBLevelDBBackingStoreInternalErrorType" expires_after="2024-07-28">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Methods that encountered leveldb errors while trying to write to disk.
-  </summary>
-</histogram>
-
 <histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
     expires_after="2025-02-10">
   <owner>estade@chromium.org</owner>
@@ -359,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE"
-    enum="PlatformFileError" expires_after="2024-09-24">
+    enum="PlatformFileError" expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -378,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="2024-07-28">
+    enum="LevelDBIOErrorMethods" expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -387,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors" enum="LevelDBErrorTypes"
-    expires_after="2024-07-28">
+    expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -396,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE"
-    enum="PlatformFileError" expires_after="2024-09-24">
+    enum="PlatformFileError" expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -416,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.EnvMethod"
-    enum="LevelDBIOErrorMethods" expires_after="2024-07-28">
+    enum="LevelDBIOErrorMethods" expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -454,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.PutValueSize2" units="KB"
-    expires_after="2024-07-28">
+    expires_after="2025-02-28">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -492,18 +464,6 @@ chromium-metrics-reviews@google.com.
     open request.
   </summary>
   <token key="RequestType" variants="IdbRequestType"/>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.SizeOnCommit2"
-    units="KB" expires_after="2024-07-28">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    The total temporary size of an IndexedDB transaction. This is the memory
-    that is temporarily stored before writing to disk. Recorded on transaction
-    commit.
-  </summary>
-  <token key="TransactionType" variants="IdbTransactionTypes"/>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive"
@@ -546,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TransactionAbortReason" enum="IDBException"
-    expires_after="2024-07-28">
+    expires_after="2025-02-28">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
