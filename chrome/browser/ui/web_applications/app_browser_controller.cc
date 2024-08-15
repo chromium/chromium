@@ -606,14 +606,26 @@ void AppBrowserController::AddColorMixers(
   mixer[kColorFrameCaptionInactive] = {kColorCaptionForegroundInactive};
 #endif  // BUILDFLAG(IS_WIN)
   mixer[kColorToolbar] = {ui::kColorFrameActive};
-  mixer[kColorToolbarButtonIconDefault] = {kColorFrameCaptionActive};
-  mixer[kColorToolbarButtonIconDisabled] = {kColorFrameCaptionInactive};
   mixer[kColorToolbarTextDefault] = {kColorFrameCaptionActive};
   mixer[kColorToolbarTextDisabledDefault] = {kColorFrameCaptionInactive};
+  mixer[kColorToolbarButtonIconDefault] = {kColorFrameCaptionActive};
   mixer[kColorToolbarButtonIcon] = {kColorToolbarButtonIconDefault};
   mixer[kColorToolbarButtonIconHovered] = {kColorToolbarButtonIcon};
   mixer[kColorToolbarButtonIconPressed] = {kColorToolbarButtonIcon};
-  mixer[kColorToolbarButtonIconInactive] = {kColorFrameCaptionInactive};
+  // While there are separate color IDs for disabled in inactive toolbar button
+  // icons, in reality toolbar buttons don't distinguish between disabled and
+  // inactive states. We want to make sure that the disabled state if visually
+  // distinct from the active state. On windows this is always the case for
+  // kColorFrameCaptionInactive, however on other platforms this might be the
+  // same color as the active caption color. So on non-windows we derive the
+  // disabled color from the regular toolbar color.
+#if BUILDFLAG(IS_WIN)
+  mixer[kColorToolbarButtonIconDisabled] = {kColorFrameCaptionInactive};
+#else
+  mixer[kColorToolbarButtonIconDisabled] = {ui::GetResultingPaintColor(
+      {ui::kColorSysStateDisabled}, {kColorToolbar})};
+#endif
+  mixer[kColorToolbarButtonIconInactive] = {kColorToolbarButtonIconDisabled};
 }
 
 void AppBrowserController::OnReceivedInitialURL() {
