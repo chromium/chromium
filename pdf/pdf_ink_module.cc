@@ -41,11 +41,13 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 
@@ -106,6 +108,13 @@ gfx::Rect InkRectToEnclosingGfxRect(const InkRect& rect) {
   return gfx::ToEnclosingRect(gfx::RectF(x, y, width, height));
 }
 
+SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
+                           const gfx::Vector2dF& origin_offset) {
+  gfx::RectF clip_rect(content_rect);
+  clip_rect.Offset(origin_offset);
+  return gfx::RectFToSkRect(clip_rect);
+}
+
 }  // namespace
 
 PdfInkModule::PdfInkModule(Client& client) : client_(client) {
@@ -137,6 +146,8 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
 
+    SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
+    canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
     for (const auto& finished_stroke : page_strokes) {
       if (!finished_stroke.should_draw) {
         continue;
@@ -160,6 +171,8 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
 
+    SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
+    canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
     for (const auto& segment : in_progress_stroke) {
       bool success = skia_renderer->Draw(*segment, transform, canvas);
       CHECK(success);
