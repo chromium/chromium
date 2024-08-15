@@ -30,7 +30,7 @@ std::string AIMetrics::GetAIAPIUsageMetricName(AISessionType session_type) {
 }
 
 // static
-std::string AIMetrics::GetAIModelAvailabilityMetricName(
+std::string AIMetrics::GetAICapabilityAvailabilityMetricName(
     AISessionType session_type) {
   return base::StrCat(
       {"AI.", GetAISessionTypeName(session_type), ".Availability"});

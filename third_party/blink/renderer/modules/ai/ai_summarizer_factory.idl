@@ -9,7 +9,7 @@
   RuntimeEnabled=AISummarizationAPI
 ]
 interface AISummarizerCapabilities {
-  readonly attribute AIModelAvailability available;
+  readonly attribute AICapabilityAvailability available;
 };
 
 [

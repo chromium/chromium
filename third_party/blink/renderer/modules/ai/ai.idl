@@ -4,7 +4,7 @@
 
 // https://github.com/explainers-by-googlers/prompt-api
 
-enum AIModelAvailability {
+enum AICapabilityAvailability {
   "readily",
   "after-download",
   "no"
@@ -21,7 +21,7 @@ interface AI {
     RaisesException,
     RuntimeEnabled=AIPromptAPI
   ]
-  Promise<AIModelAvailability> canCreateTextSession();
+  Promise<AICapabilityAvailability> canCreateTextSession();
   [
     Measure,
     CallWith=ScriptState,

@@ -7,8 +7,8 @@
 namespace blink {
 
 AISummarizerCapabilities::AISummarizerCapabilities(
-    V8AIModelAvailability model_availability)
-    : model_availability_(model_availability) {}
+    V8AICapabilityAvailability capability_availability)
+    : capability_availability_(capability_availability) {}
 
 void AISummarizerCapabilities::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);

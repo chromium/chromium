@@ -10,7 +10,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -56,26 +56,26 @@ scoped_refptr<base::SequencedTaskRunner> AI::GetTaskRunner() {
   return task_runner_;
 }
 
-ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
+ScriptPromise<V8AICapabilityAvailability> AI::canCreateTextSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8AIModelAvailability>();
+    return ScriptPromise<V8AICapabilityAvailability>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AIModelAvailability>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8AICapabilityAvailability>>(
           script_state);
   auto promise = resolver->Promise();
   using ModelAvailabilityCheckResult =
       mojom::blink::ModelAvailabilityCheckResult;
 
   text_session_factory_->CanCreateTextSession(WTF::BindOnce(
-      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver,
-         AIModelAvailability availability,
+      [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
+         AICapabilityAvailability availability,
          ModelAvailabilityCheckResult check_result) {
-        resolver->Resolve(AIModelAvailabilityToV8(availability));
+        resolver->Resolve(AICapabilityAvailabilityToV8(availability));
       },
       WrapPersistent(resolver)));
   return promise;

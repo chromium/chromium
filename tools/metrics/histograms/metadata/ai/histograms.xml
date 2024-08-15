@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.{SessionType}.Availability" enum="AIModelAvailability"
+<histogram name="AI.{SessionType}.Availability" enum="AICapabilityAvailability"
     expires_after="2025-02-10">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>

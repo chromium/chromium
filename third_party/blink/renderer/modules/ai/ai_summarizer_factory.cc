@@ -39,10 +39,10 @@ ScriptPromise<AISummarizerCapabilities> AISummarizerFactory::capabilities(
 
   text_session_factory_->CanCreateTextSession(WTF::BindOnce(
       [](ScriptPromiseResolver<AISummarizerCapabilities>* resolver,
-         AISummarizerFactory* factory, AIModelAvailability availability,
+         AISummarizerFactory* factory, AICapabilityAvailability availability,
          mojom::blink::ModelAvailabilityCheckResult check_result) {
         resolver->Resolve(MakeGarbageCollected<AISummarizerCapabilities>(
-            AIModelAvailabilityToV8(availability)));
+            AICapabilityAvailabilityToV8(availability)));
       },
       WrapPersistent(resolver), WrapWeakPersistent(this)));
   return promise;

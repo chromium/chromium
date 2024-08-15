@@ -21,7 +21,7 @@
 
 namespace blink {
 class AITextSession;
-class V8AIModelAvailability;
+class V8AICapabilityAvailability;
 class AIWriterFactory;
 
 // The class that manages the exposed model APIs that load model assets and
@@ -36,7 +36,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  ScriptPromise<V8AIModelAvailability> canCreateTextSession(
+  ScriptPromise<V8AICapabilityAvailability> canCreateTextSession(
       ScriptState* script_state,
       ExceptionState& exception_state);
   ScriptPromise<AITextSession> createTextSession(
