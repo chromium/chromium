@@ -192,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
+// TODO(crbug.com/344232409): flaky due to timeout.
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, DISABLED_PrivateStore) {
   SetTestApp(kTestEnterpriseKioskAppId);
 
   const char kPrivateStoreUpdate[] = "/private_store_update";
