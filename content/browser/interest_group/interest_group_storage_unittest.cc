@@ -57,6 +57,8 @@ using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 constexpr char kFullOriginStr[] = "https://full.example.com";
 constexpr char kPartialOriginStr[] = "https://partial.example.com";
 
+constexpr int kOldestAllFieldsVersion = 28;
+
 class InterestGroupStorageTest : public testing::Test {
  public:
   InterestGroupStorageTest() = default;
@@ -128,74 +130,163 @@ class InterestGroupStorageTest : public testing::Test {
     return result;
   }
 
-  blink::InterestGroup ProduceAllFields() {
-    return blink::TestInterestGroupBuilder(/*owner=*/kFullOrigin,
-                                           /*name=*/"full")
-        .SetPriority(1.0)
-        .SetEnableBiddingSignalsPrioritization(true)
-        .SetPriorityVector({{{"a", 2}, {"b", -2.2}}})
-        .SetPrioritySignalsOverrides({{{"a", -2}, {"c", 10}, {"d", 1.2}}})
-        .SetSellerCapabilities(
-            {{{kFullOrigin, {SellerCapabilities::kInterestGroupCounts}},
-              {kPartialOrigin, {SellerCapabilities::kLatencyStats}}}})
-        .SetAllSellersCapabilities({SellerCapabilities::kInterestGroupCounts,
-                                    SellerCapabilities::kLatencyStats})
-        .SetExecutionMode(blink::InterestGroup::ExecutionMode::kFrozenContext)
-        .SetBiddingUrl(GURL("https://full.example.com/bid"))
-        .SetBiddingWasmHelperUrl(GURL("https://full.example.com/bid_wasm"))
-        .SetUpdateUrl(GURL("https://full.example.com/update"))
-        .SetTrustedBiddingSignalsUrl(GURL("https://full.example.com/signals"))
-        .SetTrustedBiddingSignalsKeys(
-            std::vector<std::string>{"a", "b", "c", "d"})
-        .SetTrustedBiddingSignalsSlotSizeMode(
-            blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::
-                kAllSlotsRequestedSizes)
-        .SetMaxTrustedBiddingSignalsURLLength(8000)
-        .SetTrustedBiddingSignalsCoordinator(
-            url::Origin::Create(GURL("https://coordinator.test/")))
-        .SetUserBiddingSignals("foo")
-        .SetAds(std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/ad1"), "metadata1", "group_1",
-                "buyer_id", "shared_id",
-                std::vector<std::string>{"selectable_id1", "selectable_id2"},
-                "adRenderId",
-                std::vector<url::Origin>{
-                    url::Origin::Create(GURL("https://reporting.com"))}),
-            blink::InterestGroup::Ad(GURL("https://full.example.com/ad2"),
-                                     "metadata2", "group_2", "buyer_id2")})
-        .SetAdComponents(std::vector<InterestGroup::Ad>{
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent1"), "metadata1c",
-                "group_1", /*buyer_reporting_id=*/std::nullopt,
-                /*buyer_and_seller_reporting_id=*/std::nullopt,
-                /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
-                "adRenderId2"),
-            blink::InterestGroup::Ad(
-                GURL("https://full.example.com/adcomponent2"), "metadata2c",
-                "group_2")})
-        .SetAdSizes(
-            {{{"size_1",
-               blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
-                             blink::AdSize::LengthUnit::kPixels)},
-              {"size_2",
-               blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
-                             blink::AdSize::LengthUnit::kPixels)},
-              {"size_3",
-               blink::AdSize(100, blink::AdSize::LengthUnit::kScreenWidth, 100,
-                             blink::AdSize::LengthUnit::kScreenWidth)}}})
-        .SetSizeGroups(
-            {{{"group_1", std::vector<std::string>{"size_1"}},
-              {"group_2", std::vector<std::string>{"size_1", "size_2"}},
-              {"group_3", std::vector<std::string>{"size_3"}}}})
-        .SetAuctionServerRequestFlags(
-            {blink::AuctionServerRequestFlagsEnum::kOmitAds,
-             blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
+  // Produces full interest group. The `version_number` parameter controls the
+  // set of fields added to the full interest group -- only fields that existed
+  // in that version will be added. By default, all fields for the current
+  // version are added.
+  //
+  // If non-null, *version_changed_ig_fields will be set indicating if
+  // `version_number` changed any new interest group fields when compared to
+  // `version_number` - 1, if it exists. (Some versions merely changed the
+  // format of interest groups on disk and didn't add fields, or added
+  // fields that don't affect blink::InterestGroup). This is needed for a check
+  // to ensure that IgExpect[Not]EqualsForTesting() gets updated when adding a
+  // new version.
+  blink::InterestGroup ProduceAllFields(
+      int version_number = -1,
+      bool* version_changed_ig_fields = nullptr) {
+    if (version_number == -1) {
+      version_number =
+          InterestGroupStorage::GetCurrentVersionNumberForTesting();
+    }
+
+    if (version_changed_ig_fields) {
+      switch (version_number) {
+        case 9:
+        case 16:
+        case 17:
+        case 18:
+        case 20:
+        case 22:
+        case 24:
+        case 25:
+        case 26:
+        case 27:
+          *version_changed_ig_fields = false;
+          break;
+        default:
+          *version_changed_ig_fields = true;
+      }
+    }
+
+    // These fields have been supported for many old versions -- setting them
+    // here avoids having to check and maybe initialize multiple times in each
+    // version.
+    blink::InterestGroup result;
+    result.ads.emplace();
+    result.ad_components.emplace();
+    result.ads->emplace_back(
+        /*render_gurl=*/GURL("https://full.example.com/ad1"),
+        /*metadata=*/"metadata1");
+    result.ads->emplace_back(
+        /*render_gurl=*/GURL("https://full.example.com/ad2"),
+        /*metadata=*/"metadata2");
+    result.ad_components->emplace_back(
+        /*render_gurl=*/GURL("https://full.example.com/adcomponent1"),
+        /*metadata=*/"metadata1c");
+    result.ad_components->emplace_back(
+        /*render_gurl=*/GURL("https://full.example.com/adcomponent2"),
+        /*metadata=*/"metadata2c");
+    result.ad_sizes.emplace();
+
+    // ***NOTE***: Please use non-default values in the assignments below -- it
+    // helps validate that non-default fields get upgraded correctly, for
+    // instance.
+
+    switch (version_number) {
+      case 29:
+        result.ads.value()[0].selectable_buyer_and_seller_reporting_ids = {
+            "selectable_id1", "selectable_id2"};
+        ABSL_FALLTHROUGH_INTENDED;
+      case 28:
+        // NOTE: As this is the oldest version supported by ProduceAllFields(),
+        // it also initializes fields from before version 28.
+        EXPECT_EQ(kOldestAllFieldsVersion, 28);
+
+        result.owner = kFullOrigin;
+        result.name = "full";
+        result.priority = 1.0;
+        result.enable_bidding_signals_prioritization = true;
+        result.priority_vector = {{{"a", 2}, {"b", -2.2}}};
+        result.priority_signals_overrides = {
+            {{"a", -2}, {"c", 10}, {"d", 1.2}}};
+        result.seller_capabilities = {
+            {{kFullOrigin, {SellerCapabilities::kInterestGroupCounts}},
+             {kPartialOrigin, {SellerCapabilities::kLatencyStats}}}};
+        result.all_sellers_capabilities = {
+            SellerCapabilities::kInterestGroupCounts,
+            SellerCapabilities::kLatencyStats};
+        result.execution_mode =
+            blink::InterestGroup::ExecutionMode::kFrozenContext;
+        result.bidding_url = GURL("https://full.example.com/bid");
+        result.bidding_wasm_helper_url =
+            GURL("https://full.example.com/bid_wasm");
+        result.update_url = GURL("https://full.example.com/update");
+        result.trusted_bidding_signals_url =
+            GURL("https://full.example.com/signals");
+        result.trusted_bidding_signals_keys = {"a", "b", "c", "d"};
+        result.trusted_bidding_signals_slot_size_mode = blink::InterestGroup::
+            TrustedBiddingSignalsSlotSizeMode::kAllSlotsRequestedSizes;
+        result.max_trusted_bidding_signals_url_length = 8000;
+        result.trusted_bidding_signals_coordinator =
+            url::Origin::Create(GURL("https://coordinator.test/"));
+        result.user_bidding_signals = "foo";
+        result.ads.value()[0].size_group = "group_1";
+        result.ads.value()[0].buyer_reporting_id = "buyer_id";
+        result.ads.value()[0].buyer_and_seller_reporting_id = "shared_id";
+        result.ads.value()[0].ad_render_id = "adRenderId";
+        result.ads.value()[0].allowed_reporting_origins = {
+            {url::Origin::Create(GURL("https://reporting.com"))}};
+        result.ads.value()[1].size_group = "group_2";
+        result.ads.value()[1].buyer_reporting_id = "buyer_id2";
+        result.ad_components.value()[0].size_group = "group_1";
+        result.ad_components.value()[0].ad_render_id = "adRenderId2";
+        result.ad_components.value()[1].size_group = "group_2";
+        result.ad_sizes.value()["size_1"].width = 300;
+        result.ad_sizes.value()["size_1"].width_units =
+            blink::AdSize::LengthUnit::kPixels;
+        result.ad_sizes.value()["size_1"].height = 150;
+        result.ad_sizes.value()["size_1"].height_units =
+            blink::AdSize::LengthUnit::kPixels;
+        result.ad_sizes.value()["size_2"].width = 640;
+        result.ad_sizes.value()["size_2"].width_units =
+            blink::AdSize::LengthUnit::kPixels;
+        result.ad_sizes.value()["size_2"].height = 480;
+        result.ad_sizes.value()["size_2"].height_units =
+            blink::AdSize::LengthUnit::kPixels;
+        result.ad_sizes.value()["size_3"].width = 100;
+        result.ad_sizes.value()["size_3"].width_units =
+            blink::AdSize::LengthUnit::kScreenWidth;
+        result.ad_sizes.value()["size_3"].height = 100;
+        result.ad_sizes.value()["size_3"].height_units =
+            blink::AdSize::LengthUnit::kScreenWidth;
+        result.size_groups = {
+            {{"group_1", std::vector<std::string>{"size_1"}},
+             {"group_2", std::vector<std::string>{"size_1", "size_2"}},
+             {"group_3", std::vector<std::string>{"size_3"}}}};
+        result.auction_server_request_flags = {
+            blink::AuctionServerRequestFlagsEnum::kOmitAds,
+            blink::AuctionServerRequestFlagsEnum::kIncludeFullAds};
         // Note that `additional_bid_key` can only be set for negative
         // interest groups, so cannot be set here.
-        .SetAggregationCoordinatorOrigin(
-            url::Origin::Create(GURL("https://coordinator.test/")))
-        .Build();
+        result.aggregation_coordinator_origin =
+            url::Origin::Create(GURL("https://coordinator.test/"));
+        break;
+      default:
+        ADD_FAILURE()
+            << "Requested version number " << version_number
+            << " isn't currently supported by ProduceAllFields(). Please "
+               "update ProduceAllFields() for this version -- and if "
+               "appropriate, mark this version's `version_changed_ig_fields` "
+               "as false.";
+    }
+
+    // Set to a valid non-expired time, to match InterestGroupBuilder. Note that
+    // Now() will change each run (time starts at the actual current time, even
+    // with MOCK_TIME), so upgrade tests will need to ignore the expiry.
+    result.expiry = base::Time::Now() + base::Days(30);
+
+    return result;
   }
 
   // This test is in a helper function so that it can also be run after
@@ -1677,9 +1768,7 @@ TEST_F(InterestGroupStorageTest, DumpAllIgFields) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("dump-all-ig-fields")) {
     // This is not part of the proper test, but rather serves as a utility run
     // on developer workstations for generating new autogenSchemaV[n].sql files
-    // from the current database -- these are used by upgrade tests.
-    // TODO(crbug.com/355010821): Include the specific name of test that does
-    // this once implemented.
+    // from the current database -- these are used by MultiVersionUpgradeTest.
     {
       blink::InterestGroup full = ProduceAllFields();
       std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -2841,6 +2930,91 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV16) {
   std::optional<base::Time> last_reported =
       storage->GetLastKAnonymityReported(key_without_ig_in_ig_table);
   EXPECT_EQ(last_reported, base::Time::Min() + base::Microseconds(8));
+}
+
+TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
+  constexpr char kMisssingFileError[] =
+      "You can generate the missing .sql file for the current database "
+      "version by running: "
+      "`out/Default/content_unittests "
+      "--gtest_filter=\"*InterestGroupStorage*Test*DumpAllIgFields\" "
+      "--dump-all-ig-fields` after installing sqlite3 from your package "
+      "manager -- you can also build the Chromium `sqlite_shell` GN "
+      "target and rename / symlink it on your path as sqlite3. \n\n***Make "
+      "sure to add the generated file to source control***.\n\n";
+  for (int i = kOldestAllFieldsVersion;
+       i <= InterestGroupStorage::GetCurrentVersionNumberForTesting() - 1;
+       i++) {
+    SCOPED_TRACE(i);
+
+    base::FilePath file_path;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
+    file_path = file_path.AppendASCII(base::StringPrintf(
+        "content/test/data/interest_group/autogenSchemaV%d.sql", i));
+    ASSERT_TRUE(base::PathExists(file_path))
+        << "Older .sql file " << file_path
+        << " missing -- somehow it wasn't committed when the new "
+           "version was introduced? Anyways, you can use `git reset --hard` to "
+           "go back to a commit with that version to regenerate it. Once at "
+           "that commit: \n\n"
+        << kMisssingFileError;
+
+    ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
+
+    blink::InterestGroup expected = ProduceAllFields(i);
+
+    // Upgrade and read.
+    {
+      std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+      ASSERT_TRUE(storage);
+
+      std::vector<StorageInterestGroup> interest_groups =
+          storage->GetAllInterestGroupsUnfilteredForTesting();
+
+      ASSERT_EQ(1u, interest_groups.size());
+      const blink::InterestGroup& actual = interest_groups[0].interest_group;
+      // Don't compare `expiry` as it changes every test run.
+      expected.expiry = actual.expiry;
+      IgExpectEqualsForTesting(expected, actual);
+    }
+
+    // Make sure the database still works if we open it again.
+    {
+      std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+      std::vector<StorageInterestGroup> interest_groups =
+          storage->GetAllInterestGroupsUnfilteredForTesting();
+
+      ASSERT_EQ(1u, interest_groups.size());
+      const blink::InterestGroup& actual = interest_groups[0].interest_group;
+      // Don't compare `expiry` as it changes every test run.
+      expected.expiry = actual.expiry;
+      IgExpectEqualsForTesting(expected, actual);
+
+      bool version_changed_ig_fields;
+      blink::InterestGroup next_version_expected =
+          ProduceAllFields(i + 1, &version_changed_ig_fields);
+      if (version_changed_ig_fields) {
+        // Make sure IgExpect[Not]EqualsForTesting() gets updated to compare the
+        // newly introduced field(s).
+        next_version_expected.expiry = actual.expiry;
+        IgExpectNotEqualsForTesting(next_version_expected, actual);
+      }
+    }
+
+    // Delete the database in case we loop again, creating the database from
+    // another .sql file.
+    base::DeleteFile(db_path());
+  }
+
+  // Make sure the current version .sql dump gets produced when introducing new
+  // versions -- it's up to the author to add it to the CL.
+  base::FilePath file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
+  file_path = file_path.AppendASCII(base::StringPrintf(
+      "content/test/data/interest_group/autogenSchemaV%d.sql",
+      InterestGroupStorage::GetCurrentVersionNumberForTesting()));
+  ASSERT_TRUE(base::PathExists(file_path))
+      << "Missing " << file_path << " -- " << kMisssingFileError;
 }
 
 TEST_F(InterestGroupStorageTest,

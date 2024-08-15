@@ -190,7 +190,9 @@ If modifying InterestGroup fields, make sure to also modify:
 * bidder_worklet.cc (to pass the InterestGroup to generateBid())
 
 In interest_group_storage.cc, add the new field and any respective indices, add
-a new database version and migration, and migration test.
+a new database version and migration. Run InterestGroupStorageTest and follow
+the test failure message instructions to update the
+InterestGroupStorageTest.MultiVersionUpgradeTest database upgrade test.
 
 If the new field is to be updatable via dailyUpdateUrl, also update *all* of
 these:
