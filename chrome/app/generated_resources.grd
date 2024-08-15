@@ -8727,8 +8727,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
-      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_BUTTON_TEXT" desc="Text shown on the dismiss button of a Google Calendar NTP card.">
-        Hide Google Calendar
+      <message name="IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT" desc="Text shown on the dismiss button of an NTP module that specifies length of time in hours.">
+        Hide for <ph name="MODULE_TITLE">$1<ex>5</ex></ph> hours
       </message>
       <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that the Google Calendar card has been dismissed.">
         Google Calendar hidden

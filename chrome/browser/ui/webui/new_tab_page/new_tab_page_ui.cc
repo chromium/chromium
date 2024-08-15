@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -333,8 +334,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDriveTitleV2", IDS_NTP_MODULES_DRIVE_TITLE_V2},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
-      {"modulesGoogleCalendarDismissButtonText",
-       IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_BUTTON_TEXT},
+      {"modulesDismissForHoursButtonText",
+       IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT},
       {"modulesGoogleCalendarDismissToastMessage",
        IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_TOAST_MESSAGE},
       {"modulesGoogleCalendarDisableToastMessage",
@@ -417,6 +418,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
 
   source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
+
+  source->AddString(
+      "calendarModuleDismissHours",
+      base::NumberToString(
+          ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get().InHours()));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,

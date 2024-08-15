@@ -19,8 +19,9 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
   let handler: TestMock<GoogleCalendarPageHandlerRemote>;
   let module: GoogleCalendarModuleElement;
 
-  const title = `Google Calendar`;
-  const dismissToast = `Google Calendar hidden`;
+  const dismissTime = '6';
+  const dismissToast = 'Google Calendar hidden';
+  const title = 'Google Calendar';
 
   async function initializeModule(numEvents: number = 0) {
     handler.setResultFor(
@@ -34,6 +35,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     loadTimeData.overrideValues({
       modulesGoogleCalendarTitle: title,
       modulesGoogleCalendarDismissToastMessage: dismissToast,
+      modulesDismissForHoursButtonText: 'Hide for $1 hours',
+      calendarModuleDismissHours: dismissTime,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
@@ -100,5 +103,17 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
 
     // Assert.
     assertTrue(!!$$(module, 'ntp-info-dialog'));
+  });
+
+  test('include time in dismiss text', async () => {
+    await initializeModule(1);
+    assertTrue(!!module);
+
+    // Assert.
+    const dismissButton = $$(module.$.moduleHeaderElementV2, '#dismiss');
+    assertTrue(!!dismissButton);
+    assertTrue(!!dismissButton!.textContent);
+    assertEquals(
+        dismissButton!.textContent!.trim(), `Hide for ${dismissTime} hours`);
   });
 });

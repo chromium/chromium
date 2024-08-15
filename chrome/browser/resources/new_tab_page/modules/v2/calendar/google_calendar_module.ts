@@ -68,7 +68,9 @@ export class GoogleCalendarModuleElement extends
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
-          text: this.i18n('modulesGoogleCalendarDismissButtonText'),
+          text: this.i18nRecursive(
+              '', 'modulesDismissForHoursButtonText',
+              'calendarModuleDismissHours'),
         },
         {
           action: 'disable',
