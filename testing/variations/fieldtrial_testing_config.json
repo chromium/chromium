@@ -893,22 +893,6 @@
             ]
         }
     ],
-    "ArcIgnoreHoverEventAnr": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IgnoreHoverEventAnr"
-                    ],
-                    "min_os_version": "15818.0.0"
-                }
-            ]
-        }
-    ],
     "ArcLazyWebViewInit": [
         {
             "platforms": [
