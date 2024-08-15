@@ -405,7 +405,10 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:exported="false" />
+            android:exported="false">
+            <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
+        </activity>
 
         <!-- The singleInstancePerTask launch mode is required by Samsung OS to determine
              support for multi-instance in the drag & drop use case. See b/232168063 for
@@ -417,6 +420,8 @@ by a child template that "extends" this file.
             android:launchMode="singleInstancePerTask"
             android:windowNoDisplay="true"
             android:exported="false">
+            <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.dragdrop.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -529,10 +534,14 @@ by a child template that "extends" this file.
 
             {% block extra_web_rendering_activity_definitions %}
             {% endblock %}
+            <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
         </activity>
         <activity-alias android:name="com.google.android.apps.chrome.Main"
             android:targetActivity="org.chromium.chrome.browser.ChromeTabbedActivity"
             android:exported="true">
+            <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
