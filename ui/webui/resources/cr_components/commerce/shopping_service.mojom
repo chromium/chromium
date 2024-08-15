@@ -167,6 +167,15 @@ struct ProductSpecificationsProduct {
   array<ProductSpecificationsDescriptionText> summary;
 };
 
+// Describes whether different parts of the Compare feature are enabled.
+struct ProductSpecificationsFeatureState {
+  bool is_syncing_tab_compare;
+  bool can_load_full_page_ui;
+  bool can_manage_sets;
+  bool can_fetch_data;
+  bool is_allowed_for_enterprise;
+};
+
 // This struct represents information acquired from the product specifications
 // backend.
 struct ProductSpecifications {
@@ -328,8 +337,12 @@ interface ShoppingServiceHandler {
   // disclosure.
   DeclineProductSpecificationDisclosure();
 
-  // Sync user account.
+  // Sync user account for compare feature.
   ShowSyncSetupFlow();
+
+  // Get access state for compare feature.
+  GetProductSpecificationsFeatureState()
+      => (ProductSpecificationsFeatureState state);
 };
 
 // WebUI-side handler for requests from the browser.

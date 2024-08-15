@@ -19,6 +19,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -1094,6 +1095,34 @@ void ShoppingServiceHandler::DeclineProductSpecificationDisclosure() {
   pref_service_->SetTime(
       commerce::kProductSpecificationsEntryPointLastDismissedTime,
       base::Time::Now());
+}
+
+void ShoppingServiceHandler::GetProductSpecificationsFeatureState(
+    GetProductSpecificationsFeatureStateCallback callback) {
+  if (!shopping_service_ ||
+      !shopping_service_->GetProductSpecificationsService() ||
+      !shopping_service_->GetAccountChecker()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  auto state_ptr =
+      shopping_service::mojom::ProductSpecificationsFeatureState::New();
+  state_ptr->is_syncing_tab_compare = commerce::IsSyncingProductSpecifications(
+      shopping_service_->GetAccountChecker());
+  state_ptr->can_load_full_page_ui =
+      commerce::CanLoadProductSpecificationsFullPageUi(
+          shopping_service_->GetAccountChecker());
+  state_ptr->can_manage_sets = commerce::CanManageProductSpecificationsSets(
+      shopping_service_->GetAccountChecker(),
+      shopping_service_->GetProductSpecificationsService());
+  state_ptr->can_fetch_data = commerce::CanFetchProductSpecificationsData(
+      shopping_service_->GetAccountChecker());
+  state_ptr->is_allowed_for_enterprise =
+      commerce::IsProductSpecificationsAllowedForEnterprise(pref_service_);
+
+  std::move(callback).Run(std::move(state_ptr));
+  return;
 }
 
 void ShoppingServiceHandler::OnProductSpecificationsSetAdded(

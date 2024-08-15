@@ -168,6 +168,8 @@ class ShoppingServiceHandler
       const std::string& name,
       MaybeShowProductSpecificationDisclosureCallback callback) override;
   void DeclineProductSpecificationDisclosure() override;
+  void GetProductSpecificationsFeatureState(
+      GetProductSpecificationsFeatureStateCallback callback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
