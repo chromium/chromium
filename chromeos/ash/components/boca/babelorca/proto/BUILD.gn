@@ -9,6 +9,7 @@ assert(is_chromeos_ash,
 
 proto_library("proto") {
   sources = [
+    "babel_orca_message.proto",
     "tachyon.proto",
     "tachyon_common.proto",
     "tachyon_enums.proto",
