@@ -371,6 +371,8 @@ class XPy:
             # pkg-config will by default look for system-wide libs. This tells
             # it to look exclusively in the sysroot instead.
             self._env['PKG_CONFIG_SYSROOT_DIR'] = debian_sysroot
+            self._env[
+                'PKG_CONFIG_LIBDIR'] = debian_sysroot + '/usr/lib/pkgconfig'
 
             # Due to an interaction with the above flags, we must tell lzma-sys
             # explicitly to build it from source.
@@ -624,6 +626,18 @@ def GitApplyCherryPicks():
     # merged.
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                   '56d589b5bea75d08d21d7d6efb34e8527aec7635')
+
+    # TODO(https://crbug.com/357125724): Remove once compiler_builtins is fixed
+    RunCommand([
+        'git',
+        '-C',
+        RUST_SRC_DIR,
+        'revert',
+        '--no-edit',
+        '-m',
+        '1',
+        '80d8270d8488957f62fbf0df7a19dfe596be92ac',
+    ])
 
     print('Finished applying cherry-picks.')
 
