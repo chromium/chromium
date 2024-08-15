@@ -16228,6 +16228,7 @@ from previous Chrome versions.
       label="WebAppSyncGeneratedIconRetroactiveFix:enabled"/>
   <int value="-1782684481"
       label="AutofillAutoTriggerManualFallbackForCards:disabled"/>
+  <int value="-1781675786" label="SparklesForESB:enabled"/>
   <int value="-1780306716"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
   <int value="-1780174878" label="SplitTabStrip:disabled"/>
@@ -22885,6 +22886,7 @@ from previous Chrome versions.
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
+  <int value="1028801420" label="RippleForEnhancedProtection:disabled"/>
   <int value="1029230610" label="UseWritePixelsYUV:disabled"/>
   <int value="1030531340"
       label="UsernameFirstFlowWithIntermediateValuesVoting:disabled"/>
@@ -25268,6 +25270,7 @@ from previous Chrome versions.
   <int value="1998568354" label="DocumentPictureInPictureAPI:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>
   <int value="1998924792" label="MlUrlSearchBlending:enabled"/>
+  <int value="1999619901" label="SparklesForESB:disabled"/>
   <int value="2000091128" label="enable-touch-hover"/>
   <int value="2000291475"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:enabled"/>
@@ -25394,6 +25397,7 @@ from previous Chrome versions.
   <int value="2063329599"
       label="AutofillEnableAndroidNKeyForFidoAuthentication:disabled"/>
   <int value="2063420769" label="SharedHighlightingV2:disabled"/>
+  <int value="2064964530" label="RippleForEnhancedProtection:enabled"/>
   <int value="2065833330" label="CanvasContextLostInBackground:enabled"/>
   <int value="2066015302" label="QueryTiles:disabled"/>
   <int value="2066304836" label="OmniboxSteadyStateTextStyle:enabled"/>

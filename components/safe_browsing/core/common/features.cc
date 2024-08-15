@@ -252,6 +252,10 @@ constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
     &kReferrerChainParameters, "MaximumEventCount",
     /*default_value=*/100};
 
+BASE_FEATURE(kRippleForEnhancedProtection,
+             "RippleForEnhancedProtection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

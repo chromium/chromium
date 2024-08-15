@@ -1891,6 +1891,9 @@ extern const char kReplaceSyncPromosWithSignInPromosDescription[];
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 
+extern const char kRippleForEnhancedProtectionName[];
+extern const char kRippleForEnhancedProtectionDescription[];
+
 extern const char kRoundedDisplay[];
 extern const char kRoundedDisplayDescription[];
 

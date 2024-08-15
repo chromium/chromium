@@ -3285,6 +3285,12 @@ const char kRestrictGamepadAccessDescription[] =
     "Enables Permissions Policy and Secure Context restrictions on the Gamepad "
     "API";
 
+const char kRippleForEnhancedProtectionName[] =
+    "Ripple for Enhanced Protection";
+const char kRippleForEnhancedProtectionDescription[] =
+    "Enables a ripple effect that is triggered when a user enables enhanced "
+    "protection on the chrome://settings/security page.";
+
 const char kRoundedDisplay[] = "Rounded display";
 const char kRoundedDisplayDescription[] =
     "Enables rounded corners for the display";

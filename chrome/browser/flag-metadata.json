@@ -7945,6 +7945,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "safe-browsing-ripple-effect",
+    "owners": [ "awado@google.com", "jacastro@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "safety-check-extensions",
     "owners": [
       "zackhan@chromium.org",

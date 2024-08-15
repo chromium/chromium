@@ -10156,6 +10156,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsName,
      flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,
      kOsAll, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"safe-browsing-new-gms-core-api-for-browse-url-database-check",
      flag_descriptions::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckName,
@@ -12040,6 +12041,11 @@ const FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kUndoMigrationOfSyncingUserToSignedIn)},
 #endif
+
+    {"safe-browsing-ripple-effect",
+     flag_descriptions::kRippleForEnhancedProtectionName,
+     flag_descriptions::kRippleForEnhancedProtectionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(safe_browsing::kRippleForEnhancedProtection)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
