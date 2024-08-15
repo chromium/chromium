@@ -353,6 +353,15 @@ class CaptionBubbleLabel : public views::Label {
   CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
   CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
 
+  void SetMinimumHeight(int height) {
+    if (minimum_height_ == height) {
+      return;
+    }
+
+    minimum_height_ = height;
+    PreferredSizeChanged();
+  }
+
   void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
 
@@ -423,9 +432,20 @@ class CaptionBubbleLabel : public views::Label {
     }
   }
 
+  // Label:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size preferred_size =
+        views::Label::CalculatePreferredSize(available_size);
+    preferred_size.set_height(
+        std::max(minimum_height_, preferred_size.height()));
+    return preferred_size;
+  }
+
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
   std::unique_ptr<CaptionBubbleLabelAXModeObserver> ax_mode_observer_;
 #endif
+  int minimum_height_ = 0;
 };
 
 BEGIN_METADATA(CaptionBubbleLabel)
@@ -1484,17 +1504,13 @@ void CaptionBubble::UpdateContentSize() {
   int label_height = title_->GetVisible()
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
-  label_->SetPreferredSize(gfx::Size(width - kSidePaddingDip, label_height));
+  label_->SetMinimumHeight(label_height);
   auto button_size = close_button_->GetPreferredSize({});
   auto left_header_width = width - 3 * button_size.width();
   left_header_container_->SetPreferredSize(
       gfx::Size(left_header_width, button_size.height()));
 
-  auto is_live_translate_enabled = media::IsLiveTranslateEnabled();
-
-  download_progress_label_->SetPreferredSize(gfx::Size(width, content_height));
-
-  if (is_live_translate_enabled ||
+  if (media::IsLiveTranslateEnabled() ||
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     language_label_->SetPreferredSize(
         language_label_->CalculatePreferredSize({}));
