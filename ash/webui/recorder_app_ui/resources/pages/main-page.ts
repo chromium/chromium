@@ -42,7 +42,7 @@ export class MainPage extends ReactiveLitElement {
 
     recording-file-list {
       inset: 0;
-      margin: 0 16px 106px;
+      margin: 16px 16px 106px;
       position: absolute;
     }
 
