@@ -37,11 +37,11 @@ void RuleInvalidationDataBuilder::Merge(const RuleInvalidationData& other) {
                          entry.value);
   }
   if (other.universal_sibling_invalidation_set) {
-    EnsureUniversalSiblingInvalidationSet().Combine(
+    EnsureUniversalSiblingInvalidationSet()->Combine(
         *other.universal_sibling_invalidation_set);
   }
   if (other.nth_invalidation_set) {
-    EnsureNthInvalidationSet().Combine(*other.nth_invalidation_set);
+    EnsureNthInvalidationSet()->Combine(*other.nth_invalidation_set);
   }
 
   for (const auto& class_name : other.classes_in_has_argument) {

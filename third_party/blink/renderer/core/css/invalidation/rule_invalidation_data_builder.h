@@ -9,7 +9,9 @@
 
 namespace blink {
 
-class RuleInvalidationDataBuilder : public RuleInvalidationDataVisitor {
+class RuleInvalidationDataBuilder
+    : public RuleInvalidationDataVisitor<
+          RuleInvalidationDataVisitorType::kBuilder> {
  public:
   explicit RuleInvalidationDataBuilder(RuleInvalidationData&);
 

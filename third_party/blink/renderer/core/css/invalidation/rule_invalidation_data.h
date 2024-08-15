@@ -13,6 +13,8 @@
 
 namespace blink {
 
+enum class RuleInvalidationDataVisitorType;
+
 // Summarizes and indexes the contents of CSS selectors. It creates
 // invalidation sets from them and makes them available via several
 // CollectInvalidationSetForFoo methods which use the indices to quickly gather
@@ -301,6 +303,7 @@ class CORE_EXPORT RuleInvalidationData {
   friend class RuleFeatureSet;
   friend class RuleFeatureSetTest;
   friend class RuleInvalidationDataBuilder;
+  template <RuleInvalidationDataVisitorType VisitorType>
   friend class RuleInvalidationDataVisitor;
 };
 

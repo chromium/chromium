@@ -13,6 +13,23 @@ namespace blink {
 class CSSSelector;
 class StyleScope;
 
+enum class RuleInvalidationDataVisitorType { kBuilder, kTracer };
+
+// This template is used in two different scenarios:
+// 1. Builder: Iterates over CSS selectors and constructs InvalidationSets and
+//    related data based on their contents. See comments on class RuleFeatureSet
+//    for a more detailed breakdown of how these work.
+// 2. Tracer: Follows the same logic as Builder while looking at previously
+//    constructed RuleInvalidationData, without modifying it. The use case for
+//    this is reconstructing the relationships between style rules and
+//    invalidation data for developer tooling.
+//
+// The default assumption, and vast majority of usage, is the Builder scenario.
+// Method names reflect this assumption; they are held over from when this was
+// the only scenario. So in the Tracer scenario, 'Add' does not actually add
+// anything and 'Ensure' does not fill in a missing entry. Rather, they reflect
+// steps taken by the Builder that the Tracer is following in.
+template <RuleInvalidationDataVisitorType VisitorType>
 class RuleInvalidationDataVisitor {
  public:
   // Creates invalidation sets for the given CSS selector. This is done as part
@@ -22,7 +39,32 @@ class RuleInvalidationDataVisitor {
                                                const StyleScope* style_scope);
 
  protected:
-  explicit RuleInvalidationDataVisitor(RuleInvalidationData&);
+  static constexpr bool is_builder() {
+    return VisitorType == RuleInvalidationDataVisitorType::kBuilder;
+  }
+
+  // To protect the data in the Tracer scenario, we hold it as const.
+  // Declare type names that are mutable in Builder and const in Tracer.
+  using RuleInvalidationDataType =
+      std::conditional<is_builder(),
+                       RuleInvalidationData,
+                       const RuleInvalidationData>::type;
+  using InvalidationSetType = std::
+      conditional<is_builder(), InvalidationSet, const InvalidationSet>::type;
+  using SiblingInvalidationSetType =
+      std::conditional<is_builder(),
+                       SiblingInvalidationSet,
+                       const SiblingInvalidationSet>::type;
+  using InvalidationSetMapType =
+      std::conditional<is_builder(),
+                       RuleInvalidationData::InvalidationSetMap,
+                       const RuleInvalidationData::InvalidationSetMap>::type;
+  using PseudoTypeInvalidationSetMapType = std::conditional<
+      is_builder(),
+      RuleInvalidationData::PseudoTypeInvalidationSetMap,
+      const RuleInvalidationData::PseudoTypeInvalidationSetMap>::type;
+
+  explicit RuleInvalidationDataVisitor(RuleInvalidationDataType&);
 
   struct FeatureMetadata {
     DISALLOW_NEW();
@@ -475,52 +517,60 @@ class RuleInvalidationDataVisitor {
   void MarkInvalidationSetsWithinNthChild(const CSSSelector& selector,
                                           bool in_nth_child);
 
-  InvalidationSet* InvalidationSetForSimpleSelector(const CSSSelector&,
-                                                    InvalidationType,
-                                                    PositionType,
-                                                    bool in_nth_child);
+  InvalidationSetType* InvalidationSetForSimpleSelector(const CSSSelector&,
+                                                        InvalidationType,
+                                                        PositionType,
+                                                        bool in_nth_child);
 
-  InvalidationSet& EnsureClassInvalidationSet(const AtomicString& class_name,
-                                              InvalidationType,
-                                              PositionType,
-                                              bool in_nth_child);
-  InvalidationSet& EnsureAttributeInvalidationSet(
+  InvalidationSetType* EnsureClassInvalidationSet(
+      const AtomicString& class_name,
+      InvalidationType,
+      PositionType,
+      bool in_nth_child);
+  InvalidationSetType* EnsureAttributeInvalidationSet(
       const AtomicString& attribute_name,
       InvalidationType,
       PositionType,
       bool in_nth_child);
-  InvalidationSet& EnsureIdInvalidationSet(const AtomicString& id,
-                                           InvalidationType,
-                                           PositionType,
-                                           bool in_nth_child);
-  InvalidationSet& EnsurePseudoInvalidationSet(CSSSelector::PseudoType,
+  InvalidationSetType* EnsureIdInvalidationSet(const AtomicString& id,
                                                InvalidationType,
                                                PositionType,
                                                bool in_nth_child);
+  InvalidationSetType* EnsurePseudoInvalidationSet(CSSSelector::PseudoType,
+                                                   InvalidationType,
+                                                   PositionType,
+                                                   bool in_nth_child);
 
-  InvalidationSet& EnsureInvalidationSet(
-      RuleInvalidationData::InvalidationSetMap&,
-      const AtomicString& key,
-      InvalidationType,
-      PositionType,
-      bool in_nth_child);
-  InvalidationSet& EnsureInvalidationSet(
-      RuleInvalidationData::PseudoTypeInvalidationSetMap&,
-      CSSSelector::PseudoType key,
-      InvalidationType,
-      PositionType,
-      bool in_nth_child);
-  SiblingInvalidationSet& EnsureUniversalSiblingInvalidationSet();
-  NthSiblingInvalidationSet& EnsureNthInvalidationSet();
+  InvalidationSetType* EnsureInvalidationSet(InvalidationSetMapType&,
+                                             const AtomicString& key,
+                                             InvalidationType,
+                                             PositionType,
+                                             bool in_nth_child);
+  InvalidationSetType* EnsureInvalidationSet(PseudoTypeInvalidationSetMapType&,
+                                             CSSSelector::PseudoType key,
+                                             InvalidationType,
+                                             PositionType,
+                                             bool in_nth_child);
+  SiblingInvalidationSetType* EnsureUniversalSiblingInvalidationSet();
+  SiblingInvalidationSetType* EnsureNthInvalidationSet();
 
-  void AddFeaturesToInvalidationSet(InvalidationSet&,
+  void AddFeaturesToInvalidationSet(InvalidationSetType*,
                                     const InvalidationSetFeatures&);
+  static void SetWholeSubtreeInvalid(InvalidationSetType* invalidation_set);
+  static void SetInvalidatesSelf(InvalidationSetType* invalidation_set);
+  static void SetInvalidatesNth(InvalidationSetType* invalidation_set);
+  static void UpdateMaxDirectAdjacentSelectors(
+      SiblingInvalidationSetType* invalidation_set,
+      unsigned value);
 
   // Inserts the given value as a key for self-invalidation.
   // Return true if the insertion was successful. (It may fail because
   // there is no Bloom filter yet.)
   bool InsertIntoSelfInvalidationBloomFilter(const AtomicString& value,
                                              int salt);
+
+  static InvalidationSetType* EnsureSiblingDescendantInvalidationSet(
+      SiblingInvalidationSetType* invalidation_set);
 
   // Make sure that the pointer in `invalidation_set` has a single
   // reference that can be modified safely. (This is done through
@@ -544,9 +594,9 @@ class RuleInvalidationDataVisitor {
       bool in_nth_child,
       scoped_refptr<InvalidationSet>& invalidation_set);
 
-  friend struct AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext;
+  struct AddFeaturesToInvalidationSetsForLogicalCombinationInHasContext;
 
-  RuleInvalidationData& rule_invalidation_data_;
+  RuleInvalidationDataType& rule_invalidation_data_;
 };
 
 }  // namespace blink
