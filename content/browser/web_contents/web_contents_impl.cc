@@ -6049,6 +6049,16 @@ void WebContentsImpl::SaveFrameWithHeaders(
   params->set_download_source(download::DownloadSource::WEB_CONTENTS_API);
   params->set_isolation_info(rfhi.ComputeIsolationInfoForNavigation(url));
 
+  FrameTreeNode* frame_tree_node = rfhi.frame_tree_node();
+  FrameNavigationEntry* frame_navigation_entry =
+      frame_tree_node->frame_tree()
+          .controller()
+          .GetLastCommittedEntry()
+          ->GetFrameEntry(frame_tree_node);
+  if (frame_navigation_entry) {
+    params->set_initiator(frame_navigation_entry->initiator_origin());
+  }
+
   GetBrowserContext()->GetDownloadManager()->DownloadUrl(std::move(params));
 }
 
