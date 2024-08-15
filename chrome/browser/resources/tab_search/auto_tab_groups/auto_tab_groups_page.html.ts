@@ -5,7 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {AutoTabGroupsPageElement} from './auto_tab_groups_page.js';
-import {TabOrganizationState} from './tab_search.mojom-webui.js';
+import {TabOrganizationState} from '../tab_search.mojom-webui.js';
 
 export function getHtml(this: AutoTabGroupsPageElement) {
   return html`<!--_html_template_start_-->

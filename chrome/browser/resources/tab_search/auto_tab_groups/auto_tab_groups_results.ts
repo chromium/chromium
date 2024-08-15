@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import './strings.m.js';
+import '../strings.m.js';
 import './auto_tab_groups_group.js';
 import './auto_tab_groups_results_actions.js';
 
@@ -17,7 +17,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {AutoTabGroupsGroupElement} from './auto_tab_groups_group.js';
 import {getCss} from './auto_tab_groups_results.css.js';
 import {getHtml} from './auto_tab_groups_results.html.js';
-import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
+import type {TabOrganization, TabOrganizationSession} from '../tab_search.mojom-webui.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 212;

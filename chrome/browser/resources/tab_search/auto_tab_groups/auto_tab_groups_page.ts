@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import './strings.m.js';
+import '../strings.m.js';
 import './auto_tab_groups_failure.js';
 import './auto_tab_groups_in_progress.js';
 import './auto_tab_groups_not_started.js';
@@ -21,10 +21,10 @@ import type {AutoTabGroupsNotStartedElement} from './auto_tab_groups_not_started
 import {getCss} from './auto_tab_groups_page.css.js';
 import {getHtml} from './auto_tab_groups_page.html.js';
 import type {AutoTabGroupsResultsElement} from './auto_tab_groups_results.js';
-import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
-import {TabOrganizationError, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
-import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
-import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+import type {Tab, TabOrganization, TabOrganizationSession} from '../tab_search.mojom-webui.js';
+import {TabOrganizationError, TabOrganizationState, UserFeedback} from '../tab_search.mojom-webui.js';
+import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
+import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 
 const MIN_LOADING_ANIMATION_MS: number = 500;
 
