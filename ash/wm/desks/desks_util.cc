@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
@@ -212,6 +213,12 @@ bool ShouldDesksBarBeCreated() {
   // If in clamshell mode, and overview was started by faster splitscreen setup,
   // don't show the desk bar.
   return !window_util::IsInFasterSplitScreenSetupSession();
+}
+
+bool ShouldRenderDeskBarWithMiniViews() {
+  return ShouldDesksBarBeCreated() &&
+         DeskBarViewBase::GetPreferredState(DeskBarViewBase::Type::kOverview) ==
+             DeskBarViewBase::State::kExpanded;
 }
 
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {
