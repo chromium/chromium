@@ -26,9 +26,7 @@ TEST(LoggingInstallerTest, TestTruncate) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
 
   int64_t file_size = 0;
@@ -52,9 +50,7 @@ TEST(LoggingInstallerTest, TestTruncationNotNeeded) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
 
   int64_t file_size = 0;
@@ -75,9 +71,7 @@ TEST(LoggingInstallerTest, TestInUseNeedsTruncation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
   int64_t file_size = 0;
   EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
@@ -103,9 +97,7 @@ TEST(LoggingInstallerTest, TestMoveFailsNeedsTruncation) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath temp_file = temp_dir.GetPath().Append(L"temp");
-  EXPECT_EQ(static_cast<int>(test_data.size()),
-            base::WriteFile(temp_file, &test_data[0],
-                            static_cast<int>(test_data.size())));
+  EXPECT_TRUE(base::WriteFile(temp_file, test_data));
   ASSERT_TRUE(base::PathExists(temp_file));
   int64_t file_size = 0;
   EXPECT_TRUE(base::GetFileSize(temp_file, &file_size));
