@@ -2497,3 +2497,22 @@ fn hash_positive_and_negative_zero() {
         assert_eq!(rand.hash_one(k1), rand.hash_one(k2));
     }
 }
+
+#[test]
+fn test_control_character_search() {
+    // Different space circumstances
+    for n in 0..16 {
+        for m in 0..16 {
+            test_parse_err::<String>(&[(
+                &format!("\"{}\n{}\"", " ".repeat(n), " ".repeat(m)),
+                "control character (\\u0000-\\u001F) found while parsing a string at line 2 column 0",
+            )]);
+        }
+    }
+
+    // Multiple occurrences
+    test_parse_err::<String>(&[(
+        "\"\t\n\r\"",
+        "control character (\\u0000-\\u001F) found while parsing a string at line 1 column 2",
+    )]);
+}
