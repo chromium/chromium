@@ -2930,6 +2930,10 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
   }
 
   UpdateMainFrameLayoutSize();
+
+  if (RuntimeEnabledFeatures::ViewportChangesUpdateTextAutosizingEnabled()) {
+    TextAutosizer::UpdatePageInfoInAllFrames(GetPage()->MainFrame());
+  }
 }
 
 void WebViewImpl::UpdateMainFrameLayoutSize() {

@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -1235,6 +1236,7 @@ class TextAutosizerSimTest : public SimTest,
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetTextAutosizingEnabled(true);
     settings.SetTextAutosizingWindowSizeOverride(gfx::Size(400, 400));
+    settings.SetDeviceScaleAdjustment(1.5f);
   }
 };
 
@@ -1270,6 +1272,54 @@ TEST_P(TextAutosizerSimTest, CrossSiteUseCounter) {
 
   EXPECT_TRUE(
       child_doc->IsUseCounted(WebFeature::kTextAutosizedCrossSiteIframe));
+}
+
+TEST_P(TextAutosizerSimTest, ViewportChangesUpdateAutosizing) {
+  if (!RuntimeEnabledFeatures::ViewportChangesUpdateTextAutosizingEnabled()) {
+    GTEST_SKIP();
+  }
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <meta>
+    <style>
+      html { font-size: 16px; }
+      body { width: 320px; margin: 0; overflow-y: hidden; }
+    </style>
+    <div>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+      eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+      ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+      aliquip ex ea commodo consequat. Duis aute irure dolor in
+      reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+      pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+      culpa qui officia deserunt mollit anim id est laborum.
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(GetDocument()
+                   .GetViewportData()
+                   .GetViewportDescription()
+                   .IsSpecifiedByAuthor());
+
+  // The page should autosize because a meta viewport is not specified.
+  auto* div = GetDocument().QuerySelector(AtomicString("div"));
+  EXPECT_FLOAT_EQ(18.f, div->GetLayoutObject()->StyleRef().ComputedFontSize());
+
+  Element* meta = GetDocument().QuerySelector(AtomicString("meta"));
+  meta->setAttribute(html_names::kNameAttr, AtomicString("viewport"));
+  meta->setAttribute(html_names::kContentAttr,
+                     AtomicString("width=device-width"));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // The page should no longer autosize because a meta viewport is specified.
+  EXPECT_FLOAT_EQ(16.f, div->GetLayoutObject()->StyleRef().ComputedFontSize());
 }
 
 }  // namespace blink
