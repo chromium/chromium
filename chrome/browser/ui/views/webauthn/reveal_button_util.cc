@@ -7,6 +7,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 
@@ -33,5 +35,9 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
   SetToggledImageFromVectorIconWithColorId(
       button.get(), vector_icons::kVisibilityOffIcon, ui::kColorIcon,
       ui::kColorIconDisabled, kEyeIconSize);
+  views::InkDrop::Get(button.get())
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
+  button->SetHasInkDropActionOnClick(true);
+  button->SetShowInkDropWhenHotTracked(true);
   return button;
 }
