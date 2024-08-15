@@ -1157,23 +1157,6 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
 
-// Mac and Win don't generate events for Touch.
-// TODO(crbug.com/40263777): Add explicit expectations for Mac and Win.
-// Android TouchFile returns false.
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
-  // Touch "$dir".
-  base::Time access_time;
-  ASSERT_TRUE(
-      base::Time::FromString("Wed, 16 Nov 1994, 00:00:00", &access_time));
-  ASSERT_TRUE(TouchFile(dir, access_time, access_time));
-  // TODO(crbug.com/40263766): Investigate why we're getting two events
-  // here from inotify.
-  event_expecter.AddExpectedEventForPath(dir);
-  event_expecter.AddExpectedEventForPath(dir);
-  delegate.RunUntilEventsMatch(event_expecter);
-  // TODO(crbug.com/40263777): Add a test touching `subdir`.
-#endif  // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
-
   // Create "$dir/subdir/subdir_file1".
   base::FilePath subdir_file1(subdir.AppendASCII("subdir_file1"));
   ASSERT_TRUE(WriteFile(subdir_file1, "content"));
@@ -1206,18 +1189,6 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   event_expecter.AddExpectedEventForPath(dir);
 #endif
   delegate.RunUntilEventsMatch(event_expecter);
-
-// Apps cannot change file attributes on Android in /sdcard as /sdcard uses the
-// "fuse" file system, while /data uses "ext4".  Running these tests in /data
-// would be preferable and allow testing file attributes and symlinks.
-// TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
-// the |temp_dir_| in /data.
-#if !BUILDFLAG(IS_ANDROID)
-  // Modify "$dir/subdir/subdir_child_dir/child_dir_file1" attributes.
-  ASSERT_TRUE(MakeFileUnreadable(child_dir_file1));
-  event_expecter.AddExpectedEventForPath(dir);
-  delegate.RunUntilEventsMatch(event_expecter);
-#endif  // !BUILDFLAG(IS_ANDROID))
 
   // Delete "$dir/subdir/subdir_file1".
   ASSERT_TRUE(DeleteFile(subdir_file1));
@@ -1362,24 +1333,22 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
 // would be preferable and allow testing file attributes and symlinks.
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
-#define FileAttributesChanged DISABLED_FileAttributesChanged
+#define FileAttributesChanged DISABLED_NoEventWhenFileAttributesChanged
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // This test is disabled on Mac because we don't support reporting file metadata
 // changes on FSEvents.
 #if !BUILDFLAG(IS_MAC)
-TEST_F(FilePathWatcherTest, FileAttributesChanged) {
+TEST_F(FilePathWatcherTest, NoEventWhenFileAttributesChanged) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
   TestDelegate delegate;
-  AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(MakeFileUnreadable(test_file()));
-  event_expecter.AddExpectedEventForPath(test_file());
-  delegate.RunUntilEventsMatch(event_expecter);
+  delegate.SpinAndExpectNoEvents();
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
@@ -2795,10 +2764,11 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
 #if !BUILDFLAG(IS_ANDROID)
+
 // This test is disabled on Mac because we don't support reporting file metadata
 // changes on FSEvents.
 #if !BUILDFLAG(IS_MAC)
-TEST_P(FilePathWatcherWithChangeInfoTest, FileAttributesChanged) {
+TEST_P(FilePathWatcherWithChangeInfoTest, NoEventWhenFileAttributesChanged) {
   const auto matcher = testing::ElementsAre(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kModified),
@@ -2813,7 +2783,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, FileAttributesChanged) {
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(MakeFileUnreadable(test_file()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.SpinAndExpectNoEvents();
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
