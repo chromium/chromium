@@ -313,6 +313,15 @@ TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathForPathOnFileSystemType) {
           profile_, filesystem_path, storage::kFileSystemTypeSmbFs);
   EXPECT_EQ(smbfs_vfs_path, filesystem_path);
 
+  // Check: Fusebox paths are returned as passed in.
+  const base::FilePath fusebox_path =
+      base::FilePath(file_manager::util::kFuseBoxMediaPath)
+          .Append("path/to/file");
+  base::FilePath fusebox_vfs_path =
+      arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
+          profile_, fusebox_path, storage::kFileSystemTypeFuseBox);
+  EXPECT_EQ(fusebox_vfs_path, fusebox_path);
+
   // Check: Crostini paths are returned as passed in.
   const base::FilePath crostini_path =
       file_manager::util::GetCrostiniMountDirectory(profile_).Append(

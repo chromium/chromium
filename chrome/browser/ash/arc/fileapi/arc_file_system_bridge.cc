@@ -576,6 +576,7 @@ base::FilePath ArcFileSystemBridge::GetLinuxVFSPathForPathOnFileSystemType(
   switch (file_system_type) {
     case storage::FileSystemType::kFileSystemTypeDriveFs:
     case storage::FileSystemType::kFileSystemTypeSmbFs:
+    case storage::FileSystemType::kFileSystemTypeFuseBox:
       return path;
     case storage::FileSystemType::kFileSystemTypeLocal: {
       base::FilePath crostini_mount_path =

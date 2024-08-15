@@ -249,6 +249,7 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
       file_manager::util::GetCrostiniMountDirectory(profile_);
   base::FilePath system_fonts(file_manager::util::kSystemFontsPath);
   base::FilePath archive_mount(file_manager::util::kArchiveMountPath);
+  base::FilePath fusebox_path(file_manager::util::kFuseBoxMediaPath);
   if (AppendRelativePath(my_files, path, &relative_path)) {
     allowed_path = true;
     request.set_storage_location(
@@ -336,6 +337,11 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     allowed_path = true;
     request.set_storage_location(
         vm_tools::seneschal::SharePathRequest::ARCHIVE);
+  } else if (fusebox_path.AppendRelativePath(path, &relative_path)) {
+    // Allow Fusebox files and subdirs under /media/fuse/fusebox.
+    allowed_path = true;
+    request.set_storage_location(
+        vm_tools::seneschal::SharePathRequest::FUSEBOX);
   } else if (smb_service &&
              (smb_share = smb_service->GetSmbFsShareForPath(path)) &&
              AppendRelativePath(
