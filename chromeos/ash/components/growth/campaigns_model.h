@@ -75,7 +75,8 @@ enum class TriggerType {
   kAppOpened = 0,
   kCampaignsLoaded = 1,
   kEvent = 2,
-  kMaxValue = kEvent
+  kDelayedOneShotTimer = 3,
+  kMaxValue = kDelayedOneShotTimer
 };
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Trigger {

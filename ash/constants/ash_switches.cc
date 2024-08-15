@@ -733,6 +733,10 @@ const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 const char kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch[] =
     "growth-campaigns-registered-time";
 
+// Specifies the delay time to trigger campaigns for testing.
+const char kGrowthCampaignsDelayedTriggerTimeInSecs[] =
+    "growth-campaigns-delayed-trigger-time-in-secs";
+
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
 const char kGuestSession[] = "bwsi";

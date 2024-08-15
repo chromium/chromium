@@ -2010,6 +2010,18 @@ TEST_F(CampaignsManagerTest, GetCampaignTriggersWithEvent) {
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
+TEST_F(CampaignsManagerTest, GetCampaignTriggersWithDelayedOneShotTimer) {
+  growth::Trigger trigger(growth::TriggerType::kDelayedOneShotTimer);
+  campaigns_manager_->SetTrigger(std::move(trigger));
+
+  LoadComponentWithTriggerTargeting(R"([
+    {"triggerType": 3, "triggerEvents": []}
+  ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
 TEST_F(CampaignsManagerTest, GetCampaignTriggersMissmatch) {
   growth::Trigger trigger(growth::TriggerType::kAppOpened);
   campaigns_manager_->SetTrigger(std::move(trigger));
