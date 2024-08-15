@@ -179,8 +179,8 @@ void InteractiveTestPrivate::OnSequenceAborted(
              " - A RunLoop whose type is not set to kNestableTasksAllowed. "
              "Change the type and try again.\n"
              " - A check being performed on an element that has been hidden. "
-             "Wrap waiting for the hide and subsequent checks in an "
-             "Immediately() to avoid access-after-delete.";
+             "Wrap waiting for the hide and subsequent checks in a "
+             "WithoutDelay() to avoid possible access-after-delete.";
     }
     GTEST_FAIL() << "Interactive test failed " << data
                  << additional_message.str();

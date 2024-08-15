@@ -245,37 +245,36 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
 }
 
 // static
-InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
+InteractiveTestApi::StepBuilder InteractiveTestApi::EnsureNotPresent(
     ElementIdentifier element_to_check) {
-  return internal::InteractiveTestPrivate::PostTask(
-      base::StringPrintf("EnsureNotPresent( %s )",
-                         element_to_check.GetName().c_str()),
-      base::BindOnce(
-          [](ElementIdentifier id, InteractionSequence* seq,
-             TrackedElement* reference) {
-            auto* const tracker = ElementTracker::GetElementTracker();
-            auto* const element = seq->IsCurrentStepInAnyContextForTesting()
-                                      ? tracker->GetElementInAnyContext(id)
-                                      : tracker->GetFirstMatchingElement(
-                                            id, reference->context());
-            if (element) {
-              LOG(ERROR) << "Expected element " << element->ToString()
-                         << " not to be present but it was present.";
-              seq->FailForTesting();
-            }
-          },
-          element_to_check));
+  return std::move(
+      WithElement(kInteractiveTestPivotElementId,
+                  [element_to_check](InteractionSequence* seq,
+                                     TrackedElement* reference) {
+                    auto* const tracker = ElementTracker::GetElementTracker();
+                    auto* const element =
+                        seq->IsCurrentStepInAnyContextForTesting()
+                            ? tracker->GetElementInAnyContext(element_to_check)
+                            : tracker->GetFirstMatchingElement(
+                                  element_to_check, reference->context());
+                    if (element) {
+                      LOG(ERROR) << "Expected element " << element->ToString()
+                                 << " not to be present but it was present.";
+                      seq->FailForTesting();
+                    }
+                  })
+          .SetDescription(base::StringPrintf(
+              "EnsureNotPresent( %s )", element_to_check.GetName().c_str())));
 }
 
 // static
-InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
+InteractiveTestApi::StepBuilder InteractiveTestApi::EnsurePresent(
     ElementSpecifier element_to_check) {
-  return Steps(
-      FlushEvents(),
-      std::move(WithElement(element_to_check, base::DoNothing())
-                    .SetDescription(base::StringPrintf(
-                        "EnsurePresent( %s )",
-                        internal::DescribeElement(element_to_check).c_str()))));
+  return std::move(
+      WithElement(element_to_check, base::DoNothing())
+          .SetDescription(base::StringPrintf(
+              "EnsurePresent( %s )",
+              internal::DescribeElement(element_to_check).c_str())));
 }
 
 InteractionSequence::StepBuilder InteractiveTestApi::NameElement(

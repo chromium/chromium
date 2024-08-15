@@ -243,20 +243,15 @@ class InteractiveTestApi {
   [[nodiscard]] static StepBuilder WithElement(ElementSpecifier element,
                                                T&& step_callback);
 
-  // Adds steps to the sequence that ensure that `element_to_check` is not
-  // present. Flushes the current message queue to ensure that if e.g. the
-  // previous step was responding to elements being added, the
-  // `element_to_check` may not have had its shown event called yet.
-  [[nodiscard]] static MultiStep EnsureNotPresent(
+  // Ensures that `element_to_check` is not currently present/visible.
+  [[nodiscard]] static StepBuilder EnsureNotPresent(
       ElementIdentifier element_to_check);
 
-  // Opposite of EnsureNotPresent. Flushes the current message queue and then
-  // checks that the specified element is [still] present. Equivalent to:
+  // Opposite of EnsureNotPresent. Equivalent to:
   // ```
-  //   FlushEvents(),
   //   WithElement(element_to_check, base::DoNothing())
   // ```
-  [[nodiscard]] static MultiStep EnsurePresent(
+  [[nodiscard]] static StepBuilder EnsurePresent(
       ElementSpecifier element_to_check);
 
   // Specifies an element not relative to any particular other element.

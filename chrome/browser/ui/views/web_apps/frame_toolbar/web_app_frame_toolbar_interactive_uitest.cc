@@ -82,6 +82,24 @@ class WebAppFrameToolbarInteractiveUITest
     });
   }
 
+  auto CheckViewFocused(ElementSpecifier view) {
+    return std::move(
+        CheckView(
+            view,
+            [](views::View* view) {
+              if (view->HasFocus()) {
+                return true;
+              }
+              auto* const focused = view->GetFocusManager()->GetFocusedView();
+              LOG(ERROR) << "Expected " << view->GetClassName()
+                         << " to be focused, but focused view is "
+                         << (focused ? focused->GetClassName() : "(none)");
+              return false;
+            },
+            true)
+            .SetDescription("CheckViewFocused()"));
+  }
+
   auto VerifyExtensionsMenuButtonIfNeeded(bool go_forward) {
     if (IsExtensionsMenuElided()) {
       return Steps(Do([]() { base::DoNothing(); }));
@@ -89,12 +107,10 @@ class WebAppFrameToolbarInteractiveUITest
 
     if (go_forward) {
       return Steps(CycleFocusForward(),
-                   CheckViewProperty(kExtensionsMenuButtonElementId,
-                                     &views::View::HasFocus, true));
+                   CheckViewFocused(kExtensionsMenuButtonElementId));
     } else {
       return Steps(CycleFocusBackward(),
-                   CheckViewProperty(kExtensionsMenuButtonElementId,
-                                     &views::View::HasFocus, true));
+                   CheckViewFocused(kExtensionsMenuButtonElementId));
     }
   }
 
@@ -125,14 +141,10 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocusForward) {
       // Mac doesn't have a focusable toolbar by default.
       SetToolbarFocusable(),
 #endif
-      FocusToolbar(),
-      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true),
+      FocusToolbar(), CheckViewFocused(kReloadButtonElementId),
       VerifyExtensionsMenuButtonIfNeeded(/*go_forward=*/true),
-      CycleFocusForward(),
-      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
-                        true),
-      CycleFocusForward(),
-      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true));
+      CycleFocusForward(), CheckViewFocused(kToolbarAppMenuButtonElementId),
+      CycleFocusForward(), CheckViewFocused(kReloadButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
@@ -145,20 +157,17 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
       // Mac doesn't have a focusable toolbar by default.
       SetToolbarFocusable(),
 #endif
-      FocusToolbar(),
-      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true),
+      FocusToolbar(), CheckViewFocused(kReloadButtonElementId),
       VerifyExtensionsMenuButtonIfNeeded(/*go_forward=*/true),
       CycleFocusForward(),
       CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
                         true),
-      CycleFocusForward(),
-      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true),
+      CycleFocusForward(), CheckViewFocused(kReloadButtonElementId),
       CycleFocusBackward(),
       CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
                         true),
       VerifyExtensionsMenuButtonIfNeeded(/*go_forward=*/false),
-      CycleFocusBackward(),
-      CheckViewProperty(kReloadButtonElementId, &views::View::HasFocus, true));
+      CycleFocusBackward(), CheckViewFocused(kReloadButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
