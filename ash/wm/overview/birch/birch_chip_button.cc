@@ -19,7 +19,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_provider.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -246,7 +245,8 @@ void BirchChipButton::Shutdown() {
 
 void BirchChipButton::StylizeIconForItemType(
     BirchItemType type,
-    SecondaryIconType secondary_icon_type) {
+    SecondaryIconType secondary_icon_type,
+    bool use_smaller_dimension) {
   int icon_size;
   int rounded_corners;
   std::optional<ui::ColorId> background_color_id;
@@ -274,7 +274,10 @@ void BirchChipButton::StylizeIconForItemType(
     case BirchItemType::kLastActive:
     case BirchItemType::kLostMedia:
     case BirchItemType::kCoral:
-      icon_size = kFaviconSize;
+      // When `use_smaller_dimension` is true, we use the smaller app icon sizes
+      // because we have access only to smaller icons.
+      use_smaller_dimension ? icon_size = kAppIconSize
+                            : icon_size = kFaviconSize;
       rounded_corners = kFaviconCornerRadius;
       background_color_id = kIconBackgroundColorId;
       break;
@@ -348,7 +351,10 @@ void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image,
     secondary_icon_view_->SetImage(secondary_icon_image);
   }
 
-  StylizeIconForItemType(item_->GetType(), secondary_icon_type);
+  bool use_smaller_dimension = icon_image.Size().width() <= kAppIconSize ||
+                               icon_image.Size().height() <= kAppIconSize;
+  StylizeIconForItemType(item_->GetType(), secondary_icon_type,
+                         use_smaller_dimension);
 }
 
 void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {

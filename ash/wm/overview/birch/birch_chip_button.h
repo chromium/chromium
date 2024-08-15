@@ -54,8 +54,13 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
 
   void SetAddon(std::unique_ptr<views::View> addon_view);
 
+  // Stylizes the icon based on the type of the item, the type of the item's
+  // secondary icon, and whether the icon image needs to be minified.
+  // `use_smaller_dimension` will only be true for icons loaded via
+  // `DownloadImageFromUrl` in `BirchItem`.
   void StylizeIconForItemType(BirchItemType type,
-                              SecondaryIconType secondary_icon_type);
+                              SecondaryIconType secondary_icon_type,
+                              bool use_smaller_dimension);
 
   // Sets the item icon.
   void SetIconImage(const ui::ImageModel& icon_image,
