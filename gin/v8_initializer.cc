@@ -66,7 +66,7 @@ std::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
   base::RandBytes(
-      // SAFETY: This depends on callers providing a valid pointer/size pair.
+      // SAFETY: This depends on v8 providing a valid pointer/size pair.
       //
       // TODO(crbug.com/338574383): The signature is fixed as it's a callback
       // from v8, but maybe v8 can use a span.

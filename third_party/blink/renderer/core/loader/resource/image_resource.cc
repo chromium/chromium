@@ -630,6 +630,7 @@ void ImageResource::OnePartInMultipartReceived(
   }
 }
 
+// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE in the header.
 void ImageResource::MultipartDataReceived(const char* bytes, size_t size) {
   DCHECK(multipart_parser_);
   Resource::AppendData(

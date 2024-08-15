@@ -126,6 +126,7 @@ class WTF_EXPORT SegmentedBuffer {
 
   bool empty() const { return !size(); }
 
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   // TODO(crbug.com/40284755): Remove the pointer-based methods in favor of span
   // ones.
   HAS_STRICTLY_TYPED_ARG
@@ -136,6 +137,7 @@ class WTF_EXPORT SegmentedBuffer {
         // TODO(crbug.com/40284755): Remove this in favor of the span versions.
         UNSAFE_TODO(base::span(data, size)));
   }
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   HAS_STRICTLY_TYPED_ARG
   void Append(const unsigned char* data, STRICTLY_TYPED_ARG(size)) {
     ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
@@ -281,6 +283,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
     return base::AdoptRef(new SharedBuffer(std::move(data)));
   }
 
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(const char* data,
                                             STRICTLY_TYPED_ARG(size)) {
@@ -291,6 +294,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
         UNSAFE_TODO(base::span(data, size)));
   }
 
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   HAS_STRICTLY_TYPED_ARG
   static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
                                             STRICTLY_TYPED_ARG(size)) {

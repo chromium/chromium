@@ -391,6 +391,7 @@ SocketBIOAdapter* SocketBIOAdapter::GetAdapter(BIO* bio) {
   return adapter;
 }
 
+// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE in header.
 int SocketBIOAdapter::BIOWriteWrapper(BIO* bio, const char* in, int len) {
   BIO_clear_retry_flags(bio);
 
@@ -406,6 +407,7 @@ int SocketBIOAdapter::BIOWriteWrapper(BIO* bio, const char* in, int len) {
       UNSAFE_TODO(base::span(in, base::checked_cast<size_t>(len)))));
 }
 
+// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE in header.
 int SocketBIOAdapter::BIOReadWrapper(BIO* bio, char* out, int len) {
   BIO_clear_retry_flags(bio);
 

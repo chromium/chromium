@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(X11) ThrowAwaySizeRefCountedMemory final
 class COMPONENT_EXPORT(X11) SizedRefCountedMemory final
     : public base::RefCountedMemory {
  public:
-  // Safety: The caller must ensure that the `mem` buffer points to at least
+  // SAFETY: The caller must ensure that the `mem` buffer points to at least
   // `size` many bytes or Undefined Behaviour can result.
   UNSAFE_BUFFER_USAGE static scoped_refptr<SizedRefCountedMemory> From(
       scoped_refptr<UnsizedRefCountedMemory> mem,

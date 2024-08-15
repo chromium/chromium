@@ -46,7 +46,8 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
 ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
                                                      const bool* bools,
                                                      size_t len) {
-  // SAFETY: The caller must provide a valid pointer and length.
+  // SAFETY: The caller must provide a valid pointer and length, as enforced
+  // by UNSAFE_BUFFER_USAGE in the header.
   return ToJavaBooleanArray(env, UNSAFE_BUFFERS(base::span(bools, len)));
 }
 
@@ -76,6 +77,7 @@ ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
   return ScopedJavaLocalRef<jbooleanArray>(env, boolean_array);
 }
 
+// TODO(tsepez): this should be declared UNSAFE_BUFFER_USAGE in the header.
 ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
                                              const int32_t* ints,
                                              size_t len) {
@@ -101,7 +103,8 @@ ScopedJavaLocalRef<jintArray> ToJavaIntArray(JNIEnv* env,
 ScopedJavaLocalRef<jlongArray> ToJavaLongArray(JNIEnv* env,
                                                const int64_t* longs,
                                                size_t len) {
-  // SAFETY: The caller must provide a valid pointer and length.
+  // SAFETY: The caller must provide a valid pointer and length, as enforced
+  // by UNSAFE_BUFFER_USAGE in the header.
   return ToJavaLongArray(env, UNSAFE_BUFFERS(base::span(longs, len)));
 }
 
@@ -126,7 +129,8 @@ BASE_EXPORT ScopedJavaLocalRef<jlongArray> ToJavaLongArray(
 // Returns a new Java float array converted from the given C++ float array.
 BASE_EXPORT ScopedJavaLocalRef<jfloatArray>
 ToJavaFloatArray(JNIEnv* env, const float* floats, size_t len) {
-  // SAFETY: The caller must provide a valid pointer and length.
+  // SAFETY: The caller must provide a valid pointer and length, as enforced
+  // by UNSAFE_BUFFER_USAGE in the header.
   return ToJavaFloatArray(env, UNSAFE_BUFFERS(base::span(floats, len)));
 }
 
@@ -150,7 +154,8 @@ BASE_EXPORT ScopedJavaLocalRef<jfloatArray> ToJavaFloatArray(
 
 BASE_EXPORT ScopedJavaLocalRef<jdoubleArray>
 ToJavaDoubleArray(JNIEnv* env, const double* doubles, size_t len) {
-  // SAFETY: The caller must provide a valid pointer and length.
+  // SAFETY: The caller must provide a valid pointer and length, as enforced
+  // by UNSAFE_BUFFER_USAGE in the header.
   return ToJavaDoubleArray(env, UNSAFE_BUFFERS(base::span(doubles, len)));
 }
 
