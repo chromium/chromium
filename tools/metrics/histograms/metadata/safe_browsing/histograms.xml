@@ -1890,17 +1890,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.IOS.SubframeCheck.Skipped" enum="BooleanSkipped"
-    expires_after="2024-09-26">
-  <owner>ajuma@chromium.org</owner>
-  <owner>joemerramos@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether a subframe Safe Browsing check is skipped. This is recorded
-    once for every subframe navigation policy decision.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.IOS.TotalDelay" units="ms"
     expires_after="2025-01-05">
   <owner>ajuma@chromium.org</owner>

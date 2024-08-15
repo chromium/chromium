@@ -238,7 +238,6 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   bool is_main_frame = request_info.target_frame_is_main;
   if (!is_main_frame) {
-    base::UmaHistogramBoolean("SafeBrowsing.IOS.SubframeCheck.Skipped", true);
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
