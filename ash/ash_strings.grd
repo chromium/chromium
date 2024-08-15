@@ -5384,6 +5384,9 @@ No devices connected.
       <message name="IDS_ASH_MAHI_RETRY_LINK_CLICK_ACTIVATION_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the retry link is clicked">
         Retry link activated
       </message>
+      <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the learn more button is focused">
+        Learn more link. Redirect to the browser when activated
+      </message>
       <message name="IDS_ASH_MAHI_LEARN_MORE_CLICK_ACTIVATION_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the learn more button is clicked">
         Opened learn more link in the browser
       </message>

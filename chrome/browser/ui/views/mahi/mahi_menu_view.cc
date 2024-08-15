@@ -395,6 +395,8 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
                   .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
                   .SetPlaceholderText(
                       l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER))
+                  .SetAccessibleName(
+                      l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER))
                   .SetProperty(
                       views::kFlexBehaviorKey,
                       views::FlexSpecification(views::FlexSpecification(

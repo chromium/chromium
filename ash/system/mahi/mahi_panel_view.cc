@@ -718,6 +718,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
               views::Builder<views::Link>()
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
+                  .SetAccessibleName(l10n_util::GetStringUTF16(
+                      IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME))
                   .SetCallback(base::BindRepeating(
                       &MahiPanelView::OnLearnMoreLinkClicked,
                       weak_ptr_factory_.GetWeakPtr()))
