@@ -39,12 +39,16 @@ public class HostBrowserLauncher {
             return;
         }
 
-        launchBrowserInWebApkMode(
+        launchBrowserInWebApkModeIfSupported(
                 activity, params, null, Intent.FLAG_ACTIVITY_NEW_TASK, /* expectResult= */ false);
     }
 
-    /** Launches host browser in WebAPK mode. */
-    public static void launchBrowserInWebApkMode(
+    /**
+     * Launches host browser in WebAPK mode if the WebAPK is bound to a host browser via its
+     * AndroidManifest. Otherwise, launches a VIEW intent to the default browser, which will launch
+     * in WebAPK mode if it supports WebAPKs.
+     */
+    public static void launchBrowserInWebApkModeIfSupported(
             Activity activity,
             HostBrowserLauncherParams params,
             Bundle extraExtras,
@@ -52,8 +56,14 @@ public class HostBrowserLauncher {
             boolean expectResult) {
         ManageDataLauncherActivity.updateSiteSettingsShortcut(
                 activity.getApplicationContext(), params);
-        Intent intent = new Intent();
-        intent.setAction(ACTION_START_WEBAPK);
+        Intent intent;
+        if (HostBrowserUtils.isHostBrowserFromManifest(
+                activity.getApplicationContext(), params.getHostBrowserPackageName())) {
+            intent = new Intent();
+            intent.setAction(ACTION_START_WEBAPK);
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getStartUrl()));
+        }
         intent.setPackage(params.getHostBrowserPackageName());
         intent.setFlags(flags);
 

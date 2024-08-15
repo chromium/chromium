@@ -61,7 +61,7 @@ public class H2OLauncher {
 
         Bundle extraExtras = new Bundle();
         extraExtras.putBoolean(WebApkConstants.EXTRA_SPLASH_PROVIDED_BY_WEBAPK, true);
-        HostBrowserLauncher.launchBrowserInWebApkMode(
+        HostBrowserLauncher.launchBrowserInWebApkModeIfSupported(
                 splashActivity,
                 params,
                 extraExtras,
@@ -119,7 +119,7 @@ public class H2OLauncher {
 
         Bundle extraExtras = new Bundle();
         extraExtras.putBoolean(WebApkConstants.EXTRA_RELAUNCH, true);
-        HostBrowserLauncher.launchBrowserInWebApkMode(
+        HostBrowserLauncher.launchBrowserInWebApkModeIfSupported(
                 activity,
                 params,
                 extraExtras,

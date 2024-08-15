@@ -16,7 +16,6 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /** Contains methods for getting information about host browser. */
@@ -82,9 +81,8 @@ public class HostBrowserUtils {
 
     /**
      * Computes and returns the package name of the best host browser to launch the WebAPK. Returns
-     * null if there is either no host browsers which support WebAPKs or if the user needs to
-     * confirm the host browser selection. If the best host browser has changed, clears all of the
-     * WebAPK's cached data.
+     * null if there is either no available host browser. If the best host browser has changed,
+     * clears all of the WebAPK's cached data.
      */
     public static String computeHostBrowserPackageClearCachedDataOnChange(Context context) {
         PackageManager packageManager = context.getPackageManager();
@@ -152,9 +150,6 @@ public class HostBrowserUtils {
     public static boolean shouldLaunchInTab(HostBrowserLauncherParams params) {
         String hostBrowserPackageName = params.getHostBrowserPackageName();
         int hostBrowserMajorChromiumVersion = params.getHostBrowserMajorChromiumVersion();
-        if (!doesBrowserSupportWebApks(hostBrowserPackageName)) {
-            return true;
-        }
 
         if (TextUtils.equals(hostBrowserPackageName, ARC_INTENT_HELPER_BROWSER)) {
             return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_INTENT_HELPER_VERSION;
@@ -194,49 +189,37 @@ public class HostBrowserUtils {
         }
 
         // Gets the package name of the host browser if it is specified in AndroidManifest.xml.
-        String hostBrowserFromManifest =
-                WebApkUtils.readMetaDataFromManifest(context, WebApkMetaDataKeys.RUNTIME_HOST);
+        String hostBrowserFromManifest = getHostBrowserFromManifest(context);
         if (!TextUtils.isEmpty(hostBrowserFromManifest)) {
-            if (WebApkUtils.isInstalled(packageManager, hostBrowserFromManifest)) {
-                return hostBrowserFromManifest;
-            }
-            return null;
+            return hostBrowserFromManifest;
         }
 
         // Gets the package name of the default browser on the Android device.
         // TODO(hanxi): Investigate the best way to know which browser supports WebAPKs.
         String defaultBrowser = getDefaultBrowserPackageName(packageManager);
         if (!TextUtils.isEmpty(defaultBrowser)
-                && doesBrowserSupportWebApks(defaultBrowser)
                 && WebApkUtils.isInstalled(packageManager, defaultBrowser)) {
             return defaultBrowser;
         }
 
-        Map<String, ResolveInfo> installedBrowsers =
-                WebApkUtils.getInstalledBrowserResolveInfos(packageManager);
-        if (installedBrowsers.size() == 1) {
-            return installedBrowsers.keySet().iterator().next();
-        }
+        return null;
+    }
 
-        // If there is only one browser supporting WebAPK, and we can't decide which browser to use
-        // by looking up cache, metadata and default browser, open with that browser.
-        int numSupportedBrowsersInstalled = 0;
-        String lastSupportedBrowser = null;
-        for (String browserPackageName : installedBrowsers.keySet()) {
-            if (numSupportedBrowsersInstalled > 1) break;
-            if (doesBrowserSupportWebApks(browserPackageName)) {
-                numSupportedBrowsersInstalled++;
-                lastSupportedBrowser = browserPackageName;
-            }
-        }
-        if (numSupportedBrowsersInstalled == 1) {
-            return lastSupportedBrowser;
-        }
-
-        if (numSupportedBrowsersInstalled == 0 && installedBrowsers.containsKey(defaultBrowser)) {
-            return defaultBrowser;
+    private static String getHostBrowserFromManifest(Context context) {
+        String hostBrowserFromManifest =
+                WebApkUtils.readMetaDataFromManifest(context, WebApkMetaDataKeys.RUNTIME_HOST);
+        if (!TextUtils.isEmpty(hostBrowserFromManifest)
+                && WebApkUtils.isInstalled(context.getPackageManager(), hostBrowserFromManifest)) {
+            return hostBrowserFromManifest;
         }
         return null;
+    }
+
+    static boolean isHostBrowserFromManifest(Context context, String hostBrowser) {
+        if (TextUtils.isEmpty(hostBrowser)) {
+            return false;
+        }
+        return TextUtils.equals(hostBrowser, getHostBrowserFromManifest(context));
     }
 
     /** Returns the package name of the host browser cached in the SharedPreferences. */
