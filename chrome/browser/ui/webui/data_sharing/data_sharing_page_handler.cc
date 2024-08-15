@@ -28,6 +28,7 @@ DataSharingPageHandler::DataSharingPageHandler(
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_id, /*oauth_consumer_name=*/"data_sharing", /*scopes=*/
       {GaiaConstants::kPeopleApiReadWriteOAuth2Scope,
+       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
        GaiaConstants::kClearCutOAuth2Scope},
       base::BindOnce(&DataSharingPageHandler::OnAccessTokenFetched,
                      base::Unretained(this)),
