@@ -139,6 +139,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -2097,11 +2098,13 @@ public class TabGridDialogTest {
 
         // For devices with version higher or equal to O_MR1 and use light color navigation bar,
         // make sure that the color of navigation bar is changed by dialog scrim.
+        // Skip if Chrome is drawing edge to edge as navigation bar will stay transparent.
         Resources resources = cta.getResources();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1
                 || !resources.getBoolean(R.bool.window_light_navigation_bar)
                 || isTablet(cta)
-                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()) {
+                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()
+                || EdgeToEdgeUtils.isEnabled()) {
             return;
         }
         @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);
