@@ -8,6 +8,7 @@ from typing import List
 from typing import Optional
 
 import java_types
+import common
 
 _MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
     'abstract',
@@ -394,7 +395,7 @@ def _parse_jni_namespace(contents):
   return m[0]
 
 
-def _do_parse(filename, *, package_prefix):
+def _do_parse(filename, *, package_prefix, package_prefix_filter):
   assert not filename.endswith('.kt'), (
       f'Found {filename}, but Kotlin is not supported by JNI generator.')
   with open(filename) as f:
@@ -409,7 +410,8 @@ def _do_parse(filename, *, package_prefix):
     raise ParseError(
         f'Found class "{outer_class.name}" but expected "{expected_name}".')
 
-  if package_prefix:
+  if package_prefix and common.should_rename_package(
+      outer_class.package_with_dots, package_prefix_filter):
     outer_class = outer_class.make_prefixed(package_prefix)
     nested_classes = [c.make_prefixed(package_prefix) for c in nested_classes]
 
@@ -443,9 +445,14 @@ def _do_parse(filename, *, package_prefix):
   return ret
 
 
-def parse_java_file(filename, *, package_prefix=None):
+def parse_java_file(filename,
+                    *,
+                    package_prefix=None,
+                    package_prefix_filter=None):
   try:
-    return _do_parse(filename, package_prefix=package_prefix)
+    return _do_parse(filename,
+                     package_prefix=package_prefix,
+                     package_prefix_filter=package_prefix_filter)
   except Exception as e:
     note = f' (when parsing {filename})'
     if e.args and isinstance(e.args[0], str):

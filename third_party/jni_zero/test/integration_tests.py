@@ -52,6 +52,7 @@ class CliOptions:
     self.header_path = None
     self.enable_jni_multiplexing = False
     self.package_prefix = None
+    self.package_prefix_filter = None
     self.use_proxy_hash = False
     self.extra_include = None if is_final else _EXTRA_INCLUDES
     self.module_name = None
@@ -69,6 +70,8 @@ class CliOptions:
       ret.append('--enable-jni-multiplexing')
     if self.package_prefix:
       ret += ['--package-prefix', self.package_prefix]
+    if self.package_prefix_filter:
+      ret += ['--package-prefix-filter', self.package_prefix_filter]
     if self.use_proxy_hash:
       ret.append('--use-proxy-hash')
     if self.output_dir:
@@ -460,6 +463,12 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration(['SampleForTests.java'],
                                  srcjar=True,
                                  package_prefix='this.is.a.package.prefix')
+
+  def testPackagePrefixWithFilter(self):
+    self._TestEndToEndGeneration(['SampleForTests.java'],
+                                 srcjar=True,
+                                 package_prefix='this.is.a.package.prefix',
+                                 package_prefix_filter='org.jni_zero')
 
   def testPackagePrefixWithManualRegistration(self):
     self._TestEndToEndRegistration(['SampleForAnnotationProcessor.java'],

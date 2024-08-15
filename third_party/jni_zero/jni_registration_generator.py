@@ -41,8 +41,10 @@ MERGEABLE_KEYS = [
 ]
 
 
-def _ParseHelper(package_prefix, path):
-  return parse.parse_java_file(path, package_prefix=package_prefix)
+def _ParseHelper(package_prefix, package_prefix_filter, path):
+  return parse.parse_java_file(path,
+                               package_prefix=package_prefix,
+                               package_prefix_filter=package_prefix_filter)
 
 
 def _LoadJniObjs(paths, options):
@@ -56,7 +58,8 @@ def _LoadJniObjs(paths, options):
           for pf in parsed_files
       ]
   else:
-    func = functools.partial(_ParseHelper, options.package_prefix)
+    func = functools.partial(_ParseHelper, options.package_prefix,
+                             options.package_prefix_filter)
     with multiprocessing.Pool() as pool:
       for pf in pool.imap_unordered(func, paths):
         ret[pf.filename] = [
@@ -134,11 +137,13 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
   short_gen_jni_class = proxy.get_gen_jni_class(
       short=True,
       name_prefix=options.module_name,
-      package_prefix=options.package_prefix)
+      package_prefix=options.package_prefix,
+      package_prefix_filter=options.package_prefix_filter)
   full_gen_jni_class = proxy.get_gen_jni_class(
       short=False,
       name_prefix=options.module_name,
-      package_prefix=options.package_prefix)
+      package_prefix=options.package_prefix,
+      package_prefix_filter=options.package_prefix_filter)
   if options.use_proxy_hash or options.enable_jni_multiplexing:
     gen_jni_class = short_gen_jni_class
   else:
@@ -602,7 +607,8 @@ class DictionaryGenerator(object):
     self.gen_jni_class = proxy.get_gen_jni_class(
         short=options.use_proxy_hash or options.enable_jni_multiplexing,
         name_prefix=options.module_name,
-        package_prefix=options.package_prefix)
+        package_prefix=options.package_prefix,
+        package_prefix_filter=options.package_prefix_filter)
 
   def Generate(self):
     # GEN_JNI is handled separately.

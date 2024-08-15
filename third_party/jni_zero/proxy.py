@@ -17,13 +17,22 @@ import java_types
 _MAX_CHARS_FOR_HASHED_NATIVE_METHODS = 8
 
 
-def get_gen_jni_class(*, short=False, name_prefix=None, package_prefix=None):
+def get_gen_jni_class(*,
+                      short=False,
+                      name_prefix=None,
+                      package_prefix=None,
+                      package_prefix_filter=None):
   """Returns the JavaClass for GEN_JNI."""
   package = 'J' if short else 'org/jni_zero'
   name_prefix = name_prefix + '_' if name_prefix else ''
   name = name_prefix + ('N' if short else 'GEN_JNI')
+  gen_jni_class = java_types.JavaClass(f'{package}/{name}')
 
-  return java_types.JavaClass(f'{package}/{name}').make_prefixed(package_prefix)
+  if package_prefix and common.should_rename_package('org.jni_zero',
+                                                     package_prefix_filter):
+    return gen_jni_class.make_prefixed(package_prefix)
+
+  return gen_jni_class
 
 
 def create_hashed_method_name(non_hashed_name, is_test_only):

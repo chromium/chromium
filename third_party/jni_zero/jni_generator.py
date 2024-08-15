@@ -243,7 +243,8 @@ class JniObject:
       self.final_gen_jni_class = proxy.get_gen_jni_class(
           short=options.use_proxy_hash or options.enable_jni_multiplexing,
           name_prefix=self.module_name,
-          package_prefix=options.package_prefix)
+          package_prefix=options.package_prefix,
+          package_prefix_filter=options.package_prefix_filter)
     else:
       self.final_gen_jni_class = None
 
@@ -565,7 +566,9 @@ def GenerateFromSource(parser, args):
 
   try:
     parsed_files = [
-        parse.parse_java_file(f, package_prefix=args.package_prefix)
+        parse.parse_java_file(f,
+                              package_prefix=args.package_prefix,
+                              package_prefix_filter=args.package_prefix_filter)
         for f in args.input_files
     ]
     jni_objs = [JniObject(x, args, from_javap=False) for x in parsed_files]
@@ -584,7 +587,8 @@ def GenerateFromSource(parser, args):
       gen_jni_class = proxy.get_gen_jni_class(
           short=False,
           name_prefix=jni_objs_with_proxy_natives[0].module_name,
-          package_prefix=args.package_prefix)
+          package_prefix=args.package_prefix,
+          package_prefix_filter=args.package_prefix_filter)
       _CreateSrcJar(args.srcjar_path,
                     gen_jni_class,
                     jni_objs_with_proxy_natives,
