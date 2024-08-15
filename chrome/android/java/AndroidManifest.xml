@@ -1036,6 +1036,7 @@ by a child template that "extends" this file.
               <action android:name="android.support.customtabs.action.CustomTabsService" />
               <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
               <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
+              <category android:name="androidx.browser.customtabs.category.SetNetwork"/>
               <category android:name="androidx.browser.trusted.category.ImmersiveMode"/>
               <category android:name="androidx.browser.trusted.category.LaunchSiteSettings" />
               <category android:name="androidx.browser.trusted.category.LaunchWebApkSiteSettings"/>
