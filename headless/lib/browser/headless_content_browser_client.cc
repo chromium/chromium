@@ -311,6 +311,12 @@ bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return false;
 }
 
+bool HeadlessContentBrowserClient::
+    ShouldAllowProcessPerSiteForMultipleMainFrames(
+        content::BrowserContext* context) {
+  return false;
+}
+
 bool HeadlessContentBrowserClient::IsInterestGroupAPIAllowed(
     content::RenderFrameHost* render_frame_host,
     content::InterestGroupApiOperation operation,
