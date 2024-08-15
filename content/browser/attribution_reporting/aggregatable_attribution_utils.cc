@@ -211,21 +211,17 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
   base::Value::Dict additional_fields;
-  std::string serialized_source_time;
   switch (common_aggregatable_data->aggregatable_trigger_config
               .source_registration_time_config()) {
     case attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude:
-      serialized_source_time =
-          SerializeTimeRoundedDownToWholeDayInSeconds(source_time);
+      additional_fields.Set(
+          "source_registration_time",
+          SerializeTimeRoundedDownToWholeDayInSeconds(source_time));
       break;
     case attribution_reporting::mojom::SourceRegistrationTimeConfig::kExclude:
-      // Use a default valid but impossible value to indicate exclusion of
-      // source registration time.
-      serialized_source_time = "0";
       break;
   }
-  additional_fields.Set("source_registration_time",
-                        std::move(serialized_source_time));
+
   SetAttributionDestination(
       additional_fields, net::SchemefulSite(attribution_info.context_origin));
 
