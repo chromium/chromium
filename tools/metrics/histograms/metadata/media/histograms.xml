@@ -7779,6 +7779,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.Ui.PermissionRejectedViewAction"
+    enum="MediaRouterUiPermissionRejectedViewEvents" expires_after="2025-02-05">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Recorded when the permission rejected error is shown in the Cast/Gmc dialog
+    and when users click on the system settings link in the error message.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.Ui.{DialogType}Dialog.LoadedWithData" units="ms"
     expires_after="2025-01-01">
   <owner>takumif@chromium.org</owner>

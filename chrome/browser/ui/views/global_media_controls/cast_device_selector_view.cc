@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -223,6 +224,10 @@ void CastDeviceSelectorView::OnPermissionRejected() {
     return;
   }
   has_permission_rejected_issue_ = true;
+  media_router::MediaRouterMetrics::
+      RecordMediaRouterUiPermissionRejectedViewEvents(
+          media_router::MediaRouterUiPermissionRejectedViewEvents::
+              kGmcDialogErrorShown);
 
   auto* permission_rejected_label_ = permission_rejected_view_->AddChildView(
       std::make_unique<views::StyledLabel>());
@@ -246,6 +251,10 @@ void CastDeviceSelectorView::OnPermissionRejected() {
     // solved.
     base::mac::OpenSystemSettingsPane(
         base::mac::SystemSettingsPane::kPrivacySecurity);
+    media_router::MediaRouterMetrics::
+        RecordMediaRouterUiPermissionRejectedViewEvents(
+            media_router::MediaRouterUiPermissionRejectedViewEvents::
+                kGmcDialogLinkClicked);
   });
   permission_rejected_label_->AddStyleRange(
       gfx::Range(offset, offset + settings_text_for_link.length()),
@@ -336,6 +345,12 @@ void CastDeviceSelectorView::CloseButtonPressed() {
       global_media_controls::kMediaItemUIUpdatedViewActionHistogram,
       global_media_controls::MediaItemUIUpdatedViewAction::
           kCloseDeviceListForCasting);
+  if (has_permission_rejected_issue_) {
+    media_router::MediaRouterMetrics::
+        RecordMediaRouterUiPermissionRejectedViewEvents(
+            media_router::MediaRouterUiPermissionRejectedViewEvents::
+                kGmcDialogErrorDismissed);
+  }
   HideDevices();
 }
 

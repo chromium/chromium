@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -92,6 +93,9 @@ CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile,
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   if (permission_rejected_) {
+    MediaRouterMetrics::RecordMediaRouterUiPermissionRejectedViewEvents(
+        MediaRouterUiPermissionRejectedViewEvents::kCastDialogErrorShown);
+
     SetHelpIcon();
     size_t offset;
     std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
@@ -110,6 +114,8 @@ CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile,
       // solved.
       base::mac::OpenSystemSettingsPane(
           base::mac::SystemSettingsPane::kPrivacySecurity);
+      MediaRouterMetrics::RecordMediaRouterUiPermissionRejectedViewEvents(
+          MediaRouterUiPermissionRejectedViewEvents::kCastDialogLinkClicked);
     });
     permission_rejected_label_->AddStyleRange(
         gfx::Range(offset, offset + settings_text_for_link.length()),
@@ -147,7 +153,7 @@ void CastDialogNoSinksView::SetHelpIcon() {
                              kColorCastDialogHelpIcon, kPrimaryIconSize)),
                      0);
   icon->SetInstallFocusRingOnFocus(true);
-  icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
+  icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   auto a11y_text = l10n_util::GetStringUTF16(
       permission_rejected_
           ? IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_BUTTON
