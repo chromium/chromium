@@ -1622,6 +1622,9 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     properties = {
         "upload_bucket": "chromium-browser-libfuzzer",
         "upload_directory": "asan",
