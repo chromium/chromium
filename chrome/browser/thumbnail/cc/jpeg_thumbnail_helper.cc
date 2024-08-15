@@ -53,11 +53,7 @@ void WriteTask(base::FilePath file_path,
                base::OnceCallback<void(bool)> post_write_task) {
   DCHECK(!compressed_data.empty());
 
-  int bytes_written = base::WriteFile(
-      file_path, reinterpret_cast<const char*>(compressed_data.data()),
-      compressed_data.size());
-
-  if (bytes_written != static_cast<int>(compressed_data.size())) {
+  if (!base::WriteFile(file_path, compressed_data)) {
     base::DeleteFile(file_path);
     std::move(post_write_task).Run(false);
     return;
