@@ -631,6 +631,7 @@ protocol::Response InspectorOverlayAgent::setShowScrollBottleneckRects(
     debug_state.show_wheel_event_handler_rects = show;
     debug_state.show_main_thread_scroll_hit_test_rects = show;
     debug_state.show_main_thread_scroll_repaint_rects = show;
+    debug_state.show_raster_inducing_scroll_rects = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
   return protocol::Response::Success();

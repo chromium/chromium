@@ -287,6 +287,17 @@ SkColor4f DebugColors::MainThreadScrollRepaintRectFillColor() {
   return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 30.0f / 255.0f};
 }
 
+// Raster-inducing scroll rects in light yellow-orange.
+SkColor4f DebugColors::RasterInducingScrollRectBorderColor() {
+  return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 0.5f};
+}
+int DebugColors::RasterInducingScrollRectBorderWidth() {
+  return 2;
+}
+SkColor4f DebugColors::RasterInducingScrollRectFillColor() {
+  return {200.0f / 255.0f, 100.0f / 255.0f, 0.0f, 15.0f / 255.0f};
+}
+
 // Animation bounds are lime-green.
 SkColor4f DebugColors::LayerAnimationBoundsBorderColor() {
   return {112.0f / 255.0f, 229.0f / 255.0f, 0.0f, 1.0f};

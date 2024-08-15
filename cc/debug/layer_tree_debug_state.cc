@@ -33,6 +33,7 @@ bool LayerTreeDebugState::ShowDebugRects() const {
          show_scroll_event_handler_rects ||
          show_main_thread_scroll_hit_test_rects ||
          show_main_thread_scroll_repaint_rects ||
+         show_raster_inducing_scroll_rects ||
          show_layer_animation_bounds_rects || show_layout_shift_regions;
 }
 

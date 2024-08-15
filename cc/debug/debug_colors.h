@@ -106,6 +106,10 @@ class CC_DEBUG_EXPORT DebugColors {
   static int MainThreadScrollRepaintRectBorderWidth();
   static SkColor4f MainThreadScrollRepaintRectFillColor();
 
+  static SkColor4f RasterInducingScrollRectBorderColor();
+  static int RasterInducingScrollRectBorderWidth();
+  static SkColor4f RasterInducingScrollRectFillColor();
+
   static SkColor4f LayerAnimationBoundsBorderColor();
   static int LayerAnimationBoundsBorderWidth();
   static SkColor4f LayerAnimationBoundsFillColor();

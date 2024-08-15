@@ -48,6 +48,7 @@ enum class DebugRectType {
   kScrollEventHandler,
   kMainThreadScrollHitTest,
   kMainThreadScrollRepaint,
+  kRasterInducingScroll,
   kAnimationBounds,
   kLayoutShift,
 };
@@ -109,7 +110,9 @@ class CC_EXPORT DebugRectHistory {
   void SaveWheelEventHandlerRects(LayerTreeImpl* tree_impl);
   void SaveScrollEventHandlerRects(LayerTreeImpl* tree_impl);
   void SaveMainThreadScrollHitTestRects(LayerTreeImpl* tree_impl);
-  void SaveMainThreadScrollRepaintRects(LayerTreeImpl* tree_impl);
+  void SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+      LayerTreeImpl* tree_impl,
+      DebugRectType type);
 
   std::vector<DebugRect> debug_rects_;
 };

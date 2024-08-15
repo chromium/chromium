@@ -1103,6 +1103,12 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
         label_text.append(base::ToLowerASCII(MainThreadScrollingReason::AsText(
             debug_rects[i].main_thread_scroll_repaint_reasons)));
         break;
+      case DebugRectType::kRasterInducingScroll:
+        stroke_color = DebugColors::RasterInducingScrollRectBorderColor();
+        fill_color = DebugColors::RasterInducingScrollRectFillColor();
+        stroke_width = DebugColors::RasterInducingScrollRectBorderWidth();
+        label_text = "raster-inducing scroll (not bad)";
+        break;
       case DebugRectType::kAnimationBounds:
         stroke_color = DebugColors::LayerAnimationBoundsBorderColor();
         fill_color = DebugColors::LayerAnimationBoundsFillColor();

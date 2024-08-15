@@ -12,6 +12,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/layers/render_surface_impl.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/trees/damage_tracker.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -51,7 +52,12 @@ void DebugRectHistory::SaveDebugRectsForCurrentFrame(
     SaveMainThreadScrollHitTestRects(tree_impl);
   }
   if (debug_state.show_main_thread_scroll_repaint_rects) {
-    SaveMainThreadScrollRepaintRects(tree_impl);
+    SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+        tree_impl, DebugRectType::kMainThreadScrollRepaint);
+  }
+  if (debug_state.show_raster_inducing_scroll_rects) {
+    SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+        tree_impl, DebugRectType::kRasterInducingScroll);
   }
   if (debug_state.show_layout_shift_regions) {
     SaveLayoutShiftRects(hud_layer);
@@ -201,20 +207,23 @@ void DebugRectHistory::SaveMainThreadScrollHitTestRects(
   }
 }
 
-void DebugRectHistory::SaveMainThreadScrollRepaintRects(
-    LayerTreeImpl* tree_impl) {
-  // TODO(crbug.com/358408583): The code misses non-composited scrollers with
-  // main-thread repaint reasons.
+void DebugRectHistory::SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+    LayerTreeImpl* tree_impl,
+    DebugRectType type) {
   const auto& scroll_tree = tree_impl->property_trees()->scroll_tree();
-  for (auto* layer : *tree_impl) {
-    if (const auto* scroll_node =
-            scroll_tree.FindNodeFromElementId(layer->element_id())) {
-      if (auto reasons = scroll_node->main_thread_scrolling_reasons) {
+  const auto& transform_tree = tree_impl->property_trees()->transform_tree();
+  for (auto& node : scroll_tree.nodes()) {
+    if (type == DebugRectType::kMainThreadScrollRepaint
+            ? scroll_tree.ShouldRealizeScrollsOnMain(node)
+            : scroll_tree.CanRealizeScrollsOnPendingTree(node)) {
+      if (const auto* transform_node = transform_tree.Node(node.transform_id);
+          transform_node && transform_tree.Node(transform_node->parent_id)) {
         debug_rects_.emplace_back(
-            DebugRectType::kMainThreadScrollRepaint,
-            MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
-                                              gfx::Rect(layer->bounds())),
-            TouchAction::kNone, reasons);
+            type, MathUtil::MapEnclosingClippedRect(
+                      // Skip the scroll translation node.
+                      transform_tree.ToScreen(transform_node->parent_id),
+                      gfx::Rect(node.container_origin,
+                                scroll_tree.container_bounds(node.id))));
       }
     }
   }
