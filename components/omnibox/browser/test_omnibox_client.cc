@@ -106,9 +106,8 @@ GURL TestOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-TestOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
-                                         bool is_prefetch) {
-  return location_bar_model_.GetPageClassification(focus_source, is_prefetch);
+TestOmniboxClient::GetPageClassification(bool is_prefetch) {
+  return location_bar_model_.GetPageClassification(is_prefetch);
 }
 
 security_state::SecurityLevel TestOmniboxClient::GetSecurityLevel() const {

@@ -94,7 +94,6 @@ class RealboxOmniboxClient final : public OmniboxClient {
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source,
       bool is_prefetch) override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
@@ -228,8 +227,7 @@ GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-RealboxOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
-                                            bool is_prefetch) {
+RealboxOmniboxClient::GetPageClassification(bool is_prefetch) {
   if (lens_searchbox_client_) {
     return lens_searchbox_client_->GetPageClassification();
   }
@@ -400,7 +398,6 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   // RealboxOmniboxClient::GetPageClassification() ignores the arguments.
   const auto page_classification =
       omnibox_controller()->client()->GetPageClassification(
-          OmniboxFocusSource::INVALID,
           /*is_prefetch=*/false);
   AutocompleteInput autocomplete_input(
       input, page_classification, ChromeAutocompleteSchemeClassifier(profile_));

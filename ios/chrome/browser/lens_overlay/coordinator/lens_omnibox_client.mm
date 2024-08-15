@@ -158,8 +158,7 @@ GURL LensOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-LensOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
-                                         bool is_prefetch) {
+LensOmniboxClient::GetPageClassification(bool is_prefetch) {
   return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 

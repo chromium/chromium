@@ -259,10 +259,9 @@ GURL ChromeOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-ChromeOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
-                                           bool is_prefetch) {
+ChromeOmniboxClient::GetPageClassification(bool is_prefetch) {
   return location_bar_->GetLocationBarModel()->GetPageClassification(
-      focus_source, is_prefetch);
+      is_prefetch);
 }
 
 security_state::SecurityLevel ChromeOmniboxClient::GetSecurityLevel() const {
