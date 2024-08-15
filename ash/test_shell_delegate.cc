@@ -23,10 +23,12 @@
 #include "ash/system/focus_mode/test/test_focus_mode_delegate.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/test_system_sounds_delegate.h"
+#include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_metrics.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -111,7 +113,7 @@ std::unique_ptr<UserEducationDelegate>
 TestShellDelegate::CreateUserEducationDelegate() const {
   return user_education_delegate_factory_
              ? user_education_delegate_factory_.Run()
-             : nullptr;
+             : std::make_unique<testing::NiceMock<MockUserEducationDelegate>>();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
