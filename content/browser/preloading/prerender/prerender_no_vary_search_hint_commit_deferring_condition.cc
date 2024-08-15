@@ -197,7 +197,26 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
     using FinishedReason = PrerenderHost::WaitingForHeadersFinishedReason;
     auto reason = FinishedReason::kNoVarySearchHeaderNotReceived;
     if (prerender_host.no_vary_search_parse_error().has_value()) {
-      reason = FinishedReason::kNoVarySearchHeaderParseFailed;
+      using ParseError = network::mojom::NoVarySearchParseError;
+      switch (prerender_host.no_vary_search_parse_error().value()) {
+        case ParseError::kOk:
+          // kOk indicates there is no header. See the definition of this enum.
+          reason = FinishedReason::kNoVarySearchHeaderNotReceived;
+          break;
+        case ParseError::kDefaultValue:
+          // kDefaultValue indicates parsing is correct but led to default
+          // value. Treat this case as header received.
+          reason = FinishedReason::kNoVarySearchHeaderReceived;
+          break;
+        case ParseError::kNotDictionary:
+        case ParseError::kUnknownDictionaryKey:
+        case ParseError::kNonBooleanKeyOrder:
+        case ParseError::kParamsNotStringList:
+        case ParseError::kExceptNotStringList:
+        case ParseError::kExceptWithoutTrueParams:
+          reason = FinishedReason::kNoVarySearchHeaderParseFailed;
+          break;
+      }
     } else if (prerender_host.no_vary_search().has_value()) {
       reason = FinishedReason::kNoVarySearchHeaderReceived;
     }
