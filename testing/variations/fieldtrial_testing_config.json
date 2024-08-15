@@ -6639,6 +6639,48 @@
             ]
         }
     ],
+    "CrOSLateBootSplitGenerations": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_swappiness_60",
+                    "enable_features": [
+                        "CrOSLateBootSplitGenerations"
+                    ]
+                },
+                {
+                    "name": "enabled_swappiness_140",
+                    "params": {
+                        "Swappiness": "140"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSplitGenerations"
+                    ]
+                },
+                {
+                    "name": "enabled_swappiness_180",
+                    "params": {
+                        "Swappiness": "180"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSplitGenerations"
+                    ]
+                },
+                {
+                    "name": "enabled_swappiness_195",
+                    "params": {
+                        "Swappiness": "195"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSplitGenerations"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSwapZramCompAlgorithm": [
         {
             "platforms": [
