@@ -4440,6 +4440,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.HappinessTrackingSurvey.{SurveyName}"
+    enum="HappinessTrackingSurvey" expires_after="2025-08-13">
+  <owner>zhouzj@google.com</owner>
+  <owner>fjacky@google.com</owner>
+  <summary>
+    Records the responses for HaTS questions. Emitted during the lifecycle of a
+    survey and when a user answers any question on a HaTS survey.
+  </summary>
+  <token key="SurveyName">
+    <variant name="Sentiment"/>
+  </token>
+</histogram>
+
 <histogram name="Feedback.RedactionTool" enum="PIIType"
     expires_after="2025-01-26">
   <owner>nikj@google.com</owner>

@@ -136,6 +136,7 @@ namespace {
 
 constexpr char kHatsSurveyProbability[] = "probability";
 constexpr char kHatsSurveyEnSiteID[] = "en_site_id";
+constexpr char kHatsSurveyHistogramName[] = "hats_histogram_name";
 constexpr double kHatsSurveyProbabilityDefault = 0;
 
 // Survey configs must always be hardcoded here, so that they require review
@@ -567,7 +568,8 @@ SurveyConfig::SurveyConfig(
     const std::string& trigger,
     const std::optional<std::string>& presupplied_trigger_id,
     const std::vector<std::string>& product_specific_bits_data_fields,
-    const std::vector<std::string>& product_specific_string_data_fields)
+    const std::vector<std::string>& product_specific_string_data_fields,
+    bool log_responses_to_uma)
     : trigger(trigger),
       product_specific_bits_data_fields(product_specific_bits_data_fields),
       product_specific_string_data_fields(product_specific_string_data_fields) {
@@ -590,6 +592,12 @@ SurveyConfig::SurveyConfig(
                                       : base::FeatureParam<std::string>(
                                             feature, kHatsSurveyEnSiteID, "")
                                             .Get();
+
+  if (log_responses_to_uma) {
+    histogram_name =
+        base::FeatureParam<std::string>(feature, kHatsSurveyHistogramName, "")
+            .Get();
+  }
 
   user_prompted =
       base::FeatureParam<bool>(feature, "user_prompted", false).Get();

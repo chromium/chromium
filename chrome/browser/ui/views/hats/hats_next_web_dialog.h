@@ -41,6 +41,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
  public:
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
+                    const std::optional<std::string>& histogram_name,
                     base::OnceClosure success_callback,
                     base::OnceClosure failure_callback,
                     const SurveyBitsData& product_specific_bits_data,
@@ -61,20 +62,45 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   bool GetEnableTesting() override;
   std::vector<std::string> GetLanguageList() override;
   base::Value::Dict GetProductSpecificDataJson() override;
+  std::optional<std::string> GetHistogramName();
   void OnSurveyLoaded() override;
   void OnSurveyCompleted() override;
   void OnSurveyClosed() override;
-  void OnSurveyQuestionAnswered(std::string& state);
+  void OnSurveyQuestionAnswered(const std::string& state);
+
+  static bool ParseSurveyQuestionAnswer(const std::string& input,
+                                        int* question,
+                                        std::vector<int>* answers);
+
+  enum class SurveyHistogramEnumeration {
+    kSurveyLoadedEnumeration = 2,
+    kSurveyCompletedEnumeration = 3,
+    kSurveyQuestionAnswerParseError = 8,
+    kSurveyUnknownState = 9
+  };
 
  protected:
   friend class MockHatsNextWebDialog;
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, SurveyLoaded);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyLoadedWithHistogramName);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyQuestionAnsweredFirstQuestion);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyQuestionAnsweredSingleSelectQuestion);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyQuestionAnsweredMultipleSelectQuestion);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyQuestionAnsweredMultipleQuestions);
+  FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest,
+                           SurveyLoadedWithHistogramName);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, DialogResize);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, MaximumSize);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, ZoomLevel);
 
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
+                    const std::optional<std::string>& histogram_name,
                     const GURL& hats_survey_url_,
                     const base::TimeDelta& timeout,
                     base::OnceClosure success_callback,
@@ -112,6 +138,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   // Returns whether the dialog is still waiting for the survey to load.
   bool IsWaitingForSurveyForTesting();
 
+  // Returns the UMA histogram bucket for a question/answer combination.
+  int GetHistogramBucket(int question, int answer);
+
  private:
   // A timer to prevent unresponsive loading of survey dialog.
   base::OneShotTimer loading_timer_;
@@ -123,6 +152,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
 
   // The HaTS Next survey trigger ID that is provided to the HaTS webpage.
   const std::string trigger_id_;
+
+  // The UMA histogram name associated with the HaTS survey.
+  const std::optional<std::string> histogram_name_;
 
   // Whether the web contents has communicated a loaded state.
   bool received_survey_loaded_ = false;
