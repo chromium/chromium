@@ -1265,6 +1265,7 @@ test("views_unittests") {
     "controls/combobox/combobox_unittest.cc",
     "controls/editable_combobox/editable_combobox_unittest.cc",
     "controls/editable_combobox/editable_password_combobox_unittest.cc",
+    "controls/focus_ring_unittest.cc",
     "controls/image_view_unittest.cc",
     "controls/label_unittest.cc",
     "controls/link_fragment_unittest.cc",

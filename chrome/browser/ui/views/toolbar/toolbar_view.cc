@@ -841,36 +841,20 @@ void ToolbarView::Layout(PassKey) {
     UpdateClipPath();
   }
 
-  // Use two-pass solution to avoid the overflow button interfering with toolbar
-  // element space allocation. The button itself should just be an indicator of
-  // overflow, not the cause (see crbug.com/1484294). In the first pass, hide
-  // the overflow button and calculate other buttons' visibility to determine if
-  // overflow occurs. Do NOT explicitly call LayoutSuperclass() in the first
-  // pass to prevent animation conflicts with the second pass (see
-  // crbug.com/1517065). The second pass will set the overflow button visibility
-  // to the overflow state determined by the first pass.
-  // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
-    // TODO(crbug.com/40939901) Move this logic into LayoutManager.
-    views::ManualLayoutUtil manual_layout_util(layout_manager_);
+    // Need to determine whether the overflow button should be visible, and only
+    // update it if the visibility changes.
     const bool was_overflow_button_visible =
         toolbar_controller_->overflow_button()->GetVisible();
-    manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
-                                     true);
-
-    if (toolbar_controller_->ShouldShowOverflowButton(size())) {
-      // This is the second pass layout that shows overflow button if necessary.
-      manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
-                                       false);
-      if (!was_overflow_button_visible) {
-        base::RecordAction(
-            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonShown"));
-      }
-    } else {
-      if (was_overflow_button_visible) {
-        base::RecordAction(
-            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonHidden"));
-      }
+    const bool show_overflow_button =
+        toolbar_controller_->ShouldShowOverflowButton(size());
+    if (was_overflow_button_visible != show_overflow_button) {
+      views::ManualLayoutUtil(layout_manager_)
+          .SetViewHidden(toolbar_controller_->overflow_button(),
+                         !show_overflow_button);
+      base::RecordAction(base::UserMetricsAction(
+          show_overflow_button ? "ResponsiveToolbar.OverflowButtonShown"
+                               : "ResponsiveToolbar.OverflowButtonHidden"));
     }
   }
 

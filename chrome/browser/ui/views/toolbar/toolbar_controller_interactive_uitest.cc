@@ -453,14 +453,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
   EXPECT_FALSE(overflow_button()->GetVisible());
 }
 
-// TODO(crbug.com/41495158): These are all flaky due to layout loops and
-// oscillations of the overflow button from visible->not visible->visible during
-// layout.
-//
-// The tests are not reliable enough to run on Linux or Lacros; the layout code
-// itself needs to be rewritten.
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
   RunTestSequence(
       Do([this]() { SetBrowserWidth(overflow_threshold_width() - 1); }),
@@ -648,7 +640,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 }
 
 // TODO(crbug.com/41495158): Flaky on Windows and fails on Lacros.
-#if BUILDFLAG(IS_WIN)
+// Lacros failures are because resize doesn't actually stick.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_DoNotShowIphWhenOverflowed DISABLED_DoNotShowIphWhenOverflowed
 #else
 #define MAYBE_DoNotShowIphWhenOverflowed DoNotShowIphWhenOverflowed
@@ -663,5 +656,3 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
       MaybeShowPromo(feature_engagement::kIPHTabSearchFeature),
       PressClosePromoButton());
 }
-
-#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)

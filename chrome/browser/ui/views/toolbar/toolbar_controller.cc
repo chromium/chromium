@@ -381,14 +381,18 @@ bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
   return true;
 }
 
-bool ToolbarController::ShouldShowOverflowButton(
-    gfx::Size available_size) const {
+bool ToolbarController::ShouldShowOverflowButton(gfx::Size available_size) {
   if (ToolbarControllerUtil::PreventOverflow()) {
     return false;
   }
 
   // Once at least one button has been dropped by layout manager show overflow
-  // button.
+  // button. Be sure to exclude the overflow button from the calculation.
+  views::ManualLayoutUtil manual_layout_util(
+      static_cast<views::LayoutManagerBase*>(
+          toolbar_container_view_->GetLayoutManager()));
+  const auto exclusion =
+      manual_layout_util.TemporarilyExcludeFromLayout(overflow_button());
   views::ProposedLayout proposed_layout =
       static_cast<views::LayoutManagerBase*>(
           toolbar_container_view_->GetLayoutManager())

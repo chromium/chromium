@@ -56,7 +56,6 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment,
                                    nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(LayoutAlignment, kTableVertAlignKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kViewIgnoredByLayoutKey, false)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDecorativeViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ElementIdentifier,
                              kElementIdentifierKey,
                              ui::ElementIdentifier())
