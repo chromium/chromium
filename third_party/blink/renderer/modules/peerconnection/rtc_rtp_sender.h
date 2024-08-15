@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -42,6 +43,7 @@ class RTCRtpCapabilities;
 class RTCRtpTransceiver;
 class RTCInsertableStreams;
 class RTCStatsReport;
+class RTCRtpScriptTransform;
 
 webrtc::RtpEncodingParameters ToRtpEncodingParameters(
     ExecutionContext* context,
@@ -91,6 +93,9 @@ class RTCRtpSender final : public ScriptWrappable,
   ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   void setStreams(HeapVector<Member<MediaStream>> streams, ExceptionState&);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
+
+  RTCRtpScriptTransform* transform() { return transform_; }
+  void setTransform(RTCRtpScriptTransform*, ExceptionState& exception_state);
 
   RTCRtpSenderPlatform* web_sender();
   // Sets the track. This must be called when the |RTCRtpSenderPlatform| has its
@@ -155,6 +160,7 @@ class RTCRtpSender final : public ScriptWrappable,
   Member<RTCRtpTransceiver> transceiver_;
   bool transform_shortcircuited_ = false;
   Member<RTCInsertableStreams> encoded_streams_;
+  Member<RTCRtpScriptTransform> transform_;
 
   // Insertable Streams audio support
   base::Lock audio_underlying_source_lock_;

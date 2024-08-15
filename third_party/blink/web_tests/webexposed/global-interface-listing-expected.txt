@@ -7961,6 +7961,7 @@ interface RTCRtpSender
     getter dtmf
     getter rtcpTransport
     getter track
+    getter transform
     getter transport
     method constructor
     method createEncodedStreams
@@ -7970,6 +7971,7 @@ interface RTCRtpSender
     method replaceTrack
     method setParameters
     method setStreams
+    setter transform
 interface RTCRtpSent
     attribute @@toStringTag
     getter ackId

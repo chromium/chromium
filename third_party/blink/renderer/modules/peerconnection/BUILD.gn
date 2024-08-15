@@ -74,6 +74,8 @@ blink_modules_sources("peerconnection") {
     "rtc_encoded_audio_underlying_sink.h",
     "rtc_encoded_audio_underlying_source.cc",
     "rtc_encoded_audio_underlying_source.h",
+    "rtc_encoded_underlying_source_wrapper.cc",
+    "rtc_encoded_underlying_source_wrapper.h",
     "rtc_encoded_video_frame.cc",
     "rtc_encoded_video_frame.h",
     "rtc_encoded_video_frame_delegate.cc",

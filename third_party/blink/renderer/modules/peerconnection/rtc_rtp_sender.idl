@@ -22,4 +22,7 @@ interface RTCRtpSender {
 
     [RuntimeEnabled=RTCRtpTransport]
     Promise<sequence<RTCRtpSendStream>> replaceSendStreams();
+
+    [RuntimeEnabled=RTCRtpScriptTransform, RaisesException=Setter]
+    attribute RTCRtpScriptTransform? transform;
 };

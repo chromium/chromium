@@ -7,6 +7,7 @@
 // TODO(crbug.com/354881878): implement the rest of the spec
 [Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpScriptTransform]
 interface RTCRtpScriptTransformer : EventTarget {
+    readonly attribute ReadableStream readable;
     // Additional context added by the application to configure its transform.
     [CachedAttribute=IsOptionsDirty, CallWith=ScriptState] readonly attribute any options;
 };

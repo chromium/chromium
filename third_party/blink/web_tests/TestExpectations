@@ -2426,6 +2426,7 @@ crbug.com/354881878 external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-change-transform.https.html [ Skip Timeout ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-metadata-transform.https.html [ Skip Timeout ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform.https.html [ Skip Timeout ]
+crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-write-twice-transform.https.html [ Skip Timeout ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-generateKeyFrame.https.html [ Crash Skip ]
 crbug.com/354881878 external/wpt/webrtc-encoded-transform/script-transform-sendKeyFrameRequest.https.html [ Failure Skip ]
 

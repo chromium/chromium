@@ -5,20 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SCRIPT_TRANSFORMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SCRIPT_TRANSFORMER_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
-#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_underlying_source_wrapper.h"
 #include "third_party/blink/renderer/modules/peerconnection/serialized_data_for_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 
 namespace blink {
 
+class ReadableStream;
+
+// RTCRtpScriptTransformer is created and lives in the worker context.
 class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -31,13 +33,39 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
 
   // rtc_rtp_script_transformer.idl
   ScriptValue options(ScriptState*);
+  ReadableStream* readable() { return readable_; }
+
+  // These methods are called when an
+  // RTCRtpScriptTransform is assigned to an RTCRtpSender or RTCRtpReceiver.
+  void CreateAudioUnderlyingSource(
+      WTF::CrossThreadOnceClosure disconnect_callback_source);
+  void CreateVideoUnderlyingSource(
+      WTF::CrossThreadOnceClosure disconnect_callback_source);
 
   bool IsOptionsDirty() const;
   void Trace(Visitor*) const override;
 
+  void SetVideoTransformerCallback(
+      scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+          encoded_video_transformer);
+  void SetAudioTransformerCallback(
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+          encoded_audio_transformer);
+
  private:
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<SerializedDataForEvent> serialized_data_;
   Member<MessagePortArray> ports_;
+
+  Member<ReadableStream> readable_;
+
+  const Member<RTCEncodedUnderlyingSourceWrapper>
+      rtc_encoded_underlying_source_;
+
+  scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+      encoded_audio_transformer_;
+  scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
+      encoded_video_transformer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

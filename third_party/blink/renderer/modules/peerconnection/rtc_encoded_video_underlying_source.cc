@@ -26,10 +26,12 @@ const int RTCEncodedVideoUnderlyingSource::kMinQueueDesiredSize = -60;
 
 RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
     ScriptState* script_state,
-    WTF::CrossThreadOnceClosure disconnect_callback)
+    WTF::CrossThreadOnceClosure disconnect_callback,
+    ReadableStreamDefaultControllerWithScriptScope* override_controller)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
-      disconnect_callback_(std::move(disconnect_callback)) {
+      disconnect_callback_(std::move(disconnect_callback)),
+      controller_override_(override_controller) {
   DCHECK(disconnect_callback_);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -57,7 +59,16 @@ ScriptPromiseUntyped RTCEncodedVideoUnderlyingSource::Cancel(
 
 void RTCEncodedVideoUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
+  visitor->Trace(controller_override_);
   UnderlyingSourceBase::Trace(visitor);
+}
+
+ReadableStreamDefaultControllerWithScriptScope*
+RTCEncodedVideoUnderlyingSource::GetController() {
+  if (controller_override_) {
+    return controller_override_;
+  }
+  return Controller();
 }
 
 void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
@@ -76,13 +87,13 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
   if (!disconnect_callback_ || !GetExecutionContext()) {
     return;
   }
-  if (!Controller()) {
+  if (!GetController()) {
     // TODO(ricea): Maybe avoid dropping frames during transfer?
     DVLOG(1) << "Dropped frame due to null Controller(). This can happen "
                 "during transfer.";
     return;
   }
-  if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {
+  if (GetController()->DesiredSize() <= kMinQueueDesiredSize) {
     dropped_frames_++;
     VLOG_IF(2, (dropped_frames_ % 20 == 0))
         << "Dropped total of " << dropped_frames_
@@ -92,7 +103,7 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
 
   RTCEncodedVideoFrame* encoded_frame =
       MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(webrtc_frame));
-  Controller()->Enqueue(encoded_frame);
+  GetController()->Enqueue(encoded_frame);
 }
 
 void RTCEncodedVideoUnderlyingSource::Close() {
@@ -100,16 +111,18 @@ void RTCEncodedVideoUnderlyingSource::Close() {
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 
-  if (Controller())
-    Controller()->Close();
+  if (GetController()) {
+    GetController()->Close();
+  }
 }
 
 void RTCEncodedVideoUnderlyingSource::OnSourceTransferStartedOnTaskRunner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   // This can potentially be called before the stream is constructed and so
   // Controller() is still unset.
-  if (Controller())
-    Controller()->Close();
+  if (GetController()) {
+    GetController()->Close();
+  }
 }
 
 void RTCEncodedVideoUnderlyingSource::OnSourceTransferStarted() {

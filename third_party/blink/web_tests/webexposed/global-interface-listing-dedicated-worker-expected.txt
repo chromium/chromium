@@ -1768,6 +1768,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface RTCRtpScriptTransformer : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter options
+[Worker]     getter readable
 [Worker]     method constructor
 [Worker] interface RTCRtpSendResult
 [Worker]     attribute @@toStringTag
