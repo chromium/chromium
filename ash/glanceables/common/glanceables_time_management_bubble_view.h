@@ -200,7 +200,6 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
   }
   views::View* items_container_view() { return items_container_view_; }
   GlanceablesListFooterView* list_footer_view() { return list_footer_view_; }
-  GlanceablesErrorMessageView* error_message() { return error_message_; }
 
   ui::ComboboxModel* combobox_model() { return combobox_model_.get(); }
 

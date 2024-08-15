@@ -25,15 +25,11 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
-#include "ash/style/counter_expand_button.h"
-#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
-#include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -45,23 +41,16 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -282,6 +271,12 @@ void GlanceablesTasksView::UpdateTaskLists(
                      active_task_list->title, ListShownContext::kInitialList));
 }
 
+void GlanceablesTasksView::EndResizeAnimationForTest() {
+  if (resize_animation_) {
+    resize_animation_->End();
+  }
+}
+
 void GlanceablesTasksView::OnHeaderIconPressed() {
   ActionButtonPressed(TasksLaunchSource::kHeaderButton,
                       GURL(kTasksManagementPage));
@@ -292,10 +287,89 @@ void GlanceablesTasksView::OnFooterButtonPressed() {
                       GURL(kTasksManagementPage));
 }
 
-void GlanceablesTasksView::EndResizeAnimationForTest() {
-  if (resize_animation_) {
-    resize_animation_->End();
+void GlanceablesTasksView::SelectedListChanged() {
+  if (!glanceables_util::IsNetworkConnected()) {
+    // If the network is disconnected, cancel the list change and show the error
+    // message.
+    ShowErrorMessageWithType(
+        GlanceablesTasksErrorType::kCantLoadTasksNoNetwork,
+        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+    combobox_view()->SetSelectedIndex(cached_selected_list_index_);
+    return;
   }
+
+  UpdateComboboxReplacementLabelText();
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  tasks_requested_time_ = base::TimeTicks::Now();
+  tasks_list_change_count_++;
+  ScheduleUpdateTasks(ListShownContext::kUserSelectedList);
+}
+
+void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
+  const int current_height = size().height();
+  if (current_height == 0) {
+    return;
+  }
+
+  // Child resize animation should not override the expand/collapse animation.
+  if (resize_type == ResizeAnimation::Type::kChildResize &&
+      running_resize_animation_.has_value() &&
+      *running_resize_animation_ ==
+          ResizeAnimation::Type::kContainerExpandStateChanged) {
+    return;
+  }
+
+  resize_animation_.reset();
+  running_resize_animation_.reset();
+
+  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
+    PreferredSizeChanged();
+    return;
+  }
+
+  // Check if the available height is large enough for the preferred height, so
+  // that the target height for the animation is correctly bounded.
+  const views::SizeBound available_height =
+      parent()->GetAvailableSize(this).height();
+  const int preferred_height = GetPreferredSize().height();
+  const int target_height =
+      available_height.is_bounded()
+          ? std::min(available_height.value(), preferred_height)
+          : preferred_height;
+  if (current_height == target_height) {
+    return;
+  }
+
+  // If the scroll view is in overflow, and is expected to remain in overflow
+  // after resizing, no need to animate the bubble size, as it's not actually
+  // going to change.
+  const int visible_scroll_height =
+      content_scroll_view()->GetVisibleRect().height();
+  if (resize_type == ResizeAnimation::Type::kChildResize &&
+      content_scroll_view()->contents()->height() > visible_scroll_height &&
+      content_scroll_view()->contents()->GetPreferredSize().height() >
+          visible_scroll_height) {
+    PreferredSizeChanged();
+    return;
+  }
+
+  switch (resize_type) {
+    case ResizeAnimation::Type::kContainerExpandStateChanged:
+      SetUpResizeThroughputTracker(
+          target_height > current_height
+              ? kExpandAnimationSmoothnessHistogramName
+              : kCollapseAnimationSmoothnessHistogramName);
+      break;
+    case ResizeAnimation::Type::kChildResize:
+      SetUpResizeThroughputTracker(
+          kChildResizingAnimationSmoothnessHistogramName);
+      break;
+  }
+  running_resize_animation_ = resize_type;
+  resize_animation_ = std::make_unique<ResizeAnimation>(
+      current_height, target_height, this, resize_type);
+  resize_animation_->Start();
 }
 
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
@@ -336,25 +410,6 @@ std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
                             base::Unretained(this)));
   }
   return task_view;
-}
-
-void GlanceablesTasksView::SelectedListChanged() {
-  if (!glanceables_util::IsNetworkConnected()) {
-    // If the network is disconnected, cancel the list change and show the error
-    // message.
-    ShowErrorMessageWithType(
-        GlanceablesTasksErrorType::kCantLoadTasksNoNetwork,
-        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
-    combobox_view()->SetSelectedIndex(cached_selected_list_index_);
-    return;
-  }
-
-  UpdateComboboxReplacementLabelText();
-
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  tasks_requested_time_ = base::TimeTicks::Now();
-  tasks_list_change_count_++;
-  ScheduleUpdateTasks(ListShownContext::kUserSelectedList);
 }
 
 void GlanceablesTasksView::ScheduleUpdateTasks(ListShownContext context) {
@@ -691,104 +746,6 @@ void GlanceablesTasksView::ShowErrorMessageWithType(
                    button_type);
 }
 
-void GlanceablesTasksView::AnimateTaskViewVisibility(views::View* task,
-                                                     bool visible) {
-  if (!visible) {
-    animating_task_view_layer_ = task->RecreateLayer();
-  } else {
-    task->layer()->SetOpacity(animating_task_view_layer_
-                                  ? animating_task_view_layer_->opacity()
-                                  : 0.0f);
-    animating_task_view_layer_.reset();
-  }
-
-  task->SetVisible(visible);
-
-  // Animate the transform back to the identity transform.
-  views::AnimationBuilder()
-      .OnEnded(
-          base::BindOnce(&GlanceablesTasksView::OnTaskViewAnimationCompleted,
-                         weak_ptr_factory_.GetWeakPtr()))
-      .OnAborted(
-          base::BindOnce(&GlanceablesTasksView::OnTaskViewAnimationCompleted,
-                         weak_ptr_factory_.GetWeakPtr()))
-      .Once()
-      .At(visible ? base::Milliseconds(50) : base::TimeDelta())
-      .SetOpacity(visible ? task->layer() : animating_task_view_layer_.get(),
-                  visible ? 1.0f : 0.0f, gfx::Tween::LINEAR)
-      .SetDuration(base::Milliseconds(visible ? 100 : 50));
-}
-
-void GlanceablesTasksView::OnTaskViewAnimationCompleted() {
-  animating_task_view_layer_.reset();
-}
-
-void GlanceablesTasksView::AnimateResize(ResizeAnimation::Type resize_type) {
-  const int current_height = size().height();
-  if (current_height == 0) {
-    return;
-  }
-
-  // Child resize animation should not override the expand/collapse animation.
-  if (resize_type == ResizeAnimation::Type::kChildResize &&
-      running_resize_animation_.has_value() &&
-      *running_resize_animation_ ==
-          ResizeAnimation::Type::kContainerExpandStateChanged) {
-    return;
-  }
-
-  resize_animation_.reset();
-  running_resize_animation_.reset();
-
-  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
-    PreferredSizeChanged();
-    return;
-  }
-
-  // Check if the available height is large enough for the preferred height, so
-  // that the target height for the animation is correctly bounded.
-  const views::SizeBound available_height =
-      parent()->GetAvailableSize(this).height();
-  const int preferred_height = GetPreferredSize().height();
-  const int target_height =
-      available_height.is_bounded()
-          ? std::min(available_height.value(), preferred_height)
-          : preferred_height;
-  if (current_height == target_height) {
-    return;
-  }
-
-  // If the scroll view is in overflow, and is expected to remain in overflow
-  // after resizing, no need to animate the bubble size, as it's not actually
-  // going to change.
-  const int visible_scroll_height =
-      content_scroll_view()->GetVisibleRect().height();
-  if (resize_type == ResizeAnimation::Type::kChildResize &&
-      content_scroll_view()->contents()->height() > visible_scroll_height &&
-      content_scroll_view()->contents()->GetPreferredSize().height() >
-          visible_scroll_height) {
-    PreferredSizeChanged();
-    return;
-  }
-
-  switch (resize_type) {
-    case ResizeAnimation::Type::kContainerExpandStateChanged:
-      SetUpResizeThroughputTracker(
-          target_height > current_height
-              ? kExpandAnimationSmoothnessHistogramName
-              : kCollapseAnimationSmoothnessHistogramName);
-      break;
-    case ResizeAnimation::Type::kChildResize:
-      SetUpResizeThroughputTracker(
-          kChildResizingAnimationSmoothnessHistogramName);
-      break;
-  }
-  running_resize_animation_ = resize_type;
-  resize_animation_ = std::make_unique<ResizeAnimation>(
-      current_height, target_height, this, resize_type);
-  resize_animation_->Start();
-}
-
 std::u16string GlanceablesTasksView::GetErrorString(
     GlanceablesTasksErrorType error_type) const {
   switch (error_type) {
@@ -850,6 +807,38 @@ void GlanceablesTasksView::SetIsLoading(bool is_loading) {
 
   // Disable all events in the subtree if the data fetch is ongoing.
   SetCanProcessEventsWithinSubtree(!is_loading);
+}
+
+void GlanceablesTasksView::AnimateTaskViewVisibility(views::View* task,
+                                                     bool visible) {
+  if (!visible) {
+    animating_task_view_layer_ = task->RecreateLayer();
+  } else {
+    task->layer()->SetOpacity(animating_task_view_layer_
+                                  ? animating_task_view_layer_->opacity()
+                                  : 0.0f);
+    animating_task_view_layer_.reset();
+  }
+
+  task->SetVisible(visible);
+
+  // Animate the transform back to the identity transform.
+  views::AnimationBuilder()
+      .OnEnded(
+          base::BindOnce(&GlanceablesTasksView::OnTaskViewAnimationCompleted,
+                         weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(
+          base::BindOnce(&GlanceablesTasksView::OnTaskViewAnimationCompleted,
+                         weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .At(visible ? base::Milliseconds(50) : base::TimeDelta())
+      .SetOpacity(visible ? task->layer() : animating_task_view_layer_.get(),
+                  visible ? 1.0f : 0.0f, gfx::Tween::LINEAR)
+      .SetDuration(base::Milliseconds(visible ? 100 : 50));
+}
+
+void GlanceablesTasksView::OnTaskViewAnimationCompleted() {
+  animating_task_view_layer_.reset();
 }
 
 BEGIN_METADATA(GlanceablesTasksView)

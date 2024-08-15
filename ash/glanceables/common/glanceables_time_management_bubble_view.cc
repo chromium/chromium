@@ -266,117 +266,6 @@ void GlanceablesTimeManagementBubbleView::Layout(PassKey) {
   }
 }
 
-void GlanceablesTimeManagementBubbleView::SetExpandState(
-    bool is_expanded,
-    bool expand_by_overscroll) {
-  if (is_expanded_ == is_expanded) {
-    return;
-  }
-
-  is_expanded_ = is_expanded;
-  expand_button_->SetExpanded(is_expanded);
-
-  progress_bar_->SetVisible(is_expanded_);
-  content_scroll_view_->SetVisible(is_expanded_);
-  combobox_view_->SetVisible(is_expanded_);
-  combobox_replacement_label_->SetVisible(!is_expanded_);
-
-  if (is_expanded) {
-    if (expand_by_overscroll) {
-      content_scroll_view_->LockScroll();
-    } else {
-      content_scroll_view_->UnlockScroll();
-    }
-  }
-
-  UpdateInteriorMargin();
-
-  for (auto& observer : observers_) {
-    observer.OnExpandStateChanged(context_, is_expanded_, expand_by_overscroll);
-  }
-
-  AnimateResize(ResizeAnimation::Type::kContainerExpandStateChanged);
-}
-
-int GlanceablesTimeManagementBubbleView::GetCollapsedStatePreferredHeight()
-    const {
-  return kTotalInteriorMargin * 2 +
-         combobox_replacement_label_->GetLineHeight() +
-         Combobox::kComboboxBorderInsets.height();
-}
-
-void GlanceablesTimeManagementBubbleView::SetAnimationEndedClosureForTest(
-    base::OnceClosure closure) {
-  resize_animation_ended_closure_ = std::move(closure);
-}
-
-void GlanceablesTimeManagementBubbleView::CreateComboBoxView() {
-  if (combobox_view_) {
-    header_view_->RemoveChildViewT(std::exchange(combobox_view_, nullptr));
-  }
-
-  combobox_view_ = header_view_->AddChildView(
-      std::make_unique<Combobox>(combobox_model_.get()));
-  combobox_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
-  combobox_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
-  combobox_view_->SetVisible(is_expanded_);
-
-  // Assign a default value for tooltip and accessible text.
-  combobox_view_->GetViewAccessibility().SetDescription(u"");
-  combobox_view_->SetSelectionChangedCallback(base::BindRepeating(
-      &GlanceablesTimeManagementBubbleView::SelectedListChanged,
-      base::Unretained(this)));
-}
-
-size_t GlanceablesTimeManagementBubbleView::GetComboboxSelectedIndex() const {
-  CHECK(combobox_view_->GetSelectedIndex().has_value());
-  return combobox_view_->GetSelectedIndex().value();
-}
-
-void GlanceablesTimeManagementBubbleView::UpdateComboboxReplacementLabelText() {
-  combobox_replacement_label_->SetText(
-      combobox_view_->GetTextForRow(GetComboboxSelectedIndex()));
-}
-
-void GlanceablesTimeManagementBubbleView::SetUpResizeThroughputTracker(
-    const std::string& histogram_name) {
-  if (!GetWidget()) {
-    return;
-  }
-
-  resize_throughput_tracker_.emplace(
-      GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-  resize_throughput_tracker_->Start(
-      ash::metrics_util::ForSmoothnessV3(base::BindRepeating(
-          [](const std::string& histogram_name, int smoothness) {
-            base::UmaHistogramPercentage(histogram_name, smoothness);
-          },
-          histogram_name)));
-}
-
-void GlanceablesTimeManagementBubbleView::MaybeDismissErrorMessage() {
-  if (!error_message_.get()) {
-    return;
-  }
-
-  RemoveChildViewT(std::exchange(error_message_, nullptr));
-}
-
-void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
-    const std::u16string& error_message,
-    views::Button::PressedCallback callback,
-    GlanceablesErrorMessageView::ButtonActionType type) {
-  MaybeDismissErrorMessage();
-
-  error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
-      std::move(callback), error_message, type));
-  error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-}
-
 gfx::Size GlanceablesTimeManagementBubbleView::GetMinimumSize() const {
   gfx::Size minimum_size = views::FlexLayoutView::GetMinimumSize();
   minimum_size.set_height(GetCollapsedStatePreferredHeight());
@@ -450,6 +339,50 @@ void GlanceablesTimeManagementBubbleView::CreateElevatedBackground() {
       /*is_expanded=*/false, /*expand_by_overscroll=*/true));
 }
 
+void GlanceablesTimeManagementBubbleView::SetExpandState(
+    bool is_expanded,
+    bool expand_by_overscroll) {
+  if (is_expanded_ == is_expanded) {
+    return;
+  }
+
+  is_expanded_ = is_expanded;
+  expand_button_->SetExpanded(is_expanded);
+
+  progress_bar_->SetVisible(is_expanded_);
+  content_scroll_view_->SetVisible(is_expanded_);
+  combobox_view_->SetVisible(is_expanded_);
+  combobox_replacement_label_->SetVisible(!is_expanded_);
+
+  if (is_expanded) {
+    if (expand_by_overscroll) {
+      content_scroll_view_->LockScroll();
+    } else {
+      content_scroll_view_->UnlockScroll();
+    }
+  }
+
+  UpdateInteriorMargin();
+
+  for (auto& observer : observers_) {
+    observer.OnExpandStateChanged(context_, is_expanded_, expand_by_overscroll);
+  }
+
+  AnimateResize(ResizeAnimation::Type::kContainerExpandStateChanged);
+}
+
+int GlanceablesTimeManagementBubbleView::GetCollapsedStatePreferredHeight()
+    const {
+  return kTotalInteriorMargin * 2 +
+         combobox_replacement_label_->GetLineHeight() +
+         Combobox::kComboboxBorderInsets.height();
+}
+
+void GlanceablesTimeManagementBubbleView::SetAnimationEndedClosureForTest(
+    base::OnceClosure closure) {
+  resize_animation_ended_closure_ = std::move(closure);
+}
+
 void GlanceablesTimeManagementBubbleView::UpdateInteriorMargin() {
   const bool no_bottom_margin = !GetBackground() || is_expanded_;
   SetInteriorMargin(no_bottom_margin
@@ -460,6 +393,73 @@ void GlanceablesTimeManagementBubbleView::UpdateInteriorMargin() {
                                             kInteriorGlanceableBubbleMargin,
                                             kTotalInteriorMargin,
                                             kInteriorGlanceableBubbleMargin));
+}
+
+void GlanceablesTimeManagementBubbleView::CreateComboBoxView() {
+  if (combobox_view_) {
+    header_view_->RemoveChildViewT(std::exchange(combobox_view_, nullptr));
+  }
+
+  combobox_view_ = header_view_->AddChildView(
+      std::make_unique<Combobox>(combobox_model_.get()));
+  combobox_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
+  combobox_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred));
+  combobox_view_->SetVisible(is_expanded_);
+
+  // Assign a default value for tooltip and accessible text.
+  combobox_view_->GetViewAccessibility().SetDescription(u"");
+  combobox_view_->SetSelectionChangedCallback(base::BindRepeating(
+      &GlanceablesTimeManagementBubbleView::SelectedListChanged,
+      base::Unretained(this)));
+}
+
+size_t GlanceablesTimeManagementBubbleView::GetComboboxSelectedIndex() const {
+  CHECK(combobox_view_->GetSelectedIndex().has_value());
+  return combobox_view_->GetSelectedIndex().value();
+}
+
+void GlanceablesTimeManagementBubbleView::UpdateComboboxReplacementLabelText() {
+  combobox_replacement_label_->SetText(
+      combobox_view_->GetTextForRow(GetComboboxSelectedIndex()));
+}
+
+void GlanceablesTimeManagementBubbleView::SetUpResizeThroughputTracker(
+    const std::string& histogram_name) {
+  if (!GetWidget()) {
+    return;
+  }
+
+  resize_throughput_tracker_.emplace(
+      GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+  resize_throughput_tracker_->Start(
+      ash::metrics_util::ForSmoothnessV3(base::BindRepeating(
+          [](const std::string& histogram_name, int smoothness) {
+            base::UmaHistogramPercentage(histogram_name, smoothness);
+          },
+          histogram_name)));
+}
+
+void GlanceablesTimeManagementBubbleView::MaybeDismissErrorMessage() {
+  if (!error_message_.get()) {
+    return;
+  }
+
+  RemoveChildViewT(std::exchange(error_message_, nullptr));
+}
+
+void GlanceablesTimeManagementBubbleView::ShowErrorMessage(
+    const std::u16string& error_message,
+    views::Button::PressedCallback callback,
+    GlanceablesErrorMessageView::ButtonActionType type) {
+  MaybeDismissErrorMessage();
+
+  error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
+      std::move(callback), error_message, type));
+  error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 void GlanceablesTimeManagementBubbleView::ToggleExpandState() {

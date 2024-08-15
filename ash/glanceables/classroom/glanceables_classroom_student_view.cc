@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
@@ -27,10 +26,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
-#include "ash/style/counter_expand_button.h"
-#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
-#include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -50,13 +46,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
@@ -217,6 +207,12 @@ void GlanceablesClassroomStudentView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+void GlanceablesClassroomStudentView::OnHeaderIconPressed() {
+  RecordClassroomHeaderIconPressed();
+
+  OpenUrl(GURL(kClassroomHomePage));
+}
+
 void GlanceablesClassroomStudentView::OnFooterButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_SeeAllPressed"));
@@ -233,6 +229,45 @@ void GlanceablesClassroomStudentView::OnFooterButtonPressed() {
   }
 }
 
+void GlanceablesClassroomStudentView::SelectedListChanged() {
+  SelectedAssignmentListChanged(/*initial_update=*/false);
+}
+
+void GlanceablesClassroomStudentView::AnimateResize(
+    ResizeAnimation::Type resize_type) {
+  const int current_height = size().height();
+  if (current_height == 0) {
+    return;
+  }
+  resize_animation_.reset();
+
+  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
+    PreferredSizeChanged();
+    return;
+  }
+
+  // Check if the available height is large enough for the preferred height, so
+  // that the target height for the animation is correctly bounded.
+  const views::SizeBound available_height =
+      parent()->GetAvailableSize(this).height();
+  const int preferred_height = GetPreferredSize().height();
+  const int target_height =
+      available_height.is_bounded()
+          ? std::min(available_height.value(), preferred_height)
+          : preferred_height;
+  if (current_height == target_height) {
+    return;
+  }
+
+  SetUpResizeThroughputTracker(target_height > current_height
+                                   ? kExpandAnimationSmoothnessHistogramName
+                                   : kCollapseAnimationSmoothnessHistogramName);
+  resize_animation_ = std::make_unique<ResizeAnimation>(
+      current_height, target_height, this,
+      ResizeAnimation::Type::kContainerExpandStateChanged);
+  resize_animation_->Start();
+}
+
 void GlanceablesClassroomStudentView::OpenUrl(const GURL& url) const {
   NewWindowDelegate::GetPrimary()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
@@ -245,12 +280,6 @@ void GlanceablesClassroomStudentView::OnItemViewPressed(
   RecordStudentAssignmentPressed(/*default_list=*/initial_list_selected);
 
   OpenUrl(url);
-}
-
-void GlanceablesClassroomStudentView::OnHeaderIconPressed() {
-  RecordClassroomHeaderIconPressed();
-
-  OpenUrl(GURL(kClassroomHomePage));
 }
 
 void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
@@ -320,45 +349,6 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
           IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DONE_LIST));
       return client->GetCompletedStudentAssignments(std::move(callback));
   }
-}
-
-void GlanceablesClassroomStudentView::SelectedListChanged() {
-  SelectedAssignmentListChanged(/*initial_update=*/false);
-}
-
-void GlanceablesClassroomStudentView::AnimateResize(
-    ResizeAnimation::Type resize_type) {
-  const int current_height = size().height();
-  if (current_height == 0) {
-    return;
-  }
-  resize_animation_.reset();
-
-  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
-    PreferredSizeChanged();
-    return;
-  }
-
-  // Check if the available height is large enough for the preferred height, so
-  // that the target height for the animation is correctly bounded.
-  const views::SizeBound available_height =
-      parent()->GetAvailableSize(this).height();
-  const int preferred_height = GetPreferredSize().height();
-  const int target_height =
-      available_height.is_bounded()
-          ? std::min(available_height.value(), preferred_height)
-          : preferred_height;
-  if (current_height == target_height) {
-    return;
-  }
-
-  SetUpResizeThroughputTracker(target_height > current_height
-                                   ? kExpandAnimationSmoothnessHistogramName
-                                   : kCollapseAnimationSmoothnessHistogramName);
-  resize_animation_ = std::make_unique<ResizeAnimation>(
-      current_height, target_height, this,
-      ResizeAnimation::Type::kContainerExpandStateChanged);
-  resize_animation_->Start();
 }
 
 void GlanceablesClassroomStudentView::OnGetAssignments(
@@ -432,7 +422,6 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
             &GlanceablesClassroomStudentView::MaybeDismissErrorMessage,
             base::Unretained(this)),
         GlanceablesErrorMessageView::ButtonActionType::kDismiss);
-    error_message()->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
 }
 

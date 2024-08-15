@@ -97,10 +97,6 @@ class ASH_EXPORT GlanceablesTasksView
                              bool fetch_success,
                              const ui::ListModel<api::Task>* tasks);
 
-  // Announces text describing the task list state through a screen
-  // reader, using `task_list_combo_box_view_` view accessibility helper.
-  void AnnounceListStateOnComboBoxAccessibility();
-
   // Called as a `state_change_callback` when a task view state changes between
   // "view" and "edit" state, which causes changes in the task view preferred
   // size. `view_expanding` indicates whether the task view is expanding or

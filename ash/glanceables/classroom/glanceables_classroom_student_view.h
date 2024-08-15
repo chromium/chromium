@@ -86,10 +86,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
       bool success,
       std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> assignments);
 
-  // Announces text describing the assignment list state through a screen
-  // reader, using `combo_box_view_` view accessibility helper.
-  void AnnounceListStateOnComboBoxAccessibility();
-
   // Owned by views hierarchy.
   raw_ptr<views::Label> empty_list_label_ = nullptr;
 
