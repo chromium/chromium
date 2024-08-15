@@ -4512,6 +4512,19 @@ void Element::UpdateDirectionalityAndDescendant(TextDirection direction) {
           }
         }
       }
+
+      // The directionality of a shadow host also affects the effect of
+      // its slots on the auto directionality of an ancestor.
+      if (shadow_root->HasSlotAssignment()) {
+        for (HTMLSlotElement* slot : shadow_root->GetSlotAssignment().Slots()) {
+          Element* slot_parent = slot->parentElement();
+          if (slot_parent && slot_parent->SelfOrAncestorHasDirAutoAttribute() &&
+              slot_parent->CachedDirectionality() != direction) {
+            slot_parent->UpdateAncestorWithDirAuto(
+                UpdateAncestorTraversal::IncludeSelf);
+          }
+        }
+      }
     }
     element = ElementTraversal::Next(*element, this);
   } while (element);
