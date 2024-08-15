@@ -38,6 +38,11 @@
         font-weight: 400;
       }
 
+      #historyEmbeddingsDisclaimer[narrow] {
+        padding-inline: 24px;
+        max-width: none;
+      }
+
       cr-history-embeddings-filter-chips {
         margin: 0 auto;
         padding: 16px 8px;
@@ -150,7 +155,8 @@
           on-iron-select="updateScrollTarget_">
         <div id="tabs-container" path="history">
           <div id="historyEmbeddingsDisclaimer" class="history-cards"
-              hidden$="[[!enableHistoryEmbeddings_]]">
+              hidden$="[[!enableHistoryEmbeddings_]]"
+              narrow$="[[hasDrawer_]]">
             $i18n{historyEmbeddingsDisclaimer}
             <a href="$i18n{historyEmbeddingsHelpArticleUrl}" target="_blank"
                 aria-describedby="historyEmbeddingsDisclaimer">
