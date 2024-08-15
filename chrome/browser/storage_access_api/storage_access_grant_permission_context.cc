@@ -142,8 +142,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kGrantedByFirstPartySet:
       constraints.set_lifetime(
           permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
-      constraints.set_session_model(
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+      constraints.set_decided_by_related_website_sets(true);
       return constraints;
 
     case RequestOutcome::kGrantedByAllowance:
@@ -157,8 +156,6 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kDeniedByUser:
       constraints.set_lifetime(
           permissions::kStorageAccessAPIExplicitPermissionLifetime);
-      constraints.set_session_model(
-          content_settings::mojom::SessionModel::DURABLE);
       return constraints;
 
     case RequestOutcome::kDeniedByPrerequisites:
@@ -564,14 +561,18 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
         ->GetContentSetting(requesting_origin, embedding_origin,
                             ContentSettingsType::STORAGE_ACCESS, &info);
 
-    switch (info.metadata.session_model()) {
-      case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      case content_settings::mojom::SessionModel::USER_SESSION:
-        outcome = RequestOutcome::kReusedImplicitGrant;
-        break;
-      case content_settings::mojom::SessionModel::DURABLE:
-      case content_settings::mojom::SessionModel::ONE_TIME:
-        break;
+    if (info.metadata.decided_by_related_website_sets()) {
+      outcome = RequestOutcome::kReusedImplicitGrant;
+    } else {
+      switch (info.metadata.session_model()) {
+        case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
+        case content_settings::mojom::SessionModel::USER_SESSION:
+          outcome = RequestOutcome::kReusedImplicitGrant;
+          break;
+        case content_settings::mojom::SessionModel::DURABLE:
+        case content_settings::mojom::SessionModel::ONE_TIME:
+          break;
+      }
     }
   }
   NotifyPermissionSetInternal(

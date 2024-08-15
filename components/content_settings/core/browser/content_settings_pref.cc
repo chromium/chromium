@@ -46,6 +46,7 @@ const char kSessionModelKey[] = "model";
 const char kSettingKey[] = "setting";
 const char kLastModifiedKey[] = "last_modified";
 const char kLifetimeKey[] = "lifetime";
+const char kDecidedByRelatedWebsiteSets[] = "decided_by_related_website_sets";
 
 const base::TimeDelta kLastUsedPermissionExpiration = base::Hours(24);
 
@@ -109,6 +110,12 @@ base::TimeDelta GetLifetime(const base::Value::Dict& dictionary) {
   return GetTimeDeltaFromDictKey(dictionary, kLifetimeKey);
 }
 
+// Extract a bool from `dictionary[kDecidedByRelatedWebsiteSets]`.
+// Will return false if no value exists for that key.
+bool GetDecidedByRelatedWebsiteSets(const base::Value::Dict& dictionary) {
+  return dictionary.FindBool(kDecidedByRelatedWebsiteSets).value_or(false);
+}
+
 // Extract a SessionModel from |dictionary[kSessionModelKey]|. Will return
 // SessionModel::DURABLE if no model exists.
 content_settings::mojom::SessionModel GetSessionModel(
@@ -123,36 +130,6 @@ content_settings::mojom::SessionModel GetSessionModel(
   content_settings::mojom::SessionModel session_model =
       static_cast<content_settings::mojom::SessionModel>(model_int);
   return session_model;
-}
-
-bool ShouldRemoveSetting(bool off_the_record,
-                         base::Time expiration,
-                         bool restore_session,
-                         content_settings::mojom::SessionModel session_model,
-                         base::Clock* clock) {
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry) &&
-      !expiration.is_null() && expiration < clock->Now()) {
-    // Delete if an expiration date is set and in the past.
-    return true;
-  }
-
-  // Off the Record preferences are inherited from the parent profile, which
-  // has already been culled.
-  if (off_the_record)
-    return false;
-
-  // Clear non-restorable user session settings, or non-Durable settings when no
-  // restoring a previous session.
-  switch (session_model) {
-    case content_settings::mojom::SessionModel::DURABLE:
-      return false;
-    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      return true;
-    case content_settings::mojom::SessionModel::USER_SESSION:
-    case content_settings::mojom::SessionModel::ONE_TIME:
-      return !restore_session;
-  }
 }
 
 }  // namespace
@@ -431,8 +408,7 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
     // expiration date or a SessionModel of UserSession.
     base::Time expiration = GetExpiration(settings_dictionary);
     mojom::SessionModel session_model = GetSessionModel(settings_dictionary);
-    if (ShouldRemoveSetting(off_the_record_, expiration, restore_session_,
-                            session_model, clock_)) {
+    if (ShouldRemoveSetting(expiration, session_model)) {
       expired_patterns_to_remove.push_back(pattern_str);
       continue;
     }
@@ -467,6 +443,18 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
       metadata.set_last_visited(last_visited);
       metadata.SetExpirationAndLifetime(expiration, lifetime);
       metadata.set_session_model(session_model);
+      metadata.set_decided_by_related_website_sets(
+          GetDecidedByRelatedWebsiteSets(settings_dictionary));
+
+      // Migrating grants by Related Website Sets to DURABLE.
+      // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is
+      // removed.
+      if ((content_type_ == ContentSettingsType::STORAGE_ACCESS ||
+           content_type_ == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) &&
+          session_model == mojom::SessionModel::NON_RESTORABLE_USER_SESSION) {
+        metadata.set_session_model(mojom::SessionModel::DURABLE);
+        metadata.set_decided_by_related_website_sets(true);
+      }
 
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
@@ -504,6 +492,42 @@ void ContentSettingsPref::ReadContentSettingsFromPrefForPartition(
       mutable_partition->SetWithoutPathExpansion(
           old_to_new_pattern.second, std::move(pattern_settings_dictionary));
     }
+  }
+}
+
+bool ContentSettingsPref::ShouldRemoveSetting(
+    base::Time expiration,
+    content_settings::mojom::SessionModel session_model) {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kActiveContentSettingExpiry) &&
+      !expiration.is_null() && expiration < clock_->Now()) {
+    // Delete if an expiration date is set and in the past.
+    return true;
+  }
+
+  // Off the Record preferences are inherited from the parent profile, which
+  // has already been culled.
+  if (off_the_record_) {
+    return false;
+  }
+
+  // Clear non-restorable user session settings, or non-Durable settings when no
+  // restoring a previous session.
+  switch (session_model) {
+    case content_settings::mojom::SessionModel::DURABLE:
+      return false;
+    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
+      // Restore NON_RESTORABLE_USER_SESSION Storage Access permissions to
+      // migrate them to DURABLE session model.
+      // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is removed.
+      if (content_type_ == ContentSettingsType::STORAGE_ACCESS ||
+          content_type_ == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
+        return false;
+      }
+      return true;
+    case content_settings::mojom::SessionModel::USER_SESSION:
+    case content_settings::mojom::SessionModel::ONE_TIME:
+      return !restore_session_;
   }
 }
 
@@ -585,6 +609,8 @@ void ContentSettingsPref::UpdatePref(
       settings_dictionary->RemoveWithoutPathExpansion(kSessionModelKey,
                                                       nullptr);
       settings_dictionary->RemoveWithoutPathExpansion(kLifetimeKey, nullptr);
+      settings_dictionary->RemoveWithoutPathExpansion(
+          kDecidedByRelatedWebsiteSets, nullptr);
     } else {
       settings_dictionary->SetKey(kSettingKey, std::move(value));
       if (metadata.last_modified() != base::Time()) {
@@ -611,6 +637,11 @@ void ContentSettingsPref::UpdatePref(
       if (!metadata.lifetime().is_zero()) {
         settings_dictionary->SetKey(
             kLifetimeKey, base::TimeDeltaToValue(metadata.lifetime()));
+      }
+      if (metadata.decided_by_related_website_sets()) {
+        settings_dictionary->SetKey(
+            kDecidedByRelatedWebsiteSets,
+            base::Value(metadata.decided_by_related_website_sets()));
       }
     }
 

@@ -98,6 +98,9 @@ class ContentSettingsPref {
       const base::Value::Dict& partition,
       prefs::DictionaryValueUpdate* mutable_partition)
       EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
+  // Helper function to determine if the setting should be removed.
+  bool ShouldRemoveSetting(base::Time expiration,
+                           content_settings::mojom::SessionModel session_model);
 
   // Callback for changes in the pref with the same name.
   void OnPrefChanged();

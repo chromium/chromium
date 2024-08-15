@@ -25,6 +25,7 @@ TEST_F(ContentSettingConstraintsTest, CopyCtor) {
   constraints.set_lifetime(base::Seconds(1234));
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
+  constraints.set_decided_by_related_website_sets(true);
 
   ContentSettingConstraints copy = constraints;
   EXPECT_EQ(constraints, copy);
@@ -44,6 +45,7 @@ TEST_F(ContentSettingConstraintsTest, MoveCtor) {
   constraints.set_lifetime(base::Seconds(1234));
   constraints.set_session_model(mojom::SessionModel::USER_SESSION);
   constraints.set_track_last_visit_for_autoexpiration(true);
+  constraints.set_decided_by_related_website_sets(true);
 
   ContentSettingConstraints copy = constraints;
   ContentSettingConstraints moved = std::move(constraints);

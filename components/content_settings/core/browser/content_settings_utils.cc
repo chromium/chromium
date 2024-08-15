@@ -241,8 +241,11 @@ bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return metadata.session_model() ==
-             mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
+      return metadata.decided_by_related_website_sets() ||
+             // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is
+             // removed.
+             metadata.session_model() ==
+                 mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
     default:
       return false;
   }

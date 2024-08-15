@@ -55,6 +55,14 @@ class ContentSettingConstraints {
     track_last_visit_for_autoexpiration_ = track;
   }
 
+  bool decided_by_related_website_sets() const {
+    return decided_by_related_website_sets_;
+  }
+  void set_decided_by_related_website_sets(
+      bool granted_by_related_website_sets) {
+    decided_by_related_website_sets_ = granted_by_related_website_sets;
+  }
+
  private:
   // Tracks the base::Time that this instance was constructed. Copies and moves
   // reuse this time.
@@ -78,6 +86,9 @@ class ContentSettingConstraints {
   // This is used for the Safety check permission module and unrelated to the
   // "lifetime" keyword above.
   bool track_last_visit_for_autoexpiration_ = false;
+
+  // Set to true if the storage access was decided by a Related Website Set.
+  bool decided_by_related_website_sets_ = false;
 };
 
 }  // namespace content_settings

@@ -4860,22 +4860,25 @@ const ContentSettingPatternSource kExpectedSettingDefault(
 class ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest
     : public ChromeBrowsingDataRemoverDelegateTest,
       public testing::WithParamInterface<
-          std::tuple<bool,  // IsRelatedWebsiteSetsGrant.
+          std::tuple<bool,  // IsDecidedByRelatedWebsiteSets.
                      ContentSettingsType,
-                     FilterOrigins>> {
+                     FilterOrigins,
+                     content_settings::mojom::SessionModel>> {
  public:
-  bool IsRelatedWebsiteSetsGrant() const { return std::get<0>(GetParam()); }
+  bool IsDecidedByRelatedWebsiteSets() const { return std::get<0>(GetParam()); }
   ContentSettingsType GetContentSettingsType() const {
     return std::get<1>(GetParam());
   }
   FilterOrigins GetFilterOrigin() const { return std::get<2>(GetParam()); }
+  content_settings::mojom::SessionModel GetSessionModel() const {
+    return std::get<3>(GetParam());
+  }
 
   content_settings::ContentSettingConstraints GetConstraints() {
     content_settings::ContentSettingConstraints constraints;
-    constraints.set_session_model(
-        IsRelatedWebsiteSetsGrant()
-            ? content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION
-            : content_settings::mojom::SessionModel::DURABLE);
+    constraints.set_session_model(GetSessionModel());
+    constraints.set_decided_by_related_website_sets(
+        IsDecidedByRelatedWebsiteSets());
     return constraints;
   }
 
@@ -4975,7 +4978,14 @@ TEST_P(ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest,
 
   RemoveRelatedWebsiteSetsPermissionsData();
 
-  if (IsRelatedWebsiteSetsGrant()) {
+  if (IsDecidedByRelatedWebsiteSets() ||
+      // `content_settings::IsGrantedByRelatedWebsiteSets()` returned true for
+      // `NON_RESTORABLE_USER_SESSION` before crrev.com/c/5588890 so this
+      // part of the condition is testing backward compatibility.
+      // TODO(b/344678400): Delete this part of the condition after
+      // NON_RESTORABLE_USER_SESSION is removed.
+      GetSessionModel() ==
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION) {
     // Check that there's only the default and unrelated grants left.
     EXPECT_THAT(settings_map->GetSettingsForOneType(GetContentSettingsType()),
                 UnorderedElementsAre(kExpectedSettingDefault,
@@ -4993,9 +5003,17 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest,
     testing::Combine(
-        testing::Bool(),  // IsRelatedWebsiteSetsGrant.
+        testing::Bool(),  // IsDecidedByRelatedWebsiteSets.
         testing::Values(ContentSettingsType::STORAGE_ACCESS,
                         ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS),
         testing::Values(FilterOrigins::kByPrimaryUrl,
                         FilterOrigins::kBySecondaryUrl,
-                        FilterOrigins::kByBothUrls)));
+                        FilterOrigins::kByBothUrls),
+        testing::Values(
+            // `content_settings::IsGrantedByRelatedWebsiteSets()` returned
+            // true for `NON_RESTORABLE_USER_SESSION` before crrev.com/c/5588890
+            // so this parameter is testing backward compatibility.
+            // TODO(b/344678400): Delete the entire *test parameter* after
+            // NON_RESTORABLE_USER_SESSION is removed to simplify the tests.
+            content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION,
+            content_settings::mojom::SessionModel::DURABLE)));
