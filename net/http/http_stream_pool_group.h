@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -133,7 +134,9 @@ class HttpStreamPool::Group {
   // Increments the generation of this group. Closes idle streams. Streams
   // handed out before this increment won't be reused. Cancels in-flight
   // connection attempts.
-  void Refresh();
+  void Refresh(std::string_view net_log_close_reason_utf8);
+
+  void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
   // Cancels all on-going requests.
   void CancelRequests(int error);
@@ -165,7 +168,8 @@ class HttpStreamPool::Group {
     kForce,
   };
 
-  void CleanupIdleStreamSockets(CleanupMode mode);
+  void CleanupIdleStreamSockets(CleanupMode mode,
+                                std::string_view net_log_close_reason_utf8);
 
   void EnsureInFlightJob();
 

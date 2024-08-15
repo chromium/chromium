@@ -230,7 +230,7 @@ void HttpStreamPool::DecrementTotalConnectingStreamCount(size_t amount) {
 void HttpStreamPool::OnIPAddressChanged() {
   CHECK(cleanup_on_ip_address_change_);
   for (const auto& group : groups_) {
-    group.second->Refresh();
+    group.second->Refresh(kIpAddressChanged);
     group.second->CancelRequests(ERR_NETWORK_CHANGED);
   }
 }
@@ -238,7 +238,7 @@ void HttpStreamPool::OnIPAddressChanged() {
 void HttpStreamPool::OnSSLConfigChanged(
     SSLClientContext::SSLConfigChangeType change_type) {
   for (const auto& group : groups_) {
-    group.second->Refresh();
+    group.second->Refresh(kSslConfigChanged);
   }
   ProcessPendingRequestsInGroups();
 }
@@ -249,7 +249,7 @@ void HttpStreamPool::OnSSLConfigForServersChanged(
     if (GURL::SchemeIsCryptographic(group.first.destination().scheme()) &&
         servers.contains(
             HostPortPair::FromSchemeHostPort(group.first.destination()))) {
-      group.second->Refresh();
+      group.second->Refresh(kSslConfigChanged);
     }
   }
   ProcessPendingRequestsInGroups();
@@ -259,6 +259,13 @@ void HttpStreamPool::OnGroupComplete(Group* group) {
   auto it = groups_.find(group->stream_key());
   CHECK(it != groups_.end());
   groups_.erase(it);
+}
+
+void HttpStreamPool::CloseIdleStreams(
+    std::string_view net_log_close_reason_utf8) {
+  for (auto& group : groups_) {
+    group.second->CloseIdleStreams(net_log_close_reason_utf8);
+  }
 }
 
 bool HttpStreamPool::IsPoolStalled() {

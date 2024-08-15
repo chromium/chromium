@@ -352,6 +352,9 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
 void HttpNetworkSession::CloseIdleConnections(const char* net_log_reason_utf8) {
   normal_socket_pool_manager_->CloseIdleSockets(net_log_reason_utf8);
   websocket_socket_pool_manager_->CloseIdleSockets(net_log_reason_utf8);
+  if (http_stream_pool_) {
+    http_stream_pool_->CloseIdleStreams(net_log_reason_utf8);
+  }
   spdy_session_pool_.CloseCurrentIdleSessions(net_log_reason_utf8);
 }
 

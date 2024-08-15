@@ -175,11 +175,11 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
 
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
 
   if (idle_stream_sockets_.empty()) {
     return nullptr;
@@ -251,12 +251,18 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
              : std::nullopt;
 }
 
-void HttpStreamPool::Group::Refresh() {
+void HttpStreamPool::Group::Refresh(
+    std::string_view net_log_close_reason_utf8) {
   ++generation_;
-  CleanupIdleStreamSockets(CleanupMode::kForce);
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (in_flight_job_) {
     in_flight_job_->CancelInFlightAttempts();
   }
+}
+
+void HttpStreamPool::Group::CloseIdleStreams(
+    std::string_view net_log_close_reason_utf8) {
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
 void HttpStreamPool::Group::CancelRequests(int error) {
@@ -272,10 +278,12 @@ void HttpStreamPool::Group::OnJobComplete() {
 }
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
 }
 
-void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
+void HttpStreamPool::Group::CleanupIdleStreamSockets(
+    CleanupMode mode,
+    std::string_view net_log_close_reason_utf8) {
   const base::TimeTicks now = base::TimeTicks::Now();
 
   // Iterate though the idle sockets to delete any disconnected ones.
@@ -294,6 +302,9 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
     }
 
     if (should_delete) {
+      it->stream_socket->NetLog().AddEventWithStringParams(
+          NetLogEventType::HTTP_STREAM_POOL_CLOSING_SOCKET, "reason",
+          net_log_close_reason_utf8);
       it = idle_stream_sockets_.erase(it);
       pool_->DecrementTotalIdleStreamCount();
     } else {

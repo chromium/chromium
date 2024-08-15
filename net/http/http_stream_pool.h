@@ -39,6 +39,15 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     : public NetworkChangeNotifier::IPAddressObserver,
       public SSLClientContext::Observer {
  public:
+  // Reasons for closing streams.
+  static constexpr std::string_view kIpAddressChanged = "IP address changed";
+  static constexpr std::string_view kSslConfigChanged =
+      "SSL configuration changed";
+  static constexpr std::string_view kIdleTimeLimitExpired =
+      "Idle time limit expired";
+  static constexpr std::string_view kSwitchingToHttp2 = "Switching to HTTP/2";
+  static constexpr std::string_view kSwitchingToHttp3 = "Switching to HTTP/3";
+
   // The maximum number of sockets per pool. The same as
   // ClientSocketPoolManager::max_sockets_per_pool().
   static constexpr size_t kMaxStreamSocketsPerPool = 256;
@@ -104,6 +113,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     return total_handed_out_stream_count_ + total_idle_stream_count_ +
            total_connecting_stream_count_;
   }
+
+  void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
   bool ReachedMaxStreamLimit() const {
     return TotalActiveStreamCount() >= max_stream_sockets_per_pool();

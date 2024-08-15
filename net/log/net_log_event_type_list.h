@@ -1371,6 +1371,12 @@ EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND)
 // HttpStreamPool
 // ------------------------------------------------------------------------
 
+// Logged when the HttpStreamPool is closing a StreamSocket:
+//   {
+//      "reason": <Reason the socket was closed>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
+
 // Marks the start/end of a HttpStreamPool::Group.
 // The following parameters are attached:
 //   {

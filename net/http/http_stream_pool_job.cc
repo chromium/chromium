@@ -431,7 +431,7 @@ void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
   const bool has_requests = !requests_.empty() || !notified_requests_.empty();
 
   if (rv == OK) {
-    group_->Refresh();
+    group_->Refresh(kSwitchingToHttp3);
     NotifyPreconnectsComplete(OK);
     if (has_requests) {
       CreateQuicStreamAndNotify();
@@ -533,7 +533,7 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
-      group_->Refresh();
+      group_->Refresh(kSwitchingToHttp2);
       // Use PostTask() because we could reach here from RequestStream()
       // synchronously when the DNS resolution finishes immediately.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1151,7 +1151,7 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
 
     // Cancel in-flight requests and close idle streams as we don't need them
     // anymore.
-    group_->Refresh();
+    group_->Refresh(kSwitchingToHttp2);
 
     NotifyPreconnectsComplete(OK);
     CreateSpdyStreamAndNotify();
