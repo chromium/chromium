@@ -522,6 +522,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="0" label="Congratulations"/>
   <int value="1" label="Offer"/>
   <int value="2" label="Terms &amp; Conditions"/>
+  <int value="3" label="Debug"/>
 </enum>
 
 <enum name="ContextualGoogleIntegrationStatus">

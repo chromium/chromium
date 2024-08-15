@@ -128,13 +128,12 @@ TEST_P(ContainerAppTabHelperTest, RecordsPageVisitHistograms) {
   const auto pages =
       base::EnumSet<Page, Page::kMinValue, Page::kMaxValue>::All();
 
-  // Create URL for each page.
-  std::map<Page, GURL> page_urls;
+  // Create multiple URLs for each page.
+  std::map<GURL, Page> page_urls;
   for (const Page page : pages) {
-    page_urls.emplace(
-        page,
-        GURL(base::StrCat(
-            {kBaseUrl, base::NumberToString(static_cast<int>(page)), "/"})));
+    const std::string page_str = base::NumberToString(static_cast<int>(page));
+    page_urls.emplace(GURL(base::StrCat({kBaseUrl, page_str, "/1/"})), page);
+    page_urls.emplace(GURL(base::StrCat({kBaseUrl, page_str, "/2/"})), page);
   }
 
   // Replace URL for each page.
@@ -158,12 +157,21 @@ TEST_P(ContainerAppTabHelperTest, RecordsPageVisitHistograms) {
   // (a) the container app preinstallation feature is enabled, and
   // (b) the profile is not off the record.
   bool record = IsContainerAppPreinstallEnabled() && !IsProfileOffTheRecord();
-  for (const auto& [page, url] : page_urls) {
+  for (const auto& [url, page] : page_urls) {
+    auto histogram_buckets_it = base::ranges::find(
+        histogram_buckets, static_cast<base::HistogramBase::Sample>(page),
+        &Bucket::min);
     {
       // Check exact page match.
       NavigateAndCommit(url);
       if (record) {
-        histogram_buckets.emplace_back(/*sample=*/page, /*count=*/1u);
+        if (histogram_buckets_it == histogram_buckets.end()) {
+          histogram_buckets_it =
+              histogram_buckets.emplace(histogram_buckets.end(),
+                                        /*sample=*/page, /*count=*/1u);
+        } else {
+          ++(histogram_buckets_it->count);
+        }
       }
       EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
                   BucketsAreArray(histogram_buckets));
@@ -172,7 +180,7 @@ TEST_P(ContainerAppTabHelperTest, RecordsPageVisitHistograms) {
       // Check page match w/o filename.
       NavigateAndCommit(url.Resolve(kRelativeFilename));
       if (record) {
-        ++histogram_buckets.back().count;
+        ++(histogram_buckets_it->count);
       }
       EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
                   BucketsAreArray(histogram_buckets));

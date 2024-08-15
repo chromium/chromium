@@ -25,7 +25,8 @@ class ContainerAppTabHelper
     kCongratulations = kMinValue,
     kOffer = 1,
     kTermsAndConditions = 2,
-    kMaxValue = kTermsAndConditions,
+    kDebug = 3,
+    kMaxValue = kDebug,
   };
 
   ContainerAppTabHelper(const ContainerAppTabHelper&) = delete;
@@ -40,7 +41,7 @@ class ContainerAppTabHelper
   // Temporarily replaces the URLs of pages for which visits should be recorded
   // until the returned `base::AutoReset` is destroyed.
   [[nodiscard]] static base::AutoReset<std::map<uint64_t, Page>>
-  SetPageUrlsForTesting(std::map<Page, GURL> page_urls);
+  SetPageUrlsForTesting(std::map<GURL, Page> page_urls);
 
  private:
   explicit ContainerAppTabHelper(content::WebContents* web_contents);
