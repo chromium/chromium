@@ -789,6 +789,8 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   // session and has a limit for how many times it can be shown at most in a
   // period of time.
   browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillDisabledVirtualCardSuggestionFeature);
+  browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
@@ -1034,8 +1036,11 @@ void PopupViewViews::CreateSuggestionViews() {
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.
-          if (feature_for_iph ==
-              &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature) {
+          if (feature_for_iph == &feature_engagement::
+                                     kIPHAutofillVirtualCardSuggestionFeature ||
+              feature_for_iph ==
+                  &feature_engagement::
+                      kIPHAutofillDisabledVirtualCardSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
           } else if (feature_for_iph ==

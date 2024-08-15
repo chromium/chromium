@@ -577,7 +577,12 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   // grayed-out style.
   suggestion.apply_deactivated_style = !suggestion.is_acceptable;
   suggestion.feature_for_iph =
-      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
+      suggestion.apply_deactivated_style &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillEnableVcnGrayOutForMerchantOptOut)
+          ? &feature_engagement::
+                kIPHAutofillDisabledVirtualCardSuggestionFeature
+          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
 
   // If ShouldFormatForLargeKeyboardAccessory() is true, `suggestion` has been
   // properly formatted by `SetSuggestionLabelsForCard` and does not need

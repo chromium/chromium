@@ -60,6 +60,10 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillCreditCardBenefit"
       summary="message shown in the Autofill dropdown to educate users on the
                existence of credit card benefits."/>
+  <variant name="IPH_AutofillDisabledVirtualCardSuggestion"
+      summary="message shown along with a disabled and grayed-out virtual
+               card suggestion in the autofill suggestion list indicating
+               that the merchant has opted-out of accepting virtual cards."/>
   <variant name="IPH_AutofillExternalAccountProfileSuggestion"
       summary="message shown along with the externally created (e.g. in
                Google Pay) profile suggestion option in the Autofill dropdown"/>

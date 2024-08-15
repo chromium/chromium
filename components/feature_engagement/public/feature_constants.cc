@@ -631,6 +631,9 @@ BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
 BASE_FEATURE(kIPHAutofillCreditCardBenefitFeature,
              "IPH_AutofillCreditCardBenefit",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillDisabledVirtualCardSuggestionFeature,
+             "IPH_AutofillDisabledVirtualCardSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
              "IPH_AutofillExternalAccountProfileSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);

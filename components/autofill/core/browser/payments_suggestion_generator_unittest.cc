@@ -1505,6 +1505,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   }
 #endif
   EXPECT_EQ(virtual_card_name_field_suggestion.is_acceptable, true);
+  EXPECT_EQ(virtual_card_name_field_suggestion.feature_for_iph,
+            &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   if (!keyboard_accessory_enabled()) {
     // The virtual card text should be populated in the labels to be shown in a
     // new line.
@@ -1553,6 +1555,8 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   }
 #endif
   EXPECT_EQ(virtual_card_number_field_suggestion.is_acceptable, true);
+  EXPECT_EQ(virtual_card_number_field_suggestion.feature_for_iph,
+            &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, there is no label.
     ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
@@ -2140,6 +2144,12 @@ TEST_P(
   // `apply_deactivated_style` is true only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_name_field_suggestion.apply_deactivated_style,
             is_merchant_opted_out());
+  EXPECT_EQ(
+      virtual_card_name_field_suggestion.feature_for_iph,
+      virtual_card_name_field_suggestion.apply_deactivated_style
+          ? &feature_engagement::
+                kIPHAutofillDisabledVirtualCardSuggestionFeature
+          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 
   if (keyboard_accessory_enabled()) {
     // There should be only 1 line of label: obfuscated last 4 digits "..4444".
@@ -2177,6 +2187,12 @@ TEST_P(
   // `apply_deactivated_style` is true only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_number_field_suggestion.apply_deactivated_style,
             is_merchant_opted_out());
+  EXPECT_EQ(
+      virtual_card_number_field_suggestion.feature_for_iph,
+      virtual_card_number_field_suggestion.apply_deactivated_style
+          ? &feature_engagement::
+                kIPHAutofillDisabledVirtualCardSuggestionFeature
+          : &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
 
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, there is no label.
