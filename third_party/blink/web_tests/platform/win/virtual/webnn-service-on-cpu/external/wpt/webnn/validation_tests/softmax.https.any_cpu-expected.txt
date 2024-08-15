@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [softmax] Test building Softmax with float16 input without axis.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'softmax' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+[FAIL] [softmax] Test building Softmax with float16 input.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'softmax' on 'MLGraphBuilder': Unsupported data type float16 for argument input, must be one of [float32]."
+Harness: the test ran to completion.
+

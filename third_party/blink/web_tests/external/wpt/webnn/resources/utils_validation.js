@@ -203,7 +203,8 @@ promise_setup(async () => {
   if (navigator.ml === undefined) {
     return;
   }
-  context = await navigator.ml.createContext();
+  const deviceType = location.search.substring(1);
+  context = await navigator.ml.createContext({deviceType: deviceType});
 }, {explicit_timeout: true});
 
 function assert_throws_with_label(func, regrexp) {

@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [reduceL1] Test reduce when input's datatype is uint32.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceL1] Test reduce when input's datatype is int64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceL1] Test reduce when input's datatype is uint64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceL1] Throw if the input data type is not one of the {float32, float16, int32, uint32, int64, uint64}.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceProduct] Test reduce when input's datatype is uint32.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceProduct] Test reduce when input's datatype is int64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceProduct] Test reduce when input's datatype is uint64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceProduct] Throw if the input data type is not one of the {float32, float16, int32, uint32, int64, uint64}.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSum] Test reduce when input's datatype is uint32.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSum] Test reduce when input's datatype is int64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSum] Test reduce when input's datatype is uint64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSum] Throw if the input data type is not one of the {float32, float16, int32, uint32, int64, uint64}.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSumSquare] Test reduce when input's datatype is uint32.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSumSquare] Test reduce when input's datatype is int64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSumSquare] Test reduce when input's datatype is uint64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceSumSquare] Throw if the input data type is not one of the {float32, float16, int32, uint32, int64, uint64}.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMax] Test reduce when input's datatype is int64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMax] Test reduce when input's datatype is uint64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMax] Test reduce when input's datatype is int8.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMax] Test reduce when input's datatype is uint8.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMin] Test reduce when input's datatype is int64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMin] Test reduce when input's datatype is uint64.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint64 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMin] Test reduce when input's datatype is int8.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [reduceMin] Test reduce when input's datatype is uint8.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+

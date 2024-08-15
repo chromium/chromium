@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [layerNormalization] Throw if the input data type is not one of the floating point types.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint32 for input operand named 'input', must be one of [float32, float16, int32]."
+Harness: the test ran to completion.
+
