@@ -56,8 +56,12 @@ class NET_EXPORT_PRIVATE HttpStreamKey {
 
   base::Value::Dict ToValue() const;
 
+  // Creates a SpdySessionKey from `this`. Returns a key with an empty host
+  // when the scheme is not cryptgraphic.
   SpdySessionKey ToSpdySessionKey() const;
 
+  // Creates a QuicSessionKey from `this`. Returns a key with an empty host
+  // when the scheme is not cryptgraphic.
   QuicSessionKey ToQuicSessionKey() const;
 
  private:

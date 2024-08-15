@@ -384,6 +384,10 @@ base::WeakPtr<SpdySession> HttpStreamPool::FindAvailableSpdySession(
     const SpdySessionKey& spdy_session_key,
     bool enable_ip_based_pooling,
     const NetLogWithSource& net_log) {
+  if (!GURL::SchemeIsCryptographic(stream_key.destination().scheme())) {
+    return nullptr;
+  }
+
   base::WeakPtr<SpdySession> spdy_session =
       http_network_session()->spdy_session_pool()->FindAvailableSession(
           spdy_session_key, enable_ip_based_pooling, /*is_websocket=*/false,

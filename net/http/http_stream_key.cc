@@ -9,6 +9,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "net/spdy/spdy_session_key.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -63,19 +64,23 @@ base::Value::Dict HttpStreamKey::ToValue() const {
 }
 
 SpdySessionKey HttpStreamKey::ToSpdySessionKey() const {
-  return SpdySessionKey(HostPortPair::FromSchemeHostPort(destination()),
-                        privacy_mode(), ProxyChain::Direct(),
-                        SessionUsage::kDestination, socket_tag(),
-                        network_anonymization_key(), secure_dns_policy(),
-                        disable_cert_network_fetches());
+  HostPortPair host_port = GURL::SchemeIsCryptographic(destination().scheme())
+                               ? HostPortPair::FromSchemeHostPort(destination())
+                               : HostPortPair();
+  return SpdySessionKey(std::move(host_port), privacy_mode(),
+                        ProxyChain::Direct(), SessionUsage::kDestination,
+                        socket_tag(), network_anonymization_key(),
+                        secure_dns_policy(), disable_cert_network_fetches());
 }
 
 QuicSessionKey HttpStreamKey::ToQuicSessionKey() const {
-  return QuicSessionKey(HostPortPair::FromSchemeHostPort(destination()),
-                        privacy_mode(), ProxyChain::Direct(),
-                        SessionUsage::kDestination, socket_tag(),
-                        network_anonymization_key(), secure_dns_policy(),
-                        disable_cert_network_fetches());
+  HostPortPair host_port = GURL::SchemeIsCryptographic(destination().scheme())
+                               ? HostPortPair::FromSchemeHostPort(destination())
+                               : HostPortPair();
+  return QuicSessionKey(std::move(host_port), privacy_mode(),
+                        ProxyChain::Direct(), SessionUsage::kDestination,
+                        socket_tag(), network_anonymization_key(),
+                        secure_dns_policy(), /*require_dns_https_alpn=*/false);
 }
 
 }  // namespace net

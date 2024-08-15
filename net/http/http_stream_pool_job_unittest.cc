@@ -310,6 +310,10 @@ class StreamRequester : public HttpStreamRequest::Delegate {
 
   scoped_refptr<SSLCertRequestInfo> cert_info() const { return cert_info_; }
 
+  NextProto negotiated_protocol() const {
+    return request_->negotiated_protocol();
+  }
+
  private:
   StreamKeyBuilder key_builder_;
 
@@ -1744,6 +1748,51 @@ TEST_F(HttpStreamPoolJobTest,
   EXPECT_THAT(requester2.result(), Optional(IsOk()));
   ASSERT_FALSE(spdy_session_pool()->HasAvailableSession(
       stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+}
+
+TEST_F(HttpStreamPoolJobTest, DoNotUseSpdySessionForHttpRequest) {
+  constexpr std::string_view kHttpsDestination = "https://www.example.com";
+  constexpr std::string_view kHttpDestination = "http://www.example.com";
+
+  const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
+  const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
+  auto h2_data = std::make_unique<SequencedSocketData>(reads, writes);
+  socket_factory()->AddSocketDataProvider(h2_data.get());
+  auto h2_ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  h2_ssl->next_proto = NextProto::kProtoHTTP2;
+  socket_factory()->AddSSLSocketDataProvider(h2_ssl.get());
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester_https;
+  requester_https.set_destination(kHttpsDestination).RequestStream(pool());
+  HttpStreamKey stream_key = requester_https.GetStreamKey();
+  RunUntilIdle();
+  EXPECT_THAT(requester_https.result(), Optional(IsOk()));
+  EXPECT_EQ(requester_https.negotiated_protocol(), NextProto::kProtoHTTP2);
+  ASSERT_TRUE(spdy_session_pool()->HasAvailableSession(
+      stream_key.ToSpdySessionKey(), /*is_websocket=*/false));
+
+  // Request a stream for http (not https). The second request should use
+  // HTTP/1.1 and should not use the existing SPDY session.
+  auto h1_data = std::make_unique<SequencedSocketData>();
+  socket_factory()->AddSocketDataProvider(h1_data.get());
+  SSLSocketDataProvider h1_ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&h1_ssl);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester_http;
+  requester_http.set_destination(kHttpDestination).RequestStream(pool());
+  RunUntilIdle();
+  EXPECT_THAT(requester_http.result(), Optional(IsOk()));
+  EXPECT_NE(requester_http.negotiated_protocol(), NextProto::kProtoHTTP2);
 }
 
 TEST_F(HttpStreamPoolJobTest, PreconnectRequireHttp11AfterSpdySessionCreated) {

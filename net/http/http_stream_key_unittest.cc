@@ -134,4 +134,52 @@ TEST(HttpStreamKeyTest, Anonymization) {
   }
 }
 
+TEST(HttpStreamKeyTest, ToSpdySessionKey) {
+  const url::SchemeHostPort kHttpHost("http", "example.com", 80);
+  const url::SchemeHostPort kHttpsHost("https", "example.com", 443);
+
+  SpdySessionKey http_key =
+      HttpStreamKey(kHttpHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true)
+          .ToSpdySessionKey();
+  ASSERT_TRUE(http_key.host_port_pair().IsEmpty());
+
+  SpdySessionKey https_key =
+      HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true)
+          .ToSpdySessionKey();
+  ASSERT_EQ(https_key,
+            SpdySessionKey(HostPortPair::FromSchemeHostPort(kHttpsHost),
+                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                           SessionUsage::kDestination, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*disable_cert_verification_network_fetches=*/true));
+}
+
+TEST(HttpStreamKeyTest, ToQuicSessionKey) {
+  const url::SchemeHostPort kHttpHost("http", "example.com", 80);
+  const url::SchemeHostPort kHttpsHost("https", "example.com", 443);
+
+  QuicSessionKey http_key =
+      HttpStreamKey(kHttpHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true)
+          .ToQuicSessionKey();
+  ASSERT_TRUE(http_key.host().empty());
+
+  QuicSessionKey https_key =
+      HttpStreamKey(kHttpsHost, PRIVACY_MODE_DISABLED, SocketTag(),
+                    NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                    /*disable_cert_network_fetches=*/true)
+          .ToQuicSessionKey();
+  ASSERT_EQ(https_key,
+            QuicSessionKey(HostPortPair::FromSchemeHostPort(kHttpsHost),
+                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                           SessionUsage::kDestination, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*require_dns_https_alpn=*/false));
+}
+
 }  // namespace net

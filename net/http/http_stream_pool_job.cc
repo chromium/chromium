@@ -505,11 +505,15 @@ void HttpStreamPool::Job::ProcessServiceEndpointChanges() {
 bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
   CHECK(service_endpoint_request_);
 
+  if (!UsingTls()) {
+    return false;
+  }
+
   if (CanUseExistingQuicSession()) {
     return true;
   }
 
-  if (enable_ip_based_pooling_) {
+  if (CanUseQuic()) {
     QuicSessionAliasKey quic_session_alias_key(stream_key().destination(),
                                                quic_session_key());
     for (const auto& endpoint :
