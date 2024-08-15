@@ -142,9 +142,7 @@ class NearbyApiCallFlowImplTest : public testing::Test {
   }
 
   void CheckPlatformTypeHeader(const net::HttpRequestHeaders& headers) {
-    std::string platform_type;
-    EXPECT_TRUE(headers.GetHeader("X-Sharing-Platform-Type", &platform_type));
-    EXPECT_EQ("OSType.CHROME_OS", platform_type);
+    EXPECT_EQ("OSType.CHROME_OS", headers.GetHeader("X-Sharing-Platform-Type"));
   }
 
   void CheckNearbySharingClientHttpPostRequest(
@@ -164,10 +162,8 @@ class NearbyApiCallFlowImplTest : public testing::Test {
 
     EXPECT_EQ(serialized_request, network::GetUploadData(request));
 
-    std::string content_type;
-    EXPECT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                          &content_type));
-    EXPECT_EQ("application/x-protobuf", content_type);
+    EXPECT_EQ("application/x-protobuf",
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType));
   }
 
   void CheckNearbySharingClientHttpPatchRequest(
@@ -187,10 +183,8 @@ class NearbyApiCallFlowImplTest : public testing::Test {
 
     EXPECT_EQ(serialized_request, network::GetUploadData(request));
 
-    std::string content_type;
-    EXPECT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                          &content_type));
-    EXPECT_EQ("application/x-protobuf", content_type);
+    EXPECT_EQ("application/x-protobuf",
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType));
   }
 
   void CheckNearbySharingClientHttpGetRequest(
