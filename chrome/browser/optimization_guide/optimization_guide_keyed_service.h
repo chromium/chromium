@@ -294,7 +294,7 @@ class OptimizationGuideKeyedService
 
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Must outlive `prediction_manager_` and `hints_manager_`.
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Keep a reference to this so it stays alive.
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>

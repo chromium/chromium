@@ -6907,7 +6907,9 @@
   {
     "name": "optimization-guide-debug-logs",
     "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 125
+    // This flag is used by regular debugging by developers and internal users
+    // and should not be removed.
+    "expiry_milestone": -1
   },
   {
     "name": "optimization-guide-enable-dogfood-logging",
