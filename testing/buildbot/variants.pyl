@@ -11,102 +11,6 @@
       'amd_radeon_rx_5500_xt',
     ],
   },
-  'CROS_BRYA_RELEASE_BETA': {
-    'identifier': 'BRYA_RELEASE_BETA',
-    'skylab': {
-      'cros_board': 'brya',
-      'cros_img': 'brya-release/R124-15823.16.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_BRYA_RELEASE_DEV': {
-    'identifier': 'BRYA_RELEASE_DEV',
-    'skylab': {
-      'cros_board': 'brya',
-      'cros_img': 'brya-release/R125-15843.0.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_BRYA_RELEASE_LKGM': {
-    'identifier': 'BRYA_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'brya',
-      'use_lkgm': True,
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_BRYA_RELEASE_STABLE': {
-    'identifier': 'BRYA_RELEASE_STABLE',
-    'skylab': {
-      'cros_board': 'brya',
-      'cros_img': 'brya-release/R123-15786.48.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_FIZZ_RELEASE_BETA': {
-    'identifier': 'FIZZ_RELEASE_BETA',
-    'skylab': {
-      'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R124-15823.16.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_FIZZ_RELEASE_DEV': {
-    'identifier': 'FIZZ_RELEASE_DEV',
-    'skylab': {
-      'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R125-15843.0.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_FIZZ_RELEASE_LKGM': {
-    'identifier': 'FIZZ_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'fizz',
-      'use_lkgm': True,
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_FIZZ_RELEASE_STABLE': {
-    'identifier': 'FIZZ_RELEASE_STABLE',
-    'skylab': {
-      'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R123-15786.48.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_GUYBRUSH_RELEASE_BETA': {
-    'identifier': 'GUYBRUSH_RELEASE_BETA',
-    'skylab': {
-      'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R124-15823.16.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_GUYBRUSH_RELEASE_DEV': {
-    'identifier': 'GUYBRUSH_RELEASE_DEV',
-    'skylab': {
-      'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R125-15843.0.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_GUYBRUSH_RELEASE_LKGM': {
-    'identifier': 'GUYBRUSH_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'guybrush',
-      'use_lkgm': True,
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_GUYBRUSH_RELEASE_STABLE': {
-    'identifier': 'GUYBRUSH_RELEASE_STABLE',
-    'skylab': {
-      'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R123-15786.48.0',
-      'dut_pool': 'chrome',
-    },
-  },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'identifier': 'JACUZZI_RELEASE_LKGM',
     'skylab': {
@@ -123,48 +27,9 @@
       'public_builder_bucket': 'testplatform-public',
     },
   },
-  'CROS_PUFF_RELEASE_BETA': {
-    'identifier': 'PUFF_RELEASE_BETA',
-    'skylab': {
-      'cros_board': 'puff',
-      'cros_img': 'puff-release/R124-15823.16.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_PUFF_RELEASE_DEV': {
-    'identifier': 'PUFF_RELEASE_DEV',
-    'skylab': {
-      'cros_board': 'puff',
-      'cros_img': 'puff-release/R125-15843.0.0',
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_PUFF_RELEASE_LKGM': {
-    'identifier': 'PUFF_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'puff',
-      'use_lkgm': True,
-      'dut_pool': 'chrome',
-    },
-  },
-  'CROS_PUFF_RELEASE_STABLE': {
-    'identifier': 'PUFF_RELEASE_STABLE',
-    'skylab': {
-      'cros_board': 'puff',
-      'cros_img': 'puff-release/R123-15786.48.0',
-      'dut_pool': 'chrome',
-    },
-  },
   'CROS_RELEASE_LKGM': {
     'identifier': 'RELEASE_LKGM',
     'skylab': {
-      'use_lkgm': True,
-    },
-  },
-  'CROS_STRONGBAD_RELEASE_LKGM': {
-    'identifier': 'STRONGBAD_RELEASE_LKGM',
-    'skylab': {
-      'cros_board': 'strongbad',
       'use_lkgm': True,
     },
   },

@@ -3952,41 +3952,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# This target should usually be the same as `lacros_skylab_tests`. We use
-# a different target for version skew so we can easily disable all version skew
-# tests during an outage.
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests_version_skew",
-    tests = {
-        "lacros_all_tast_tests": targets.legacy_test_config(
-            tast_expr = "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-            test_level_retries = 2,
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            timeout_sec = 10800,
-            shards = 2,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests_with_gtests",
-    tests = {
-        "chromeos_integration_tests": targets.legacy_test_config(),
-    },
-)
-
-# This target should usually be the same as `lacros_skylab_tests_with_gtests`. We use
-# a different target for version skew so we can easily disable all version skew
-# tests during an outage.
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests_with_gtests_version_skew",
-    tests = {
-        "chromeos_integration_tests": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "leak_detection_isolated_scripts",
     tests = {

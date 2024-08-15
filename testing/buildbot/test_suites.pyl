@@ -4157,26 +4157,6 @@
       },
     },
 
-    'lacros_skylab_tests_version_skew': {
-      'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
-        'test_level_retries': 2,
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'timeout_sec': 10800,
-        'shards': 2,
-      },
-    },
-
-    'lacros_skylab_tests_with_gtests': {
-      'chromeos_integration_tests': {},
-    },
-
-    'lacros_skylab_tests_with_gtests_version_skew': {
-      'chromeos_integration_tests': {},
-    },
-
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
         'test': 'performance_test_suite',
@@ -7730,88 +7710,6 @@
           'SIM_IPAD_AIR_6TH_GEN_18_0',
           'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
-        ],
-      },
-    },
-
-    'lacros_skylab_arm64': {
-      'chromeos_integration_tests_suite': {
-        'mixins': [
-          'skylab-cft',
-        ],
-        'variants': [
-          'CROS_STRONGBAD_RELEASE_LKGM',
-        ],
-      },
-      'lacros_skylab_tests': {
-        'mixins': [
-          'skylab-cft',
-        ],
-        'variants': [
-          'CROS_STRONGBAD_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'lacros_skylab_tests_amd64_generic': {
-      'lacros_skylab_tests': {
-        'mixins': [
-          'skylab-cft',
-        ],
-        'variants': [
-          'CROS_BRYA_RELEASE_LKGM',
-          'CROS_FIZZ_RELEASE_LKGM',
-          'CROS_GUYBRUSH_RELEASE_LKGM',
-          'CROS_PUFF_RELEASE_LKGM',
-        ],
-      },
-      'lacros_skylab_tests_version_skew': {
-        'mixins': [
-          'skylab-cft',
-        ],
-        'variants': [
-          'CROS_BRYA_RELEASE_BETA',
-          'CROS_BRYA_RELEASE_DEV',
-          'CROS_BRYA_RELEASE_STABLE',
-          'CROS_FIZZ_RELEASE_BETA',
-          'CROS_FIZZ_RELEASE_DEV',
-          'CROS_FIZZ_RELEASE_STABLE',
-          'CROS_GUYBRUSH_RELEASE_BETA',
-          'CROS_GUYBRUSH_RELEASE_DEV',
-          'CROS_GUYBRUSH_RELEASE_STABLE',
-          'CROS_PUFF_RELEASE_BETA',
-          'CROS_PUFF_RELEASE_DEV',
-          'CROS_PUFF_RELEASE_STABLE',
-        ],
-      },
-      'lacros_skylab_tests_with_gtests': {
-        'mixins': [
-          'skylab-cft',
-        ],
-        'variants': [
-          'CROS_BRYA_RELEASE_LKGM',
-          'CROS_FIZZ_RELEASE_LKGM',
-          'CROS_GUYBRUSH_RELEASE_LKGM',
-          'CROS_PUFF_RELEASE_LKGM',
-        ],
-      },
-      'lacros_skylab_tests_with_gtests_version_skew': {
-        'mixins': [
-          'skylab-cft',
-        ],
-        'variants': [
-          'CROS_BRYA_RELEASE_BETA',
-          'CROS_BRYA_RELEASE_DEV',
-          'CROS_BRYA_RELEASE_STABLE',
-          'CROS_FIZZ_RELEASE_BETA',
-          'CROS_FIZZ_RELEASE_DEV',
-          'CROS_FIZZ_RELEASE_STABLE',
-          'CROS_GUYBRUSH_RELEASE_BETA',
-          'CROS_GUYBRUSH_RELEASE_DEV',
-          'CROS_GUYBRUSH_RELEASE_STABLE',
-          'CROS_PUFF_RELEASE_BETA',
-          'CROS_PUFF_RELEASE_DEV',
-          'CROS_PUFF_RELEASE_STABLE',
         ],
       },
     },

@@ -162,13 +162,6 @@
           'symupload',
           'strip_lacros_files',
         ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic',
-        },
-        'os_type': 'chromeos',
       },
       'lacros-arm-generic-chrome': {
         'additional_compile_targets': [
@@ -177,10 +170,6 @@
           'symupload',
           'strip_lacros_files'
         ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'os_type': 'chromeos',
       },
       'lacros-arm64-generic-chrome': {
         'additional_compile_targets': [
@@ -189,13 +178,6 @@
           'symupload',
           'strip_lacros_files'
         ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_arm64',
-        },
-        'os_type': 'chromeos',
       },
       'linux-chrome': {
         'additional_compile_targets': [
