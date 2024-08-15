@@ -386,11 +386,6 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
           &TrackingProtectionOnboarding::OnOnboardingPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kTrackingProtectionOnboardingAcked,
-      base::BindRepeating(
-          &TrackingProtectionOnboarding::OnOnboardingAckedChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kTrackingProtectionSilentOnboardingStatus,
       base::BindRepeating(
           &TrackingProtectionOnboarding::OnSilentOnboardingPrefChanged,
@@ -413,30 +408,12 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
   for (auto& observer : observers_) {
     observer.OnTrackingProtectionOnboardingUpdated(onboarding_status);
   }
-
-  switch (GetInternalModeBOnboardingStatus(pref_service_)) {
-    case tracking_protection::TrackingProtectionOnboardingStatus::kIneligible:
-    case tracking_protection::TrackingProtectionOnboardingStatus::kEligible:
-      for (auto& observer : observers_) {
-        observer.OnShouldShowNoticeUpdated();
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-void TrackingProtectionOnboarding::OnOnboardingAckedChanged() const {
-  for (auto& observer : observers_) {
-    observer.OnShouldShowNoticeUpdated();
-  }
 }
 
 void TrackingProtectionOnboarding::OnSilentOnboardingPrefChanged() const {
   auto onboarding_status = GetSilentOnboardingStatus();
   for (auto& observer : observers_) {
     observer.OnTrackingProtectionSilentOnboardingUpdated(onboarding_status);
-    observer.OnShouldShowNoticeUpdated();
   }
 }
 

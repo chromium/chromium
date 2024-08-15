@@ -50,7 +50,6 @@ class MockTrackingProtectionObserver
       OnTrackingProtectionOnboardingUpdated,
       (TrackingProtectionOnboarding::OnboardingStatus onboarding_status),
       (override));
-  MOCK_METHOD(void, OnShouldShowNoticeUpdated, (), (override));
   MOCK_METHOD(
       void,
       OnTrackingProtectionSilentOnboardingUpdated,
@@ -113,71 +112,6 @@ TEST_F(TrackingProtectionOnboardingTest,
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       MarkingAsEligibleTriggersShouldShowNoticeObservers) {
-  // Setup
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
-
-  // Action
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-
-  // Verification
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       MarkingAsIneligibleTriggersShouldShowNoticeObservers) {
-  // Setup
-  // We start with an eligible profile
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
-
-  // Action
-  tracking_protection_onboarding()->MaybeMarkModeBIneligible();
-
-  // Verification
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       NoticeActionTriggersShouldShowNoticeObservers) {
-  // Setup
-  // We start with an eligible profile
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
-
-  // Action
-  tracking_protection_onboarding()->NoticeActionTaken(
-      SurfaceType::kDesktop, NoticeType::kModeBOnboarding,
-      NoticeAction::kSettings);
-
-  // Verification
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       NoticeShownDoesNotTriggerShouldShowNoticeObservers) {
-  // Setup
-  // We start with an eligible profile
-  tracking_protection_onboarding()->MaybeMarkModeBEligible();
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(0);
-
-  // Action
-  tracking_protection_onboarding()->NoticeShown(SurfaceType::kDesktop,
-                                                NoticeType::kModeBOnboarding);
-
-  // Verification
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
@@ -939,53 +873,6 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
   prefs()->SetInteger(
       prefs::kTrackingProtectionSilentOnboardingStatus,
       static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       MarkingAsEligibleTriggersShouldShowNoticeObservers) {
-  // Setup
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
-
-  // Action
-  tracking_protection_onboarding()->MaybeMarkModeBSilentEligible();
-
-  // Verification
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       MarkingAsIneligibleTriggersShouldShowNoticeObservers) {
-  // Setup
-  // We start with an eligible profile
-  tracking_protection_onboarding()->MaybeMarkModeBSilentEligible();
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
-
-  // Action
-  tracking_protection_onboarding()->MaybeMarkModeBSilentIneligible();
-
-  // Verification
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       NoticeShownTriggersShouldShowNoticeObservers) {
-  // Setup
-  // We start with an eligible profile
-  tracking_protection_onboarding()->MaybeMarkModeBSilentEligible();
-  MockTrackingProtectionObserver observer;
-  tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
-
-  // Action
-  tracking_protection_onboarding()->NoticeShown(
-      SurfaceType::kDesktop, NoticeType::kModeBSilentOnboarding);
-
-  // Verification
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
