@@ -6,27 +6,27 @@
  * #type=style-lit
  * #css_wrapper_metadata_end */
 
-.tab-organization-body {
+.auto-tab-groups-body {
   color: var(--color-secondary-foreground);
   font-size: 13px;
   font-weight: 400;
   line-height: 20px;
 }
 
-.tab-organization-container {
+.auto-tab-groups-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 100%;
 }
 
-.tab-organization-header {
+.auto-tab-groups-header {
   color: var(--cr-primary-text-color);
   font-size: 14px;
   font-weight: 500;
 }
 
-.tab-organization-link {
+.auto-tab-groups-link {
   color: var(--color-link-foreground-on-bubble-footer);
   cursor: pointer;
   display: inline-block;
@@ -38,7 +38,7 @@
   width: fit-content;
 }
 
-.tab-organization-text-container {
+.auto-tab-groups-text-container {
   display: flex;
   flex-direction: column;
   gap: 8px;

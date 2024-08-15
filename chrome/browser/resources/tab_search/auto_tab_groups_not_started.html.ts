@@ -4,21 +4,21 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationNotStartedElement} from './auto_tab_groups_not_started.js';
+import type {AutoTabGroupsNotStartedElement} from './auto_tab_groups_not_started.js';
 
-export function getHtml(this: TabOrganizationNotStartedElement) {
+export function getHtml(this: AutoTabGroupsNotStartedElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="tab-organization-container">
-  <tab-organization-not-started-image></tab-organization-not-started-image>
-  <div class="tab-organization-text-container">
+<div class="auto-tab-groups-container">
+  <auto-tab-groups-not-started-image></auto-tab-groups-not-started-image>
+  <div class="auto-tab-groups-text-container">
     <div id="header"
-        class="tab-organization-header"
+        class="auto-tab-groups-header"
         aria-live="polite"
         aria-relevant="all">
       ${this.getTitle()}
     </div>
-    <div class="tab-organization-body">
+    <div class="auto-tab-groups-body">
       ${this.getBody_()}
       ${this.showFre ? html`
 <table class="bullet-list">
@@ -41,7 +41,7 @@ export function getHtml(this: TabOrganizationNotStartedElement) {
             <td>$i18n{notStartedBodyFREBullet3}</td>
           </tr>
         </table>
-        <a class="tab-organization-link"
+        <a class="auto-tab-groups-link"
             role="link"
             tabindex="0"
             @click="${this.onLearnMoreClick_}">

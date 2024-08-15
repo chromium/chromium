@@ -11,16 +11,16 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './auto_tab_groups_in_progress.css.js';
 import {getHtml} from './auto_tab_groups_in_progress.html.js';
 
-export interface TabOrganizationInProgressElement {
+export interface AutoTabGroupsInProgressElement {
   $: {
     header: HTMLElement,
   };
 }
 
-// Loading state for the tab organization UI.
-export class TabOrganizationInProgressElement extends CrLitElement {
+// Loading state for the auto tab groups UI.
+export class AutoTabGroupsInProgressElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-in-progress';
+    return 'auto-tab-groups-in-progress';
   }
 
   static override get styles() {
@@ -38,9 +38,9 @@ export class TabOrganizationInProgressElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-in-progress': TabOrganizationInProgressElement;
+    'auto-tab-groups-in-progress': AutoTabGroupsInProgressElement;
   }
 }
 
 customElements.define(
-    TabOrganizationInProgressElement.is, TabOrganizationInProgressElement);
+    AutoTabGroupsInProgressElement.is, AutoTabGroupsInProgressElement);

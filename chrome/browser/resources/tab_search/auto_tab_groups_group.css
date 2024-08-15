@@ -38,7 +38,7 @@ cr-input:focus {
   --cr-input-padding-top: 8px;
 }
 
-tab-organization-results-actions {
+auto-tab-groups-results-actions {
   display: block;
   margin: 16px 16px 0 16px;
 }

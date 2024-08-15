@@ -7,10 +7,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './auto_tab_groups_new_badge.css.js';
 import {getHtml} from './auto_tab_groups_new_badge.html.js';
 
-// New badge divider for the tab organization UI.
-export class TabOrganizationNewBadgeElement extends CrLitElement {
+// New badge divider for the auto tab groups UI.
+export class AutoTabGroupsNewBadgeElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-new-badge';
+    return 'auto-tab-groups-new-badge';
   }
 
   static override get styles() {
@@ -24,9 +24,9 @@ export class TabOrganizationNewBadgeElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-new-badge': TabOrganizationNewBadgeElement;
+    'auto-tab-groups-new-badge': AutoTabGroupsNewBadgeElement;
   }
 }
 
 customElements.define(
-    TabOrganizationNewBadgeElement.is, TabOrganizationNewBadgeElement);
+    AutoTabGroupsNewBadgeElement.is, AutoTabGroupsNewBadgeElement);

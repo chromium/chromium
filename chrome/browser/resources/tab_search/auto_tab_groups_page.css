@@ -13,35 +13,35 @@
   --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
 }
 
-tab-organization-not-started,
-tab-organization-in-progress,
-tab-organization-results,
-tab-organization-failure {
+auto-tab-groups-not-started,
+auto-tab-groups-in-progress,
+auto-tab-groups-results,
+auto-tab-groups-failure {
   display: flex;
 }
 
-:host(.changed-state) tab-organization-not-started[shown],
-:host(.changed-state) tab-organization-in-progress[shown],
-:host(.changed-state) tab-organization-results[shown],
-:host(.changed-state) tab-organization-failure[shown] {
+:host(.changed-state) auto-tab-groups-not-started[shown],
+:host(.changed-state) auto-tab-groups-in-progress[shown],
+:host(.changed-state) auto-tab-groups-results[shown],
+:host(.changed-state) auto-tab-groups-failure[shown] {
   animation: fadeIn 100ms linear 100ms forwards,
              displayIn 200ms linear forwards,
              slideIn 250ms var(--standard-curve) forwards;
 }
 
-tab-organization-not-started:not([shown]),
-tab-organization-in-progress:not([shown]),
-tab-organization-results:not([shown]),
-tab-organization-failure:not([shown]) {
+auto-tab-groups-not-started:not([shown]),
+auto-tab-groups-in-progress:not([shown]),
+auto-tab-groups-results:not([shown]),
+auto-tab-groups-failure:not([shown]) {
   height: 0px;
   position: absolute;
   visibility: hidden;
 }
 
-:host(.changed-state.from-not-started) tab-organization-not-started:not([shown]),
-:host(.changed-state.from-in-progress) tab-organization-in-progress:not([shown]),
-:host(.changed-state.from-success) tab-organization-results:not([shown]),
-:host(.changed-state.from-failure) tab-organization-failure:not([shown]) {
+:host(.changed-state.from-not-started) auto-tab-groups-not-started:not([shown]),
+:host(.changed-state.from-in-progress) auto-tab-groups-in-progress:not([shown]),
+:host(.changed-state.from-success) auto-tab-groups-results:not([shown]),
+:host(.changed-state.from-failure) auto-tab-groups-failure:not([shown]) {
   animation: fadeOut 100ms linear forwards,
              displayOut 200ms linear forwards,
              slideOut 250ms var(--standard-curve) forwards;

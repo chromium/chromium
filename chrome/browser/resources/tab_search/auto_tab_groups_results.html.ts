@@ -4,39 +4,39 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationResultsElement} from './auto_tab_groups_results.js';
+import type {AutoTabGroupsResultsElement} from './auto_tab_groups_results.js';
 
-export function getHtml(this: TabOrganizationResultsElement) {
+export function getHtml(this: AutoTabGroupsResultsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="tab-organization-container">
+<div class="auto-tab-groups-container">
   <div id="header"
-      class="tab-organization-header"
+      class="auto-tab-groups-header"
       aria-live="polite"
       aria-relevant="all">
     ${this.getTitle()}
   </div>
   <div id="scrollable">
     ${this.getOrganizations_().map(item => html`
-      <tab-organization-group
+      <auto-tab-groups-group
         name="${this.getName_(item)}"
         .tabs="${item.tabs}"
         first-new-tab-index="${item.firstNewTabIndex}"
         organization-id="${item.organizationId}"
         ?multi-tab-organization="${this.multiTabOrganization}"
         ?show-reject="${this.hasMultipleOrganizations_()}">
-      </tab-organization-group>
+      </auto-tab-groups-group>
     `)}
   </div>
   ${this.multiTabOrganization ? html`
-    <tab-organization-results-actions show-clear
+    <auto-tab-groups-results-actions show-clear
         ?multiple-organizations="${this.hasMultipleOrganizations_()}"
         @create-group-click="${this.onCreateAllGroupsClick_}">
-    </tab-organization-results-actions>
+    </auto-tab-groups-results-actions>
   ` : ''}
   <div class="feedback" role="toolbar" @keydown="${this.onFeedbackKeyDown_}">
     <div class="button-row">
-      <div class="tab-organization-body">
+      <div class="auto-tab-groups-body">
         $i18n{learnMoreDisclaimer1}
       </div>
       <cr-feedback-buttons id="feedbackButtons"
@@ -45,9 +45,9 @@ export function getHtml(this: TabOrganizationResultsElement) {
           @selected-option-changed="${this.onFeedbackSelectedOptionChanged_}">
       </cr-feedback-buttons>
     </div>
-    <div class="tab-organization-body">
+    <div class="auto-tab-groups-body">
       $i18n{learnMoreDisclaimer2}
-      <div id="learnMore" class="tab-organization-link"
+      <div id="learnMore" class="auto-tab-groups-link"
           @click="${this.onLearnMoreClick_}"
           @keydown="${this.onLearnMoreKeyDown_}"
           role="link"

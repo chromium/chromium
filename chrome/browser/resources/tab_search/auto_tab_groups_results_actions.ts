@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'tab-organization-results-actions' is a row with actions that
- * can be taken on a tab organization suggestion. It is agnostic as to what
+ * @fileoverview 'auto-tab-groups-results-actions' is a row with actions that
+ * can be taken on an auto tab groups suggestion. It is agnostic as to what
  * that suggestion is, and can be used to suggest one or multiple groups.
  */
 
@@ -17,9 +17,9 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './auto_tab_groups_results_actions.css.js';
 import {getHtml} from './auto_tab_groups_results_actions.html.js';
 
-export class TabOrganizationResultsActionsElement extends CrLitElement {
+export class AutoTabGroupsResultsActionsElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-results-actions';
+    return 'auto-tab-groups-results-actions';
   }
 
   static override get properties() {
@@ -56,10 +56,9 @@ export class TabOrganizationResultsActionsElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-results-actions': TabOrganizationResultsActionsElement;
+    'auto-tab-groups-results-actions': AutoTabGroupsResultsActionsElement;
   }
 }
 
 customElements.define(
-    TabOrganizationResultsActionsElement.is,
-    TabOrganizationResultsActionsElement);
+    AutoTabGroupsResultsActionsElement.is, AutoTabGroupsResultsActionsElement);

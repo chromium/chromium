@@ -15,12 +15,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationFailureElement} from './auto_tab_groups_failure.js';
-import type {TabOrganizationInProgressElement} from './auto_tab_groups_in_progress.js';
-import type {TabOrganizationNotStartedElement} from './auto_tab_groups_not_started.js';
+import type {AutoTabGroupsFailureElement} from './auto_tab_groups_failure.js';
+import type {AutoTabGroupsInProgressElement} from './auto_tab_groups_in_progress.js';
+import type {AutoTabGroupsNotStartedElement} from './auto_tab_groups_not_started.js';
 import {getCss} from './auto_tab_groups_page.css.js';
 import {getHtml} from './auto_tab_groups_page.html.js';
-import type {TabOrganizationResultsElement} from './auto_tab_groups_results.js';
+import type {AutoTabGroupsResultsElement} from './auto_tab_groups_results.js';
 import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
 import {TabOrganizationError, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
@@ -28,18 +28,18 @@ import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 const MIN_LOADING_ANIMATION_MS: number = 500;
 
-export interface TabOrganizationPageElement {
+export interface AutoTabGroupsPageElement {
   $: {
-    notStarted: TabOrganizationNotStartedElement,
-    inProgress: TabOrganizationInProgressElement,
-    results: TabOrganizationResultsElement,
-    failure: TabOrganizationFailureElement,
+    notStarted: AutoTabGroupsNotStartedElement,
+    inProgress: AutoTabGroupsInProgressElement,
+    results: AutoTabGroupsResultsElement,
+    failure: AutoTabGroupsFailureElement,
   };
 }
 
-export class TabOrganizationPageElement extends CrLitElement {
+export class AutoTabGroupsPageElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-page';
+    return 'auto-tab-groups-page';
   }
 
   static override get properties() {
@@ -317,9 +317,8 @@ export class TabOrganizationPageElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-page': TabOrganizationPageElement;
+    'auto-tab-groups-page': AutoTabGroupsPageElement;
   }
 }
 
-customElements.define(
-    TabOrganizationPageElement.is, TabOrganizationPageElement);
+customElements.define(AutoTabGroupsPageElement.is, AutoTabGroupsPageElement);

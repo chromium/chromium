@@ -14,7 +14,7 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationGroupElement} from './auto_tab_groups_group.js';
+import type {AutoTabGroupsGroupElement} from './auto_tab_groups_group.js';
 import {getCss} from './auto_tab_groups_results.css.js';
 import {getHtml} from './auto_tab_groups_results.html.js';
 import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
@@ -22,7 +22,7 @@ import type {TabOrganization, TabOrganizationSession} from './tab_search.mojom-w
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 204;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 212;
 
-export interface TabOrganizationResultsElement {
+export interface AutoTabGroupsResultsElement {
   $: {
     feedbackButtons: CrFeedbackButtonsElement,
     header: HTMLElement,
@@ -31,9 +31,9 @@ export interface TabOrganizationResultsElement {
   };
 }
 
-export class TabOrganizationResultsElement extends CrLitElement {
+export class AutoTabGroupsResultsElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-results';
+    return 'auto-tab-groups-results';
   }
 
   static override get properties() {
@@ -110,7 +110,7 @@ export class TabOrganizationResultsElement extends CrLitElement {
   }
 
   focusInput() {
-    const group = this.shadowRoot!.querySelector('tab-organization-group');
+    const group = this.shadowRoot!.querySelector('auto-tab-groups-group');
     if (!group) {
       return;
     }
@@ -187,8 +187,8 @@ export class TabOrganizationResultsElement extends CrLitElement {
     event.preventDefault();
 
     const groups =
-        [...this.shadowRoot!.querySelectorAll('tab-organization-group')];
-    const organizations = groups.map((group: TabOrganizationGroupElement) => {
+        [...this.shadowRoot!.querySelectorAll('auto-tab-groups-group')];
+    const organizations = groups.map((group: AutoTabGroupsGroupElement) => {
       return {
         organizationId: group.organizationId,
         name: group.name,
@@ -245,9 +245,9 @@ export class TabOrganizationResultsElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-results': TabOrganizationResultsElement;
+    'auto-tab-groups-results': AutoTabGroupsResultsElement;
   }
 }
 
 customElements.define(
-    TabOrganizationResultsElement.is, TabOrganizationResultsElement);
+    AutoTabGroupsResultsElement.is, AutoTabGroupsResultsElement);

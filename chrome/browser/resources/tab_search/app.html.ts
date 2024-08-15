@@ -18,7 +18,7 @@ ${this.tabOrganizationEnabled_ ? html`
   </cr-tabs>
   <cr-page-selector .selected="${this.selectedTabIndex_}">
     <tab-search-page></tab-search-page>
-    <tab-organization-page></tab-organization-page>
+    <auto-tab-groups-page></auto-tab-groups-page>
   </cr-page-selector>
 ` : html`
   <tab-search-page></tab-search-page>

@@ -15,20 +15,19 @@ import {getHtml} from './auto_tab_groups_not_started.html.js';
 import type {TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
 import {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
 
-const TabOrganizationNotStartedElementBase =
-    WebUiListenerMixinLit(CrLitElement);
+const AutoTabGroupsNotStartedElementBase = WebUiListenerMixinLit(CrLitElement);
 
-export interface TabOrganizationNotStartedElement {
+export interface AutoTabGroupsNotStartedElement {
   $: {
     header: HTMLElement,
   };
 }
 
-// Not started state for the tab organization UI.
-export class TabOrganizationNotStartedElement extends
-    TabOrganizationNotStartedElementBase {
+// Not started state for the auto tab groups UI.
+export class AutoTabGroupsNotStartedElement extends
+    AutoTabGroupsNotStartedElementBase {
   static get is() {
-    return 'tab-organization-not-started';
+    return 'auto-tab-groups-not-started';
   }
 
   static override get properties() {
@@ -118,9 +117,9 @@ export class TabOrganizationNotStartedElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-not-started': TabOrganizationNotStartedElement;
+    'auto-tab-groups-not-started': AutoTabGroupsNotStartedElement;
   }
 }
 
 customElements.define(
-    TabOrganizationNotStartedElement.is, TabOrganizationNotStartedElement);
+    AutoTabGroupsNotStartedElement.is, AutoTabGroupsNotStartedElement);

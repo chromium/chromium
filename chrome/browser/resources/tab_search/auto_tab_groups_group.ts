@@ -28,15 +28,15 @@ function getEventTargetIndex(e: Event): number {
   return Number((e.currentTarget as HTMLElement).dataset['index']);
 }
 
-export interface TabOrganizationGroupElement {
+export interface AutoTabGroupsGroupElement {
   $: {
     selector: CrPageSelectorElement,
   };
 }
 
-export class TabOrganizationGroupElement extends CrLitElement {
+export class AutoTabGroupsGroupElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-group';
+    return 'auto-tab-groups-group';
   }
 
   static override get properties() {
@@ -273,9 +273,8 @@ export class TabOrganizationGroupElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-group': TabOrganizationGroupElement;
+    'auto-tab-groups-group': AutoTabGroupsGroupElement;
   }
 }
 
-customElements.define(
-    TabOrganizationGroupElement.is, TabOrganizationGroupElement);
+customElements.define(AutoTabGroupsGroupElement.is, AutoTabGroupsGroupElement);

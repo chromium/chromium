@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationResultsActionsElement} from './auto_tab_groups_results_actions.js';
+import type {AutoTabGroupsResultsActionsElement} from './auto_tab_groups_results_actions.js';
 
-export function getHtml(this: TabOrganizationResultsActionsElement) {
+export function getHtml(this: AutoTabGroupsResultsActionsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="button-row">

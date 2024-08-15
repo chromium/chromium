@@ -4,24 +4,24 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationPageElement} from './auto_tab_groups_page.js';
+import type {AutoTabGroupsPageElement} from './auto_tab_groups_page.js';
 import {TabOrganizationState} from './tab_search.mojom-webui.js';
 
-export function getHtml(this: TabOrganizationPageElement) {
+export function getHtml(this: AutoTabGroupsPageElement) {
   return html`<!--_html_template_start_-->
 <div id="contents">
   <div id="body">
-    <tab-organization-not-started id="notStarted"
+    <auto-tab-groups-not-started id="notStarted"
         ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
         @sign-in-click="${this.onSignInClick_}"
         @organize-tabs-click="${this.onOrganizeTabsClick_}"
         @learn-more-click="${this.onLearnMoreClick_}"
         ?show-fre="${this.showFRE_}">
-    </tab-organization-not-started>
-    <tab-organization-in-progress id="inProgress"
+    </auto-tab-groups-not-started>
+    <auto-tab-groups-in-progress id="inProgress"
         ?shown="${this.isState_(TabOrganizationState.kInProgress)}">
-    </tab-organization-in-progress>
-    <tab-organization-results id="results"
+    </auto-tab-groups-in-progress>
+    <auto-tab-groups-results id="results"
         ?shown="${this.isState_(TabOrganizationState.kSuccess)}"
         .session="${this.session_}"
         ?multi-tab-organization="${this.multiTabOrganization_}"
@@ -33,14 +33,14 @@ export function getHtml(this: TabOrganizationPageElement) {
         @remove-tab="${this.onRemoveTab_}"
         @learn-more-click="${this.onLearnMoreClick_}"
         @feedback="${this.onFeedback_}">
-    </tab-organization-results>
-    <tab-organization-failure id="failure"
+    </auto-tab-groups-results>
+    <auto-tab-groups-failure id="failure"
         ?shown="${this.isState_(TabOrganizationState.kFailure)}"
         ?show-fre="${this.showFRE_}"
         .error="${this.getSessionError_()}"
         @check-now="${this.onCheckNow_}"
         @tip-click="${this.onTipClick_}">
-    </tab-organization-failure>
+    </auto-tab-groups-failure>
   </div>
 </div><!--_html_template_end_-->`;
 }

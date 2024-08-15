@@ -18,9 +18,9 @@
 }
 
 /* Explicitly provide a hard-coded width for each text block.
- * This ensures accuracy in the tab-organization-page calculation for
+ * This ensures accuracy in the auto-tab-groups-page calculation for
  * animating bubble height, as text wraps when rendered offscreen.
  */
-.tab-organization-body {
+.auto-tab-groups-body {
   width: 280px;
 }

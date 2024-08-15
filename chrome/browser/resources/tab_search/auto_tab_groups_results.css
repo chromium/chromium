@@ -64,8 +64,8 @@ cr-feedback-buttons {
   border-bottom: var(--scroll-border);
 }
 
-.tab-organization-body,
-.tab-organization-link {
+.auto-tab-groups-body,
+.auto-tab-groups-link {
   display: inline;
   font-size: 11px;
   line-height: 16px;

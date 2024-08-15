@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationNotStartedImageElement} from './auto_tab_groups_not_started_image.js';
+import type {AutoTabGroupsNotStartedImageElement} from './auto_tab_groups_not_started_image.js';
 
-export function getHtml(this: TabOrganizationNotStartedImageElement) {
+export function getHtml(this: AutoTabGroupsNotStartedImageElement) {
   return html`<!--_html_template_start_-->
 <svg xmlns="http://www.w3.org/2000/svg" width="280" height="103" fill="none">
   <g clip-path="url(#a)">

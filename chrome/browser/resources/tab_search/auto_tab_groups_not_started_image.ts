@@ -7,10 +7,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './auto_tab_groups_not_started_image.css.js';
 import {getHtml} from './auto_tab_groups_not_started_image.html.js';
 
-// Themed image for the tab organization not started state.
-export class TabOrganizationNotStartedImageElement extends CrLitElement {
+// Themed image for the auto tab groups not started state.
+export class AutoTabGroupsNotStartedImageElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-not-started-image';
+    return 'auto-tab-groups-not-started-image';
   }
 
   static override get styles() {
@@ -24,10 +24,10 @@ export class TabOrganizationNotStartedImageElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-not-started-image': TabOrganizationNotStartedImageElement;
+    'auto-tab-groups-not-started-image': AutoTabGroupsNotStartedImageElement;
   }
 }
 
 customElements.define(
-    TabOrganizationNotStartedImageElement.is,
-    TabOrganizationNotStartedImageElement);
+    AutoTabGroupsNotStartedImageElement.is,
+    AutoTabGroupsNotStartedImageElement);

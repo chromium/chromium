@@ -12,16 +12,16 @@ import {getCss} from './auto_tab_groups_failure.css.js';
 import {getHtml} from './auto_tab_groups_failure.html.js';
 import {TabOrganizationError} from './tab_search.mojom-webui.js';
 
-export interface TabOrganizationFailureElement {
+export interface AutoTabGroupsFailureElement {
   $: {
     header: HTMLElement,
   };
 }
 
-// Failure state for the tab organization UI.
-export class TabOrganizationFailureElement extends CrLitElement {
+// Failure state for the auto tab groups UI.
+export class AutoTabGroupsFailureElement extends CrLitElement {
   static get is() {
-    return 'tab-organization-failure';
+    return 'auto-tab-groups-failure';
   }
 
   static override get properties() {
@@ -85,9 +85,9 @@ export class TabOrganizationFailureElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'tab-organization-failure': TabOrganizationFailureElement;
+    'auto-tab-groups-failure': AutoTabGroupsFailureElement;
   }
 }
 
 customElements.define(
-    TabOrganizationFailureElement.is, TabOrganizationFailureElement);
+    AutoTabGroupsFailureElement.is, AutoTabGroupsFailureElement);

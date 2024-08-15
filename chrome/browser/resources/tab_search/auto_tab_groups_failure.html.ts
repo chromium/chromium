@@ -4,29 +4,29 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationFailureElement} from './auto_tab_groups_failure.js';
+import type {AutoTabGroupsFailureElement} from './auto_tab_groups_failure.js';
 
-export function getHtml(this: TabOrganizationFailureElement) {
+export function getHtml(this: AutoTabGroupsFailureElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="tab-organization-container">
-  <div class="tab-organization-text-container">
+<div class="auto-tab-groups-container">
+  <div class="auto-tab-groups-text-container">
     <div id="header"
-        class="tab-organization-header"
+        class="auto-tab-groups-header"
         aria-live="polite"
         aria-relevant="all">
       ${this.getTitle(this.error)}
     </div>
-    <div class="tab-organization-body">
+    <div class="auto-tab-groups-body">
       <localized-link localized-string="${this.getBody_()}"
           @link-clicked="${this.onCheckNow_}"></localized-link>
     </div>
   </div>
   ${this.showFre ? html`
     <div class="footer">
-      <div class="tab-organization-body">
+      <div class="auto-tab-groups-body">
         <b>$i18n{tipTitle}</b> $i18n{tipBody}
-        <div class="tab-organization-link"
+        <div class="auto-tab-groups-link"
             role="link"
             tabindex="0"
             @click="${this.onTipClick_}"

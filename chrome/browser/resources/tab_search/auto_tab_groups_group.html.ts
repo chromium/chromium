@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationGroupElement} from './auto_tab_groups_group.js';
+import type {AutoTabGroupsGroupElement} from './auto_tab_groups_group.js';
 
-export function getHtml(this: TabOrganizationGroupElement) {
+export function getHtml(this: AutoTabGroupsGroupElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="group">
@@ -22,7 +22,7 @@ export function getHtml(this: TabOrganizationGroupElement) {
         </cr-input>
       ` : html`
         <div class="group-name-row">
-          <div class="tab-organization-header group-name">${this.name}</div>
+          <div class="auto-tab-groups-header group-name">${this.name}</div>
           <cr-icon-button class="icon-edit"
               aria-label="${this.getEditButtonAriaLabel_()}"
               title="${this.getEditButtonAriaLabel_()}"
@@ -54,7 +54,7 @@ export function getHtml(this: TabOrganizationGroupElement) {
       @iron-select="${this.onSelectedChanged_}">
     ${this.tabDatas_.map((item, index) => html`
       ${this.showNewTabSectionHeader_(index) ? html`
-        <tab-organization-new-badge></tab-organization-new-badge>
+        <auto-tab-groups-new-badge></auto-tab-groups-new-badge>
       ` : ''}
       <tab-search-item class="mwb-list-item" .data="${item}"
           role="option"
@@ -69,9 +69,9 @@ export function getHtml(this: TabOrganizationGroupElement) {
     `)}
   </cr-page-selector>
   ${!this.multiTabOrganization ? html`
-    <tab-organization-results-actions
+    <auto-tab-groups-results-actions
         @create-group-click="${this.onCreateGroupClick_}">
-    </tab-organization-results-actions>
+    </auto-tab-groups-results-actions>
   ` : ''}
 </div>
 <!--_html_template_end_-->`;

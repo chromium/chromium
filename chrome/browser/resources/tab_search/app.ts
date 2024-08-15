@@ -77,9 +77,9 @@ export class TabSearchAppElement extends CrLitElement {
   protected onSelectedTabChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabIndex_ = e.detail.value;
     if (this.selectedTabIndex_ === 1) {
-      const tabOrganizationPage =
-          this.shadowRoot!.querySelector('tab-organization-page')!;
-      tabOrganizationPage.classList.toggle('changed-state', false);
+      const autoTabGroupsPage =
+          this.shadowRoot!.querySelector('auto-tab-groups-page')!;
+      autoTabGroupsPage.classList.toggle('changed-state', false);
     }
     this.apiProxy_.setTabIndex(this.selectedTabIndex_);
   }

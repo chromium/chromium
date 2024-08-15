@@ -4,14 +4,14 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {TabOrganizationInProgressElement} from './auto_tab_groups_in_progress.js';
+import type {AutoTabGroupsInProgressElement} from './auto_tab_groups_in_progress.js';
 
-export function getHtml(this: TabOrganizationInProgressElement) {
+export function getHtml(this: AutoTabGroupsInProgressElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="tab-organization-container">
+<div class="auto-tab-groups-container">
   <div id="header"
-      class="tab-organization-header"
+      class="auto-tab-groups-header"
       aria-live="polite"
       aria-relevant="all">
     ${this.getTitle()}
