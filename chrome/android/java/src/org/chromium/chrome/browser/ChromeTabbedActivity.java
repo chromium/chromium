@@ -668,10 +668,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                         new TabGroupVisualDataManager(tabModelSelector);
                             }));
 
+            Profile profile = mTabModelSelector.getCurrentModel().getProfile();
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
                     new HistoricalTabModelObserver(
                             mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
+            mHistoricalTabModelObserver.addSecodaryTabModelSupplier(
+                    ArchivedTabModelOrchestrator.getForProfile(profile)::getTabModel);
 
             // Defer creation of this helper so it triggers after TabModelFilter observers.
             mUndoRefocusHelper =

@@ -19,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabCreator;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
@@ -116,6 +118,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     // ArchivedTabModelOrchestrator. This should always be the create for the "primary" instance
     // of ChromeTabbedActivity.
     private TabCreator mRegularTabCreator;
+    private HistoricalTabModelObserver mHistoricalTabModelObserver;
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -196,6 +199,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
             mUnderlyingTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
 
+        if (mHistoricalTabModelObserver != null) {
+            mHistoricalTabModelObserver.destroy();
+            mHistoricalTabModelObserver = null;
+        }
+
         super.destroy();
     }
 
@@ -211,6 +219,12 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     public ObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
+    }
+
+    public TabModel getTabModel() {
+        // If the tab model selector isn't ready yet, then return a placeholder supplier
+        if (getTabModelSelector() == null) return null;
+        return getTabModelSelector().getModel(/* incognito= */ false);
     }
 
     /** Returns whether the archived tab model has been initialized. */
@@ -300,6 +314,12 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mUnderlyingTabCountSupplier = model.getTabCountSupplier();
         mTabCountSupplier.set(mUnderlyingTabCountSupplier.get());
         mUnderlyingTabCountSupplier.addObserver(mTabCountSupplierObserver);
+
+        mHistoricalTabModelObserver =
+                new HistoricalTabModelObserver(
+                        getTabModelSelector()
+                                .getTabModelFilterProvider()
+                                .getTabModelFilter(/* isIncognito= */ false));
     }
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
@@ -334,6 +354,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabArchiver.rescueArchivedTabs(mRegularTabCreator);
 
         mRescueTabsCalled = true;
+    }
+
+    public void initializeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
+        mHistoricalTabModelObserver.addSecodaryTabModelSupplier(regularTabModelSupplier);
     }
 
     // TabModelOrchestrator lifecycle methods.

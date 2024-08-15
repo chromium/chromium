@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -37,7 +38,9 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                     UrlConstants.CHROME_NATIVE_SCHEME,
                     ContentUrlConstants.ABOUT_SCHEME);
 
+    private final List<Supplier<TabModel>> mSecondaryTabModelSuppliers = new ArrayList<>();
     private final TabModel mTabModel;
+
     private boolean mIgnoreUrlSchemesForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -65,6 +68,22 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     }
 
     // HistoricalTabSaver implementation.
+
+    @Override
+    public void destroy() {
+        mSecondaryTabModelSuppliers.clear();
+    }
+
+    @Override
+    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mSecondaryTabModelSuppliers.add(tabModelSupplier);
+    }
+
+    @Override
+    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mSecondaryTabModelSuppliers.remove(tabModelSupplier);
+    }
+
     @Override
     public void createHistoricalTab(Tab tab) {
         if (!shouldSave(tab)) return;
@@ -187,6 +206,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
      */
     private boolean shouldSave(Tab tab) {
         if (tab.isIncognito()) return false;
+        // Check the secondary tab model to see if the tab was moved instead of deleted.
+        if (tabIdExistsInSecondaryModel(tab.getId())) return false;
 
         // {@link GURL#getScheme()} is not available in unit tests.
         if (mIgnoreUrlSchemesForTesting) return true;
@@ -204,6 +225,16 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 && committedUrlOrFrozenUrl.isValid()
                 && !committedUrlOrFrozenUrl.isEmpty()
                 && !UNSUPPORTED_SCHEMES.contains(committedUrlOrFrozenUrl.getScheme());
+    }
+
+    private boolean tabIdExistsInSecondaryModel(int tabId) {
+        for (Supplier<TabModel> tabModelSupplier : mSecondaryTabModelSuppliers) {
+            if (tabModelSupplier.hasValue() && tabModelSupplier.get().getTabById(tabId) != null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

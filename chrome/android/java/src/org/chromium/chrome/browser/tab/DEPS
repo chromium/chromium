@@ -73,6 +73,9 @@ specific_include_rules = {
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
   ],
+  'HistoricalTabSaver\.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+  ],
   'HistoricalTabSaverImpl\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
   ],

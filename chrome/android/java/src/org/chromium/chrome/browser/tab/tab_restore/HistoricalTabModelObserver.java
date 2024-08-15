@@ -9,9 +9,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -46,6 +48,23 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     /** Removes observers. */
     public void destroy() {
         mTabGroupModelFilter.removeObserver(this);
+        mHistoricalTabSaver.destroy();
+    }
+
+    /**
+     * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
+     * recent tabs.
+     */
+    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mHistoricalTabSaver.addSecodaryTabModelSupplier(tabModelSupplier);
+    }
+
+    /**
+     * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
+     * recent tabs.
+     */
+    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mHistoricalTabSaver.removeSecodaryTabModelSupplier(tabModelSupplier);
     }
 
     @Override
