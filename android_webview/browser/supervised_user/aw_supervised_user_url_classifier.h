@@ -11,7 +11,16 @@
 #include "base/no_destructor.h"
 #include "url/gurl.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace android_webview {
+
+namespace prefs {
+inline constexpr char kShouldBlockRestrictedContent[] =
+    "android_webview.should_block_restricted_content";
+}  // namespace prefs
+
 using UrlClassifierCallback = base::OnceCallback<void(bool /*shouldBlock*/)>;
 
 // Native side of java-class of same name. Must only be used on the UI thread.
@@ -20,6 +29,7 @@ using UrlClassifierCallback = base::OnceCallback<void(bool /*shouldBlock*/)>;
 class AwSupervisedUserUrlClassifier {
  public:
   static AwSupervisedUserUrlClassifier* GetInstance();
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   AwSupervisedUserUrlClassifier(const AwSupervisedUserUrlClassifier&) = delete;
   AwSupervisedUserUrlClassifier& operator=(
@@ -36,7 +46,7 @@ class AwSupervisedUserUrlClassifier {
   ~AwSupervisedUserUrlClassifier() = default;
 
   bool platform_supports_url_checks_ = false;
-  bool user_requires_url_checks_ = false;
+  raw_ptr<PrefService> local_state_;
   friend class base::NoDestructor<AwSupervisedUserUrlClassifier>;
 };
 }  // namespace android_webview
