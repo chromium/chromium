@@ -1,7 +1,7 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
+++genericContainer ignored
 ++++genericContainer htmlTag='body'
-++++++genericContainer ignored className='div-inside-template' htmlTag='div'
+++++++genericContainer ignored
 ++++++++paragraph htmlTag='p'
 ++++++++++staticText name='Slot contents'
 ++++++++++++inlineTextBox name='Slot contents'

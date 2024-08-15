@@ -525,9 +525,23 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   };
 
   ASSERT_EQ(complete_nodes.size(), contents_nodes.size());
-  for (size_t i = 0; i < complete_nodes.size(); ++i)
-    EXPECT_LT(total_attribute_count(contents_nodes[i]),
-              total_attribute_count(complete_nodes[i]));
+  int num_attributes_for_all_contents_nodes = 0;
+  int num_attributes_for_all_complete_nodes = 0;
+  for (size_t i = 0; i < complete_nodes.size(); ++i) {
+    num_attributes_for_all_contents_nodes +=
+        total_attribute_count(contents_nodes[i]);
+    num_attributes_for_all_complete_nodes +=
+        total_attribute_count(complete_nodes[i]);
+    EXPECT_LE(total_attribute_count(contents_nodes[i]),
+              total_attribute_count(complete_nodes[i]))
+        << "\nComplete node should have had more attributes:"
+        << "\n* AXNodeData with AXMode=kWebContents: "
+        << contents_nodes[i].ToString()
+        << "\n* AXNodeData with AXMode=kAXModeComplete: "
+        << complete_nodes[i].ToString();
+  }
+  EXPECT_LT(num_attributes_for_all_contents_nodes,
+            num_attributes_for_all_complete_nodes);
 }
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, SnapshotPDFMode) {

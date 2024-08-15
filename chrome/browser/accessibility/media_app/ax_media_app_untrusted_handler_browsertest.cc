@@ -978,8 +978,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
   ASSERT_TRUE(load_waiter.WaitForNotification());
   EXPECT_EQ(
       "rootWebArea htmlTag='#document'\n"
-      "++genericContainer htmlTag='html'\n"
-      "++++genericContainer htmlTag='body'\n"
+      "++genericContainer\n"
+      "++++genericContainer\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
       "++++++++staticText name='Text that is not replaced by child tree.'\n"
@@ -1008,8 +1008,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
   ASSERT_TRUE(child_tree_added_waiter.WaitForNotification());
   ASSERT_EQ(
       "rootWebArea htmlTag='#document'\n"
-      "++genericContainer htmlTag='html'\n"
-      "++++genericContainer htmlTag='body'\n"
+      "++genericContainer\n"
+      "++++genericContainer\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
       "++++++++staticText name='Text that is not replaced by child tree.'\n"

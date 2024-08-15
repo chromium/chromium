@@ -1,7 +1,7 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
-++++++heading ignored invisible htmlTag='h2'
-++++++++paragraph ignored invisible htmlTag='p'
-++++++++++button ignored invisible htmlTag='li'
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading ignored invisible
+++++++++paragraph ignored invisible
+++++++++++button ignored invisible
 ++++++group htmlTag='div' name='Done'

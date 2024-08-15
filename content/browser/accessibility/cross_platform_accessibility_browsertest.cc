@@ -2416,7 +2416,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
-      <body>
+      <body lang="fr">
         <div>
           <button>This should be accessible</button>
         </div>
@@ -2436,8 +2436,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_NE(body_node, nullptr);
 
   // Make sure this is actually the body element.
-  ASSERT_EQ(body_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag),
-            "body");
+  ASSERT_EQ(
+      body_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage),
+      "fr");
   ASSERT_TRUE(body_node->IsIgnored());
 
   AccessibilityNotificationWaiter waiter(

@@ -11,7 +11,7 @@ rootWebArea focusable scrollable=true
 ++++++++paragraph
 ++++++++++staticText name='Scrollable'
 ++++++++++++inlineTextBox name='Scrollable'
-++++++genericContainer ignored className='not-scrollable'
+++++++genericContainer ignored
 ++++++++paragraph
 ++++++++++staticText name='Scrollable'
 ++++++++++++inlineTextBox name='Scrollable'
