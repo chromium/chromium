@@ -77,7 +77,7 @@ source_set("lib_with_resources") {
 # `process_version_rc_template` invokes `process_version` with the default
 # template rc file which is at //chrome/app/chrome_version.rc.version.
 process_version_rc_template("version") {
-  _product_fullname = "$updater_product_full_name " + "($current_cpu)"
+  _product_fullname = "$updater_metainstaller_name " + "($current_cpu)"
   if (is_debug) {
     _product_fullname += " (debug)"
   }
@@ -85,7 +85,7 @@ process_version_rc_template("version") {
     "-e",
     "PRODUCT_FULLNAME=\"$_product_fullname\"",
     "-e",
-    "INTERNAL_NAME=\"$updater_product_full_name\"",
+    "INTERNAL_NAME=\"$updater_metainstaller_name\"",
     "-e",
     "ORIGINAL_FILENAME=\"UpdaterSetup.exe\"",
     "-e",
