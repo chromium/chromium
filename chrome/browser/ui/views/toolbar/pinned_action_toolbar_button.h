@@ -80,7 +80,6 @@ class PinnedActionToolbarButton : public ToolbarButton,
   // ui::SimpleMenuModel::Delegate:
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
-  ui::ImageModel GetIconForCommandId(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
 

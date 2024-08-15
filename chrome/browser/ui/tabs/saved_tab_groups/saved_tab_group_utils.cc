@@ -334,7 +334,8 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
   if (is_ui_update) {
     dialog_model.AddMenuItem(
         ui::ImageModel::FromVectorIcon(
-            saved_group->is_pinned() ? kKeepFilledIcon : kKeepIcon,
+            saved_group->is_pinned() ? kKeepPinFilledChromeRefreshIcon
+                                     : kKeepPinChromeRefreshIcon,
             ui::kColorMenuIcon,
             is_ui_update ? kUIUpdateIconSize : kOldIconSize),
         l10n_util::GetStringUTF16(saved_group->is_pinned()
