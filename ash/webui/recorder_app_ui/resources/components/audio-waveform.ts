@@ -8,8 +8,8 @@ import {
   html,
   nothing,
   PropertyDeclarations,
+  repeat,
   svg,
-  SVGTemplateResult,
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {
@@ -69,8 +69,8 @@ function toViewBoxString(viewBox: Rect|null): string|typeof nothing {
  *     to x = 0, and the viewBox of the whole SVG is set to show around the
  *     current time.
  *
- * `timestampToBarIndex` converts from (1) to (2), and `getBarX` converts from
- * (2) to (3).
+ * `timestampToBarIndex` converts from (1) to (2), `getBarX` converts from
+ * (2) to (3), and `xCoordinateToRoughIdx` converts from (3) to (2).
  *
  * Since the whole waveform looks better when things are aligned to bar, most
  * variables (ended in BarIdx) are in the coordinate of (2).
@@ -86,6 +86,10 @@ function timestampToBarIndex(seconds: number): number {
 
 function getBarX(barIdx: number): number {
   return barIdx * (BAR_WIDTH + BAR_GAP);
+}
+
+function xCoordinateToRoughIdx(x: number): number {
+  return Math.floor(x / (BAR_WIDTH + BAR_GAP));
 }
 
 /**
@@ -505,13 +509,30 @@ export class AudioWaveform extends ReactiveLitElement {
     </g>`;
   }
 
-  private renderSvgContent(
-    viewBox: Rect|null,
-  ): SVGTemplateResult[]|typeof nothing {
-    if (viewBox === null || this.values.length === 0) {
+  private renderCurrentTimeBar(viewBox: Rect) {
+    if (this.currentTimeBarIdx.value === null) {
       return nothing;
     }
-    const ret: SVGTemplateResult[] = [];
+    const width = 2;
+    // Add the progress indicator at the current time. Draw on the left side
+    // of the current bar so it looks more "correct" when jumping to the start
+    // of a paragraph with speaker label.
+    const x = getBarX(this.currentTimeBarIdx.value) - BAR_WIDTH / 2 - width;
+    const y = viewBox.y;
+    return svg`<rect
+      x=${x}
+      y=${y}
+      width=${width}
+      height=${viewBox.height}
+      rx="1"
+      class="playhead"
+    />`;
+  }
+
+  private renderAudioBars(viewBox: Rect) {
+    if (this.values.length === 0) {
+      return nothing;
+    }
 
     const speakerLabelRanges = this.speakerLabelInfo.value.ranges;
     let currentSpeakerLabelRangeIdx = 0;
@@ -541,69 +562,81 @@ export class AudioWaveform extends ReactiveLitElement {
       return null;
     }
 
-    for (const [i, val] of this.values.entries()) {
-      const rect = this.getBarLocation(
-        i,
-        val,
-        BAR_MIN_HEIGHT,
-        Math.min(viewBox.height, BAR_MAX_HEIGHT),
-      );
-      // TODO(pihsun): Optimize and directly calculate the index range.
-      if (rect.x + rect.width < viewBox.x ||
-          rect.x > viewBox.x + viewBox.width) {
-        continue;
-      }
-      const classes: Record<string, boolean> = {
-        future: this.isAfterCurrentTime(i),
-      };
-      const range = getSpeakerLabelRange(i);
+    // This is an optimization to not goes through the whole values array, and
+    // directly calculate the part that needs to be rendered instead. To
+    // simplify the logic we calculate the rough range and just extend it a bit
+    // to make sure we covers the whole range.
+    const startIdx = Math.max(xCoordinateToRoughIdx(viewBox.x) - 5, 0);
+    const endIdx = Math.min(
+      xCoordinateToRoughIdx(viewBox.x + viewBox.width) + 5,
+      this.values.length - 1,
+    );
 
-      if (range !== null) {
-        if (!currentSpeakerLabelRangeRendered) {
-          ret.push(
-            this.renderSpeakerRange(
-              this.speakerLabelInfo.value.speakerLabels,
-              range,
-              viewBox,
-            ),
-          );
-          currentSpeakerLabelRangeRendered = true;
+    if (endIdx < startIdx) {
+      return nothing;
+    }
+
+    const idxRange = Array.from(
+      {length: endIdx - startIdx + 1},
+      (_, i) => i + startIdx,
+    );
+
+    return repeat(
+      idxRange,
+      (i) => i,
+      (i) => {
+        const ret: RenderResult[] = [];
+
+        const val = assertExists(this.values[i]);
+        const rect = this.getBarLocation(
+          i,
+          val,
+          BAR_MIN_HEIGHT,
+          Math.min(viewBox.height, BAR_MAX_HEIGHT),
+        );
+        if (rect.x + rect.width < viewBox.x ||
+            rect.x > viewBox.x + viewBox.width) {
+          return nothing;
         }
+        const classes: Record<string, boolean> = {
+          future: this.isAfterCurrentTime(i),
+        };
+        const range = getSpeakerLabelRange(i);
 
-        classes[getSpeakerLabelClass(range.speakerLabelIndex)] = true;
-      } else {
-        classes['no-speaker'] = true;
-      }
-      ret.push(
-        svg`<rect
+        if (range !== null) {
+          if (!currentSpeakerLabelRangeRendered) {
+            ret.push(
+              this.renderSpeakerRange(
+                this.speakerLabelInfo.value.speakerLabels,
+                range,
+                viewBox,
+              ),
+            );
+            currentSpeakerLabelRangeRendered = true;
+          }
+
+          classes[getSpeakerLabelClass(range.speakerLabelIndex)] = true;
+        } else {
+          classes['no-speaker'] = true;
+        }
+        ret.push(svg`<rect
           x=${rect.x}
           y=${rect.y}
           width=${rect.width}
           height=${rect.height}
           rx=${rect.width / 2}
           class="bar ${classMap(classes)}"
-        />`,
-      );
+        />`);
+        return ret;
+      },
+    );
+  }
+
+  private renderSvgContent(viewBox: Rect|null) {
+    if (viewBox === null) {
+      return nothing;
     }
-    if (this.currentTimeBarIdx.value !== null) {
-      const width = 2;
-      // Add the progress indicator at the current time. Draw on the left side
-      // of the current bar so it looks more "correct" when jumping to the start
-      // of a paragraph with speaker label.
-      const x = getBarX(this.currentTimeBarIdx.value) - BAR_WIDTH / 2 - width;
-      const y = viewBox.y;
-      ret.push(
-        svg`<rect
-          x=${x}
-          y=${y}
-          width=${width}
-          height=${viewBox.height}
-          rx="1"
-          class="playhead"
-        />`,
-      );
-    }
-    return ret;
+    return [this.renderAudioBars(viewBox), this.renderCurrentTimeBar(viewBox)];
   }
 
   private getViewBox(): Rect|null {

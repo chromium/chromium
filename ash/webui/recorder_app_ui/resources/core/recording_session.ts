@@ -142,9 +142,9 @@ export class RecordingSession {
           0,
           POWER_SCALE_FACTOR - 1,
         );
-        this.powers.mutate((d) => {
-          d.push(scaledPower);
-        });
+        // TODO(pihsun): This still copies the whole array and can be optimized
+        // further.
+        this.powers.value = [...this.powers.value, scaledPower];
         this.currentSodaSession?.session.addAudio(samples);
         this.processedSamples += samples.length;
       },
