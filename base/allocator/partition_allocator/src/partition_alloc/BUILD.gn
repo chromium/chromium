@@ -232,11 +232,13 @@ component("raw_ptr") {
     sources += [ "pointers/raw_ptr_noop_impl.h" ]
     sources += [ "pointers/empty.cc" ]
   }
-  public_deps = [ ":build_config" ]
+  public_deps = [
+    ":build_config",
+    ":buildflags",
+  ]
   if (use_partition_alloc) {
     public_deps += [ ":partition_alloc" ]
   }
-  deps = [ ":buildflags" ]
 
   # See also: `partition_alloc_base/component_export.h`
   defines = [ "IS_RAW_PTR_IMPL" ]
@@ -337,6 +339,7 @@ if (is_clang_or_gcc) {
       ":allocator_base",
       ":allocator_core",
       ":allocator_shim",
+      ":buildflags",
     ]
   }
 
