@@ -285,17 +285,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
 
     ASSERT_TRUE(base::WriteFile(file, "content"));
     auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
-
-// TODO(b/357062364): Remove separate expectations for Mac once historical
-// 'create' flags are ignored, and the correct 'modified' change type is
-// returned instead.
-#if BUILDFLAG(IS_MAC)
-    const std::string expected_change_type =
-        SupportsChangeInfo() ? "appeared" : "unknown";
-#else
     const std::string expected_change_type =
         SupportsChangeInfo() ? "modified" : "unknown";
-#endif
 
     // Expect that we received at least one "modified" event.
     ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));

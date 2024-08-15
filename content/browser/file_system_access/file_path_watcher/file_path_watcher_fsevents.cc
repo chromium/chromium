@@ -135,21 +135,6 @@ FilePathWatcher::FilePathType GetFilePathType(
   }
   return FilePathWatcher::FilePathType::kUnknown;
 }
-
-FilePathWatcher::ChangeType GetChangeType(FSEventStreamEventFlags event_flags) {
-  if (event_flags & kFSEventStreamEventFlagItemCreated) {
-    return FilePathWatcher::ChangeType::kCreated;
-  }
-  if (event_flags & kFSEventStreamEventFlagItemModified) {
-    return FilePathWatcher::ChangeType::kModified;
-  }
-  if (event_flags & kFSEventStreamEventFlagItemRemoved) {
-    return FilePathWatcher::ChangeType::kDeleted;
-  }
-  // If we can't determine the change type based on the `event_flags`, report
-  // a 'modified' change type.
-  return FilePathWatcher::ChangeType::kModified;
-}
 }  // namespace
 
 FilePathWatcherFSEvents::FilePathWatcherFSEvents()
@@ -340,16 +325,40 @@ void FilePathWatcherFSEvents::DispatchEvents(
         continue;
       }
 
+      // TODO(b/357118831): Add handling for rename events along the dir path to
+      // `target`, and report the change type accordingly depending on the move
+      // type. According to FSEvents, this occurs when the
+      // `kFSEventStreamEventFlagRootChanged` flag is present and the event id
+      // is equal to 0. Differentiate between a true rename along the path to
+      // target and the target itself being created initially by checking if the
+      // next event is a 'create' event on the target path.
+      //
       // Otherwise, if the target has been created, ignore the "root change"
       // event and fall through to report only the following create event on the
-      // next call to `DispatchEvents`. Other 'rename' cases on parent dir(s) of
-      // the `target` fall out-of-scope, so we don't report those either.
+      // next call to `DispatchEvents`.
       continue;
     }
 
     // Use the `kFSEventStreamEventFlagItemRenamed` flag to identify a 'move'
     // event.
     if (event_flags & kFSEventStreamEventFlagItemRenamed) {
+      // Sometimes, FSEvents reports an event with a batch of event flags that
+      // contain both a `kFSEventStreamEventFlagItemRenamed` and a
+      // `kFSEventStreamEventFlagItemXattrMod` flag, which represents writable
+      // file contents being modified.
+      if (event_flags & kFSEventStreamEventFlagItemXattrMod) {
+        // Only report 'modified' change events that are in-scope.
+        if (!event_in_scope) {
+          continue;
+        }
+
+        FilePathWatcher::ChangeInfo change_info = {
+            file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
+        callback_.Run(std::move(change_info),
+                      report_modified_path_ ? event_path : target,
+                      /*error=*/false);
+        continue;
+      }
       // Based on testing, moves within-scope for FSEvents will have
       // consecutive event ids that differ by 1, and the event with the higher
       // event id represents the "moved to" part of a move event. This allows
@@ -434,28 +443,60 @@ void FilePathWatcherFSEvents::DispatchEvents(
                     /*error=*/false);
       continue;
     }
+
+    // Determine which of the remaining change event types is reported (created,
+    // modified, or deleted). Only report events that are in-scope.
     if (!event_in_scope) {
       continue;
     }
 
-    // Use `GetChangeType` to determine which of the remaining change
-    // event types is reported (created, modified, or deleted).
-    FilePathWatcher::ChangeType change_type = GetChangeType(event_flags);
-
-    // TODO(b/357062364): Update check to `kDeleted` once historical create
-    // flags are ignored. Don't report an additional delete event for target dir
-    // deletion.
-    if (change_type == FilePathWatcher::ChangeType::kCreated &&
-        coalesce_target_deletion) {
-      coalesce_next_target_deletion_ = false;
+    // If `kFSEventStreamEventFlagItemRemoved` is present, prioritize reporting
+    // that the file has been deleted.
+    if (event_flags & kFSEventStreamEventFlagItemRemoved) {
+      // Skip over coalesced delete events, that have already been reported for
+      // a delete event on the target path.
+      if (coalesce_target_deletion) {
+        coalesce_next_target_deletion_ = false;
+        continue;
+      }
+      FilePathWatcher::ChangeInfo change_info = {
+          file_path_type, FilePathWatcher::ChangeType::kDeleted, event_path};
+      callback_.Run(std::move(change_info),
+                    report_modified_path_ ? event_path : target,
+                    /*error=*/false);
       continue;
     }
 
-    FilePathWatcher::ChangeInfo change_info = {file_path_type, change_type,
-                                               event_path};
-    callback_.Run(std::move(change_info),
-                  report_modified_path_ ? event_path : target,
-                  /*error=*/false);
+    // The `kFSEventStreamEventFlagItemInodeMetaMod` flag is the only signal
+    // we currently have for a given batch of event flags to determine if the
+    // contents of a file have been modified. This flag does not appear in the
+    // scenario of a new file write, which is reported as 'created'.
+    if (event_flags & kFSEventStreamEventFlagItemInodeMetaMod) {
+      FilePathWatcher::ChangeInfo change_info = {
+          file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
+      callback_.Run(std::move(change_info),
+                    report_modified_path_ ? event_path : target,
+                    /*error=*/false);
+      continue;
+    }
+
+    if (event_flags & kFSEventStreamEventFlagItemCreated) {
+      FilePathWatcher::ChangeInfo change_info = {
+          file_path_type, FilePathWatcher::ChangeType::kCreated, event_path};
+      callback_.Run(std::move(change_info),
+                    report_modified_path_ ? event_path : target,
+                    /*error=*/false);
+      continue;
+    }
+
+    if (event_flags & kFSEventStreamEventFlagItemModified) {
+      FilePathWatcher::ChangeInfo change_info = {
+          file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
+      callback_.Run(std::move(change_info),
+                    report_modified_path_ ? event_path : target,
+                    /*error=*/false);
+      continue;
+    }
   }
 }
 

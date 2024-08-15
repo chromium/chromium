@@ -481,7 +481,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
 
   CreateDirectory(dir_path);
   auto swap_file_path = dir_path.AppendASCII("foo.crswap");
-  base::WriteFile(swap_file_path, "watch me and then ignore me");
+  WriteFile(swap_file_path, "watch me and then ignore me");
 
   auto non_swap_file_path = dir_path.AppendASCII("bar.noncrswap");
   WriteFile(non_swap_file_path, "watch me and then report me");
@@ -534,15 +534,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   auto expected_url = manager_->CreateFileSystemURLFromPath(
       FileSystemAccessEntryFactory::PathType::kLocal, non_swap_file_path);
 
-// TODO(b/357062364): Remove separate handling for Mac once historical create
-// flags are ignored, and the correct change type is returned.
-#if BUILDFLAG(IS_MAC)
-  const ChangeInfo change_info =
-      ChangeInfo(file_path_type, ChangeType::kCreated, expected_url.path());
-#else
   const ChangeInfo change_info =
       ChangeInfo(file_path_type, ChangeType::kDeleted, expected_url.path());
-#endif
 
   std::list<Change> expected_changes{{expected_url, change_info}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -1103,6 +1096,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
   // Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
   // file path type. Since `fileInDir` is deleted, there is nothing to call
   // base::GetFileInfo on.
+  //
+  // FSEvents (Mac) relies on calls to `vnode_getattr`, which operates similarly
+  // to `GetFileInfo`.
   ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kDeleted,
                          file_url.path());
 #else

@@ -1364,6 +1364,10 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
 // the |temp_dir_| in /data.
 #define FileAttributesChanged DISABLED_FileAttributesChanged
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// This test is disabled on Mac because we don't support reporting file metadata
+// changes on FSEvents.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(FilePathWatcherTest, FileAttributesChanged) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
@@ -1377,6 +1381,7 @@ TEST_F(FilePathWatcherTest, FileAttributesChanged) {
   event_expecter.AddExpectedEventForPath(test_file());
   delegate.RunUntilEventsMatch(event_expecter);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -2373,28 +2378,16 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MultipleWatchersSingleFile) {
   delegate2.RunUntilEventsMatch(matcher);
 }
 
-#if !BUILDFLAG(IS_MAC)
-// TODO(b/357062364): Re-enable once flake fixed on Mac. Despite spinning the
-// event loop, the flags for the last `WriteFile` and `DeleteFile` operations
-// are sometimes coalesced by FSEvents. This means that either a 'create' or a
-// 'delete' is inconsistently reported, breaking test expectations.
 TEST_P(FilePathWatcherWithChangeInfoTest, NonExistentDirectory) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file(dir.AppendASCII("file"));
   const auto each_event_matcher = testing::Each(
       testing::AllOf(HasPath(file), testing::Not(HasErrored()), IsDeletedFile(),
                      HasModifiedPath(file), HasNoMovedFromPath()));
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove this separate `sequence_matcher` for Mac once
-  // handling for historical create events is implemented.
-  const auto sequence_matcher =
-      testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated)});
-#else
   const auto sequence_matcher =
       testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated),
                              IsType(FilePathWatcher::ChangeType::kModified),
                              IsType(FilePathWatcher::ChangeType::kDeleted)});
-#endif
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   FilePathWatcher watcher;
@@ -2418,9 +2411,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NonExistentDirectory) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
-// TODO(b/357062364): Re-enable this test once flakiness is fixed. This test is
-// likely flaky due to the sheer number of `SpinEventLoop`(s) triggered as a
-// result of creating many test directories.
 TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
   base::FilePath path(temp_dir_.GetPath());
   std::vector<std::string> dir_names;
@@ -2434,17 +2424,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
   const auto each_event_matcher = testing::Each(
       testing::AllOf(HasPath(file), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(file), HasNoMovedFromPath()));
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove matcher once handling for historical create
-  // events is implemented.
-  const auto sequence_matcher =
-      testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated),
-                             IsType(FilePathWatcher::ChangeType::kCreated)});
-#else
   const auto sequence_matcher =
       testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated),
                              IsType(FilePathWatcher::ChangeType::kModified)});
-#endif
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   FilePathWatcher watcher;
@@ -2465,7 +2447,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
   ASSERT_TRUE(WriteFile(file, "content v2"));
   delegate.RunUntilEventsMatch(matcher);
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DisappearingDirectory) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -2551,20 +2532,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
 
   const auto each_event_matcher = testing::Each(
       testing::AllOf(testing::Not(HasErrored()), HasNoMovedFromPath()));
-
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove this matcher once handling for historical create
-  // events is implemented.
-  const auto sequence_matcher = testing::IsSupersetOf(
-      {testing::AllOf(HasPath(report_modified_path() ? file1 : dir),
-                      IsDeletedFile(),
-                      IsType(FilePathWatcher::ChangeType::kCreated),
-                      HasModifiedPath(file1)),
-       testing::AllOf(HasPath(report_modified_path() ? file2 : dir),
-                      IsDeletedFile(),
-                      IsType(FilePathWatcher::ChangeType::kCreated),
-                      HasModifiedPath(file2))});
-#else
   const auto sequence_matcher = testing::IsSupersetOf(
       {testing::AllOf(HasPath(report_modified_path() ? file1 : dir),
                       IsDeletedFile(),
@@ -2582,7 +2549,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
                       IsDeletedFile(),
                       IsType(FilePathWatcher::ChangeType::kCreated),
                       HasModifiedPath(file2))});
-#endif
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   ASSERT_TRUE(CreateDirectory(dir));
@@ -2602,16 +2568,23 @@ TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
 
   ASSERT_TRUE(WriteFile(file1, "content"));
   ASSERT_TRUE(WriteFile(file1, "content v2"));
+
+  // TODO(b/358401685): On Mac, a minimum of two additional event loop spins are
+  // required to prevent the flags from the previous `WriteFile` from being
+  // automatically coalesced into the following `DeleteFile` event, by FSEvents.
+  // Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(DeleteFile(file1));
   ASSERT_TRUE(WriteFile(file2, "content"));
   delegate.RunUntilEventsMatch(matcher);
 }
 
-// TODO(b/357121828): Flaky on Mac - the event flags for the move operation
-// (which should result in a 'deleted' event) are rarely recorded. When the
-// move operation is recognized by FSEvents, the delete event is only reported
-// on one delegate (should be reported on both delegates instead). Re-enable
-// once these issues are fixed.
+// TODO(b/357118831): Re-enable once implementation for handling a rename on
+// the root dir path is complete.
 #if !BUILDFLAG(IS_MAC)
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -2679,7 +2652,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   base::FilePath dest_subdir(dest_dir.AppendASCII("subdir"));
   base::FilePath dest_file(dest_subdir.AppendASCII("file"));
 
-  // A moved file to the wathced scope is considered "created", with respect
+  // A moved file to the watched scope is considered "created", with respect
   // to the watched path.
   const auto each_event_matcher = testing::Each(testing::AllOf(
       testing::Not(HasErrored()), IsType(FilePathWatcher::ChangeType::kCreated),
@@ -2822,20 +2795,14 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
 #if !BUILDFLAG(IS_ANDROID)
+// This test is disabled on Mac because we don't support reporting file metadata
+// changes on FSEvents.
+#if !BUILDFLAG(IS_MAC)
 TEST_P(FilePathWatcherWithChangeInfoTest, FileAttributesChanged) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove this matcher once handling for historical
-  // create events is implemented.
-  const auto matcher = testing::ElementsAre(
-      testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
-                     IsType(FilePathWatcher::ChangeType::kCreated),
-                     HasModifiedPath(test_file()), HasNoMovedFromPath()));
-#else
   const auto matcher = testing::ElementsAre(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kModified),
                      HasModifiedPath(test_file()), HasNoMovedFromPath()));
-#endif
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
@@ -2848,6 +2815,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, FileAttributesChanged) {
   ASSERT_TRUE(MakeFileUnreadable(test_file()));
   delegate.RunUntilEventsMatch(matcher);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_P(FilePathWatcherWithChangeInfoTest, CreateLink) {
@@ -3124,20 +3092,10 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFileInDirectory) {
   // directory modification.
   base::FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
   base::FilePath child(parent.AppendASCII("child"));
-
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove this matcher once handling for historical create
-  // events is implemented.
-  const auto matcher = testing::ElementsAre(testing::AllOf(
-      HasPath(report_modified_path() ? child : parent), IsDeletedFile(),
-      IsType(FilePathWatcher::ChangeType::kCreated), testing::Not(HasErrored()),
-      HasModifiedPath(child), HasNoMovedFromPath()));
-#else
   const auto matcher = testing::ElementsAre(testing::AllOf(
       HasPath(report_modified_path() ? child : parent), IsDeletedFile(),
       IsType(FilePathWatcher::ChangeType::kDeleted), testing::Not(HasErrored()),
       HasModifiedPath(child), HasNoMovedFromPath()));
-#endif
 
   ASSERT_TRUE(CreateDirectory(parent));
   ASSERT_TRUE(WriteFile(child, "contents"));
@@ -3161,18 +3119,10 @@ TEST_P(FilePathWatcherWithChangeInfoTest, FileInDirectory) {
       testing::AllOf(HasPath(report_modified_path() ? child : parent),
                      testing::Not(HasErrored()), IsDeletedFile(),
                      HasModifiedPath(child), HasNoMovedFromPath()));
-
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove this matcher once handling for historical create
-  // events is implemented.
-  const auto sequence_matcher =
-      testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated)});
-#else
   const auto sequence_matcher =
       testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated),
                              IsType(FilePathWatcher::ChangeType::kModified),
                              IsType(FilePathWatcher::ChangeType::kDeleted)});
-#endif
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   ASSERT_TRUE(CreateDirectory(parent));
@@ -3184,6 +3134,16 @@ TEST_P(FilePathWatcherWithChangeInfoTest, FileInDirectory) {
 
   ASSERT_TRUE(WriteFile(child, "contents"));
   ASSERT_TRUE(WriteFile(child, "contents v2"));
+
+// TODO(b/358401685): On Mac, a minimum of two additional event loop spins are
+// required to prevent the flags from the previous `WriteFile` from being
+// automatically coalesced into the following `DeleteFile` event, by FSEvents.
+// Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(DeleteFile(child));
   delegate.RunUntilEventsMatch(matcher);
 }
@@ -3198,16 +3158,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryInDirectory) {
       testing::AllOf(HasPath(report_modified_path() ? child : parent),
                      testing::Not(HasErrored()), IsDeletedDirectory(),
                      HasModifiedPath(child), HasNoMovedFromPath()));
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Update once handling for historical create events is
-  // implemented.
-  const auto sequence_matcher =
-      testing::IsSupersetOf({IsType(FilePathWatcher::ChangeType::kCreated)});
-#else
   const auto sequence_matcher =
       testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
                            IsType(FilePathWatcher::ChangeType::kDeleted));
-#endif
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   ASSERT_TRUE(CreateDirectory(parent));
@@ -3235,28 +3188,10 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
   auto reported_child_path_created_matcher = testing::AllOf(
       HasPath(report_modified_path() ? child : parent), IsDeletedDirectory(),
       HasModifiedPath(child), IsType(FilePathWatcher::ChangeType::kCreated));
-#if BUILDFLAG(IS_MAC)
-  // TODO(b/357062364): Remove this matcher once handling for historical create
-  // events is implemented.
-  auto reported_child_path_deleted_matcher = testing::AllOf(
-      HasPath(report_modified_path() ? child : parent), IsDeletedDirectory(),
-      HasModifiedPath(child), IsType(FilePathWatcher::ChangeType::kCreated));
-#else
   auto reported_child_path_deleted_matcher = testing::AllOf(
       HasPath(report_modified_path() ? child : parent), IsDeletedDirectory(),
       HasModifiedPath(child), IsType(FilePathWatcher::ChangeType::kDeleted));
-#endif
   if (type() == FilePathWatcher::Type::kRecursive) {
-#if BUILDFLAG(IS_MAC)
-    // TODO(b/357062364): Update once handling for historical create events is
-    // implemented.
-    sequence_matcher = testing::IsSupersetOf(
-        {reported_child_path_created_matcher,
-         testing::AllOf(HasPath(report_modified_path() ? grandchild : parent),
-                        IsDeletedFile(), HasModifiedPath(grandchild),
-                        IsType(FilePathWatcher::ChangeType::kCreated)),
-         reported_child_path_deleted_matcher});
-#else
     sequence_matcher = testing::IsSupersetOf(
         {reported_child_path_created_matcher,
          testing::AllOf(HasPath(report_modified_path() ? grandchild : parent),
@@ -3269,11 +3204,10 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
                         IsDeletedFile(), HasModifiedPath(grandchild),
                         IsType(FilePathWatcher::ChangeType::kDeleted)),
          reported_child_path_deleted_matcher});
-#endif
   } else {
     // Do not expect changes to `grandchild` when watching `parent`
     // non-recursively.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
     // Modified events on directories may or may not get filtered because the
     // directories get deleted too fast before we can see they're directories.
     sequence_matcher =
@@ -3299,7 +3233,26 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
   SpinEventLoopForABit();
 
   ASSERT_TRUE(WriteFile(grandchild, "contents"));
+
+// TODO(b/358401685): On Mac, a minimum of one additional event loop spin is
+// required to prevent the flags from the previous `WriteFile` from being
+// automatically coalesced into the following `WriteFile` event, by FSEvents.
+// Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(WriteFile(grandchild, "contents v2"));
+
+// TODO(b/358401685): On Mac, a minimum of two additional event loop spins are
+// required to prevent the flags from the previous `WriteFile` from being
+// automatically coalesced into the following `DeleteFile` event, by FSEvents.
+// Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(DeleteFile(grandchild));
   ASSERT_TRUE(DeletePathRecursively(child));
   delegate.RunUntilEventsMatch(matcher);
