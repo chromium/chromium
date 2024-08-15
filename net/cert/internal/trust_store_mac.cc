@@ -17,6 +17,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
+#include "base/apple/scoped_cftyperef.h"
 #include "base/atomicops.h"
 #include "base/callback_list.h"
 #include "base/containers/contains.h"

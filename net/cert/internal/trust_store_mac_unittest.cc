@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "base/base_paths.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
