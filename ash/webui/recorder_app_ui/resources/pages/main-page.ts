@@ -35,14 +35,26 @@ import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 export class MainPage extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --actions-padding-vertical: 24px;
+      --record-button-height: 96px;
+
+      @container style(--small-viewport: 1) {
+        --record-button-height: 80px;
+      }
+
       display: block;
       height: 100%;
       width: 100%;
     }
 
     recording-file-list {
+      --actions-height: calc(
+        var(--actions-padding-vertical) * 2 + var(--record-button-height)
+      );
+      --scroll-bottom-extra-padding: calc(var(--actions-height) / 2);
+
       inset: 0;
-      margin: 16px 16px 106px;
+      margin: 16px 16px calc(32px + var(--actions-height) / 2);
       position: absolute;
     }
 
@@ -63,20 +75,19 @@ export class MainPage extends ReactiveLitElement {
       height: fit-content;
       inset: 0;
       margin: auto auto 32px;
-      padding: 24px 44px;
+      padding: var(--actions-padding-vertical) 44px;
       position: absolute;
       width: fit-content;
     }
 
     #record-button {
       --cra-icon-button-container-color: var(--cros-sys-error_container);
-      --cra-icon-button-container-height: 96px;
+      --cra-icon-button-container-height: var(--record-button-height);
       --cra-icon-button-container-width: 152px;
       --cros-icon-button-color-override: var(--cros-sys-on_error_container);
       --cros-icon-button-icon-size: 32px;
 
       @container style(--small-viewport: 1) {
-        --cra-icon-button-container-height: 80px;
         --cra-icon-button-container-width: 136px;
       }
 

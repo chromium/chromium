@@ -101,7 +101,7 @@ export class RecordingFileList extends ReactiveLitElement {
       flex-flow: column;
       gap: 16px;
       overflow-y: auto;
-      padding: 8px 0 24px;
+      padding: 8px 0 calc(24px + var(--scroll-bottom-extra-padding, 0px));
     }
 
     #sort-recording-menu {
