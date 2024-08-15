@@ -1730,11 +1730,7 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
   // Pause the watchdog around Dawn info collection since it is known to be
   // slow loading GPU drivers.
   if (watchdog_thread_ && pause_watchdog) {
-    if (report_only_mode) {
-      watchdog_thread_->EnableReportOnlyMode();
-    } else {
-      watchdog_thread_->PauseWatchdog();
-    }
+    watchdog_thread_->PauseWatchdog();
   }
 
   if (report_only_mode) {
@@ -1748,11 +1744,7 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
   }
 
   if (watchdog_thread_ && pause_watchdog) {
-    if (report_only_mode) {
-      watchdog_thread_->DisableReportOnlyMode();
-    } else {
-      watchdog_thread_->ResumeWatchdog();
-    }
+    watchdog_thread_->ResumeWatchdog();
   }
 
   io_runner_->PostTask(FROM_HERE,

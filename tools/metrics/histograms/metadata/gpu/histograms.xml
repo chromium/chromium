@@ -1303,24 +1303,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ReportOnlyModeStatusAtHang" enum="BooleanEnabled"
-    expires_after="2025-02-10">
-  <owner>spvw@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Records whether report only mode is enabled at GPU process watchdog hang
-    time. Currently, we are not seeing any of the hangs/crashes reported by
-    report-only mode, despite the experiment rolling out.
-
-    General Catan investigation: https://crbug.com/1350257
-
-    Report only feature: https://crbug.com/1356196
-
-    Part of a performance investigation that Catan is doing into GPU startup
-    time.
-  </summary>
-</histogram>
-
 <histogram name="GPU.Sandboxed" enum="Boolean" expires_after="2024-12-19">
   <owner>akhna@google.com</owner>
   <owner>chromeos-hardening@google.com</owner>

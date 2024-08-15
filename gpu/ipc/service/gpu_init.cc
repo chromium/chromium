@@ -183,22 +183,12 @@ class GpuWatchdogInit {
 
 void PauseGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
   if (watchdog_thread) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-      watchdog_thread->EnableReportOnlyMode();
-    } else {
-      watchdog_thread->PauseWatchdog();
-    }
+    watchdog_thread->PauseWatchdog();
   }
 }
 void ResumeGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
   if (watchdog_thread) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-      watchdog_thread->DisableReportOnlyMode();
-    } else {
-      watchdog_thread->ResumeWatchdog();
-    }
+    watchdog_thread->ResumeWatchdog();
   }
 }
 
