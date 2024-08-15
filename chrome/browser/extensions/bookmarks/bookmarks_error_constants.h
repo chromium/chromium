@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARK_API_CONSTANTS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARK_API_CONSTANTS_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_ERROR_CONSTANTS_H_
+#define CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_ERROR_CONSTANTS_H_
 
-// Constants used for the Bookmarks API.
+// Error constants used for bookmarks-related APIs.
 
-namespace extensions {
-namespace bookmark_api_constants {
+namespace extensions::bookmarks_errors {
 
-// Keys.
-extern const char kParentIdKey[];
-extern const char kUrlKey[];
-extern const char kTitleKey[];
-
-// Errors.
 extern const char kNoNodeError[];
 extern const char kNoParentError[];
 extern const char kFolderNotEmptyError[];
@@ -26,12 +19,9 @@ extern const char kInvalidUrlError[];
 extern const char kModifySpecialError[];
 extern const char kEditBookmarksDisabled[];
 extern const char kModifyManagedError[];
-extern const char kInvalidParamError[];
 extern const char kCannotSetUrlOfFolderError[];
-extern const char kBookmarkNodesNotFoundFromIdListError[];
 extern const char kInvalidMoveDestinationError[];
 
-}  // namespace bookmark_api_constants
-}  // namespace extensions
+}  // namespace extensions::bookmarks_errors
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_BOOKMARKS_BOOKMARK_API_CONSTANTS_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_BOOKMARKS_BOOKMARKS_ERROR_CONSTANTS_H_

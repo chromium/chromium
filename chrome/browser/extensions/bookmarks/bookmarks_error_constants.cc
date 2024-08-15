@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 
-namespace extensions {
-namespace bookmark_api_constants {
-
-const char kParentIdKey[] = "parentId";
-const char kUrlKey[] = "url";
-const char kTitleKey[] = "title";
+namespace extensions::bookmarks_errors {
 
 const char kNoNodeError[] = "Can't find bookmark for id.";
 const char kNoParentError[] = "Can't find parent bookmark for id.";
@@ -23,12 +18,8 @@ const char kInvalidUrlError[] = "Invalid URL.";
 const char kModifySpecialError[] = "Can't modify the root bookmark folders.";
 const char kEditBookmarksDisabled[] = "Bookmark editing is disabled.";
 const char kModifyManagedError[] = "Can't modify managed bookmarks.";
-const char kInvalidParamError[] = "Parameter 'key' is invalid.";
 const char kCannotSetUrlOfFolderError[] = "Can't set URL of a bookmark folder.";
-const char kBookmarkNodesNotFoundFromIdListError[] =
-    "Could not find bookmark nodes with given ids: [*]";
 const char kInvalidMoveDestinationError[] =
     "Can't move a folder to itself or its descendant.";
 
-}  // namespace bookmark_api_constants
-}  // namespace extensions
+}  // namespace extensions::bookmarks_errors
