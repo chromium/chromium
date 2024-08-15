@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
+    enum="Boolean" expires_after="2025-02-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records true if the Google Search Results Page is ever visited during a
+    session for a given ChromeTabbedActivity, false otherwise.
+
+    Recorded when an UMA Session ends.
+  </summary>
+</histogram>
+
 <histogram name="Session.Background.TotalDuration" units="ms"
     expires_after="2025-02-09">
   <owner>asvitkine@chromium.org</owner>

@@ -17,6 +17,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,9 +25,11 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -50,6 +53,12 @@ public class UmaSessionStats {
     private ComponentCallbacks mComponentCallbacks;
 
     private boolean mKeyboardConnected;
+
+    private static final String TABBED_SESSION_CONTAINED_GOOGLE_SEARCH_HISTOGRAM =
+            "Session.Android.TabbedSessionContainedGoogleSearch";
+    private @ActivityType int mCurrentActivityType = ActivityType.PRE_FIRST_TAB;
+
+    private boolean mTabbedSessionContainedGoogleSearch;
 
     public UmaSessionStats(Context context) {
         mContext = context;
@@ -91,14 +100,20 @@ public class UmaSessionStats {
 
     /**
      * Starts a new session for logging.
+     *
+     * @param activityType The type of the Activity.
      * @param tabModelSelector A TabModelSelector instance for recording tab counts on page loads.
-     *        If null, UmaSessionStats does not record page loads and tab counts.
+     *     If null, UmaSessionStats does not record page loads and tab counts.
      * @param permissionDelegate The AndroidPermissionDelegate used for querying permission status.
-     *        If null, UmaSessionStats will not record permission status.
+     *     If null, UmaSessionStats will not record permission status.
      */
     public void startNewSession(
-            TabModelSelector tabModelSelector, AndroidPermissionDelegate permissionDelegate) {
+            @ActivityType int activityType,
+            TabModelSelector tabModelSelector,
+            AndroidPermissionDelegate permissionDelegate) {
         ensureNativeInitialized();
+        mTabbedSessionContainedGoogleSearch = false;
+        mCurrentActivityType = activityType;
 
         mTabModelSelector = tabModelSelector;
         if (mTabModelSelector != null) {
@@ -124,6 +139,15 @@ public class UmaSessionStats {
                         @Override
                         public void onPageLoadFinished(Tab tab, GURL url) {
                             recordPageLoadStats(tab);
+                        }
+
+                        @Override
+                        public void onDidFinishNavigationInPrimaryMainFrame(
+                                Tab tab, NavigationHandle navigation) {
+                            if (!navigation.hasCommitted()) return;
+                            if (UrlUtilitiesJni.get().isGoogleSearchUrl(tab.getUrl().getSpec())) {
+                                mTabbedSessionContainedGoogleSearch = true;
+                            }
                         }
                     };
         }
@@ -166,6 +190,11 @@ public class UmaSessionStats {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelector = null;
+        }
+        if (mCurrentActivityType == ActivityType.TABBED) {
+            RecordHistogram.recordBooleanHistogram(
+                    TABBED_SESSION_CONTAINED_GOOGLE_SEARCH_HISTOGRAM,
+                    mTabbedSessionContainedGoogleSearch);
         }
 
         UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats, UmaSessionStats.this);

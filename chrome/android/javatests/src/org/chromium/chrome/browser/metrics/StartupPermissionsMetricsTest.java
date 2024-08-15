@@ -25,6 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -79,7 +80,9 @@ public class StartupPermissionsMetricsTest {
                         "VoiceInteraction.AudioPermissionEvent.SessionStart",
                         VoiceRecognitionHandler.AudioPermissionState.GRANTED);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
+                () ->
+                        mUmaSessionStats.startNewSession(
+                                ActivityType.TABBED, null, mPermissionDelegate));
         histogramWatcher.assertExpected();
     }
 
@@ -98,7 +101,9 @@ public class StartupPermissionsMetricsTest {
                         "VoiceInteraction.AudioPermissionEvent.SessionStart",
                         VoiceRecognitionHandler.AudioPermissionState.DENIED_CAN_ASK_AGAIN);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
+                () ->
+                        mUmaSessionStats.startNewSession(
+                                ActivityType.TABBED, null, mPermissionDelegate));
         histogramWatcher.assertExpected();
     }
 
@@ -117,7 +122,9 @@ public class StartupPermissionsMetricsTest {
                         "VoiceInteraction.AudioPermissionEvent.SessionStart",
                         VoiceRecognitionHandler.AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
+                () ->
+                        mUmaSessionStats.startNewSession(
+                                ActivityType.TABBED, null, mPermissionDelegate));
         histogramWatcher.assertExpected();
     }
 }

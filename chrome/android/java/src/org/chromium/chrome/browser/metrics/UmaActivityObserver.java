@@ -52,7 +52,7 @@ public class UmaActivityObserver {
         sCurrentActivityType = activityType;
 
         UmaSessionStats.updateMetricsServiceState();
-        mUmaSessionStats.startNewSession(tabModelSelector, permissionDelegate);
+        mUmaSessionStats.startNewSession(activityType, tabModelSelector, permissionDelegate);
     }
 
     /**
