@@ -268,30 +268,6 @@
       'service_account': 'chrome-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromeos-amd64-generic': {
-    'args': [
-      '--magic-vm-cache=magic_cros_vm_cache',
-    ],
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'kvm': '1',
-        'os': 'Ubuntu-22.04',
-        'pool': 'chromium.tests',
-      },
-      'optional_dimensions': {
-        '60': {
-          'caches': 'cros_vm',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'cros_vm',
-          'path': 'magic_cros_vm_cache',
-        },
-      ],
-    },
-  },
   'chromeos-betty': {
     'args': [
       '--magic-vm-cache=magic_cros_vm_cache',
@@ -329,6 +305,30 @@
         'gce': '1',
         'os': 'Ubuntu-22.04',
         'pool': 'chrome.tests.finch',
+      },
+      'optional_dimensions': {
+        '60': {
+          'caches': 'cros_vm',
+        },
+      },
+      'named_caches': [
+        {
+          'name': 'cros_vm',
+          'path': 'magic_cros_vm_cache',
+        },
+      ],
+    },
+  },
+  'chromeos-generic-vm': {
+    'args': [
+      '--magic-vm-cache=magic_cros_vm_cache',
+    ],
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'kvm': '1',
+        'os': 'Ubuntu-22.04',
+        'pool': 'chromium.tests',
       },
       'optional_dimensions': {
         '60': {

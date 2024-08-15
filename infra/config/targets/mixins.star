@@ -366,7 +366,7 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chromeos-amd64-generic",
+    name = "chromeos-generic-vm",
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",
     ],
@@ -414,7 +414,7 @@ targets.mixin(
                 "caches": "cros_vm",
             },
         },
-        # See the 'chromeos-amd64-generic' mixin above for the purpose of this
+        # See the 'chromeos-generic-vm' mixin above for the purpose of this
         # cache.
         named_caches = [
             swarming.cache(
@@ -444,7 +444,7 @@ targets.mixin(
                 "caches": "cros_vm",
             },
         },
-        # See the 'chromeos-amd64-generic' mixin above for the purpose of this
+        # See the 'chromeos-generic-vm' mixin above for the purpose of this
         # cache.
         named_caches = [
             swarming.cache(

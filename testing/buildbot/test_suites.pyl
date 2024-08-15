@@ -505,6 +505,20 @@
       },
     },
 
+    'chromeos_arm_gtests': {
+      'video_decode_accelerator_tests_v4l2': {
+        'test': 'video_decode_accelerator_tests',
+        'args': [
+          '--as-root',
+          '--validator_type=none',
+          '../../media/test/data/test-25fps.vp9',
+          '../../media/test/data/test-25fps.vp9.json',
+        ],
+        'ci_only': True,
+        'experiment_percentage': 100,
+      },
+    },
+
     'chromeos_browser_all_tast_tests': {
       'chrome_all_tast_tests': {
         'mixins': [

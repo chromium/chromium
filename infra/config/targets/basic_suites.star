@@ -461,6 +461,18 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromeos_arm_gtests",
+    tests = {
+        "video_decode_accelerator_tests_v4l2": targets.legacy_test_config(
+            ci_only = True,
+            # TODO(b/303119905): Remove experimental status once this
+            # suite is added to CQ.
+            experiment_percentage = 100,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromeos_browser_all_tast_tests",
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(

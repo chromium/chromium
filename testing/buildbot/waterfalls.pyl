@@ -1575,7 +1575,7 @@
       'chromeos-amd64-generic-rel-gtest': {
         'browser_config': 'cros-chrome',
         'mixins': [
-          'chromeos-amd64-generic',
+          'chromeos-generic-vm',
         ],
         'os_type': 'chromeos',
         'test_suites': {
@@ -1587,7 +1587,7 @@
       'chromeos-amd64-generic-rel-tast': {
         'browser_config': 'cros-chrome',
         'mixins': [
-          'chromeos-amd64-generic',
+          'chromeos-generic-vm',
         ],
         'os_type': 'chromeos',
         'test_suites': {
@@ -1608,6 +1608,13 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'browser_config': 'cros-chrome',
+        'mixins': [
+          'chromeos-generic-vm',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_arm_gtests',
+        },
       },
       'chromeos-jacuzzi-rel': {
         'additional_compile_targets': [
@@ -3371,7 +3378,7 @@
           'chromiumos_preflight',
         ],
         'mixins': [
-          'chromeos-amd64-generic',
+          'chromeos-generic-vm',
         ],
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
@@ -4271,7 +4278,7 @@
         'os_type': 'chromeos',
         'skip_merge_script': True,
         'mixins': [
-          'chromeos-amd64-generic',
+          'chromeos-generic-vm',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_chromeos_release_gtests',
