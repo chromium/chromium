@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+
 #import "base/time/time.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -51,9 +52,9 @@ constexpr TestAccount kTestAccounts[] = {
 
 }  // namespace
 
-class BrowserStateInfoCacheTest : public PlatformTest {
+class ProfileAttributesStorageIOSTest : public PlatformTest {
  public:
-  BrowserStateInfoCacheTest() {
+  ProfileAttributesStorageIOSTest() {
     BrowserStateInfoCache::RegisterPrefs(testing_pref_service_.registry());
   }
 
@@ -64,7 +65,7 @@ class BrowserStateInfoCacheTest : public PlatformTest {
 };
 
 // Tests that AddBrowserState(...) inserts data for a BrowserState.
-TEST_F(BrowserStateInfoCacheTest, AddBrowserState) {
+TEST_F(ProfileAttributesStorageIOSTest, AddBrowserState) {
   BrowserStateInfoCache cache(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
@@ -89,7 +90,7 @@ TEST_F(BrowserStateInfoCacheTest, AddBrowserState) {
 }
 
 // Tests that RemoveBrowserState(...) removes data for a BrowserState.
-TEST_F(BrowserStateInfoCacheTest, RemoveBrowserState) {
+TEST_F(ProfileAttributesStorageIOSTest, RemoveBrowserState) {
   BrowserStateInfoCache cache(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
@@ -113,7 +114,7 @@ TEST_F(BrowserStateInfoCacheTest, RemoveBrowserState) {
 
 // Test the BrowserStateInfoCache saves the data to PrefService and can
 // later load it correctly.
-TEST_F(BrowserStateInfoCacheTest, PrefService) {
+TEST_F(ProfileAttributesStorageIOSTest, PrefService) {
   // Add data to a first BrowserStateInfoCache, it should store the
   // data in the PrefService.
   {
@@ -144,7 +145,7 @@ TEST_F(BrowserStateInfoCacheTest, PrefService) {
 }
 
 // Tests that the saved browser state can be retrieve with the scene ID.
-TEST_F(BrowserStateInfoCacheTest, MapBrowserStateAndSceneID) {
+TEST_F(ProfileAttributesStorageIOSTest, MapBrowserStateAndSceneID) {
   BrowserStateInfoCache cache(pref_service());
 
   std::string sceneID = "Test Scene ID";
@@ -161,7 +162,7 @@ TEST_F(BrowserStateInfoCacheTest, MapBrowserStateAndSceneID) {
   EXPECT_EQ(cache.GetBrowserStateNameForSceneID(sceneID), std::string());
 }
 
-TEST_F(BrowserStateInfoCacheTest, SetAndGetLastActiveTime) {
+TEST_F(ProfileAttributesStorageIOSTest, SetAndGetLastActiveTime) {
   BrowserStateInfoCache cache(pref_service());
 
   for (const TestAccount& account : kTestAccounts) {
