@@ -8,15 +8,20 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-def _CheckWebDevStyle(input_api, output_api):
+PRESUBMIT_VERSION = '2.0.0'
+
+
+def CheckWebDevStyle(input_api, output_api):
   results = []
 
   try:
     import sys
+
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '../..', '..', '..', 'tools')]
     from web_dev_style import presubmit_support
+
     results += presubmit_support.CheckStyle(input_api, output_api)
   finally:
     sys.path = old_sys_path
@@ -24,16 +29,7 @@ def _CheckWebDevStyle(input_api, output_api):
   return results
 
 
-def _CheckChangeOnUploadOrCommit(input_api, output_api):
-  results = _CheckWebDevStyle(input_api, output_api)
-  results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True)
-  return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return _CheckChangeOnUploadOrCommit(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return _CheckChangeOnUploadOrCommit(input_api, output_api)
+def CheckPatchFormatted(input_api, output_api):
+  return input_api.canned_checks.CheckPatchFormatted(
+      input_api, output_api, check_js=True
+  )
