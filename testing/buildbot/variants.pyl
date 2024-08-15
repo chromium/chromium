@@ -168,14 +168,6 @@
       'use_lkgm': True,
     },
   },
-  'CROS_TROGDOR_PUBLIC_LKGM': {
-    'identifier': 'TROGDOR_PUBLIC_LKGM',
-    'skylab': {
-      'cros_board': 'trogdor',
-      'use_lkgm': True,
-      'bucket': 'chromiumos-image-archive',
-    },
-  },
   'CROS_VOLTEER_PUBLIC_LKGM': {
     'identifier': 'VOLTEER_PUBLIC_LKGM',
     'skylab': {
@@ -226,20 +218,6 @@
       'dimensions': {
         'os': 'iOS-15.4.1',
         'device': 'iPhone9,1',
-      },
-    },
-  },
-  'LACROS_AMD64_GENERIC': {
-    'identifier': 'amd64-generic',
-    'args': [
-      '--board=amd64-generic',
-      '--use-vm',
-    ],
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'kvm': '1',
-        'os': 'Ubuntu-22.04',
       },
     },
   },

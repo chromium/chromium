@@ -4145,28 +4145,6 @@
       },
     },
 
-    'lacros_all_tast_tests_suite': {
-      'lacros_all_tast_tests': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'idempotent': False,
-        },
-      },
-    },
-
-    'lacros_device_or_vm_gtests': {
-      'cc_unittests': {},
-      'ozone_unittests': {},
-      'vaapi_unittest': {
-        'mixins': [
-          'vaapi_unittest_args',
-          'vaapi_unittest_libfake_args',
-        ],
-      },
-    },
-
     'lacros_skylab_tests': {
       'lacros_all_tast_tests': {
         'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
@@ -4197,10 +4175,6 @@
 
     'lacros_skylab_tests_with_gtests_version_skew': {
       'chromeos_integration_tests': {},
-    },
-
-    'lacros_vm_gtests': {
-      'base_unittests': {},
     },
 
     'leak_detection_isolated_scripts': {
@@ -7760,42 +7734,6 @@
       },
     },
 
-    'lacros_arm64_generic_rel_skylab': {
-      'chromeos_integration_tests_suite': {
-        'variants': [
-          'CROS_TROGDOR_PUBLIC_LKGM',
-        ],
-      },
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_TROGDOR_PUBLIC_LKGM',
-        ],
-      },
-    },
-
-    'lacros_device_or_vm_tests': {
-      'chromeos_integration_tests_suite': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-        ],
-      },
-      'lacros_all_tast_tests_suite': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-        ],
-      },
-      'lacros_device_or_vm_gtests': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-        ],
-      },
-      'lacros_vm_gtests': {
-        'variants': [
-          'LACROS_AMD64_GENERIC',
-        ],
-      },
-    },
-
     'lacros_skylab_arm64': {
       'chromeos_integration_tests_suite': {
         'mixins': [
@@ -7874,19 +7812,6 @@
           'CROS_PUFF_RELEASE_BETA',
           'CROS_PUFF_RELEASE_DEV',
           'CROS_PUFF_RELEASE_STABLE',
-        ],
-      },
-    },
-
-    'lacros_skylab_tests_amd64_generic_rel': {
-      'chromeos_integration_tests_suite': {
-        'variants': [
-          'CROS_VOLTEER_PUBLIC_LKGM',
-        ],
-      },
-      'lacros_skylab_tests': {
-        'variants': [
-          'CROS_VOLTEER_PUBLIC_LKGM',
         ],
       },
     },

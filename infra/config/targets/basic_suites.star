@@ -3935,34 +3935,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "lacros_all_tast_tests_suite",
-    tests = {
-        "lacros_all_tast_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_device_or_vm_gtests",
-    tests = {
-        "cc_unittests": targets.legacy_test_config(),
-        "ozone_unittests": targets.legacy_test_config(),
-        "vaapi_unittest": targets.legacy_test_config(
-            mixins = [
-                "vaapi_unittest_args",
-                "vaapi_unittest_libfake_args",
-            ],
-        ),
-    },
-)
-
 # Lacros tests that run on Skylab, and these tests are usually HW sensative,
 # Currently we only run Tast tests.
 targets.legacy_basic_suite(
@@ -4012,13 +3984,6 @@ targets.legacy_basic_suite(
     name = "lacros_skylab_tests_with_gtests_version_skew",
     tests = {
         "chromeos_integration_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_vm_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(),
     },
 )
 

@@ -75,7 +75,6 @@ ci/ios18-sdk-simulator
 ci/lacros-arm64-archive-rel
 ci/lacros-arm64-generic-rel
 ci/linux-annotator-rel
-ci/linux-ash-chromium-generator-rel
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
 ci/linux-blink-wpt-reset-rel

@@ -1363,48 +1363,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-targets.legacy_matrix_compound_suite(
-    name = "lacros_arm64_generic_rel_skylab",
-    basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_TROGDOR_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "CROS_TROGDOR_PUBLIC_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "lacros_device_or_vm_tests",
-    basic_suites = {
-        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-            ],
-        ),
-        "lacros_all_tast_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-            ],
-        ),
-        "lacros_device_or_vm_gtests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-            ],
-        ),
-        "lacros_vm_gtests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_AMD64_GENERIC",
-            ],
-        ),
-    },
-)
-
 # Check go/lacros-on-skylab for details of Skylab configurations.
 targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_arm64",
@@ -1489,22 +1447,6 @@ targets.legacy_matrix_compound_suite(
                 "CROS_FIZZ_RELEASE_LKGM",
                 "CROS_GUYBRUSH_RELEASE_LKGM",
                 "CROS_PUFF_RELEASE_LKGM",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "lacros_skylab_tests_amd64_generic_rel",
-    basic_suites = {
-        "lacros_skylab_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_LKGM",
-            ],
-        ),
-        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_LKGM",
             ],
         ),
     },

@@ -178,15 +178,6 @@
     "enabled": true,
     "identifier": "JACUZZI_RELEASE_LKGM"
   },
-  "CROS_TROGDOR_PUBLIC_LKGM": {
-    "skylab": {
-      "cros_board": "trogdor",
-      "use_lkgm": true,
-      "bucket": "chromiumos-image-archive"
-    },
-    "enabled": true,
-    "identifier": "TROGDOR_PUBLIC_LKGM"
-  },
   "CROS_STRONGBAD_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "strongbad",

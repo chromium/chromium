@@ -477,22 +477,6 @@ targets.variant(
 ) for name, variant in json.decode(io.read_file("./cros-skylab-variants.json")).items()]
 
 targets.variant(
-    name = "LACROS_AMD64_GENERIC",
-    identifier = "amd64-generic",
-    args = [
-        "--board=amd64-generic",
-        "--use-vm",
-    ],
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "kvm": "1",
-            "os": "Ubuntu-22.04",
-        },
-    ),
-)
-
-targets.variant(
     name = "LACROS_ASH_TOT",
     identifier = "Ash ToT",
     args = [

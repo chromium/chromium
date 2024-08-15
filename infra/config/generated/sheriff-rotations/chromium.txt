@@ -93,7 +93,6 @@ ci/lacros-amd64-generic-rel
 ci/lacros-amd64-generic-rel-gtest
 ci/lacros-arm-archive-rel
 ci/lacros-arm-generic-rel
-ci/lacros-arm-generic-rel-skylab
 ci/lacros64-archive-rel
 ci/linux-archive-rel
 ci/linux-bfcache-rel
