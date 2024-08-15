@@ -289,6 +289,19 @@ bool IsGoogleSearchHostname(const GURL& url) {
   return result && result.value() == "www";
 }
 
+bool IsProbablyGoogleSearchUrl(const GURL& url) {
+  if (!page_load_metrics::IsGoogleSearchHostname(url)) {
+    return false;
+  }
+
+  const std::string_view path = url.path_piece();
+  if (path == "/maps" || path.find("/maps/") != std::string_view::npos) {
+    return false;
+  }
+
+  return true;
+}
+
 // Determine if the given url has query associated with it.
 bool HasGoogleSearchQuery(const GURL& url) {
   // NOTE: we do not require 'q=' in the query, as AJAXy search may instead

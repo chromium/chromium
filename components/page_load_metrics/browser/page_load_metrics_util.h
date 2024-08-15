@@ -219,6 +219,32 @@ bool IsGoogleSearchHostname(const GURL& url);
 // not check the domain name, but only check the parameters.
 bool HasGoogleSearchQuery(const GURL& url);
 
+// Whether a given URL is probably for Google Search, i.e., it has a Google
+// Search hostname and is not part of Google Maps.
+//
+// The motivation here is for that pages that are part of Google Search, e.g.
+// Search Results pages or redirector URLs, we should not log from-Google-Search
+// stats. We could try to detect only the specific known search URLs here, and
+// log navigations to other pages on the Google Search hostname. (For example, a
+// search for 'about google' includes a result for
+// https://www.google.com/about/). However, we assume these cases are relatively
+// uncommon, and we run the risk of logging metrics for some search redirector
+// URLs. Thus we choose the more conservative approach of ignoring all URLs on
+// known Search hostnames.
+//
+// The one exception is Google Maps, which we want to be sure to log stats for.
+//
+// Examples:
+//   https://www.google.com/ -> true
+//   https://www.google.co.jp/ -> true
+//   https://www.google.com/#q=test -> true
+//   https://www.google.com/about/ -> true [false positive, but oh well]
+//   https://www.google.com/maps -> false
+//   https://www.google.com/maps/otherstuff -> false
+//   https://www.google.example.com/ -> false
+//   https://docs.google.com/ -> false
+bool IsProbablyGoogleSearchUrl(const GURL& url);
+
 // Whether the given url is for a Google Search results page. See
 // https://docs.google.com/document/d/1jNPZ6Aeh0KV6umw1yZrrkfXRfxWNruwu7FELLx_cpOg/edit
 // for additional details.
