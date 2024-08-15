@@ -104,7 +104,7 @@ _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/lint.jar"
 _custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
 _manifest_merger_jar_path =
-    "//third_party/android_build_tools/manifest_merger/manifest-merger.jar"
+    "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"
 
 # Put the bug number in the target name so that false-positives have a hint in
 # the error message about why non-existent dependencies are there.
