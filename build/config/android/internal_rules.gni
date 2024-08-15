@@ -101,7 +101,7 @@ _custom_r8_path = "//third_party/r8/custom_r8.jar"
 # and unnecessarily slows down all bots.
 _d8_path = "//third_party/r8/d8/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
-_default_lint_jar_path = "//third_party/android_build_tools/lint/lint.jar"
+_default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
 _custom_lint_jar_path = "//third_party/android_build_tools/lint/custom_lint.jar"
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"

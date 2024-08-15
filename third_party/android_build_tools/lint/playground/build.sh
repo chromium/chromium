@@ -19,7 +19,7 @@ function get_path() {
   echo "$1"
 }
 
-LINT_PATH=$(get_path ../lint.jar)
+LINT_PATH=$(get_path ../cipd/lint.jar)
 JAVA_PATH=$(get_path ../../../jdk/current/bin/java)
 
 $JAVA_PATH -cp $LINT_PATH com.android.tools.lint.Main --project ./project.xml

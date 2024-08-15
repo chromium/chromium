@@ -1529,7 +1529,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_build_tools/lint': {
+  'src/third_party/android_build_tools/lint/cipd': {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
