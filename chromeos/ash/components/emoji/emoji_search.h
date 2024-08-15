@@ -78,6 +78,10 @@ class EmojiSearch {
   EmojiSearch(const EmojiSearch&) = delete;
   EmojiSearch& operator=(const EmojiSearch&) = delete;
 
+  // If multiple `language_codes` are provided, this aggregates the search
+  // results from multiple languages by prioritising languages earlier in the
+  // `language_codes` span first, then prioritising emoji `weighting`. Because
+  // of this, `weighting` is NOT guaranteed to be in non-increasing order.
   [[nodiscard]] EmojiSearchResult SearchEmoji(
       std::string_view query,
       base::span<const std::string> language_codes);

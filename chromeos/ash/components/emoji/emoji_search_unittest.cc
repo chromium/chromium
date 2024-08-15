@@ -7,6 +7,8 @@
 #include "base/containers/span.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/components/emoji/grit/emoji.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 
 namespace emoji {
@@ -201,6 +203,93 @@ TEST_F(EmojiSearchTest, FindsSmilingEmoji) {
   EXPECT_THAT(result.emojis, ElementsAre(FieldsAre(Gt(0), "😀")));
   EXPECT_THAT(result.emoticons, ElementsAre(FieldsAre(Gt(0), ":-)")));
   EXPECT_THAT(result.symbols, IsEmpty());
+}
+
+TEST_F(EmojiSearchTest, FindsSingleSmilingEmojiInMultipleLanguages) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate(
+      {{FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+        FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                     R"([{"group":"Arrows","emoji":[{"base":{"string":"←",
+                     "name":"leftwards arrow"}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_JA,
+                     R"([{"group":"Arrows","emoji":[{"base":{"string":"←",
+                     "name":"leftwards arrow","keywords":["矢印"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                     R"-([{"group":"Classic","emoji":[
+                     {"base":{"string":":-)","name":"smiley face "}}]}])-"},
+        FakeResource{
+            IDR_EMOJI_PICKER_JA_START,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["笑顔",":smile:"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_JA_REMAINING,
+                     R"([{"emoji":[{"base":{"string":"😺","name":"grinning cat",
+                     "keywords":["笑顔",":smile:"]}}]}])"}}});
+
+  EmojiSearch search;
+
+  search.LoadEmojiLanguages({{"en", "ja"}});
+  EmojiSearchResult result =
+      search.SearchEmoji("grinning face", {{"en", "ja"}});
+  EXPECT_THAT(result.emojis, UnorderedElementsAre(FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(result.symbols, IsEmpty());
+  EXPECT_THAT(result.emoticons, IsEmpty());
+}
+
+TEST_F(EmojiSearchTest, FindsDifferentSmilingEmojiOrderMatchesLanguages) {
+  ScopedFakeResourceBundleDelegate mock_resource_delegate(
+      {{FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+        FakeResource{
+            IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING,
+            R"([{"emoji":[{"base":{"string":"😀","name":"grinning face",
+            "keywords":["face","grin","grinning face",":D",":smile:"]}}]}])"},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_EN_INTERNAL, R"([])"},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON,
+                     R"([{"group":"Arrows","emoji":[{"base":{"string":"←",
+                     "name":"leftwards arrow"}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_SYMBOL_JA,
+                     R"([{"group":"Arrows","emoji":[{"base":{"string":"←",
+                     "name":"leftwards arrow","keywords":["矢印"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON,
+                     R"-([{"group":"Classic","emoji":[
+                     {"base":{"string":":-)","name":"smiley face "}}]}])-"},
+        FakeResource{IDR_EMOJI_PICKER_JA_START,
+                     R"([{"emoji":[{"base":{"string":"😺","name":"grinning cat",
+                     "keywords":["笑顔",":smile:"]}}]}])"},
+        FakeResource{IDR_EMOJI_PICKER_JA_REMAINING,
+                     R"([{"emoji":[{"base":{"string":"😺","name":"grinning cat",
+                     "keywords":["笑顔",":smile:"]}}]}])"}}});
+
+  EmojiSearch search;
+
+  search.LoadEmojiLanguages({{"en", "ja"}});
+  EmojiSearchResult en_ja_result =
+      search.SearchEmoji("grinning", {{"en", "ja"}});
+  EXPECT_THAT(en_ja_result.emojis,
+              ElementsAre(FieldsAre(Gt(0), "😀"), FieldsAre(Gt(0), "😺")));
+  EXPECT_THAT(en_ja_result.symbols, IsEmpty());
+  EXPECT_THAT(en_ja_result.emoticons, IsEmpty());
+
+  EmojiSearchResult ja_en_result =
+      search.SearchEmoji("grinning", {{"ja", "en"}});
+  EXPECT_THAT(ja_en_result.emojis,
+              ElementsAre(FieldsAre(Gt(0), "😺"), FieldsAre(Gt(0), "😀")));
+  EXPECT_THAT(ja_en_result.symbols, IsEmpty());
+  EXPECT_THAT(ja_en_result.emoticons, IsEmpty());
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

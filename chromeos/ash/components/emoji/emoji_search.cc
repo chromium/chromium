@@ -7,6 +7,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -212,6 +213,17 @@ std::vector<EmojiSearchEntry> GetResultsFromMap(
   return ret;
 }
 
+void MergeResults(std::vector<EmojiSearchEntry>& accumulator,
+                  std::set<std::string>& seen,
+                  base::span<EmojiSearchEntry> new_results) {
+  for (EmojiSearchEntry& new_result : new_results) {
+    auto [it, inserted] = seen.emplace(new_result.emoji_string);
+    if (inserted) {
+      accumulator.push_back(std::move(new_result));
+    }
+  }
+}
+
 std::optional<EmojiLanguageCode> GetLanguageCode(std::string_view code) {
   static constexpr auto kLangCodeStrToEnum =
       base::MakeFixedFlatMap<std::string_view, EmojiLanguageCode>({
@@ -334,8 +346,11 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     std::string_view query,
     base::span<const std::string> language_codes) {
   std::vector<EmojiSearchEntry> emojis;
+  std::set<std::string> seen_emojis;
   std::vector<EmojiSearchEntry> symbols;
+  std::set<std::string> seen_symbols;
   std::vector<EmojiSearchEntry> emoticons;
+  std::set<std::string> seen_emoticons;
 
   for (const std::string& code_str : language_codes) {
     std::optional<EmojiLanguageCode> code = GetLanguageCode(code_str);
@@ -346,18 +361,13 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
         it != language_data_.end()) {
       std::vector<EmojiSearchEntry> new_emojis =
           GetResultsFromMap(it->second.emojis, query);
-      emojis.insert(emojis.end(), std::make_move_iterator(new_emojis.begin()),
-                    std::make_move_iterator(new_emojis.end()));
+      MergeResults(emojis, seen_emojis, new_emojis);
       std::vector<EmojiSearchEntry> new_symbols =
           GetResultsFromMap(it->second.symbols, query);
-      symbols.insert(symbols.end(),
-                     std::make_move_iterator(new_symbols.begin()),
-                     std::make_move_iterator(new_symbols.end()));
+      MergeResults(symbols, seen_symbols, new_symbols);
       std::vector<EmojiSearchEntry> new_emoticons =
           GetResultsFromMap(it->second.emoticons, query);
-      emoticons.insert(emoticons.end(),
-                       std::make_move_iterator(new_emoticons.begin()),
-                       std::make_move_iterator(new_emoticons.end()));
+      MergeResults(emoticons, seen_emoticons, new_emoticons);
     }
   }
   return EmojiSearchResult(emojis, symbols, emoticons);
