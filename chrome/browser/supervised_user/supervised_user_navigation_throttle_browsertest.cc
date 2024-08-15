@@ -877,9 +877,17 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 // Tests that the trivial www-subdomain stripping is applied on the url
 // of the interstitial. Blocked urls without further conflicts will be
 // unblocked by a remote approval.
+// TODO(crbug.com/356676072): flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval \
+  DISABLED_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval
+#else
+#define MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval \
+  BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval
+#endif
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
-    BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
+    MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
   // Classify url blocks the navigation to the target url.
   // No matching blocklist entry exists for the host of the target url.
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
