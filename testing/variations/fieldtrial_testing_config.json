@@ -6075,6 +6075,38 @@
             ]
         }
     ],
+    "CrOSAudioSidetoneAndMicIndicator": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VCTrayMicIndicator",
+                        "VCTrayTitleHeader"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutMicIndicator",
+                    "enable_features": [
+                        "VCTrayTitleHeader"
+                    ],
+                    "disable_features": [
+                        "VCTrayMicIndicator"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "VCTrayMicIndicator",
+                        "VCTrayTitleHeader"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothA2dpAacCodec": [
         {
             "platforms": [
