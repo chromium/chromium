@@ -309,13 +309,19 @@ const FeatureEntry::FeatureVariation
     };
 
 const FeatureEntry::FeatureParam kIOSTipsNotifications5SecondTrigger[] = {
-    {kIOSTipsNotificationsTriggerTimeParam, "5s"},
+    {kIOSTipsNotificationsUnknownTriggerTimeParam, "5s"},
+    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "5s"},
+    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "5s"},
 };
 const FeatureEntry::FeatureParam kIOSTipsNotifications10SecondTrigger[] = {
-    {kIOSTipsNotificationsTriggerTimeParam, "10s"},
+    {kIOSTipsNotificationsUnknownTriggerTimeParam, "10s"},
+    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "10s"},
+    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "10s"},
 };
 const FeatureEntry::FeatureParam kIOSTipsNotifications30SecondTrigger[] = {
-    {kIOSTipsNotificationsTriggerTimeParam, "30s"},
+    {kIOSTipsNotificationsUnknownTriggerTimeParam, "30s"},
+    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "30s"},
+    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "30s"},
 };
 const FeatureEntry::FeatureVariation kIOSTipsNotificationsVariations[] = {
     {"(5s trigger)", kIOSTipsNotifications5SecondTrigger,

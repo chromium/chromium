@@ -129,9 +129,21 @@ UNNotificationContent* ContentForTipsNotificationType(
 
 base::TimeDelta TipsNotificationTriggerDelta(
     TipsNotificationUserType user_type) {
-  return GetFieldTrialParamByFeatureAsTimeDelta(
-      kIOSTipsNotifications, kIOSTipsNotificationsTriggerTimeParam,
-      DefaultTriggerDelta(user_type));
+  base::TimeDelta default_trigger = DefaultTriggerDelta(user_type);
+  switch (user_type) {
+    case TipsNotificationUserType::kUnknown:
+      return GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications, kIOSTipsNotificationsUnknownTriggerTimeParam,
+          default_trigger);
+    case TipsNotificationUserType::kLessEngaged:
+      return GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications,
+          kIOSTipsNotificationsLessEngagedTriggerTimeParam, default_trigger);
+    case TipsNotificationUserType::kActiveSeeker:
+      return GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications,
+          kIOSTipsNotificationsActiveSeekerTriggerTimeParam, default_trigger);
+  }
 }
 
 UNNotificationTrigger* TipsNotificationTrigger(

@@ -7,6 +7,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/task_environment.h"
 #import "base/threading/thread_restrictions.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -459,6 +461,7 @@ TEST_F(TipsNotificationClientTest, OmniboxPositionHandle) {
                                        1);
 }
 
+// Tests the the user can be classified as an "Active Seeker" of Tips.
 TEST_F(TipsNotificationClientTest, ClassifyUserActiveSeeker) {
   base::ScopedMockClockOverride clock;
   WriteFirstRunSentinel();
@@ -488,6 +491,7 @@ TEST_F(TipsNotificationClientTest, ClassifyUserActiveSeeker) {
   EXPECT_EQ(GetUserType(), TipsNotificationUserType::kActiveSeeker);
 }
 
+// Tests the the user can be classified as "Less Engaged".
 TEST_F(TipsNotificationClientTest, ClassifyUserLessEngaged) {
   base::ScopedMockClockOverride clock;
   WriteFirstRunSentinel();
@@ -512,4 +516,35 @@ TEST_F(TipsNotificationClientTest, ClassifyUserLessEngaged) {
   clock.Advance(base::Hours(73));
   SimulateForegroundingApp();
   EXPECT_EQ(GetUserType(), TipsNotificationUserType::kLessEngaged);
+}
+
+// Tests that the correct trigger time is used, depending on the user's
+// classification.
+TEST_F(TipsNotificationClientTest, TestTriggerTimeDeltas) {
+  EXPECT_EQ(TipsNotificationTriggerDelta(TipsNotificationUserType::kUnknown),
+            base::Days(3));
+  EXPECT_EQ(
+      TipsNotificationTriggerDelta(TipsNotificationUserType::kLessEngaged),
+      base::Days(21));
+  EXPECT_EQ(
+      TipsNotificationTriggerDelta(TipsNotificationUserType::kActiveSeeker),
+      base::Days(7));
+
+  // Verify that the feature params can set the trigger delta.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSTipsNotifications,
+      {
+          {kIOSTipsNotificationsUnknownTriggerTimeParam, "1d"},
+          {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "2d"},
+          {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "3d"},
+      });
+  EXPECT_EQ(TipsNotificationTriggerDelta(TipsNotificationUserType::kUnknown),
+            base::Days(1));
+  EXPECT_EQ(
+      TipsNotificationTriggerDelta(TipsNotificationUserType::kLessEngaged),
+      base::Days(2));
+  EXPECT_EQ(
+      TipsNotificationTriggerDelta(TipsNotificationUserType::kActiveSeeker),
+      base::Days(3));
 }

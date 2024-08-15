@@ -94,10 +94,12 @@ void MaybeDismissNotification() {
     triggerTime = "72h";
   }
 
-  // Enable Tips Notifications with 1s trigger time.
+  // Enable Tips Notifications with trigger time params.
   std::string enableFeatures = base::StringPrintf(
-      "--enable-features=%s:%s/%s", kIOSTipsNotifications.name,
-      kIOSTipsNotificationsTriggerTimeParam, triggerTime.c_str());
+      "--enable-features=%s:%s/%s,%s/%s,%s/%s", kIOSTipsNotifications.name,
+      kIOSTipsNotificationsUnknownTriggerTimeParam, triggerTime.c_str(),
+      kIOSTipsNotificationsLessEngagedTriggerTimeParam, triggerTime.c_str(),
+      kIOSTipsNotificationsActiveSeekerTriggerTimeParam, triggerTime.c_str());
   config.additional_args.push_back(enableFeatures);
   return config;
 }

@@ -605,7 +605,8 @@ void TipsNotificationClient::ClassifyUser() {
     return;
   }
 
-  if (now > last_request + base::Hours(72)) {
+  if (now > last_request + TipsNotificationTriggerDelta(
+                               TipsNotificationUserType::kUnknown)) {
     user_type_ = TipsNotificationUserType::kLessEngaged;
   } else {
     user_type_ = TipsNotificationUserType::kActiveSeeker;
