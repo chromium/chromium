@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
@@ -70,6 +70,10 @@ suite('TextSelection', function() {
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+    // Resize observer does not trigger with flushTasks(), so we need to use
+    // waitAfterNextRender() instead.
+    await waitAfterNextRender(selectionOverlayElement);
+
     metrics = fakeMetricsPrivate();
     await flushTasks();
     await addWords();

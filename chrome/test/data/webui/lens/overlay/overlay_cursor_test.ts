@@ -4,7 +4,6 @@
 
 import 'chrome-untrusted://lens/lens_overlay_app.js';
 
-import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {CursorTooltipElement} from 'chrome-untrusted://lens/cursor_tooltip.js';
@@ -16,17 +15,12 @@ import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrom
 import {flushTasks, waitBeforeNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {createObject} from '../utils/object_utils.js';
 import {simulateStartDrag} from '../utils/selection_utils.js';
 import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
-
-// Default screenshot data URI is a 1600x1 pink rectangle.
-const SCREENSHOT_DATA_URI =
-    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABkAAAAABCAYAAACG2GJUAAAA' +
-    'AXNSR0IArs4c6QAAADVJREFUWEft0AENAAAMAiDfP7T2+CAC17TBgAEDBgwYMGDAgAEDBg' +
-    'wYMGDAgAEDBgwYMPBoYOZdAv///pRmAAAAAElFTkSuQmCC';
 
 function isRendered(el: HTMLElement) {
   return isVisible(el) && getComputedStyle(el).visibility !== 'hidden';
@@ -71,12 +65,8 @@ suite('OverlayCursor', () => {
     tooltipEl = cursorTooltip.$.cursorTooltip;
 
     // Send a fake screenshot to unhide the selection overlay.
-    const dataUriBytes = new TextEncoder().encode(SCREENSHOT_DATA_URI);
-    callbackRouterRemote.screenshotDataUriReceived({
-      data: {
-        bytes: Array.from(dataUriBytes),
-      } as BigBuffer,
-    });
+    testBrowserProxy.page.screenshotDataReceived(fakeScreenshotBitmap());
+    await waitForScreenshotRendered(selectionOverlayElement);
 
     // Since the size of the Selection Overlay is based on the screenshot which
     // is not loaded in the test, we need to force the overlay to take up the

@@ -176,7 +176,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       "img-src 'self' chrome-untrusted://resources "
-      "https://www.gstatic.com data:;");
+      "https://www.gstatic.com data: blob:;");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");

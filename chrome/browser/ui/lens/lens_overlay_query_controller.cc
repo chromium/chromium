@@ -233,6 +233,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
   lens::ImageData image_data = DownscaleAndEncodeBitmap(
       original_screenshot_, ui_scale_factor_, client_logs);
+
   if (lens::features::GetLensOverlaySendLatencyGen204()) {
     client_logs.set_paella_id(gen204_id_);
   }
