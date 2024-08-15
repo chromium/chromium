@@ -21,6 +21,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/base_i18n_switches.h"
@@ -8085,6 +8086,23 @@ bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
 void ChromeContentBrowserClient::GetHyphenationDictionary(
     base::OnceCallback<void(const base::FilePath&)> callback) {
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !BUILDFLAG(IS_ANDROID)
+  // Chrome for Testing bundles hyphenation dictionaries however, if the
+  // component updater is disabled (which is commonly the case with test
+  // automation frameworks), the hyphenation dictionaries directory is never
+  // initialized. To work around this, provide the well known hyphenation
+  // directory here bypassing the disabled component installer.
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableComponentUpdate)) {
+    base::FilePath dir;
+    if (base::PathService::Get(base::DIR_EXE, &dir)) {
+      dir = dir.AppendASCII("hyphen-data");
+      std::move(callback).Run(dir);
+      return;
+    }
+  }
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
+
   component_updater::HyphenationComponentInstallerPolicy::
       GetHyphenationDictionary(std::move(callback));
 #endif
