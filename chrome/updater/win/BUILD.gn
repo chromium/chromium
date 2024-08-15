@@ -122,28 +122,40 @@ process_version("uninstall.cmd") {
   ]
 }
 
-process_version_rc_template("version_resources") {
-  _product_fullname = "$updater_product_full_name " + "($current_cpu)"
-  if (is_debug) {
-    _product_fullname += " (debug)"
+template("updater_process_version_rc_template") {
+  # `process_version_rc_template` invokes `process_version` with the default
+  # template rc file which is at //chrome/app/chrome_version.rc.version.
+  process_version_rc_template(target_name) {
+    _product_fullname = "$updater_product_full_display_name"
+    if (invoker.suffix != "") {
+      _product_fullname += invoker.suffix
+    }
+    _product_fullname += " ($current_cpu)"
+    if (is_debug) {
+      _product_fullname += " (debug)"
+    }
+    extra_args = [
+      "-e",
+      "PRODUCT_FULLNAME=\"$_product_fullname\"",
+      "-e",
+      "INTERNAL_NAME=\"$_product_fullname\"",
+      "-e",
+      "ORIGINAL_FILENAME=\"${invoker.original_filename}\"",
+      "-e",
+      "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
+    ]
+    output = "$target_gen_dir/${invoker.rc}"
   }
-  sources = [ "updater.ver" ]
-  output = "$target_gen_dir/updater_exe.rc"
-  extra_args = [
-    "-e",
-    "PRODUCT_FULLNAME=\"$_product_fullname\"",
-  ]
 }
 
-process_version_rc_template("version_resources_test") {
-  _product_fullname = "$updater_product_full_name (test) " + "($current_cpu)"
-  if (is_debug) {
-    _product_fullname += " (debug)"
-  }
-  sources = [ "updater_test.ver" ]
-  output = "$target_gen_dir/updater_test_exe.rc"
-  extra_args = [
-    "-e",
-    "PRODUCT_FULLNAME=\"$_product_fullname\"",
-  ]
+updater_process_version_rc_template("version_resources") {
+  suffix = ""
+  original_filename = "updater.exe"
+  rc = "updater_exe.rc"
+}
+
+updater_process_version_rc_template("version_resources_test") {
+  suffix = " (test)"
+  original_filename = "updater_test.exe"
+  rc = "updater_test_exe.rc"
 }
