@@ -1293,8 +1293,14 @@ class GetContextsWithDeveloperToolsOpened
       const GetContextsWithDeveloperToolsOpened&) = delete;
 };
 
+// TODO(crbug.com/357845909): flaky on ChromeOS and Linux MSAN.
+#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#define MAYBE_ReturnsDevToolsContext DISABLED_ReturnsDevToolsContext
+#else
+#define MAYBE_ReturnsDevToolsContext ReturnsDevToolsContext
+#endif
 IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
-                       ReturnsDevToolsContext) {
+                       MAYBE_ReturnsDevToolsContext) {
   const bool open_docked = GetParam();
 
   // Open the developer tools and wait for the extension page to be loaded.
