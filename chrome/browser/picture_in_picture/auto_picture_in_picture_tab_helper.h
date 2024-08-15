@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_HELPER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PICTURE_IN_PICTURE_TAB_HELPER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -137,17 +138,28 @@ class AutoPictureInPictureTabHelper
   FRIEND_TEST_ALL_PREFIXES(AutoPictureInPictureTabHelperBrowserTest,
                            CannotAutopipViaHttp);
 
+  enum class HasSufficientlyVisibleVideo {
+    kNo,
+    kYes,
+  };
+
   void MaybeEnterAutoPictureInPicture();
+
+  void EnterAutoPictureInPicture();
 
   void MaybeExitAutoPictureInPicture();
 
   void MaybeStartOrStopObservingTabStrip();
 
-  bool IsEligibleForAutoPictureInPicture() const;
+  bool IsEligibleForAutoPictureInPicture(
+      HasSufficientlyVisibleVideo has_sufficiently_visible_video =
+          HasSufficientlyVisibleVideo::kNo) const;
 
   // Returns true if the tab is currently playing unmuted playback, and
-  // MediaSession reports true for |meets_visibility_threshold|.
-  bool MeetsVideoPlaybackConditions() const;
+  // MediaSession reports that there exists a sufficiently visible video.
+  bool MeetsVideoPlaybackConditions(
+      HasSufficientlyVisibleVideo has_sufficiently_visible_video =
+          HasSufficientlyVisibleVideo::kNo) const;
 
   // Returns true if the tab is currently using the camera or microphone.
   bool IsUsingCameraOrMicrophone() const;
@@ -155,6 +167,18 @@ class AutoPictureInPictureTabHelper
   // Returns the current state of the 'Auto Picture-in-Picture' content
   // setting for the current website of the observed WebContents.
   ContentSetting GetCurrentContentSetting() const;
+
+  // Asks MediaSession to `GetVisibility`, if there exists a media session and
+  // we are not currently in picture in picture.
+  void MaybeGetVisibility();
+
+  // Gets the video visibility, and enters picture in picture if MediaSession
+  // reports that there exists a sufficiently visible video.
+  //
+  // For a video to be considered sufficiently visible, it must meet the video
+  // visibility threshold defined by `HTMLVideoElement` (kVisibilityThreshold)
+  // and tracked by the `MediaVideoVisibilityTracker`.
+  void GetVideoVisibility(bool has_sufficiently_visible_video);
 
   // HostContentSettingsMap is tied to the Profile which outlives the
   // WebContents (which we're tied to), so this is safe.
@@ -205,11 +229,6 @@ class AutoPictureInPictureTabHelper
   // picture-in-picture. It only resets on navigation.
   bool has_ever_registered_for_auto_picture_in_picture_ = false;
 
-  // True if the media session, associated with the observed WebContents, meets
-  // the video visibility threshold defined by |HTMLVideoElement|
-  // (kVisibilityThreshold) and tracked y the |MediaVideoVisibilityTracker|.
-  bool has_sufficiently_visible_video_ = false;
-
   // Connections with the media session service to listen for audio focus
   // updates and control media sessions.
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
@@ -219,6 +238,13 @@ class AutoPictureInPictureTabHelper
 
   // If non-null, this is the setting helper for the permission setting UI.
   std::unique_ptr<AutoPipSettingHelper> auto_pip_setting_helper_;
+
+  // WeakPtrFactory used only for requesting video visibility. This weak ptr
+  // factory is invalidated before sending any new visibility requests to the
+  // `MediaSession`, and at the beginning of `MaybeExitAutoPictureInPicture`
+  // calls.
+  base::WeakPtrFactory<AutoPictureInPictureTabHelper>
+      get_visibility_weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
