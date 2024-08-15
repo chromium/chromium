@@ -15,7 +15,7 @@ Refer to README.md for content description and update process.
  <item id="aggregation_service_report" added_in_milestone="95" content_hash_code="08063b85" os_list="linux,windows,chromeos,android" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc" />
  <item id="android_device_manager_socket" added_in_milestone="65" content_hash_code="00623801" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_device_manager.cc" />
  <item id="android_web_socket" added_in_milestone="65" content_hash_code="00bbd661" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_web_socket.cc" />
- <item id="auction_downloader" added_in_milestone="92" content_hash_code="01f53427" os_list="linux,windows,chromeos,android" file_path="content/services/auction_worklet/public/cpp/auction_downloader.cc" />
+ <item id="auction_downloader" added_in_milestone="92" content_hash_code="0728efd6" os_list="linux,windows,chromeos,android" file_path="content/services/auction_worklet/public/cpp/auction_downloader.cc" />
  <item id="auction_report_sender" added_in_milestone="92" content_hash_code="029b766e" os_list="linux,windows,chromeos,android" file_path="content/browser/interest_group/interest_group_manager_impl.cc" />
  <item id="autofill_image_fetcher_card_art_image" added_in_milestone="93" content_hash_code="038b8696" os_list="linux,windows,chromeos" file_path="components/autofill/core/browser/ui/autofill_image_fetcher.cc" />
  <item id="autofill_query" added_in_milestone="62" content_hash_code="006ccff5" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc" />
@@ -111,7 +111,7 @@ Refer to README.md for content description and update process.
  <item id="indexed_db_internals_handler" added_in_milestone="62" content_hash_code="0384abe6" os_list="linux,windows,chromeos,android" file_path="content/browser/indexed_db/indexed_db_internals_ui.cc" />
  <item id="interest_feedv2_image_send" added_in_milestone="86" content_hash_code="06687258" os_list="linux,windows,chromeos,android" file_path="components/feed/core/v2/image_fetcher.cc" />
  <item id="interest_feedv2_send" added_in_milestone="83" content_hash_code="02f676af" os_list="linux,windows,chromeos,android" file_path="components/feed/core/v2/feed_network_impl.cc" />
- <item id="interest_group_update_fetcher" added_in_milestone="94" content_hash_code="06322759" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_update_manager.cc" />
+ <item id="interest_group_update_fetcher" added_in_milestone="94" content_hash_code="03596230" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_update_manager.cc" />
  <item id="intranet_redirect_detector" added_in_milestone="62" content_hash_code="03b26f7b" os_list="linux,windows,chromeos" file_path="chrome/browser/intranet_redirect_detector.cc" />
  <item id="javascript_report_error" added_in_milestone="87" content_hash_code="03abb4b9" os_list="linux" file_path="chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc" />
  <item id="lib_address_input" added_in_milestone="62" content_hash_code="0374aae8" os_list="linux,windows,chromeos,android" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc" />
@@ -315,7 +315,7 @@ Refer to README.md for content description and update process.
  <item id="quick_answers_spellchecker" added_in_milestone="102" content_hash_code="022892f0" os_list="chromeos" file_path="chromeos/components/quick_answers/utils/spell_check_language.cc" />
  <item id="printing_oauth2_token_exchange_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="059df373" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/ipp_endpoint_token_fetcher.cc" />
  <item id="fedcm_account_profile_image_fetcher" added_in_milestone="102" content_hash_code="01d6ba52" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/webid/account_selection_view_base.cc" />
- <item id="interest_group_well_known_fetcher" added_in_milestone="103" content_hash_code="01ea06eb" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_permissions_checker.cc" />
+ <item id="interest_group_well_known_fetcher" added_in_milestone="103" content_hash_code="070b9eed" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_permissions_checker.cc" />
  <item id="speculation_rules_prefetch" added_in_milestone="103" content_hash_code="015fd398" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prefetch/prefetch_service.cc" />
  <item id="fast_pair_image_decoder" added_in_milestone="103" content_hash_code="03a98cf1" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
  <item id="drivefs_http_client" added_in_milestone="104" content_hash_code="042b8f2c" os_list="chromeos" file_path="chromeos/ash/components/drivefs/drivefs_http_client.cc" />
@@ -479,7 +479,7 @@ Refer to README.md for content description and update process.
  <item id="get_locale_oauth2_people_api_call" added_in_milestone="128" type="partial" second_id="oauth2_api_call_flow" content_hash_code="021bb5c6" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,7" file_path="chrome/browser/ash/login/screens/locale_switch_screen.cc" />
  <item id="boca_classroom_integration" added_in_milestone="128" content_hash_code="056b9402" os_list="chromeos" file_path="ash/webui/boca_ui/provider/classroom_page_handler_impl.cc" />
  <item id="android_webview_shell" added_in_milestone="129" content_hash_code="0625d0be" os_list="android" file_path="android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserFragment.java" />
- <item id="trusted_signals_fetcher" added_in_milestone="129" content_hash_code="0757940f" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/trusted_signals_fetcher.cc" />
+ <item id="trusted_signals_fetcher" added_in_milestone="129" content_hash_code="01dc45e7" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/trusted_signals_fetcher.cc" />
  <item id="plus_address_preallocation" added_in_milestone="129" content_hash_code="05275659" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_http_client_impl.cc" />
  <item id="contextual_search_resolve_debug" added_in_milestone="129" content_hash_code="053e98c5" os_list="linux,windows,android,chromeos" file_path="components/contextual_search/core/browser/contextual_search_delegate_impl.cc" />
 </annotations>

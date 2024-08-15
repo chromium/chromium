@@ -91,15 +91,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "Interest group periodic update fetcher"
           description:
-            "Fetches periodic updates of FLEDGE interest groups previously "
-            "joined by navigator.joinAdInterestGroup(). FLEDGE allow sites to "
-            "store persistent interest groups that are only accessible to "
-            "special on-device ad auction worklets run via "
-            "navigator.runAdAuction(). JavaScript running in the context of a "
-            "frame cannot read interest groups, but it can request that all "
-            "interest groups owned by the current frame's origin be updated by "
-            "fetching JSON from the registered update URL for each interest "
-            "group."
+            "Fetches periodic updates of Protected Audiences interest groups "
+            "previously joined by navigator.joinAdInterestGroup(). Protected "
+            "Audiences allow sites to store persistent interest groups that "
+            "are only accessible to special on-device ad auction worklets run "
+            "via navigator.runAdAuction(). JavaScript running in the context "
+            "of a frame cannot read interest groups, but it can request that "
+            "all interest groups owned by the current frame's origin be "
+            "updated by fetching JSON from the registered update URL for each "
+            "interest group."
             "See https://github.com/WICG/turtledove/blob/main/FLEDGE.md and "
             "https://developer.chrome.com/docs/privacy-sandbox/fledge/"
           trigger:
@@ -112,11 +112,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests are controlled by a feature flag that is off by "
-            "default now. When enabled, they can be disabled by the Privacy"
-            " Sandbox setting."
-          policy_exception_justification:
-            "These requests are triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 // TODO(crbug.com/40172488): Report errors to devtools for the TryToCopy*().

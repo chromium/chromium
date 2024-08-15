@@ -41,9 +41,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "AuctionDownloader"
           description:
-            "Requests FLEDGE script or JSON file for running an ad auction."
+            "Requests Protected Audiences script or JSON file for running an "
+            "ad auction."
           trigger:
-            "Requested when running a FLEDGE auction."
+            "Requested when running a Protected Audiences auction."
           data: "URL associated with an interest group or seller."
           destination: WEBSITE
           user_data: {
@@ -59,9 +60,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests cannot be disabled."
-          policy_exception_justification:
-            "These requests triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 const char kWebAssemblyMime[] = "application/wasm";

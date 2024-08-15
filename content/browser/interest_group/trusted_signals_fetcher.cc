@@ -69,10 +69,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "Users can control this via the 'Sites you visit can determine "
-            "what you like and then suggest ads as you continue browsing' "
-            "setting under Settings > Privacy and security > Site-suggested "
-            "ads."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
           chrome_policy {
             PrivacySandboxSiteEnabledAdsEnabled {
               PrivacySandboxSiteEnabledAdsEnabled: false
