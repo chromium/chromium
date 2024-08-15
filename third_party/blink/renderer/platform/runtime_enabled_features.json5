@@ -3333,6 +3333,12 @@
       status: "stable",
     },
     {
+      // When enabled, prevents undo to be applied if the enclosing block
+      // is not editable
+      name: "PreventUndoIfNotEditable",
+      status: "stable"
+    },
+    {
       // Controls whether filtering IDs can be specified for Private Aggregation
       // contributions. If disabled, any IDs will be ignored.
       name: "PrivateAggregationApiFilteringIds",
