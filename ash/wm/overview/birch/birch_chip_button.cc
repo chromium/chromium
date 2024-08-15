@@ -43,12 +43,11 @@ namespace ash {
 namespace {
 
 // The color and layout parameters of the chip.
-constexpr gfx::Insets kInteriorMarginsNoAddon =
-    gfx::Insets::TLBR(12, 0, 12, 20);
+constexpr gfx::Insets kInteriorMarginsNoAddon = gfx::Insets::TLBR(12, 0, 8, 20);
 constexpr gfx::Insets kInteriorMarginsWithAddon = gfx::Insets::VH(12, 0);
 
 // The layout parameters of icon.
-constexpr gfx::Insets kIconMargins = gfx::Insets::VH(0, 12);
+constexpr gfx::Insets kIconMargins = gfx::Insets::TLBR(0, 12, 0, 8);
 constexpr int kMainIconViewSize = 40;
 constexpr int kParentIconViewSize = 44;
 constexpr int kSecondaryIconViewSize = 20;
