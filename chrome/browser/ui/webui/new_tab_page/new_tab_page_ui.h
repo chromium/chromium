@@ -100,7 +100,6 @@ class NewTabPageUI
   static bool IsNewTabPageOrigin(const GURL& url);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void ResetProfilePrefs(PrefService* prefs);
-  static bool IsDriveModuleEnabledForProfile(Profile* profile);
   static bool IsManagedProfile(Profile* profile);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo

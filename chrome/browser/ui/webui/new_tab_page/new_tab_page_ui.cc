@@ -464,9 +464,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
-      module_id_names_(ntp::MakeModuleIdNames(
-          NewTabPageUI::IsDriveModuleEnabledForProfile(profile_),
-          NewTabPageUI::IsManagedProfile(profile_))) {
+      module_id_names_(
+          ntp::MakeModuleIdNames(IsDriveModuleEnabledForProfile(profile_),
+                                 NewTabPageUI::IsManagedProfile(profile_))) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
@@ -571,24 +571,6 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   ntp_tiles::MostVisitedSites::ResetProfilePrefs(prefs);
   prefs->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-}
-
-// static
-bool NewTabPageUI::IsDriveModuleEnabledForProfile(Profile* profile) {
-  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
-  // module to be enabled.
-  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
-  if (!IsDriveModuleEnabled() || !sync_service ||
-      !sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          ntp_features::kNtpDriveModule,
-          ntp_features::kNtpDriveModuleManagedUsersOnlyParam, true)) {
-    return true;
-  }
-
-  return NewTabPageUI::IsManagedProfile(profile);
 }
 
 // static

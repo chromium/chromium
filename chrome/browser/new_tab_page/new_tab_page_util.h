@@ -7,12 +7,15 @@
 
 #include "base/feature_list.h"
 
+class Profile;
+
 namespace variations {
 class VariationsService;
 }  // namespace variations
 
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
+bool IsDriveModuleEnabledForProfile(Profile* profile);
 bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature);
 
 // Return the country code as provided by the variations service.

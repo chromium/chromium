@@ -6,7 +6,10 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "components/search/ntp_features.h"
+#include "components/sync/service/sync_service.h"
 #include "components/variations/service/variations_service.h"
 
 namespace {
@@ -51,6 +54,27 @@ bool IsDriveModuleEnabled() {
     return base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
   }
   return IsOsSupportedForDrive();
+}
+
+bool IsDriveModuleEnabledForProfile(Profile* profile) {
+  if (!IsDriveModuleEnabled()) {
+    return false;
+  }
+
+  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
+  // module to be enabled.
+  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
+    return false;
+  }
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          ntp_features::kNtpDriveModule,
+          ntp_features::kNtpDriveModuleManagedUsersOnlyParam, true)) {
+    return NewTabPageUI::IsManagedProfile(profile);
+  }
+
+  return true;
 }
 
 bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature) {
