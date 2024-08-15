@@ -1164,3 +1164,16 @@ TEST_F(TabContainerTest, GetLeadingTrailingElementsForZOrdering) {
   EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering()->view(),
             group_header);
 }
+
+TEST_F(TabContainerTest, TabGroupHeaderAccessibleProperties) {
+  auto group = tab_groups::TabGroupId::GenerateNew();
+  AddTab(0, std::nullopt, TabActive::kActive);
+  AddTab(1, group);
+
+  TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+  ui::AXNodeData data;
+
+  group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTabList);
+}

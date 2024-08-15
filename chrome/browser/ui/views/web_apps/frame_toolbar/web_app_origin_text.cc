@@ -22,6 +22,7 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
@@ -63,6 +64,8 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kApplication);
 }
 
 WebAppOriginText::~WebAppOriginText() = default;
@@ -121,7 +124,6 @@ void WebAppOriginText::OnLayerAnimationEnded(
 }
 
 void WebAppOriginText::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kApplication;
   if (!label_->GetText().empty()) {
     node_data->SetNameChecked(label_->GetText());
   }

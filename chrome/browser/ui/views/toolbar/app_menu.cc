@@ -454,16 +454,12 @@ class AppMenuView : public views::View {
 
  public:
   AppMenuView(AppMenu* menu, ButtonMenuItemModel* menu_model)
-      : menu_(menu->AsWeakPtr()), menu_model_(menu_model) {}
+      : menu_(menu->AsWeakPtr()), menu_model_(menu_model) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
+  }
   AppMenuView(const AppMenuView&) = delete;
   AppMenuView& operator=(const AppMenuView&) = delete;
   ~AppMenuView() override = default;
-
-  // Overridden from views::View.
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::View::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kMenu;
-  }
 
   views::Button* CreateAndConfigureButton(
       views::Button::PressedCallback callback,
@@ -1370,6 +1366,19 @@ void AppMenu::OnGlobalErrorsChanged() {
   // menu. Close the menu to avoid have a stale menu on-screen.
   if (root_)
     root_->Cancel();
+}
+
+views::View* AppMenu::GetZoomAppMenuViewForTest() {
+  std::optional<int> zoom_view_command_id = IDC_ZOOM_MENU;
+  auto* menu_item = root_->GetMenuItemByID(zoom_view_command_id.value());
+  DCHECK(menu_item);
+
+  for (views::View* child : menu_item->children()) {
+    if (views::IsViewClass<ZoomView>(child)) {
+      return child;
+    }
+  }
+  return nullptr;
 }
 
 void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {

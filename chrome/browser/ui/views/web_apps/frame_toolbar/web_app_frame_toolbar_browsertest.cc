@@ -2525,6 +2525,18 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
       helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(app_url());
 }
+
+IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+                       WebAppOriginTextAccessibleProperties) {
+  InstallAndLaunchWebApp();
+  auto* origin_text = helper()->origin_text_view();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(origin_text);
+  origin_text->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kApplication);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     WebAppFrameToolbarBrowserTest_OriginText,

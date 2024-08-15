@@ -37,6 +37,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -858,4 +859,15 @@ TEST_F(TabTest, DiscardIndicatorResponsiveness) {
     EXPECT_EQ(test_case.expected_increased_radius,
               tab_icon->increased_discard_indicator_radius_);
   }
+}
+
+TEST_F(TabTest, AccessibleProperties) {
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
+  ui::AXNodeData data;
+
+  tab->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kTab, data.role);
 }

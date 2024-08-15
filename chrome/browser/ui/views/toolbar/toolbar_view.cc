@@ -948,10 +948,6 @@ views::View* ToolbarView::GetDefaultFocusableChild() {
   return location_bar_;
 }
 
-void ToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
-}
-
 void ToolbarView::InitLayout() {
   const int default_margin = GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN);
   // TODO(dfried): rename this constant.

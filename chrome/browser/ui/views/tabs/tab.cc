@@ -80,6 +80,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -274,6 +275,8 @@ Tab::Tab(TabSlotController* controller)
       std::make_unique<TabStyleHighlightPathGenerator>(tab_style_views()));
 
   SetProperty(views::kElementIdentifierKey, kTabElementId);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
 }
 
 Tab::~Tab() {
@@ -704,7 +707,6 @@ std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
 }
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTab;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               IsSelected());
 

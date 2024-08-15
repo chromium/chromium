@@ -28,7 +28,6 @@ class RingProgressBar : public views::View, public gfx::AnimationDelegate {
 
  private:
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   // gfx::AnimationDelegate:
