@@ -4833,6 +4833,24 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerRenderer.ExtensionLoadStatusInWorkerScriptEvaluation"
+    enum="ExtensionLoadStatusOnScriptEval" expires_after="2025-02-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    This records the state of the extension loading in the (renderer) extension
+    registry during the process of service worker script evaluation. Loaded
+    means the extension is in the extension registry. Unloaded means the
+    extension was loaded, but is now unloaded (disabled). Unknown means that
+    there is no record of the extension in the renderer.
+
+    It is emitted potentially after the worker thread is started and the worker
+    script will soon or already is evaluating, but it is before the worker's
+    extension bindings sytem is created.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
     enum="SettingsOverriddenDialogResult" expires_after="2024-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>

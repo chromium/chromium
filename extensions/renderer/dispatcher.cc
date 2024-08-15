@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -120,6 +121,16 @@ namespace {
 
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
+
+enum class ExtensionRendererLoadStatus {
+  // Extension is neither loaded in the registry nor unloaded.
+  kUnknownExtension = 0,
+  // Extension is loaded in the registry.
+  kExtensionLoaded = 1,
+  // Extension was loaded in the registry, but was unloaded.
+  kExtensionUnloaded = 2,
+  kMaxValue = kExtensionUnloaded,
+};
 
 // Returns whether or not extension APIs are allowed for the specified
 // `script_url` and `scope`. The script must be specified in the extension's
@@ -499,6 +510,19 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
 
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(script_url);
+
+  ExtensionRendererLoadStatus load_status =
+      ExtensionRendererLoadStatus::kUnknownExtension;
+  if (extension) {
+    load_status = ExtensionRendererLoadStatus::kExtensionLoaded;
+  } else if (base::Contains(unloaded_extensions_, script_url.host())) {
+    // script_url.host() is the extension's ID.
+    load_status = ExtensionRendererLoadStatus::kExtensionUnloaded;
+  }
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerRenderer."
+      "ExtensionLoadStatusInWorkerScriptEvaluation",
+      load_status);
 
   if (!extension) {
     // TODO(kalman): This is no good. Instead we need to either:
