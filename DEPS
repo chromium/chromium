@@ -1485,7 +1485,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_build_tools/apkanalyzer': {
+  'src/third_party/android_build_tools/apkanalyzer/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/android_build_tools/apkanalyzer',

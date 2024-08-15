@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DIR_APK_ANALYZER="$(dirname $0)"
-DIR_SOURCE_ROOT="$DIR_APK_ANALYZER/../../.."
+DIR_APK_ANALYZER="$(dirname $0)/cipd"
+DIR_SOURCE_ROOT="$DIR_APK_ANALYZER/../../../.."
 DIR_CMDLINE_TOOLS="$DIR_SOURCE_ROOT/third_party/android_sdk/public/cmdline-tools/latest"
 JAVA="$DIR_SOURCE_ROOT/third_party/jdk/current/bin/java"
 
