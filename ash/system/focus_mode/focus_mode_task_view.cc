@@ -559,6 +559,11 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
   // Note: don't show the carousel if we are editing a previously selected task.
   chip_carousel_->SetVisible(!show_selected_state &&
                              chip_carousel_->HasTasks());
+  // Request a update for the scroll view and gradient for `chip_carousel_` when
+  // it's visible.
+  if (chip_carousel_->GetVisible()) {
+    chip_carousel_->InvalidateLayout();
+  }
 
   complete_button_->SetImageModel(
       views::Button::STATE_NORMAL,
