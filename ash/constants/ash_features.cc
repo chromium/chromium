@@ -2623,7 +2623,7 @@ BASE_FEATURE(kSmartReader, "SmartReader", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSavedDeskUiRevamp,
              "SavedDeskUiRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuickAppAccessTestUI,
              "QuickAppAccessTestUI",
@@ -4557,8 +4557,11 @@ bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
 }
 
 bool IsSavedDeskUiRevampEnabled() {
-  return base::FeatureList::IsEnabled(kForestFeature) &&
-         base::FeatureList::IsEnabled(kSavedDeskUiRevamp);
+  if (!base::FeatureList::IsEnabled(kForestFeature)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kSavedDeskUiRevamp);
 }
 
 bool IsScalableIphEnabled() {
