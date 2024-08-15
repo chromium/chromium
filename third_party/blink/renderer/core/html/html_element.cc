@@ -3093,14 +3093,16 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
     UpdateAncestorWithDirAuto(UpdateAncestorTraversal::ExcludeSelf);
   }
 
-  if (is_old_auto && !is_new_auto) {
+  if (is_old_auto) {
     if (!RecalcSelfOrAncestorHasDirAuto()) {
       ClearSelfOrAncestorHasDirAutoAttribute();
       UpdateDescendantHasDirAutoAttribute(false /* has_dir_auto */);
     }
-  } else if (!is_old_auto && is_new_auto) {
-    SetSelfOrAncestorHasDirAutoAttribute();
-    UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
+  } else {
+    if (RecalcSelfOrAncestorHasDirAuto()) {
+      SetSelfOrAncestorHasDirAutoAttribute();
+      UpdateDescendantHasDirAutoAttribute(true /* has_dir_auto */);
+    }
   }
 
   if (is_new_auto) {
