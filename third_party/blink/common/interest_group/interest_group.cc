@@ -470,36 +470,6 @@ size_t InterestGroup::EstimateSize() const {
   return size;
 }
 
-bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
-  return std::tie(expiry, owner, name, priority,
-                  enable_bidding_signals_prioritization, priority_vector,
-                  priority_signals_overrides, seller_capabilities,
-                  all_sellers_capabilities, execution_mode, bidding_url,
-                  bidding_wasm_helper_url, update_url,
-                  trusted_bidding_signals_url, trusted_bidding_signals_keys,
-                  trusted_bidding_signals_slot_size_mode,
-                  max_trusted_bidding_signals_url_length,
-                  trusted_bidding_signals_coordinator, user_bidding_signals,
-                  ads, ad_components, ad_sizes, size_groups,
-                  auction_server_request_flags, additional_bid_key,
-                  aggregation_coordinator_origin) ==
-         std::tie(other.expiry, other.owner, other.name, other.priority,
-                  other.enable_bidding_signals_prioritization,
-                  other.priority_vector, other.priority_signals_overrides,
-                  other.seller_capabilities, other.all_sellers_capabilities,
-                  other.execution_mode, other.bidding_url,
-                  other.bidding_wasm_helper_url, other.update_url,
-                  other.trusted_bidding_signals_url,
-                  other.trusted_bidding_signals_keys,
-                  other.trusted_bidding_signals_slot_size_mode,
-                  other.max_trusted_bidding_signals_url_length,
-                  other.trusted_bidding_signals_coordinator,
-                  other.user_bidding_signals, other.ads, other.ad_components,
-                  other.ad_sizes, other.size_groups,
-                  other.auction_server_request_flags, other.additional_bid_key,
-                  other.aggregation_coordinator_origin);
-}
-
 std::string_view InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(
     TrustedBiddingSignalsSlotSizeMode slot_size_mode) {
   switch (slot_size_mode) {

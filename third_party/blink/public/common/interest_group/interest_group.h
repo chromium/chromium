@@ -94,9 +94,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     // Optional origins that can receive macro expanded reports.
     std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
-    // Only used in tests, but provided as an operator instead of as
-    // IsEqualForTesting() to make it easier to implement InterestGroup's
-    // IsEqualForTesting().
+    // TODO(crbug.com/355010821): Remove once all callers have been migrated.
     bool operator==(const Ad& other) const;
 
    private:
@@ -120,8 +118,6 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   // Returns the approximate size of the contents of this InterestGroup, in
   // bytes.
   size_t EstimateSize() const;
-
-  bool IsEqualForTesting(const InterestGroup& other) const;
 
   // Parses string representation of a TrustedBiddingSignalsSlotSizeMode. A
   // template so it works on wtf::Strings and std::strings. Returns kNone when
@@ -177,10 +173,11 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   std::optional<AdditionalBidKey> additional_bid_key;
   std::optional<url::Origin> aggregation_coordinator_origin;
 
-  static_assert(__LINE__ == 180, R"(
+  static_assert(__LINE__ == 176, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
-* IsValid(), EstimateSize(), and IsEqualForTesting() in this class
+* IsValid(), EstimateSize(), and in this class
+* IgExpect[Not]EqualsForTesting() in interest_group_test_utils.cc
 * SerializeInterestGroupForDevtools()
     (in devtools_serialization.cc; test in devtools_serialization_unittest.cc)
 * auction_ad_interest_group.idl

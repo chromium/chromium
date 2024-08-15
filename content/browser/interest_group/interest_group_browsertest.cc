@@ -119,6 +119,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
+#include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
@@ -133,6 +134,8 @@ namespace content {
 
 namespace {
 
+using ::blink::IgExpectEqualsForTesting;
+using ::blink::IgExpectNotEqualsForTesting;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Optional;
@@ -878,9 +881,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         // Don't compare the expiration.
         expected_group.expiry =
             final_interest_group.value()->interest_group.expiry;
-        EXPECT_TRUE(
-            final_interest_group.value()->interest_group.IsEqualForTesting(
-                expected_group));
+        IgExpectEqualsForTesting(
+            /*actual=*/final_interest_group.value()->interest_group,
+            /*expected=*/expected_group);
       }
     } else {
       // On failure, nothing should have changed.
@@ -890,9 +893,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         EXPECT_EQ(
             initial_interest_group.value()->bidding_browser_signals->join_count,
             final_interest_group.value()->bidding_browser_signals->join_count);
-        EXPECT_TRUE(
-            final_interest_group.value()->interest_group.IsEqualForTesting(
-                initial_interest_group.value()->interest_group));
+        IgExpectEqualsForTesting(
+            /*actual=*/final_interest_group.value()->interest_group,
+            /*expected=*/initial_interest_group.value()->interest_group);
       }
     }
 
@@ -1268,9 +1271,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         blink::InterestGroup expected_group = group;
         expected_group.expiry =
             final_interest_group.value()->interest_group.expiry;
-        EXPECT_TRUE(
-            final_interest_group.value()->interest_group.IsEqualForTesting(
-                expected_group));
+        IgExpectEqualsForTesting(
+            /*actual=*/final_interest_group.value()->interest_group,
+            /*expected=*/expected_group);
       }
     } else {
       // On failure, nothing should have changed.
@@ -1280,9 +1283,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         EXPECT_EQ(
             initial_interest_group.value()->bidding_browser_signals->join_count,
             final_interest_group.value()->bidding_browser_signals->join_count);
-        EXPECT_TRUE(
-            final_interest_group.value()->interest_group.IsEqualForTesting(
-                initial_interest_group.value()->interest_group));
+        IgExpectEqualsForTesting(
+            /*actual=*/final_interest_group.value()->interest_group,
+            /*expected=*/initial_interest_group.value()->interest_group);
       }
     }
 
@@ -5142,9 +5145,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       blink::InterestGroup expected_group = test_case.expected_group.value();
       expected_group.expiry =
           maybe_interest_group.value()->interest_group.expiry;
-      EXPECT_TRUE(
-          maybe_interest_group.value()->interest_group.IsEqualForTesting(
-              expected_group));
+      IgExpectEqualsForTesting(
+          /*actual=*/maybe_interest_group.value()->interest_group,
+          /*expected=*/expected_group);
     } else {
       EXPECT_FALSE(maybe_interest_group);
     }

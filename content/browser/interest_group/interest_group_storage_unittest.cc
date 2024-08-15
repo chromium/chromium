@@ -36,6 +36,7 @@
 #include "sql/test/test_helpers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
@@ -43,11 +44,13 @@
 namespace content {
 namespace {
 
-using blink::InterestGroup;
-using testing::Field;
-using testing::Property;
-using testing::UnorderedElementsAre;
-using testing::UnorderedElementsAreArray;
+using ::blink::IgExpectEqualsForTesting;
+using ::blink::IgExpectNotEqualsForTesting;
+using ::blink::InterestGroup;
+using ::testing::Field;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 using SellerCapabilities = blink::SellerCapabilities;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
@@ -212,13 +215,15 @@ class InterestGroupStorageTest : public testing::Test {
     std::vector<StorageInterestGroup> storage_interest_groups =
         storage->GetInterestGroupsForOwner(partial_origin);
     ASSERT_EQ(1u, storage_interest_groups.size());
-    EXPECT_TRUE(
-        partial.IsEqualForTesting(storage_interest_groups[0].interest_group));
+    IgExpectEqualsForTesting(
+        /*actual=*/storage_interest_groups[0].interest_group,
+        /*expected=*/partial);
 
     storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
     ASSERT_EQ(1u, storage_interest_groups.size());
-    EXPECT_TRUE(
-        full.IsEqualForTesting(storage_interest_groups[0].interest_group));
+    IgExpectEqualsForTesting(
+        /*actual=*/storage_interest_groups[0].interest_group,
+        /*expected=*/full);
     base::Time join_time = base::Time::Now();
     EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
     EXPECT_EQ(storage_interest_groups[0].last_updated, join_time);
@@ -259,8 +264,9 @@ class InterestGroupStorageTest : public testing::Test {
 
     storage_interest_groups = storage->GetInterestGroupsForOwner(full_origin);
     ASSERT_EQ(1u, storage_interest_groups.size());
-    EXPECT_TRUE(
-        updated.IsEqualForTesting(storage_interest_groups[0].interest_group));
+    IgExpectEqualsForTesting(
+        /*actual=*/storage_interest_groups[0].interest_group,
+        /*expected=*/updated);
     // `join_time` should not be modified be updates, but `last_updated` should
     // be.
     EXPECT_EQ(storage_interest_groups[0].join_time, join_time);
@@ -3096,8 +3102,8 @@ TEST_F(InterestGroupStorageTest, UpdatePrioritySignalsOverrides) {
   std::vector<StorageInterestGroup> storage_interest_groups =
       storage->GetInterestGroupsForOwner(kOrigin);
   ASSERT_EQ(1u, storage_interest_groups.size());
-  EXPECT_TRUE(original_group.IsEqualForTesting(
-      storage_interest_groups[0].interest_group));
+  IgExpectEqualsForTesting(/*actual=*/storage_interest_groups[0].interest_group,
+                           /*expected=*/original_group);
 
   // Updating a group that has no overrides should add an overrides maps and set
   // the corresponding keys.

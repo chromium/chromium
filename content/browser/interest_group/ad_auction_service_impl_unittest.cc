@@ -83,6 +83,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/common/interest_group/test_interest_group_builder.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
@@ -97,6 +98,9 @@ namespace content {
 class BrowserContext;
 
 namespace {
+
+using ::blink::IgExpectEqualsForTesting;
+using ::blink::IgExpectNotEqualsForTesting;
 
 using RealTimeReportingType =
     blink::mojom::AuctionAdConfigNonSharedParams_RealTimeReportingType;
@@ -7131,9 +7135,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
     scoped_refptr<StorageInterestGroups> groups =
         GetInterestGroupsForOwner(kOriginA);
     ASSERT_EQ(groups->size(), 1u);
-    EXPECT_TRUE(
-        groups->GetInterestGroups()[0]->interest_group.IsEqualForTesting(
-            *test_case.expected_group));
+    IgExpectEqualsForTesting(
+        /*actual=*/groups->GetInterestGroups()[0]->interest_group,
+        /*expected=*/*test_case.expected_group);
 
     // Reset for the next iteration.
     JoinInterestGroupAndFlush(initial_interest_group);

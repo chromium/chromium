@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -24,6 +25,9 @@
 namespace blink {
 
 namespace {
+
+using ::blink::IgExpectEqualsForTesting;
+using ::blink::IgExpectNotEqualsForTesting;
 
 const char kOrigin1[] = "https://origin1.test/";
 const char kOrigin2[] = "https://origin2.test/";
@@ -47,17 +51,21 @@ InterestGroup CreateInterestGroup() {
 // deserialization to succeed. Expects the deserialization to succeed, and to be
 // the same as the original group. Also makes sure the input InterestGroup is
 // not equal to the output of CreateInterestGroup(), to verify that
-// IsEqualForTesting() is checking whatever was modified in the input group.
+// IgExpect[Not]EqualsForTesting() is checking whatever was modified in the
+// input group.
 //
 // Arguments is not const because SerializeAndDeserialize() doesn't take a
 // const input value, as serializing some object types is destructive.
 void SerializeAndDeserializeAndCompare(InterestGroup& interest_group) {
-  ASSERT_FALSE(interest_group.IsEqualForTesting(CreateInterestGroup()));
+  IgExpectNotEqualsForTesting(/*actual=*/interest_group,
+                              /*not_expected=*/CreateInterestGroup());
+  ASSERT_FALSE(testing::Test::HasFailure());
 
   InterestGroup interest_group_clone;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<blink::mojom::InterestGroup>(
       interest_group, interest_group_clone));
-  EXPECT_TRUE(interest_group.IsEqualForTesting(interest_group_clone));
+  IgExpectEqualsForTesting(/*actual=*/interest_group_clone,
+                           /*expected=*/interest_group);
 }
 
 // A variant of SerializeAndDeserializeAndCompare() that expects serialization
@@ -71,7 +79,9 @@ void SerializeAndDeserializeAndCompare(InterestGroup& interest_group) {
 // renderer-side logic, but InterestGroup::IsValid() still needs to be checked.
 void SerializeAndDeserializeExpectFailure(InterestGroup& interest_group,
                                           std::string_view tag = "") {
-  ASSERT_FALSE(interest_group.IsEqualForTesting(CreateInterestGroup()));
+  IgExpectNotEqualsForTesting(/*actual=*/interest_group,
+                              /*not_expected=*/CreateInterestGroup());
+  ASSERT_FALSE(testing::Test::HasFailure());
 
   InterestGroup interest_group_clone;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<blink::mojom::InterestGroup>(
