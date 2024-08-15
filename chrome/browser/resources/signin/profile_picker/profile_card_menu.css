@@ -5,11 +5,11 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
- * #import=./profile_picker_shared_lit.css.js
+ * #import=./profile_picker_shared.css.js
  * #import=chrome://resources/cr_elements/action_link_lit.css.js
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #include=profile-picker-shared-lit cr-hidden-style-lit action-link-lit
+ * #include=profile-picker-shared cr-hidden-style-lit action-link-lit
  * #css_wrapper_metadata_end */
 
 #moreActionsButton {

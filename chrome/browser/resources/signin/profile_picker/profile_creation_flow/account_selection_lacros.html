@@ -1,6 +1,22 @@
-<style include="profile-creation-shared profile-picker-shared cr-shared-style">
+<style include="cr-shared-style">
   :host {
     --account-button-hover-color: var(--md-background-color);
+  }
+
+  #backButton {
+    --cr-icon-button-icon-size: 22px;
+    --cr-icon-button-margin-start: 4px;
+    --cr-icon-button-size: 36px;
+    margin-inline-start: 16px;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (forced-colors: none) {
+    #backButton {
+      --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    }
   }
 
   a {
@@ -42,7 +58,10 @@
   .title {
     color: var(--cr-primary-text-color);
     font-size: 24px;
+    font-weight: normal;
     line-height: 32px;
+    margin-block-end: 20px;
+    margin-block-start: 20px;
     margin-bottom: 8px;
     margin-top: 0;
   }
@@ -50,7 +69,10 @@
   .subtitle {
     color: var(--cr-secondary-text-color);
     font-size: 14px;
+    font-weight: normal;
     line-height: 20px;
+    margin-block-end: 15px;
+    margin-block-start: 15px;
     margin-bottom: 24px;
     margin-top: 0;
   }

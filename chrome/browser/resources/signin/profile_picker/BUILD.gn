@@ -44,13 +44,10 @@ build_webui("build") {
   css_files = [
     "profile_card.css",
     "profile_card_menu.css",
-    "profile_creation_flow/profile_creation_shared.css",
-    "profile_creation_flow/profile_creation_shared_lit.css",
     "profile_creation_flow/profile_type_choice.css",
     "profile_picker_main_view.css",
     "profile_picker_app.css",
     "profile_picker_shared.css",
-    "profile_picker_shared_lit.css",
     "profile_switch.css",
   ]
 
