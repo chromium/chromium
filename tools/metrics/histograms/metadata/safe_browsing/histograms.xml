@@ -2006,6 +2006,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NavigationObserver.RedirectForTelScheme"
+    enum="BooleanAccepted" expires_after="2024-12-01">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs how many times users are redirected for tel URL. This serves as an
+    estimate how often users are (unknowingly) being redirected to possibly
+    different phone numbers.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.NavigationThrottle.IsSameURL"
     enum="BooleanSameURL" expires_after="2024-12-18">
   <owner>xinghuilu@chromium.org</owner>
