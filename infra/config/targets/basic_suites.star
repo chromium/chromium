@@ -4371,30 +4371,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "network_sandbox_browser_tests",
-    tests = {
-        "browser_tests_network_sandbox": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-        "components_browsertests_network_sandbox": targets.legacy_test_config(),
-        "content_browsertests_network_sandbox": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-        "extensions_browsertests_network_sandbox": targets.legacy_test_config(),
-        "interactive_ui_tests_network_sandbox": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-        "sync_integration_tests_network_sandbox": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "network_service_fyi_gtests",
     tests = {
         "network_service_web_request_proxy_browser_tests": targets.legacy_test_config(

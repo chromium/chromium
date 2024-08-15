@@ -94,7 +94,6 @@ ci/linux-lacros-code-coverage
 ci/linux-lacros-dbg-fyi
 ci/linux-lacros-dbg-tests-fyi
 ci/linux-lacros-tester-fyi-rel
-ci/linux-network-sandbox-rel
 ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
@@ -134,7 +133,6 @@ ci/rts-model-packager
 ci/rts-suite-analysis
 ci/win-annotator-rel
 ci/win-fieldtrial-rel
-ci/win-network-sandbox-tester
 ci/win-perfetto-rel
 ci/win-rust-x64-dbg
 ci/win-rust-x64-rel

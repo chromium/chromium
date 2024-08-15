@@ -324,7 +324,6 @@
     "linux-lacros-dbg-fyi": "ci/linux-lacros-dbg-fyi/gn-args.json",
     "linux-lacros-rel-dangling-ptr-fyi": "ci/linux-lacros-rel-dangling-ptr-fyi/gn-args.json",
     "linux-multiscreen-fyi-rel": "ci/linux-multiscreen-fyi-rel/gn-args.json",
-    "linux-network-sandbox-rel": "ci/linux-network-sandbox-rel/gn-args.json",
     "linux-perfetto-rel": "ci/linux-perfetto-rel/gn-args.json",
     "linux-rel-no-external-ip": "ci/linux-rel-no-external-ip/gn-args.json",
     "linux-upload-perfetto": "ci/linux-upload-perfetto/gn-args.json",

@@ -4533,54 +4533,6 @@
       },
     },
 
-    'network_sandbox_browser_tests': {
-      'browser_tests_network_sandbox': {
-        'test': 'browser_tests',
-        'args': [
-          '--enable-features=NetworkServiceSandbox',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'components_browsertests_network_sandbox': {
-        'test': 'components_browsertests',
-        'args': [
-          '--enable-features=NetworkServiceSandbox',
-        ],
-      },
-      'content_browsertests_network_sandbox': {
-        'test': 'content_browsertests',
-        'args': [
-          '--enable-features=NetworkServiceSandbox',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'extensions_browsertests_network_sandbox': {
-        'test': 'extensions_browsertests',
-        'args': [
-          '--enable-features=NetworkServiceSandbox',
-        ],
-      },
-      'interactive_ui_tests_network_sandbox': {
-        'test': 'interactive_ui_tests',
-        'args': [
-          '--enable-features=NetworkServiceSandbox',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'sync_integration_tests_network_sandbox': {
-        'test': 'sync_integration_tests',
-        'args': [
-          '--enable-features=NetworkServiceSandbox',
-        ],
-      },
-    },
-
     'network_service_fyi_gtests': {
       'network_service_web_request_proxy_browser_tests': {
         'test': 'browser_tests',
