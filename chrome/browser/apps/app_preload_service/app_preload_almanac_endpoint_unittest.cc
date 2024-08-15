@@ -59,16 +59,16 @@ TEST_F(AppPreloadAlmanacEndpointTest, GetAppsForFirstLoginRequest) {
   device_info.user_type = "unmanaged";
 
   std::string method;
-  std::string method_override_header;
-  std::string content_type;
+  std::optional<std::string> method_override_header;
+  std::optional<std::string> content_type;
   std::string body;
 
   url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                  &content_type);
-        request.headers.GetHeader("X-HTTP-Method-Override",
-                                  &method_override_header);
+        content_type =
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType);
+        method_override_header =
+            request.headers.GetHeader("X-HTTP-Method-Override");
         method = request.method;
         body = network::GetUploadData(request);
       }));
