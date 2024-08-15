@@ -415,6 +415,7 @@ export class DragDropReorderTileListDelegate {
   private applyChanges_() {
     // Remove the dragging tile from its original index.
     const [draggingTile] = this.tileList_.splice(this.dragStartIndex_, 1);
+    assert(draggingTile);
     // Place it on the target index.
     this.tileList_.splice(this.dropTargetIndex_, 0, draggingTile);
 

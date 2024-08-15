@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ProfileCardElement} from './profile_card.js';
+
+export function getHtml(this: ProfileCardElement) {
+  return html`<!--_html_template_start_-->
 <div id="profileCardContainer">
   <cr-button id="profileCardButton" @click="${this.onProfileClick_}"
       aria-label="${this.i18n(
@@ -42,3 +52,5 @@
     aria-hidden="true">
   ${this.profileState.localProfileName}
 </cr-tooltip>
+<!--_html_template_end_-->`;
+}

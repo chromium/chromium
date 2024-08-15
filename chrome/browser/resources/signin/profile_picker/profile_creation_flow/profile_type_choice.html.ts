@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ProfileTypeChoiceElement} from './profile_type_choice.js';
+
+export function getHtml(this: ProfileTypeChoiceElement) {
+  return html`<!--_html_template_start_-->
 <div id="headerContainer"
     .style="--theme-frame-color:${this.profileThemeInfo.themeFrameColor};
             --theme-text-color:${this.profileThemeInfo.themeFrameTextColor};">
@@ -39,3 +49,5 @@ ${this.managedDeviceDisclaimer_ ? html`
     </div>
   </div>
 ` : ''}
+<!--_html_template_end_-->`;
+}

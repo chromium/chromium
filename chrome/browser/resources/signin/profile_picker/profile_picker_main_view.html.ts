@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ProfilePickerMainViewElement} from './profile_picker_main_view.js';
+
+export function getHtml(this: ProfilePickerMainViewElement) {
+  return html`<!--_html_template_start_-->
 <div class="flex-container">
   <div class="title-container">
     <img id="product-logo" @click="${this.onProductLogoClick_}"
@@ -57,3 +67,5 @@
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}

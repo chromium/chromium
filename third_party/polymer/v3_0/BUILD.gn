@@ -133,7 +133,6 @@ ts_library("library") {
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/signin:build_ts",
-    "//chrome/browser/resources/signin/profile_picker:build_ts",
     "//chrome/browser/resources/suggest_internals:build_ts",
     "//chrome/browser/resources/support_tool:build_ts",
     "//chrome/test/data/pdf:build_ts",
@@ -174,7 +173,10 @@ ts_library("library") {
   }
 
   if (is_chromeos_lacros) {
-    visibility += [ "//chrome/browser/resources/intro:build_ts" ]
+    visibility += [
+      "//chrome/browser/resources/intro:build_ts",
+      "//chrome/browser/resources/signin/profile_picker:build_ts",
+    ]
   }
 
   if (is_chromeos_ash) {

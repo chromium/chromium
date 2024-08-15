@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ProfileCardMenuElement} from './profile_card_menu.js';
+
+export function getHtml(this: ProfileCardMenuElement) {
+  return html`<!--_html_template_start_-->
 <cr-icon-button iron-icon="cr:more-vert" id="moreActionsButton"
     @click="${this.onMoreActionsButtonClicked_}" title="$i18n{profileMenuName}"
     aria-label="${this.moreActionsButtonAriaLabel_}">
@@ -81,3 +91,5 @@
     </div>
   </cr-dialog>
 </if>
+<!--_html_template_end_-->`;
+}
