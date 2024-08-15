@@ -8674,8 +8674,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS" desc="Context menu item that opens the submenu to customize suggestions in informed restore/overview UI">
         Customize suggestions
       </message>
-      <message name="IDS_ASH_BIRCH_TOGGLE_TEMPERATURE_UNITS" desc="Context menu item that toggles temperature units (F vs. C) for the weather suggestion in informed restore/overview UI">
-        Toggle temperature units (F vs. C)
+      <message name="IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS" desc="Context menu item that sets the temperature units to Celsius for the weather suggestion in informed restore/overview UI">
+        Show temperature in Celsius
+      </message>
+      <message name="IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT" desc="Context menu item that sets the temperature units to Fahrenheit for the weather suggestion in informed restore/overview UI">
+        Show temperature in Fahrenheit
       </message>
       <message name="IDS_ASH_BIRCH_SEND_FEEDBACK" desc="Context menu item that sends feedback about suggestions in informed restore/overview UI">
         Send feedback
