@@ -824,7 +824,7 @@ fyi_ios_builder(
             "dcheck_always_on",
         ],
     ),
-    builderless = False,
+    builderless = True,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
