@@ -122,8 +122,9 @@ def main_run(args):
     else:
       print('Test failed without updating the annotations sheet.')
       failures = []
-      with open(errors_filename, encoding='utf-8') as f:
-        failures = json.load(f) or ['Please refer to stdout for errors.']
+      if rc:
+        with open(errors_filename, encoding='utf-8') as f:
+          failures = json.load(f) or ['Please refer to stdout for errors.']
       common.record_local_script_results('test_traffic_annotation_auditor',
                                          args.output, failures, True)
   except (ValueError, OSError) as e:
