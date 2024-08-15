@@ -24,101 +24,108 @@ import java.util.List;
 public class SharedImageTilesCoordinator {
 
     // The maximum amount of tiles that can show, including icon tile and count tile.
-    private static final int MAX_TILES_UI_LIMIT = 5;
+    private static final int MAX_TILES_UI_LIMIT = 3;
     // The maximum number appearing on the count number tile.
     private static final int MAX_COUNT_TILE_NUMBER = 99;
+    // The maximum single digit number for the count number tile.
+    private static final int MAX_SINGLE_DIGIT_NUMBER = 9;
 
     private final SharedImageTilesMediator mMediator;
     private final Context mContext;
     private final PropertyModel mModel;
-    private final ViewGroup mView;
+    private final SharedImageTilesView mView;
+    private final @SharedImageTilesType int mType;
     private int mAvailableTileCount;
+    private int mIconTilesCount;
 
     /**
-     * Constructor for SharedImageTilesCoordinator component.
+     * Constructor for {@link SharedImageTilesCoordinator} component.
      *
      * @param context The Android context used to inflate the views.
+     * @param type The {@link SharedImageTilesType} of the SharedImageTiles.
+     * @param color The {@link SharedImageTilesColor} of the SharedImageTiles.
      */
-    public SharedImageTilesCoordinator(Context context) {
-        mModel = new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS).build();
+    public SharedImageTilesCoordinator(
+            Context context, @SharedImageTilesType int type, @SharedImageTilesColor int color) {
+        mModel =
+                new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
+                        .with(SharedImageTilesProperties.COLOR_THEME, color)
+                        .build();
         mContext = context;
+        mType = type;
 
         mView =
-                (ViewGroup)
+                (SharedImageTilesView)
                         LayoutInflater.from(mContext).inflate(R.layout.shared_image_tiles, null);
-        initializeSharedImageTiles();
 
         PropertyModelChangeProcessor.create(mModel, mView, SharedImageTilesViewBinder::bind);
-
         mMediator = new SharedImageTilesMediator(mModel);
+
+        initializeSharedImageTiles();
     }
 
     /** Populate the shared_image_tiles container with the specific icons. */
     private void initializeSharedImageTiles() {
+        if (mAvailableTileCount == 0) {
+            return;
+        }
+
         int maxTilesToShowWithNumberTile = MAX_TILES_UI_LIMIT - 1;
         boolean showNumberTile = mAvailableTileCount > MAX_TILES_UI_LIMIT;
-        int numIconTiles =
+        mIconTilesCount =
                 showNumberTile
                         ? MAX_TILES_UI_LIMIT - 1
                         : Math.min(mAvailableTileCount, MAX_TILES_UI_LIMIT);
 
         // Add icon tile(s).
-        for (int i = 0; i < numIconTiles; i++) {
-            appendIconTile();
-        }
+        mModel.set(SharedImageTilesProperties.ICON_TILES, mIconTilesCount);
 
         // Add number tile.
         if (showNumberTile) {
             // Compute a count bubble.
-            appendNumberTile(mAvailableTileCount - maxTilesToShowWithNumberTile);
+            mModel.set(
+                    SharedImageTilesProperties.REMAINING_TILES,
+                    mAvailableTileCount - maxTilesToShowWithNumberTile);
+        } else {
+            if (mType == SharedImageTilesType.CLICKABLE && mIconTilesCount < MAX_TILES_UI_LIMIT) {
+                // Append an add person button.
+                mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, true);
+            }
         }
     }
 
-    private void appendNumberTile(int remaining) {
-        LayoutInflater.from(mContext).inflate(R.layout.shared_image_tiles_count, mView, true);
-
-        // Maximum tiles remaining count must be within 2 digits.
-        mModel.set(
-                SharedImageTilesProperties.REMAINING_TILES,
-                Math.min(MAX_COUNT_TILE_NUMBER, remaining));
-    }
-
-    private void appendIconTile() {
-        LayoutInflater.from(mContext).inflate(R.layout.shared_image_tiles_icon, mView, true);
-    }
-
     /** Get the view component of SharedImageTiles. */
-    public @NonNull ViewGroup getView() {
+    public @NonNull SharedImageTilesView getView() {
         return mView;
     }
 
     /**
-     * Update the shared image tiles' background color.
+     * Update the tiles count for a SharedImageTiles component.
      *
-     * @param backgroundColor The new background color to use.
+     * @param count The new count number.
      */
-    public void updateBackgroundColor(int backgroundColor) {
-        mModel.set(SharedImageTilesProperties.BACKGROUND_COLOR, backgroundColor);
-    }
-
     public void updateTilesCount(int count) {
         // TODO(b/325533985): |mAvailableTileCount| should be replace by the actual number of icons
         // needed.
         mAvailableTileCount = count;
-        mView.removeAllViews();
+        mModel.set(SharedImageTilesProperties.SHOW_ADD_BUTTON, false);
+        mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
+        mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
         initializeSharedImageTiles();
     }
 
-    public List<ViewGroup> getAllViews() {
-        assert (mView.getChildCount() == mAvailableTileCount);
+    /** Get all icon views. */
+    public List<ViewGroup> getAllIconViews() {
+        assert (mView.getChildCount() >= mIconTilesCount);
         List<ViewGroup> list = new ArrayList<>();
-        for (int i = 0; i < mAvailableTileCount; i++) {
+        for (int i = 0; i < mIconTilesCount; i++) {
             View view = mView.getChildAt(i);
             list.add((ViewGroup) view);
         }
         return list;
     }
 
+    /** Get the Android context used by the component. */
     public @NonNull Context getContext() {
         return mContext;
     }

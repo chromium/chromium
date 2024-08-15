@@ -27,7 +27,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -150,7 +152,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mBottomSheetController = bottomSheetController;
 
             if (isDataSharingAndroidEnabled) {
-                mSharedImageTilesCoordinator = new SharedImageTilesCoordinator(activity);
+                mSharedImageTilesCoordinator =
+                        new SharedImageTilesCoordinator(
+                                activity,
+                                SharedImageTilesType.CLICKABLE,
+                                SharedImageTilesColor.DYNAMIC);
             }
 
             Runnable showColorPickerPopupRunnable =
@@ -272,7 +278,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         DataSharingUIDelegate uiDelegate = DataSharingServiceFactory.getUIDelegate(profile);
         uiDelegate.showAvatars(
                 mSharedImageTilesCoordinator.getContext(),
-                mSharedImageTilesCoordinator.getAllViews(),
+                mSharedImageTilesCoordinator.getAllIconViews(),
                 emails,
                 /* success= */ null,
                 /* config= */ null);

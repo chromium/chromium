@@ -7,9 +7,11 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Dimens for shared_image_tiles view -->
-    <dimen name="shared_image_tiles_icon_height">36dp</dimen>
-    <dimen name="shared_image_tiles_overlap_margin">10dp</dimen>
-    <dimen name="shared_image_tiles_overlap_margin_negative">-10dp</dimen>
+    <dimen name="shared_image_tiles_icon_height">28dp</dimen>
+    <dimen name="shared_image_tiles_icon_radius">14dp</dimen>
+    <dimen name="shared_image_tiles_add_width">24dp</dimen>
+    <dimen name="shared_image_tiles_overlap_margin">8dp</dimen>
+    <dimen name="shared_image_tiles_overlap_margin_negative">-6dp</dimen>
 
     <!-- Dimens for recipient invitation modal -->
     <dimen name="data_sharing_invitation_footer_width">300dp</dimen>

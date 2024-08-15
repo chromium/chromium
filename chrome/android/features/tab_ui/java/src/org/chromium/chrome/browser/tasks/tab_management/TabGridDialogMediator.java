@@ -683,9 +683,6 @@ public class TabGridDialogMediator
 
         mModel.set(TabGridDialogProperties.DIALOG_BACKGROUND_COLOR, dialogBackgroundColor);
         mModel.set(TabGridDialogProperties.HAIRLINE_COLOR, hairlineColor);
-        if (mSharedImageTilesCoordinator != null) {
-            mSharedImageTilesCoordinator.updateBackgroundColor(dialogBackgroundColor);
-        }
         mModel.set(TabGridDialogProperties.TINT, tintList);
         mModel.set(
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR,
