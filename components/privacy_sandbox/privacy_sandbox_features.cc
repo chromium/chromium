@@ -158,10 +158,6 @@ BASE_FEATURE(kIpProtectionUserBypass,
              "IpProtectionUserBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTrackingProtectionSettingsLaunch,
-             "TrackingProtectionSettingsLaunch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
              "PrivacySandboxRelatedWebsiteSetsUi",
              base::FEATURE_DISABLED_BY_DEFAULT);

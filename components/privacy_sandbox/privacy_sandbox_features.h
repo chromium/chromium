@@ -191,10 +191,6 @@ BASE_DECLARE_FEATURE(kIpProtectionUserBypass);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
 
-// Enables settings UX + behavior for the full Tracking Protection launch.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionSettingsLaunch);
-
 // Enables TP settings page to display TRACKING_PROTECTION content settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingInSettings);

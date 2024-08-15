@@ -321,6 +321,7 @@ public abstract class ChromeFeatureList {
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FINGERPRINTING_PROTECTION_SETTING =
             "FingerprintingProtectionSetting";
+    public static final String FINGERPRINTING_PROTECTION_UX = "FingerprintingProtectionUx";
     public static final String FINGERPRINTING_PROTECTION_USER_BYPASS =
             "FingerprintingProtectionUserBypass";
     public static final String FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS =
@@ -342,6 +343,7 @@ public abstract class ChromeFeatureList {
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
     public static final String IP_PROTECTION_V1 = "IpProtectionV1";
+    public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String IP_PROTECTION_USER_BYPASS = "IpProtectionUserBypass";
     public static final String KID_FRIENDLY_CONTENT_FEED = "KidFriendlyContentFeed";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
@@ -509,8 +511,6 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_PHONE_CLEANUP = "ToolbarPhoneCleanup";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
-    public static final String TRACKING_PROTECTION_SETTINGS_LAUNCH =
-            "TrackingProtectionSettingsLaunch";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA =
             "TrackingProtectionUserBypassPwa";
     public static final String TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER =
