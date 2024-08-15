@@ -231,7 +231,7 @@ TabInterface* TabInterface::GetFromContents(
 }
 
 // static
-TabInterface* TabInterface::MaybeGetFromContentsHackForCrashBug(
+TabInterface* TabInterface::MaybeGetFromContents(
     content::WebContents* web_contents) {
   TabLookupFromWebContents* lookup =
       TabLookupFromWebContents::FromWebContents(web_contents);
