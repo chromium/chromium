@@ -478,6 +478,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, CreateObserver) {
              "const observer = new FileSystemObserver(() => {}); })()"));
 }
 
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -493,6 +495,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -702,6 +705,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 
 // TODO(crbug.com/321980469): Add a ReObserveAfterUnobserve test once the
 // unobserve() method is no longer racy. See https://crrev.com/c/4814709.
+//
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -721,6 +727,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/343961295): Windows reports two events when a swap file
 // is closed: a "disappear" for the target file being overwritten, and a "move"
@@ -754,6 +761,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 
+// TODO(b/360153904): Disabled on Mac due to flakiness.
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectHandle) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -798,6 +807,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
       *records.GetList().front().GetDict().FindList("relativePathComponents"),
       testing::IsEmpty());
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
