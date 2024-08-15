@@ -2270,53 +2270,16 @@ source_set("browser_tests") {
 }
 
 if (is_chromeos_device) {
-  crosier_tests("integration_tests") {
-    sources = [
-      "featured_integration_test.cc",
-      "ml_integration_test.cc",
-      "screenshot_integration_test.cc",
-      "security_files_integration_test.cc",
-      "web_handwriting_integration_test.cc",
-    ]
-
-    sources_metadata = [
-      "featured_integration_test.yaml",
-      "ml_integration_test.yaml",
-      "screenshot_integration_test.yaml",
-      "security_files_integration_test.yaml",
-      "web_handwriting_integration_test.yaml",
-    ]
+  group("integration_tests") {
+    testonly = true
 
     deps = [
-      "//ash",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ui",
-      "//chrome/common:constants",
-      "//chrome/common:non_code_constants",
-      "//chrome/test:ash_integration_test_support",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//chrome/test/base/ash/interactive:test_support",
-      "//chrome/test/base/chromeos/crosier:proto",
-      "//chrome/test/base/chromeos/crosier/helper:common",
-      "//chromeos/services/machine_learning/public/cpp",
-      "//chromeos/services/machine_learning/public/mojom",
-      "//content/test:test_support",
-      "//gpu",
-      "//skia:skia_core_public_headers",
-      "//testing/gtest",
-      "//ui/display/manager",
-      "//ui/gfx",
-      "//url",
-
-      # Gather tests from subdirectories:
       "//chrome/browser/ash/accessibility:integration_tests",
       "//chrome/browser/ash/assistant:integration_tests",
       "//chrome/browser/ash/bluetooth:integration_tests",
       "//chrome/browser/ash/child_accounts:integration_tests",
       "//chrome/browser/ash/external_metrics:integration_tests",
+      "//chrome/browser/ash/integration_tests",
       "//chrome/browser/ash/login:integration_tests",
       "//chrome/browser/ash/power/ml/smart_dim:integration_tests",
       "//chrome/browser/ash/scanning:integration_tests",
@@ -2332,7 +2295,6 @@ if (is_chromeos_device) {
     testonly = true
 
     deps = [
-      # Gather tests from subdirectories.
       "//chrome/browser/ash/accessibility/live_caption:interactive_ui_tests",
       "//chrome/browser/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ash/child_accounts:interactive_ui_tests",
