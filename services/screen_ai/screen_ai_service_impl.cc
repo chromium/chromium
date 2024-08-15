@@ -48,7 +48,7 @@ constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
 
 // How long after all clients are disconnected, it is checked if service is
 // idle.
-constexpr base::TimeDelta kCoolDownTime = base::Seconds(1);
+constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
