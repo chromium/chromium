@@ -669,7 +669,7 @@ pub(crate) mod parsing {
 
                         if inputs.empty_or_trailing()
                             && (args.peek(Token![...])
-                                || args.peek(Ident)
+                                || (args.peek(Ident) || args.peek(Token![_]))
                                     && args.peek2(Token![:])
                                     && args.peek3(Token![...]))
                         {

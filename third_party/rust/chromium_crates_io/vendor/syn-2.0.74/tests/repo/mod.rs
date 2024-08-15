@@ -19,9 +19,6 @@ const REVISION: &str = "5069856495870486134dd2ca0b0e2516308c5c2a";
 
 #[rustfmt::skip]
 static EXCLUDE_FILES: &[&str] = &[
-    // TODO: parenthesization of `{ (match () {})() }`
-    "compiler/rustc_lint/src/context/diagnostics.rs",
-
     // TODO: `unsafe static`, `safe fn`
     // https://github.com/dtolnay/syn/issues/1675
     "src/tools/rustfmt/tests/target/unsafe_extern_blocks.rs",
@@ -34,23 +31,6 @@ static EXCLUDE_FILES: &[&str] = &[
     "src/tools/rustfmt/tests/target/unsafe_attributes.rs",
     "tests/ui/attributes/unsafe/unsafe-attributes.rs",
     "tests/ui/rust-2024/unsafe-attributes/unsafe-attribute-marked.rs",
-
-    // TODO: vararg in function pointer type: `extern fn(_: *mut _, _: ...)`
-    // https://github.com/dtolnay/syn/issues/1711
-    "library/std/src/sys/pal/uefi/helpers.rs",
-
-    // TODO: explicit tail calls: `become _g()`
-    // https://github.com/dtolnay/syn/issues/1501
-    "src/tools/miri/tests/fail/tail_calls/cc-mismatch.rs",
-    "src/tools/miri/tests/fail/tail_calls/signature-mismatch-arg.rs",
-    "src/tools/miri/tests/pass/tail_call.rs",
-    "src/tools/rust-analyzer/crates/parser/test_data/parser/inline/ok/0209_become_expr.rs",
-    "tests/mir-opt/tail_call_drops.rs",
-    "tests/ui/explicit-tail-calls/ctfe-arg-good-borrow.rs",
-    "tests/ui/explicit-tail-calls/ctfe-arg-move.rs",
-    "tests/ui/explicit-tail-calls/ctfe-collatz-multi-rec.rs",
-    "tests/ui/explicit-tail-calls/drop-order.rs",
-    "tests/ui/explicit-tail-calls/return-lifetime-sub.rs",
 
     // TODO: non-lifetime binders: `where for<'a, T> &'a Struct<T>: Trait`
     // https://github.com/dtolnay/syn/issues/1435

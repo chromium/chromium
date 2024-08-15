@@ -1,5 +1,5 @@
 use crate::attr::Attribute;
-use crate::expr::Expr;
+use crate::expr::{Expr, Index, Member};
 use crate::ident::Ident;
 use crate::punctuated::{self, Punctuated};
 use crate::restriction::{FieldMutability, Visibility};
@@ -104,6 +104,47 @@ impl Fields {
             Fields::Unnamed(f) => f.unnamed.is_empty(),
         }
     }
+
+    return_impl_trait! {
+        /// Get an iterator over the fields of a struct or variant as [`Member`]s.
+        /// This iterator can be used to iterate over a named or unnamed struct or
+        /// variant's fields uniformly.
+        ///
+        /// # Example
+        ///
+        /// The following is a simplistic [`Clone`] derive for structs. (A more
+        /// complete implementation would additionally want to infer trait bounds on
+        /// the generic type parameters.)
+        ///
+        /// ```
+        /// # use quote::quote;
+        /// #
+        /// fn derive_clone(input: &syn::ItemStruct) -> proc_macro2::TokenStream {
+        ///     let ident = &input.ident;
+        ///     let members = input.fields.members();
+        ///     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
+        ///     quote! {
+        ///         impl #impl_generics Clone for #ident #ty_generics #where_clause {
+        ///             fn clone(&self) -> Self {
+        ///                 Self {
+        ///                     #(#members: self.#members.clone()),*
+        ///                 }
+        ///             }
+        ///         }
+        ///     }
+        /// }
+        /// ```
+        ///
+        /// For structs with named fields, it produces an expression like `Self { a:
+        /// self.a.clone() }`. For structs with unnamed fields, `Self { 0:
+        /// self.0.clone() }`. And for unit structs, `Self {}`.
+        pub fn members(&self) -> impl Iterator<Item = Member> + Clone + '_ [Members] {
+            Members {
+                fields: self.iter(),
+                index: 0,
+            }
+        }
+    }
 }
 
 impl IntoIterator for Fields {
@@ -155,6 +196,43 @@ ast_struct! {
         pub colon_token: Option<Token![:]>,
 
         pub ty: Type,
+    }
+}
+
+pub struct Members<'a> {
+    fields: punctuated::Iter<'a, Field>,
+    index: u32,
+}
+
+impl<'a> Iterator for Members<'a> {
+    type Item = Member;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let field = self.fields.next()?;
+        let member = match &field.ident {
+            Some(ident) => Member::Named(ident.clone()),
+            None => {
+                #[cfg(all(feature = "parsing", feature = "printing"))]
+                let span = crate::spanned::Spanned::span(&field.ty);
+                #[cfg(not(all(feature = "parsing", feature = "printing")))]
+                let span = proc_macro2::Span::call_site();
+                Member::Unnamed(Index {
+                    index: self.index,
+                    span,
+                })
+            }
+        };
+        self.index += 1;
+        Some(member)
+    }
+}
+
+impl<'a> Clone for Members<'a> {
+    fn clone(&self) -> Self {
+        Members {
+            fields: self.fields.clone(),
+            index: self.index,
+        }
     }
 }
 

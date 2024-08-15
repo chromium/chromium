@@ -1741,6 +1741,8 @@ pub(crate) mod parsing {
             input.parse().map(Expr::Continue)
         } else if input.peek(Token![return]) {
             input.parse().map(Expr::Return)
+        } else if input.peek(Token![become]) {
+            expr_become(input)
         } else if input.peek(token::Bracket) {
             array_or_repeat(input)
         } else if input.peek(Token![let]) {
@@ -2391,6 +2393,16 @@ pub(crate) mod parsing {
                 },
             })
         }
+    }
+
+    #[cfg(feature = "full")]
+    fn expr_become(input: ParseStream) -> Result<Expr> {
+        let begin = input.fork();
+        input.parse::<Token![become]>()?;
+        if can_begin_expr(input) {
+            input.parse::<Expr>()?;
+        }
+        Ok(Expr::Verbatim(verbatim::between(&begin, input)))
     }
 
     #[cfg(feature = "full")]

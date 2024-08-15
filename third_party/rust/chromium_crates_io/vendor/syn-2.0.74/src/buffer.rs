@@ -364,6 +364,16 @@ impl<'a> Cursor<'a> {
 
         Some(unsafe { Cursor::create(self.ptr.add(len), self.scope) })
     }
+
+    pub(crate) fn scope_delimiter(self) -> Delimiter {
+        match unsafe { &*self.scope } {
+            Entry::End(_, offset) => match unsafe { &*self.scope.offset(*offset) } {
+                Entry::Group(group, _) => group.delimiter(),
+                _ => Delimiter::None,
+            },
+            _ => unreachable!(),
+        }
+    }
 }
 
 impl<'a> Copy for Cursor<'a> {}

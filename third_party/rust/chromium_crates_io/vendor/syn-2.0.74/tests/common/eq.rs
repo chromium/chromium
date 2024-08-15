@@ -174,6 +174,7 @@ use rustc_data_structures::sync::Lrc;
 use rustc_span::source_map::Spanned;
 use rustc_span::symbol::{sym, Ident};
 use rustc_span::{ErrorGuaranteed, Span, Symbol, SyntaxContext, DUMMY_SP};
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::hash::{BuildHasher, Hash};
 use thin_vec::ThinVec;
@@ -253,6 +254,12 @@ impl<K: Eq + Hash, V: SpanlessEq, S: BuildHasher> SpanlessEq for HashMap<K, V, S
     }
 }
 
+impl<'a, T: ?Sized + ToOwned + SpanlessEq> SpanlessEq for Cow<'a, T> {
+    fn eq(&self, other: &Self) -> bool {
+        <T as SpanlessEq>::eq(self, other)
+    }
+}
+
 impl<T: SpanlessEq> SpanlessEq for Spanned<T> {
     fn eq(&self, other: &Self) -> bool {
         SpanlessEq::eq(&self.node, &other.node)
@@ -307,6 +314,7 @@ spanless_eq_partial_eq!(u32);
 spanless_eq_partial_eq!(u128);
 spanless_eq_partial_eq!(usize);
 spanless_eq_partial_eq!(char);
+spanless_eq_partial_eq!(str);
 spanless_eq_partial_eq!(String);
 spanless_eq_partial_eq!(Pu128);
 spanless_eq_partial_eq!(Symbol);
