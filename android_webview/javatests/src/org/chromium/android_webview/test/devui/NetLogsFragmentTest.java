@@ -210,7 +210,6 @@ public class NetLogsFragmentTest {
 
         File firstFile = (File) filesList.getAdapter().getItem(1);
         String firstFileName = NetLogsFragment.getFilePackageName(firstFile);
-        onData(anything()).inAdapterView(withId(R.id.net_log_list)).atPosition(1).perform(click());
         onView(withText(firstFileName)).perform(click());
         onView(withText("Delete")).check(matches(isDisplayed()));
         onView(withText("Delete")).perform(click());
@@ -246,10 +245,6 @@ public class NetLogsFragmentTest {
                     .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
             String firstFileName = NetLogsFragment.getFilePackageName(sMockFileList.get(1));
-            onData(anything())
-                    .inAdapterView(withId(R.id.net_log_list))
-                    .atPosition(1)
-                    .perform(click());
             onView(withText(firstFileName)).perform(click());
             onView(withText("Share")).check(matches(isDisplayed()));
             onView(withText("Share")).perform(click());
