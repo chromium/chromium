@@ -516,6 +516,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarkerStartResource() == b.MarkerStartResource();
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
+    case CSSPropertyID::kMasonryTrackEnd:
+      return a.MasonryTrackEnd() == b.MasonryTrackEnd();
+    case CSSPropertyID::kMasonryTrackStart:
+      return a.MasonryTrackStart() == b.MasonryTrackStart();
     case CSSPropertyID::kMathShift:
       return a.MathShift() == b.MathShift();
     case CSSPropertyID::kMathStyle:

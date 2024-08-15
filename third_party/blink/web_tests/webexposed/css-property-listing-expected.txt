@@ -258,6 +258,8 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
+    masonry-track-end
+    masonry-track-start
     math-depth
     math-shift
     math-style
