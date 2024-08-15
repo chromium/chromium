@@ -147,6 +147,22 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
+<histogram name="Cras.AstRuntime" units="seconds" expires_after="2025-08-12">
+  <owner>cranelw@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Tracks the runtime of the APM when AST is active.</summary>
+</histogram>
+
+<histogram name="Cras.AstStartStatus" enum="CrasEffectStartStatus"
+    expires_after="2025-08-12">
+  <owner>cranelw@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Sent when AST is requested in APM. 0 for AST requested but failed; 1 for AST
+    requested and success.
+  </summary>
+</histogram>
+
 <histogram name="Cras.Busyloop" units="units" expires_after="2025-02-10">
 <!-- Name completed by histogram_suffixes
      name="Cras.TimePeriod" -->
