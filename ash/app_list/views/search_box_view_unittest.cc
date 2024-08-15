@@ -727,6 +727,35 @@ TEST_F(SearchBoxViewTest, AccessibleProperties) {
   EXPECT_EQ(ax::mojom::Role::kTextField, data.role);
 }
 
+TEST_F(SearchBoxViewTest, SearchResultBaseViewAccessibleProperties) {
+  SimulateQuery(u"test");
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.7, u"tester",
+                     std::u16string(), ash::AppListSearchResultCategory::kWeb);
+  base::RunLoop().RunUntilIdle();
+  auto* result_base_view = GetFirstResultView();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(result_base_view);
+  result_base_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kClick, data.GetDefaultActionVerb());
+
+  result_base_view->SetEnabled(false);
+  data = ui::AXNodeData();
+  result_base_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kClick, data.GetDefaultActionVerb());
+
+  result_base_view->SetVisible(false);
+  data = ui::AXNodeData();
+  result_base_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  result_base_view->SetVisible(true);
+  data = ui::AXNodeData();
+  result_base_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::DefaultActionVerb::kClick, data.GetDefaultActionVerb());
+}
+
 class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
  public:
   SearchBoxViewAssistantButtonTest() = default;
