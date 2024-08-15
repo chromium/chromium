@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
-#include "remoting/protocol/port_range.h"
+#include "remoting/base/port_range.h"
 
 namespace remoting::protocol {
 

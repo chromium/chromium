@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/port_range.h"
+#include "remoting/base/port_range.h"
 
 #include <sstream>
 
@@ -68,6 +68,23 @@ TEST(PortRange, Output) {
   str << port_range;
 
   EXPECT_THAT(str.str(), testing::MatchesRegex(".*123.*456.*"));
+}
+
+TEST(PortRange, Equality) {
+  PortRange port_range_1;
+  port_range_1.min_port = 123;
+  port_range_1.max_port = 456;
+
+  PortRange port_range_2;
+  port_range_2.min_port = 123;
+  port_range_2.max_port = 456;
+
+  PortRange port_range_3;
+  port_range_3.min_port = 456;
+  port_range_3.max_port = 789;
+
+  EXPECT_EQ(port_range_1, port_range_2);
+  EXPECT_NE(port_range_1, port_range_3);
 }
 
 }  // namespace remoting

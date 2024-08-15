@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/port_range.h"
+#include "remoting/base/port_range.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -12,6 +12,13 @@
 #include "base/strings/string_util.h"
 
 namespace remoting {
+
+bool PortRange::operator==(const PortRange&) const = default;
+
+void PortRange::reset() {
+  min_port = 0;
+  max_port = 0;
+}
 
 bool PortRange::Parse(const std::string& port_range, PortRange* result) {
   DCHECK(result);

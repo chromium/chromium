@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "remoting/base/port_range.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -23,7 +24,6 @@
 #include "remoting/host/it2me/reconnect_params.h"
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/protocol/errors.h"
-#include "remoting/protocol/port_range.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/signal_strategy.h"
 
