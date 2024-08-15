@@ -333,6 +333,10 @@ export class CertificateManagerV2Element extends
     }
   }
 
+  private generateHrefForPage_(p: Page): string {
+    return '/' + p;
+  }
+
   private async onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CERTS);

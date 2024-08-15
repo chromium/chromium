@@ -87,22 +87,30 @@
 </cr-toolbar>
 <div id="container">
   <div id="sidebar" role="navigation">
+    <!-- TODO(crbug.com/40928765): see if we can just use href for
+         attr-for-selected and get rid of path -->
     <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
         selected-attribute="selected"
         selected="[[getSelectedTopLevelPage_(selectedPage_)]]"
         on-iron-activate="onMenuItemActivate_">
       <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path$="[[pageEnum_.LOCAL_CERTS]]" on-click="onMenuItemClick_">
+          path$="[[pageEnum_.LOCAL_CERTS]]"
+          href$="[[generateHrefForPage_(pageEnum_.LOCAL_CERTS)]]"
+          on-click="onMenuItemClick_">
         <cr-icon icon="cr:computer" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2LocalCerts')]]
       </a>
       <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path$="[[pageEnum_.CLIENT_CERTS]]" on-click="onMenuItemClick_">
+          path$="[[pageEnum_.CLIENT_CERTS]]"
+          href$="[[generateHrefForPage_(pageEnum_.CLIENT_CERTS)]]"
+          on-click="onMenuItemClick_">
         <cr-icon icon="certmanager:card" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2ClientCerts')]]
       </a>
       <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
-          path$="[[pageEnum_.CRS_CERTS]]" on-click="onMenuItemClick_">
+          path$="[[pageEnum_.CRS_CERTS]]"
+          href$="[[generateHrefForPage_(pageEnum_.CRS_CERTS)]]"
+          on-click="onMenuItemClick_">
         <cr-icon icon="cr:chrome-product" class="menu-icon"></cr-icon>
         [[i18n('certificateManagerV2CRSCerts')]]
       </a>
