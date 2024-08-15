@@ -537,8 +537,32 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                       ash::features::kCameraSuperResSupported));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  source->AddBoolean("video_capture_disallowed",
-                     !prefs->GetBoolean(prefs::kVideoCaptureAllowed));
+  const base::Value::List& allowed_urls =
+      prefs->GetList(prefs::kVideoCaptureAllowedUrls);
+  bool url_allowed = false;
+
+  GURL cca_url = GURL(ash::kChromeUICameraAppURL);
+
+  for (const base::Value& allowed_url : allowed_urls) {
+    if (allowed_url.is_string()) {
+      std::string pattern = allowed_url.GetString();
+      if (pattern.back() == '*') {
+        pattern.pop_back();
+        if (base::StartsWith(cca_url.spec(), pattern,
+                             base::CompareCase::SENSITIVE)) {
+          url_allowed = true;
+          break;
+        }
+      } else if (cca_url == GURL(pattern)) {
+        url_allowed = true;
+        break;
+      }
+    }
+  }
+
+  source->AddBoolean(
+      "cca_disallowed",
+      !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";

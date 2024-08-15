@@ -590,7 +590,7 @@ export class CameraManager implements EventListener {
     this.scheduler.reconfigurer.setShouldSuspend(shouldSuspend);
     state.set(state.State.SUSPEND, shouldSuspend);
     const perfLogger = PerfLogger.getInstance();
-    if (loadTimeData.isVideoCaptureDisallowed()) {
+    if (loadTimeData.isCCADisallowed()) {
       nav.open(ViewName.WARNING, WarningType.DISABLED_CAMERA);
       perfLogger.interrupt();
       return false;
