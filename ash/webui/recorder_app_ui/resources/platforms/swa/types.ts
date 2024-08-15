@@ -25,6 +25,7 @@ export {
   ModelStateType,
   PageHandler,
   type PageHandlerRemote,
+  QuietModeMonitorReceiver,
 } from '../../mojom/recorder_app.mojom-webui.js';
 export {
   type SodaClientInterface,

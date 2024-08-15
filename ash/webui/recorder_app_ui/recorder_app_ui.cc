@@ -33,6 +33,7 @@
 #include "services/on_device_model/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
+#include "ui/message_center/message_center.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
@@ -161,9 +162,15 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
       base::BindRepeating(&TranslateAudioDeviceId, browser_context,
                           delegate_->GetMediaDeviceSaltService(browser_context),
                           url::Origin::Create(GURL(kChromeUIRecorderAppURL)));
+
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->AddObserver(this);
+  in_quiet_mode_ = message_center->IsQuietMode();
 }
 
 RecorderAppUI::~RecorderAppUI() {
+  message_center::MessageCenter::Get()->RemoveObserver(this);
+
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
@@ -234,6 +241,15 @@ void RecorderAppUI::AddModelMonitor(
   }
   model_monitors_[model_id].Add(std::move(monitor));
   std::move(callback).Run(model_state.Clone());
+}
+
+void RecorderAppUI::AddQuietModeMonitor(
+    ::mojo::PendingRemote<recorder_app::mojom::QuietModeMonitor> monitor,
+    AddQuietModeMonitorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  quiet_mode_monitors_.Add(std::move(monitor));
+  std::move(callback).Run(in_quiet_mode_);
 }
 
 void RecorderAppUI::LoadModel(
@@ -476,11 +492,13 @@ void RecorderAppUI::LoadSpeechRecognizer(
 
 void RecorderAppUI::OpenAiFeedbackDialog(
     const std::string& description_template) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->OpenAiFeedbackDialog(description_template);
 }
 
 void RecorderAppUI::GetMicrophoneInfo(const std::string& source_id,
                                       GetMicrophoneInfoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   device_id_mapping_callback_.Run(
       source_id,
       base::BindOnce(&RecorderAppUI::GetMicrophoneInfoWithDeviceId,
@@ -490,6 +508,7 @@ void RecorderAppUI::GetMicrophoneInfo(const std::string& source_id,
 void RecorderAppUI::GetMicrophoneInfoWithDeviceId(
     GetMicrophoneInfoCallback callback,
     const std::optional<std::string>& device_id_str) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recorder_app::mojom::MicrophoneInfoPtr info = nullptr;
   uint64_t default_mic_id =
       CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
@@ -506,6 +525,20 @@ void RecorderAppUI::GetMicrophoneInfoWithDeviceId(
     }
   }
   std::move(callback).Run(std::move(info));
+}
+
+void RecorderAppUI::OnQuietModeChanged(bool in_quiet_mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  in_quiet_mode_ = in_quiet_mode;
+  for (auto& monitor : quiet_mode_monitors_) {
+    monitor->Update(in_quiet_mode_);
+  }
+}
+
+void RecorderAppUI::SetQuietMode(bool quiet_mode) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  message_center::MessageCenter::Get()->SetQuietMode(quiet_mode);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)

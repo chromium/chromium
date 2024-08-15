@@ -445,9 +445,28 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
+  private onDoNotDisturbToggle() {
+    this.platformHandler.quietMode.update((s) => !s);
+  }
+
+  private renderDoNotDisturbSettingsRow() {
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsDoNotDisturbLabel}</span>
+        <span slot="description">
+          ${i18n.settingsOptionsDoNotDisturbDescription}
+        </span>
+        <cros-switch
+          slot="action"
+          .selected=${live(this.platformHandler.quietMode.value)}
+          @change=${this.onDoNotDisturbToggle}
+        ></cros-switch>
+      </settings-row>
+    `;
+  }
+
   override render(): RenderResult {
-    // TODO: b/354109582 - Implement actual functionality of DnD and keep
-    // screen on.
+    // TODO: b/354109582 - Implement actual functionality of keep screen on.
     return html`<cra-dialog ${ref(this.dialog)}>
         <div slot="content">
           <div id="header">
@@ -465,15 +484,7 @@ export class SettingsMenu extends ReactiveLitElement {
             <div class="section">
               <div class="title">${i18n.settingsSectionGeneralHeader}</div>
               <div class="body">
-                <settings-row>
-                  <span slot="label">
-                    ${i18n.settingsOptionsDoNotDisturbLabel}
-                  </span>
-                  <span slot="description">
-                    ${i18n.settingsOptionsDoNotDisturbDescription}
-                  </span>
-                  <cros-switch slot="action"></cros-switch>
-                </settings-row>
+                ${this.renderDoNotDisturbSettingsRow()}
                 <settings-row>
                   <span slot="label">
                     ${i18n.settingsOptionsKeepScreenOnLabel}

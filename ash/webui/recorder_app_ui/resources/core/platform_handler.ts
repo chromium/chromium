@@ -4,7 +4,7 @@
 
 import {InternalMicInfo} from './microphone_manager.js';
 import {ModelLoader, ModelState} from './on_device_model/types.js';
-import {ReadonlySignal} from './reactive/signal.js';
+import {ReadonlySignal, Signal} from './reactive/signal.js';
 import {SodaSession} from './soda/types.js';
 
 export abstract class PlatformHandler {
@@ -31,6 +31,7 @@ export abstract class PlatformHandler {
    * Installation state and error will be reported through the `sodaState`.
    */
   abstract installSoda(): void;
+
   /**
    * The SODA installation state.
    */
@@ -90,4 +91,9 @@ export abstract class PlatformHandler {
   getLocale(): Intl.LocalesArgument {
     return undefined;
   }
+
+  /**
+   * Gets/sets the quiet mode of the system.
+   */
+  abstract readonly quietMode: Signal<boolean>;
 }

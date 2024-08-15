@@ -21,7 +21,7 @@ import {ModelState} from '../../core/on_device_model/types.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
-import {signal} from '../../core/reactive/signal.js';
+import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {SodaSession} from '../../core/soda/types.js';
 
 import {
@@ -34,6 +34,7 @@ import {
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
   PageHandler as MojoPageHandler,
+  QuietModeMonitorReceiver,
   SodaClientReceiver,
   SodaRecognizerRemote,
 } from './types.js';
@@ -41,11 +42,15 @@ import {
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
-  readonly sodaState = signal<ModelState>({kind: 'unavailable'});
+  override readonly sodaState = signal<ModelState>({kind: 'unavailable'});
 
   override summaryModelLoader: SummaryModelLoader;
 
   override titleSuggestionModelLoader: TitleSuggestionModelLoader;
+
+  readonly quietModeInternal = signal(false);
+
+  override readonly quietMode: Signal<boolean>;
 
   constructor() {
     super();
@@ -53,6 +58,15 @@ export class PlatformHandler extends PlatformHandlerBase {
     this.titleSuggestionModelLoader = new TitleSuggestionModelLoader(
       this.remote,
     );
+    this.quietMode = computed({
+      get: () => {
+        return this.quietModeInternal.value;
+      },
+      set: (quietMode: boolean) => {
+        this.remote.setQuietMode(quietMode);
+        this.quietModeInternal.value = quietMode;
+      },
+    });
   }
 
   override async init(): Promise<void> {
@@ -69,6 +83,16 @@ export class PlatformHandler extends PlatformHandlerBase {
       monitor.$.bindNewPipeAndPassRemote(),
     );
     update(state);
+
+    const quietModeMonitor = new QuietModeMonitorReceiver({
+      update: (inQuietMode: boolean) => {
+        this.quietModeInternal.value = inQuietMode;
+      },
+    });
+    const {inQuietMode} = await this.remote.addQuietModeMonitor(
+      quietModeMonitor.$.bindNewPipeAndPassRemote(),
+    );
+    this.quietModeInternal.value = inQuietMode;
 
     await this.summaryModelLoader.init();
     await this.titleSuggestionModelLoader.init();

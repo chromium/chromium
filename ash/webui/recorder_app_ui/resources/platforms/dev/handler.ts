@@ -322,7 +322,9 @@ function substituteI18nString(label: string, ...args: Array<number|string>):
 }
 
 export class PlatformHandler extends PlatformHandlerBase {
-  readonly sodaState = signal<ModelState>({kind: 'notInstalled'});
+  override readonly quietMode = signal(false);
+
+  override readonly sodaState = signal<ModelState>({kind: 'notInstalled'});
 
   override async init(): Promise<void> {
     settingsInit();
