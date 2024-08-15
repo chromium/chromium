@@ -173,6 +173,7 @@ source_set("chromeos") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles",
