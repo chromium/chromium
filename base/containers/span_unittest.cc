@@ -3072,6 +3072,55 @@ TEST(SpanTest, GMockMacroCompatibility) {
   EXPECT_THAT(dynamic_span1, ElementsAreArray(vec2));
 }
 
+TEST(SpanTest, GTestMacroCompatibility) {
+  int arr1[] = {1, 3, 5};
+  int arr2[] = {1, 3, 5};
+  int arr3[] = {2, 4, 6, 8};
+  std::vector vec1(std::begin(arr1), std::end(arr1));
+  std::vector vec2(std::begin(arr2), std::end(arr2));
+  std::vector vec3(std::begin(arr3), std::end(arr3));
+  span<int, 3> static_span1(arr1);
+  span<int, 3> static_span2(arr2);
+  span<int, 4> static_span3(arr3);
+  span<int> dynamic_span1(vec1);
+  span<int> dynamic_span2(vec2);
+  span<int> dynamic_span3(vec3);
+
+  // Alas, many desirable comparisions are still not possible. They
+  // are commented out below.
+  EXPECT_EQ(arr1, static_span2);
+  EXPECT_EQ(arr1, dynamic_span2);
+
+  // EXPECT_EQ(vec1, static_span2);
+  EXPECT_EQ(vec1, dynamic_span2);
+
+  EXPECT_EQ(static_span1, arr2);
+  EXPECT_EQ(static_span1, static_span2);
+  EXPECT_EQ(static_span1, dynamic_span2);
+  // EXPECT_EQ(static_span1, vec2);
+
+  EXPECT_EQ(dynamic_span1, arr2);
+  EXPECT_EQ(dynamic_span1, static_span2);
+  EXPECT_EQ(dynamic_span1, dynamic_span2);
+  EXPECT_EQ(dynamic_span1, vec2);
+
+  // EXPECT_NE(arr1, static_span3);
+  EXPECT_NE(arr1, dynamic_span3);
+
+  // EXPECT_NE(vec1, static_span3);
+  EXPECT_NE(vec1, dynamic_span3);
+
+  // EXPECT_NE(static_span1, arr3);
+  // EXPECT_NE(static_span1, static_span3);
+  EXPECT_NE(static_span1, dynamic_span3);
+  // EXPECT_NE(static_span1, vec3);
+
+  EXPECT_NE(dynamic_span1, arr3);
+  EXPECT_NE(dynamic_span1, static_span3);
+  EXPECT_NE(dynamic_span1, dynamic_span3);
+  EXPECT_NE(dynamic_span1, vec3);
+}
+
 // These are all examples from //docs/unsafe_buffers.md, copied here to ensure
 // they compile.
 TEST(SpanTest, Example_UnsafeBuffersPatterns) {
