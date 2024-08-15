@@ -1926,19 +1926,6 @@ TEST(SpanTest, MakeSpanFromConstContainer) {
                 "the type of made_span differs from expected_span!");
 }
 
-TEST(SpanTest, MakeStaticSpanFromConstContainer) {
-  const std::vector<int> vector = {-1, -2, -3, -4, -5};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<const int, 5> UNSAFE_BUFFERS(
-      expected_span(vector.data(), vector.size()));
-  auto made_span = make_span<5>(vector);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
 TEST(SpanTest, MakeSpanFromContainer) {
   std::vector<int> vector = {-1, -2, -3, -4, -5};
   span<int> expected_span(vector);
@@ -1948,30 +1935,6 @@ TEST(SpanTest, MakeSpanFromContainer) {
   static_assert(decltype(made_span)::extent == dynamic_extent, "");
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeStaticSpanFromContainer) {
-  std::vector<int> vector = {-1, -2, -3, -4, -5};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<int, 5> UNSAFE_BUFFERS(expected_span(vector.data(), vector.size()));
-  auto made_span = make_span<5>(vector);
-  EXPECT_EQ(expected_span.data(), make_span<5>(vector).data());
-  EXPECT_EQ(expected_span.size(), make_span<5>(vector).size());
-  static_assert(decltype(make_span<5>(vector))::extent == 5, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeStaticSpanFromConstexprContainer) {
-  constexpr std::string_view str = "Hello, World";
-  constexpr auto made_span = make_span<12>(str);
-  static_assert(str.data() == made_span.data(), "Error: data() does not match");
-  static_assert(str.size() == made_span.size(), "Error: size() does not match");
-  static_assert(std::is_same_v<decltype(str)::value_type,
-                               decltype(made_span)::value_type>,
-                "Error: value_type does not match");
-  static_assert(str.size() == decltype(made_span)::extent,
-                "Error: extent does not match");
 }
 
 TEST(SpanTest, MakeSpanFromRValueContainer) {
@@ -1985,23 +1948,6 @@ TEST(SpanTest, MakeSpanFromRValueContainer) {
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
   static_assert(decltype(made_span)::extent == dynamic_extent, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeStaticSpanFromRValueContainer) {
-  std::vector<int> vector = {-1, -2, -3, -4, -5};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<const int, 5> UNSAFE_BUFFERS(
-      expected_span(vector.data(), vector.size()));
-  // Note: While static_cast<T&&>(foo) is effectively just a fancy spelling of
-  // std::move(foo), make_span does not actually take ownership of the passed in
-  // container. Writing it this way makes it more obvious that we simply care
-  // about the right behavour when passing rvalues.
-  auto made_span = make_span<5>(static_cast<std::vector<int>&&>(vector));
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5, "");
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -2261,7 +2207,7 @@ TEST(SpanTest, CopyFrom) {
 
   // Handle empty cases gracefully.
   // Dynamic size to static size requires an explicit conversion.
-  empty_static_span.copy_from(make_span<0u>(empty_dynamic_span));
+  empty_static_span.copy_from(*empty_dynamic_span.to_fixed_extent<0>());
   empty_dynamic_span.copy_from(empty_static_span);
   static_span.first(empty_static_span.size()).copy_from(empty_static_span);
   dynamic_span.first(empty_dynamic_span.size()).copy_from(empty_dynamic_span);
