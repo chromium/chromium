@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_icon.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -158,6 +159,7 @@ NSAttributedString* Strikethrough(NSString* text) {
 - (CrossfadeLabel*)createTitle {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label.text = [self titleText];
+  label.accessibilityIdentifier = set_up_list::kAccessibilityID;
   label.font =
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   if (_data.complete) {
@@ -198,6 +200,7 @@ NSAttributedString* Strikethrough(NSString* text) {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label = [[CrossfadeLabel alloc] init];
   label.text = [self descriptionText];
+  label.accessibilityIdentifier = set_up_list::kAccessibilityID;
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   //  label.translatesAutoresizingMaskIntoConstraints = NO;
