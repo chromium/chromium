@@ -1326,6 +1326,11 @@ bool HasKeyboardFocusedTab(const Browser* browser) {
 void ConvertPopupToTabbedBrowser(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowAsTab"));
   TabStripModel* tab_strip = browser->tab_strip_model();
+  // If this popup is the last browser object, removing it from the browser-list
+  // will trigger OnShutdownStarting for Window close. Create the new browser
+  // object first, before removing the existing object from the browser-list in
+  // order to avoid incorrectly triggering a shutdown.
+  Browser* b = Browser::Create(Browser::CreateParams(browser->profile(), true));
   std::unique_ptr<tabs::TabModel> tab_model =
       tab_strip->DetachTabAtForInsertion(tab_strip->active_index());
   // This method moves a WebContents from a non-normal browser window to a
@@ -1335,7 +1340,6 @@ void ConvertPopupToTabbedBrowser(Browser* browser) {
   // tab to begin with.
   std::unique_ptr<content::WebContents> contents_move =
       tabs::TabModel::DestroyAndTakeWebContents(std::move(tab_model));
-  Browser* b = Browser::Create(Browser::CreateParams(browser->profile(), true));
 
   // This method moves a WebContents from a non-normal browser window to a
   // normal browser window. We cannot move the Tab over directly since TabModel
