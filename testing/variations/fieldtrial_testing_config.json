@@ -22256,6 +22256,27 @@
             ]
         }
     ],
+    "SysUiHoldbackStudyM129": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Default",
+                    "disable_features": [
+                        "SysUiShouldHoldbackForest"
+                    ]
+                },
+                {
+                    "name": "EnrolledInHoldback",
+                    "enable_features": [
+                        "SysUiShouldHoldbackForest"
+                    ]
+                }
+            ]
+        }
+    ],
     "SystemEmojiPickerGIFSupportByDefault": [
         {
             "platforms": [

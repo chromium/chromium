@@ -8524,6 +8524,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "sys-ui-holdback-forest",
+    "owners": ["newcomer@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "sys-ui-holdback-gif-recording",
     "owners": ["newcomer@chromium.org"],
     "expiry_milestone": 130

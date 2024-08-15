@@ -7845,13 +7845,17 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
+const char kSysUIShouldHoldbackForestName[] = "Holdback for Forest on chromeOS";
+const char kSysUIShouldHoldbackForestDescription[] =
+    "Enables holdback for Forest.";
+
 const char kSysUiShouldHoldbackGifRecordingName[] =
-    "Holdback for GIF recording on ChromeOS";
+    "Holdback for GIF recording on chromeOS";
 const char kSysUiShouldHoldbackGifRecordingDescription[] =
     "Enables holdback for GIF recording.";
 
 const char kSysUiShouldHoldbackTaskManagementName[] =
-    "Holdback for Task Management on ChromeOS";
+    "Holdback for Task Management on chromeOS";
 const char kSysUiShouldHoldbackTaskManagementDescription[] =
     "Enables holdback for Task Management.";
 

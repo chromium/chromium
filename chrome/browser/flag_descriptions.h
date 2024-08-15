@@ -4544,6 +4544,9 @@ extern const char kLauncherSystemInfoAnswerCardsDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
+extern const char kSysUIShouldHoldbackForestName[];
+extern const char kSysUIShouldHoldbackForestDescription[];
+
 extern const char kSysUiShouldHoldbackGifRecordingName[];
 extern const char kSysUiShouldHoldbackGifRecordingDescription[];
 
