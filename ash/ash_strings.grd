@@ -8545,6 +8545,9 @@ To shut down the device, press and hold the power button on the device again.
          =1 {In 1 min}
          other {In # mins}}
       </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_NO_TITLE" desc="Placeholder title text for a calendar event that has no title">
+        (No title)
+      </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_TOMORROW" desc="Subtitle text for a calendar event that occurs tomorrow">
         Tomorrow
       </message>

@@ -121,6 +121,28 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents) {
   EXPECT_EQ(items[1].end_time(), TimeFromString("11 Jan 2010 11:00 GMT"));
 }
 
+TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithNoSummary) {
+  BirchCalendarProvider provider(profile());
+
+  // Set up a custom fetcher with known events.
+  auto fetcher = std::make_unique<TestCalendarFetcher>(profile());
+  auto events = std::make_unique<google_apis::calendar::EventList>();
+  events->set_time_zone("Greenwich Mean Time");
+  events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_0", /*summary=*/"", "10 Jan 2010 10:00 GMT",
+      "10 Jan 2010 11:00 GMT"));
+  fetcher->events_ = std::move(events);
+  provider.SetFetcherForTest(std::move(fetcher));
+
+  // Get the calendar events.
+  provider.RequestBirchDataFetch();
+
+  // The title contains "(No title)".
+  const auto& items = Shell::Get()->birch_model()->GetCalendarItemsForTest();
+  ASSERT_EQ(1u, items.size());
+  EXPECT_EQ(items[0].title(), u"(No title)");
+}
+
 TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
   BirchCalendarProvider provider(profile());
 
