@@ -222,8 +222,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                                  chrome::kHistorySearchSettingURL));
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
                      history_embeddings::kSearchQueryMinimumWordCount.Get());
-  source->AddString("historyEmbeddingsHelpArticleUrl",
-                    chrome::kHistorySearchLearnMorePageURL);
+  source->AddString("historyEmbeddingsLearnMoreUrl",
+                    chrome::kHistorySearchSettingURL);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
