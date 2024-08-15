@@ -139,11 +139,10 @@ bool SnapGroupController::OnWindowSnapped(
         // Else no need to refresh the group bounds.
         return true;
     }
+
     const float snap_ratio = window_util::GetSnapRatioForWindow(target_window);
     // Apply the target window's snap ratio *after* the group creation so we
     // can actually enforce it.
-    // TODO(b/346624805): See if we can consolidate this with
-    // `AddSnapGroup()` and/or `ShowDivider()`.
     snap_group->ApplyPrimarySnapRatio(
         IsPhysicallyLeftOrTop(target_window) ? snap_ratio : 1.f - snap_ratio);
     return true;
