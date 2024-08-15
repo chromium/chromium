@@ -3940,6 +3940,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
               long_url)));
 }
 
+// Ensure that no crash occurs when doing a same-document navigation within a
+// site-less SiteInstance, such as for a browser-initiated about:blank.
+// See https://crbug.com/359807735.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameDocumentSitelessNavigation) {
+  WebContents* web_contents = shell()->web_contents();
+  GURL url1 = GURL("about:blank#1");
+  GURL url2 = GURL("about:blank#2");
+  NavigationHandleCommitObserver navigation_1(web_contents, url1);
+  NavigationHandleCommitObserver navigation_2(web_contents, url2);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_TRUE(navigation_2.has_committed());
+  EXPECT_FALSE(navigation_1.was_same_document());
+  EXPECT_TRUE(navigation_2.was_same_document());
+}
+
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        NonDeterministicUrlRewritesUseLastUrl) {
   // Lambda expressions cannot be assigned to function pointers if they use

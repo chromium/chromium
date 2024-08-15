@@ -2792,8 +2792,12 @@ void NavigationRequest::BeginNavigationImpl() {
     if (IsSameDocument()) {
       render_frame_host_ = frame_tree_node_->current_frame_host()->GetSafeRef();
 
-      auto* site_instance = render_frame_host_.value()->GetSiteInstance();
-      DCHECK(site_instance->HasSite());
+      // The SiteInstance should have a site already from the navigation that
+      // committed the document, unless the scheme does not require a site. Same
+      // document navigations cannot change scheme or origin, so it should be
+      // equivalent to check the current vs destination UrlInfo.
+      DCHECK(render_frame_host_.value()->GetSiteInstance()->HasSite() ||
+             !SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo()));
 
       WillCommitWithoutUrlLoader();
       return;
