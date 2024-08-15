@@ -465,6 +465,25 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
+  private onKeepScreenOnToggle() {
+    settings.mutate((s) => {
+      s.keepScreenOn = !s.keepScreenOn;
+    });
+  }
+
+  private renderKeepScreenOnSettingsRow() {
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsKeepScreenOnLabel}</span>
+        <cros-switch
+          slot="action"
+          .selected=${live(settings.value.keepScreenOn)}
+          @change=${this.onKeepScreenOnToggle}
+        ></cros-switch>
+      </settings-row>
+    `;
+  }
+
   override render(): RenderResult {
     // TODO: b/354109582 - Implement actual functionality of keep screen on.
     return html`<cra-dialog ${ref(this.dialog)}>
@@ -485,12 +504,7 @@ export class SettingsMenu extends ReactiveLitElement {
               <div class="title">${i18n.settingsSectionGeneralHeader}</div>
               <div class="body">
                 ${this.renderDoNotDisturbSettingsRow()}
-                <settings-row>
-                  <span slot="label">
-                    ${i18n.settingsOptionsKeepScreenOnLabel}
-                  </span>
-                  <cros-switch slot="action"></cros-switch>
-                </settings-row>
+                ${this.renderKeepScreenOnSettingsRow()}
               </div>
             </div>
             ${this.renderTranscriptionSection()}

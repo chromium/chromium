@@ -147,6 +147,7 @@ export type ExportSettings = Infer<typeof exportSettingsSchema>;
 export const settingsSchema = z.object({
   exportSettings: exportSettingsSchema,
   includeSystemAudio: z.boolean(),
+  keepScreenOn: z.withDefault(z.boolean(), false),
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
@@ -167,6 +168,7 @@ const defaultSettings: Settings = {
     transcriptionFormat: ExportTranscriptionFormat.TXT,
   },
   includeSystemAudio: false,
+  keepScreenOn: false,
   onboardingDone: false,
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,

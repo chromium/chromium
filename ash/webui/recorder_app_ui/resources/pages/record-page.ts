@@ -52,6 +52,7 @@ import {
   assertExists,
   assertInstanceof,
 } from '../core/utils/assert.js';
+import {AsyncJobQueue} from '../core/utils/async_job_queue.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
 function getDefaultTitle(): string {
@@ -338,6 +339,10 @@ export class RecordPage extends ReactiveLitElement {
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
+  private wakeLock: WakeLockSentinel|null = null;
+
+  private readonly wakeLockRequestQueue = new AsyncJobQueue('keepLatest');
+
   private async startRecording() {
     if (this.recordingSession.value !== null) {
       return;
@@ -387,12 +392,37 @@ export class RecordPage extends ReactiveLitElement {
       }
     });
     this.recordingSession.value = session;
+    if (settings.value.keepScreenOn) {
+      this.requestWakeLock();
+    }
+  }
+
+  private requestWakeLock() {
+    this.wakeLockRequestQueue.push(async () => {
+      // Don't request a new wake lock when the old one is still in effect,
+      // since according to
+      // https://w3c.github.io/screen-wake-lock/#garbage-collection we
+      // shouldn't drop the wake lock that is not released.
+      if (this.wakeLock === null || this.wakeLock.released) {
+        this.wakeLock = await navigator.wakeLock.request('screen');
+      }
+    });
+  }
+
+  private releaseWakeLock() {
+    this.wakeLockRequestQueue.push(async () => {
+      if (this.wakeLock !== null) {
+        await this.wakeLock.release();
+        this.wakeLock = null;
+      }
+    });
   }
 
   private async cancelRecording() {
     if (this.recordingSession.value === null) {
       return;
     }
+    this.releaseWakeLock();
     await this.recordingSession.value.finish();
     this.transcriptionEnableDispose?.();
     this.transcriptionEnableDispose = null;
@@ -408,6 +438,7 @@ export class RecordPage extends ReactiveLitElement {
     if (this.recordingSession.value === null) {
       return null;
     }
+    this.releaseWakeLock();
     const session = this.recordingSession.value;
     const audioData = await session.finish();
     const params: RecordingCreateParams = {
@@ -436,16 +467,30 @@ export class RecordPage extends ReactiveLitElement {
     }
   }
 
+  private readonly onVisibilityChange = () => {
+    if (this.wakeLock !== null && this.wakeLock.released &&
+        document.visibilityState === 'visible') {
+      // Re-acquire the wake lock if the recorder app is brought back to
+      // foreground.
+      // See https://developer.chrome.com/docs/capabilities/web-apis/wake-lock/
+      // TODO(pihsun): We need to have a private API if it's required to have
+      // screen kept on when recording in background.
+      this.requestWakeLock();
+    }
+  };
+
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
     // TODO(pihsun): auto-starting the recording since this page is arrived
     // from clicking "record" button from the main page. Reconsider how to do
     // this properly.
     await this.startRecording();
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   override async disconnectedCallback(): Promise<void> {
     super.disconnectedCallback();
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
     // Cancel current recording when leaving page / hot reloading.
     // TODO: b/336963138 - Have a confirmation before leaving.
     // TODO: b/336963138 - Exit handler for the whole page.
