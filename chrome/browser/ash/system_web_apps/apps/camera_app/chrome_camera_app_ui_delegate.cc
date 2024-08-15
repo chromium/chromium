@@ -38,6 +38,7 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/pdf/pdf_service.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -537,29 +538,9 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                       ash::features::kCameraSuperResSupported));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  const base::Value::List& allowed_urls =
-      prefs->GetList(prefs::kVideoCaptureAllowedUrls);
-  bool url_allowed = false;
-
   GURL cca_url = GURL(ash::kChromeUICameraAppURL);
-
-  for (const base::Value& allowed_url : allowed_urls) {
-    if (allowed_url.is_string()) {
-      std::string pattern = allowed_url.GetString();
-      if (pattern.back() == '*') {
-        pattern.pop_back();
-        if (base::StartsWith(cca_url.spec(), pattern,
-                             base::CompareCase::SENSITIVE)) {
-          url_allowed = true;
-          break;
-        }
-      } else if (cca_url == GURL(pattern)) {
-        url_allowed = true;
-        break;
-      }
-    }
-  }
-
+  bool url_allowed = policy::IsOriginInAllowlist(
+      cca_url, prefs, prefs::kVideoCaptureAllowedUrls);
   source->AddBoolean(
       "cca_disallowed",
       !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
