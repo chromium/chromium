@@ -19,18 +19,20 @@ docstring-quote = double
 # TODO(crbug.com/353942917): Burn down this list to the minimal reasonable
 # amount by fixing issues or doing inline-disables where appropriate.
 # Intentionally kept:
+#   bad-indentation: Formatting is auto-handled by yapf and there is expected to
+#     be a mixture of 2 and 4-space files due to a change in style guidelines.
+#   duplicate-code: Finds many non-actionable "duplicate" entries such as
+#     similar imports in multiple files.
+#   fixme: TODOs are perfectly valid as long as they're associated with a bug.
+#   missing-docstring: Docstrings should be encouraged, but also should not be
+#     required for every single function and method.
 #   wrong-import-position: We often need to add directories to PATH before
 #     importing, which causes this check to fail.
-disable=abstract-method,
-        bad-indentation,
-        broad-except,
+disable=bad-indentation,
         duplicate-code,
         fixme,
         import-error,
         invalid-name,
-        invalid-triple-quote,
-        locally-disabled,
-        locally-enabled,
         missing-docstring,
         no-member,
         no-self-use,
@@ -45,7 +47,6 @@ disable=abstract-method,
         too-many-public-methods,
         too-many-return-statements,
         too-many-statements,
-        ungrouped-imports,
         wrong-import-position,
 
 [REPORTS]

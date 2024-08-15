@@ -374,7 +374,7 @@ def execute_gtest_perf_test(command_generator,
           output_paths.logs)
       with open(output_paths.perf_results, 'w') as fh:
         fh.write(graph_json_string)
-  except Exception:
+  except Exception:  # pylint: disable=broad-except
     traceback.print_exc()
     return_code = 1
   if os.path.exists(output_paths.perf_results):
@@ -589,7 +589,7 @@ def execute_telemetry_benchmark(command_generator,
     csv_file_path = os.path.join(temp_dir, 'results.csv')
     if os.path.isfile(csv_file_path):
       shutil.move(csv_file_path, output_paths.csv_perf_results)
-  except Exception:
+  except Exception:  # pylint: disable=broad-except
     print('The following exception may have prevented the code from '
           'outputing structured test results and perf results output:')
     print(traceback.format_exc())
@@ -860,7 +860,7 @@ class CrossbenchTest(object):
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
       print(traceback.format_exc())

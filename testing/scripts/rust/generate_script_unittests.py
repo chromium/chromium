@@ -47,14 +47,14 @@ class Tests(fake_filesystem_unittest.TestCase):
         finally:
             os.remove(filepath)
 
-        expected = '''
+        expected = """
 #!/bin/bash
 env vpython3 \
 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" \\
     "--rust-test-executable=$(dirname $0)/../bar" \\
     "--rust-test-executable=$(dirname $0)/../foo" \\
     "$@"
-'''.strip()
+""".strip()
 
         self.assertEqual(expected, actual)
 
@@ -80,13 +80,13 @@ env vpython3 \
         finally:
             os.remove(filepath)
 
-        expected = '''
+        expected = """
 @echo off
 vpython3 "%~dp0\\../../../testing/scripts/rust\\rust_main_program.py" ^
     "--rust-test-executable=%~dp0\\..\\bar.exe" ^
     "--rust-test-executable=%~dp0\\..\\foo.exe" ^
     %*
-'''.strip()
+""".strip()
 
         self.assertEqual(expected, actual)
 

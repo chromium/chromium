@@ -52,6 +52,18 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     return test_id.split('.')[-1]
 
+  def _GetPublicCiQuery(self) -> str:
+    return 'public_ci'
+
+  def _GetInternalCiQuery(self) -> str:
+    return 'internal_ci'
+
+  def _GetPublicTryQuery(self) -> str:
+    return 'public_try'
+
+  def _GetInternalTryQuery(self) -> str:
+    return 'internal_try'
+
 
 def CreateGenericQuerier(
     suite: Optional[str] = None,

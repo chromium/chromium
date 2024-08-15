@@ -511,7 +511,7 @@ class BaseIsolatedScriptArgsAdapter:
       print('Command returned exit code %d' % exit_code)
       sys.stdout.flush()
       self.do_post_test_run_tasks()
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
       traceback.print_exc()
       exit_code = None
     finally:

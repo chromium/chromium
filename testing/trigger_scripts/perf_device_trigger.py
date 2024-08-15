@@ -47,6 +47,7 @@ This script is normally called from the swarming recipe module in tools/build.
 import argparse
 import copy
 import os
+import subprocess
 import sys
 import logging
 import random
@@ -334,7 +335,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
                 tasks = self.list_tasks(values_with_shard,
                                         limit='1',
                                         server=self._swarming_server)
-        except Exception:
+        except subprocess.CalledProcessError:
             self._sharded_query_failed = True
         if self._sharded_query_failed:
             tasks = self.list_tasks(values,

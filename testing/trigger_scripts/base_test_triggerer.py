@@ -136,11 +136,10 @@ class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
         try:
             self._bot_configs = strip_unicode(
                 json.loads(args.multiple_trigger_configs))
-        except Exception as e:
-            six.raise_from(
-                ValueError(
-                    'Error while parsing JSON from bot config string %s: %s' %
-                    (args.multiple_trigger_configs, str(e))), e)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                'Error while parsing JSON from bot config string %s: %s' %
+                (args.multiple_trigger_configs, str(e))) from e
         # Validate the input.
         if not isinstance(self._bot_configs, list):
             raise ValueError('Bot configurations must be a list, were: %s' %
