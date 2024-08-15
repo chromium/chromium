@@ -772,10 +772,22 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
   auto vulkan_overlay_adaptor =
       VulkanOverlayAdaptor::Create(/*is_protected=*/false, GetParam());
 
+  bool performed_cleanup = false;
+  auto fence_helper =
+      vulkan_overlay_adaptor->GetVulkanDeviceQueue()->GetFenceHelper();
+  fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
+      [](bool* cleanup_flag, gpu::VulkanDeviceQueue* device_queue,
+         bool device_lost) { *cleanup_flag = true; },
+      &performed_cleanup));
+  auto cleanup_fence = fence_helper->GenerateCleanupFence();
+  fence_helper->Wait(cleanup_fence, UINT64_MAX);
+
   ProcessMailboxes(in_mailbox, image.VisibleRect().size(), out_mailbox,
                    gfx::RectF(base::checked_cast<float>(output_size.width()),
                               base::checked_cast<float>(output_size.height())),
                    gfx::RectF(1.0f, 1.0f), transform, *vulkan_overlay_adaptor);
+  ASSERT_TRUE(performed_cleanup);
+
   // This implicitly waits for all semaphores to signal.
   vulkan_overlay_adaptor->GetVulkanDeviceQueue()
       ->GetFenceHelper()
