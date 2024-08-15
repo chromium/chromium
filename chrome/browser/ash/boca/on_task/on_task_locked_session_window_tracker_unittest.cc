@@ -29,6 +29,9 @@ constexpr char kTabUrl1DomainRedirect[] =
 constexpr char kTabUrlRedirectedUrl[] = "http://redirect-url.com/q?randomness";
 constexpr char kTabUrl2[] = "http://company.org";
 constexpr char kTabUrl2SubDomain1[] = "http://company.a.org";
+constexpr char kTabGoogleUrl[] = "http://google.com";
+constexpr char kTabDocsUrl[] = "http://docs.google.com";
+constexpr char kTabGooglePath[] = "http://google.com/blah-blah";
 
 }  // namespace
 
@@ -523,6 +526,40 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
             policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
   EXPECT_EQ(blocklist->GetURLBlocklistState(url_b),
             policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+}
+
+TEST_F(OnTaskLockedSessionWindowTrackerTest,
+       AllowAndBlockUrlSuccessfullyForGoogleSameDomainNav) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL google_url(kTabGoogleUrl);
+  const GURL docs_url(kTabDocsUrl);
+  const GURL random_google_url(kTabGooglePath);
+  const GURL url_b(kTabUrl1SubDomain1);
+  const GURL not_google_url(kTabUrl2);
+
+  AddTab(browser(), google_url);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const blocklist = window_tracker->on_task_blocklist();
+
+  blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0),
+      OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(blocklist->current_page_restriction_level(),
+            OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+  EXPECT_EQ(blocklist->GetURLBlocklistState(docs_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+  EXPECT_EQ(blocklist->GetURLBlocklistState(random_google_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+  EXPECT_EQ(blocklist->GetURLBlocklistState(url_b),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
+  EXPECT_EQ(blocklist->GetURLBlocklistState(not_google_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
 }
 
 TEST_F(OnTaskLockedSessionWindowTrackerTest, NewBrowserWindowsDontOpen) {

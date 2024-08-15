@@ -20,6 +20,7 @@ static_library("on_task") {
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
+    "//components/google/core/common",
     "//components/policy/core/browser",
     "//components/sessions",
     "//components/sessions:session_id",
