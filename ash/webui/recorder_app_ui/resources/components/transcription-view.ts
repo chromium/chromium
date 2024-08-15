@@ -114,7 +114,8 @@ export class TranscriptionView extends ReactiveLitElement {
       }
 
       .highlight-word {
-        text-decoration: underline;
+        text-decoration: underline 1.5px;
+        text-underline-offset: 3px;
       }
 
       .speaker-label {
