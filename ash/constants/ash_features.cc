@@ -1933,9 +1933,7 @@ BASE_FEATURE(kMojoDBusRelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables to split left and right modifiers in settings.
-BASE_FEATURE(kModifierSplit,
-             "ModifierSplit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kModifierSplit, "ModifierSplit", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to split left and right modifiers in settings for dogfood.
 BASE_FEATURE(kModifierSplitDogfood,
