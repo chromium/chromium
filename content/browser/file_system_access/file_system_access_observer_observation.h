@@ -81,6 +81,7 @@ class FileSystemAccessObserverObservation
   int callback_count_ = 0;
 
   bool received_changes_while_in_bf_cache_ = false;
+  bool received_error_while_in_bf_cache_ = false;
 
   // The host which owns this instance.
   const raw_ptr<FileSystemAccessObserverHost> host_ = nullptr;

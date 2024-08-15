@@ -450,4 +450,49 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
       {{MojoChangeType::kUnknown, MojoFilePathType::kFile, {}}}));
 }
 
+TEST_F(FileSystemAccessObserverObservationTest, ReceivedErrorsInBFCache) {
+  base::FilePath file_path = CreateFile();
+  storage::FileSystemURL file_url = CreateFileSystemURL(
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
+      CreateFileHandle(file_url);
+
+  FileSystemAccessWatchScope scope =
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
+
+  FakeChangeSource source(scope, file_system_context());
+  RegisterChangeSource(source);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation = observer.Observe(file_handle, false);
+
+  // Will receive changes before entering BFCache.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}}}));
+
+  // No event is emitted just for entering the BFCache.
+  EnterBFCache();
+  ExitBFCache();
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+
+  // No errors are emitted while in BFCache
+  EnterBFCache();
+  source.SignalChange();
+  source.SignalError();
+  source.SignalError();
+  source.SignalChange();
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+
+  // If we receive an event while in BFCache, a single unknown event is emitted
+  // after exiting BFCache.
+  ExitBFCache();
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
+}
+
 }  // namespace content
