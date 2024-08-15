@@ -6,6 +6,8 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -75,6 +77,34 @@ TEST_F(UIKitUIUtilTest, ViewHierarchyRootForView) {
   [view1 removeFromSuperview];
   EXPECT_EQ(ViewHierarchyRootForView(view1), view1);
   EXPECT_EQ(ViewHierarchyRootForView(view2), view1);
+}
+
+// Tests that the NSArray of UITraits passed into `TraitCollectionSetForTraits`
+// is not the returned value when the `kTraitCollectionDidChangeRefactor`
+// feature flag is disabled.
+TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsEnabled) {
+  if (@available(iOS 17, *)) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        kEnableTraitCollectionRegistration);
+
+    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.self ];
+    EXPECT_NE([TraitCollectionSetForTraits(traits) count], [traits count]);
+  }
+}
+
+// Tests that the NSArray of UITraits passed into `TraitCollectionSetForTraits`
+// is the returned value when the `kTraitCollectionDidChangeRefactor` feature
+// flag is enabled.
+TEST_F(UIKitUIUtilTest, UITraitArrayIsReturnedWhenKillswitchIsDisabled) {
+  if (@available(iOS 17, *)) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        kEnableTraitCollectionRegistration);
+
+    NSArray<UITrait>* traits = @[ UITraitForceTouchCapability.self ];
+    EXPECT_EQ([TraitCollectionSetForTraits(traits) count], [traits count]);
+  }
 }
 
 }  // namespace

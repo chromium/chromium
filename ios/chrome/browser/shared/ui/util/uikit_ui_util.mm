@@ -436,3 +436,39 @@ CGFloat DeviceCornerRadius() {
 bool IsBottomOmniboxAvailable() {
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
 }
+
+NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits) {
+  if (base::FeatureList::IsEnabled(kEnableTraitCollectionRegistration)) {
+    return traits;
+  }
+
+  static dispatch_once_t once;
+  static NSArray<UITrait>* everyUIMutableTrait = nil;
+  dispatch_once(&once, ^{
+    // This is a list of all the UITraits provided by iOS. This was generated
+    // from Apple's documentation on UIMutableTraits and is subject to change
+    // with subsequent releases of iOS. See
+    // https://developer.apple.com/documentation/uikit/uimutabletraits?language=objc
+    NSMutableArray<UITrait>* mutableTraits = [@[
+      UITraitAccessibilityContrast.self, UITraitActiveAppearance.self,
+      UITraitDisplayGamut.self, UITraitDisplayScale.self,
+      UITraitForceTouchCapability.self, UITraitHorizontalSizeClass.self,
+      UITraitImageDynamicRange.self, UITraitLayoutDirection.self,
+      UITraitLegibilityWeight.self, UITraitPreferredContentSizeCategory.self,
+      UITraitSceneCaptureState.self, UITraitToolbarItemPresentationSize.self,
+      UITraitTypesettingLanguage.self, UITraitUserInterfaceIdiom.self,
+      UITraitUserInterfaceLevel.self, UITraitUserInterfaceStyle.self,
+      UITraitVerticalSizeClass.self
+    ] mutableCopy];
+
+#if defined(__IPHONE_18_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_0
+    if (@available(iOS 18, *)) {
+      [mutableTraits addObject:UITraitListEnvironment.self];
+    }
+#endif
+
+    everyUIMutableTrait = [NSArray arrayWithArray:mutableTraits];
+  });
+
+  return everyUIMutableTrait;
+}
