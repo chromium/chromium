@@ -9851,7 +9851,6 @@
                         "ServiceWorkerMergeFindRegistrationForClientUrl",
                         "ServiceWorkerRegistrationCache",
                         "ServiceWorkerScopeCache",
-                        "ServiceWorkerStorageControlOnThreadPool",
                         "ServiceWorkerStorageControlResponseUseHighPriority"
                     ]
                 }
@@ -21354,22 +21353,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ServiceWorkerStaticRouter"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ServiceWorkerStorageControl": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerStorageControlOnIOThread",
-                        "ServiceWorkerStorageControlResponseQueue"
                     ]
                 }
             ]
