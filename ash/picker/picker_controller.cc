@@ -643,6 +643,7 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
           },
           weak_ptr_factory_.GetWeakPtr()));
   session_metrics_ = std::make_unique<PickerSessionMetrics>(GetPrefs());
+  session_metrics_->OnStartSession(GetFocusedTextInputClient());
 
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
       GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
@@ -657,7 +658,6 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   widget_->Show();
 
   feature_usage_metrics_.StartUsage();
-  session_metrics_->OnStartSession(GetFocusedTextInputClient());
   view_observation_.Observe(widget_->GetContentsView());
 }
 

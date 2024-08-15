@@ -39,6 +39,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -75,6 +77,7 @@ using ::testing::AnyNumber;
 using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
@@ -83,6 +86,8 @@ using ::testing::Not;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::VariantWith;
+
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
 
 bool CopyTextToClipboard() {
   base::test::TestFuture<bool> copy_confirmed_future;
@@ -186,11 +191,15 @@ class PickerControllerTest : public AshTestBase {
                                                            &prefs_);
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
     PickerSessionMetrics::RegisterProfilePrefs(prefs_.registry());
+    metrics_recorder_ =
+        std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
+    metrics_recorder_->Initialize();
   }
 
   void TearDown() override {
     client_.reset();
     controller_.reset();
+    metrics_recorder_.reset();
     AshTestBase::TearDown();
   }
 
@@ -204,6 +213,10 @@ class PickerControllerTest : public AshTestBase {
 
   sync_preferences::TestingPrefServiceSyncable& prefs() { return prefs_; }
 
+  metrics::structured::TestStructuredMetricsRecorder& metrics_recorder() {
+    return *metrics_recorder_;
+  }
+
  private:
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
   // Holds a raw ptr to the `MockNewWindowDelegate` owned by
@@ -212,6 +225,8 @@ class PickerControllerTest : public AshTestBase {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<PickerController> controller_;
   std::unique_ptr<NiceMock<TestPickerClient>> client_;
+  std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
+      metrics_recorder_;
 };
 
 TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
@@ -239,6 +254,30 @@ TEST_F(PickerControllerTest,
 
   task_environment()->FastForwardBy(base::Seconds(4));
   EXPECT_FALSE(controller().caps_lock_state_view_for_testing());
+}
+
+TEST_F(PickerControllerTest, TogglingWidgetRecordsStartSessionMetrics) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.SetTextAndSelection(u"abcd", gfx::Range(1, 4));
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  controller().ToggleWidget();
+
+  cros_events::Picker_StartSession expected_event;
+  expected_event
+      .SetInputFieldType(cros_events::PickerInputFieldType::PLAIN_TEXT)
+      .SetSelectionLength(3);
+  EXPECT_THAT(
+      metrics_recorder().GetEvents(),
+      ElementsAre(AllOf(
+          Property("event name", &metrics::structured::Event::event_name,
+                   Eq(expected_event.event_name())),
+          Property("metric values", &metrics::structured::Event::metric_values,
+                   Eq(std::ref(expected_event.metric_values()))))));
 }
 
 TEST_F(PickerControllerTest,
