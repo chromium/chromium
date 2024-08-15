@@ -92,10 +92,6 @@ int ChromeExtensionsRendererClient::GetLowestIsolatedWorldId() const {
   return ISOLATED_WORLD_ID_EXTENSIONS;
 }
 
-extensions::Dispatcher* ChromeExtensionsRendererClient::GetDispatcher() {
-  return dispatcher();
-}
-
 void ChromeExtensionsRendererClient::OnExtensionLoaded(
     const extensions::Extension& extension) {
   resource_request_policy_->OnExtensionLoaded(extension);
@@ -277,11 +273,6 @@ void ChromeExtensionsRendererClient::WillSendRequest(
     base::UmaHistogramEnumeration(
         "Extensions.GoogleDocOffline.AvailabilityOnResourceRequest", vote);
   }
-}
-
-extensions::Dispatcher*
-ChromeExtensionsRendererClient::GetExtensionDispatcherForTest() {
-  return extension_dispatcher();
 }
 
 // static

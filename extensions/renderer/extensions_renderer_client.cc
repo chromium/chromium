@@ -32,7 +32,7 @@ void ExtensionsRendererClient::Set(ExtensionsRendererClient* client) {
 
 void ExtensionsRendererClient::AddAPIProvider(
     std::unique_ptr<ExtensionsRendererAPIProvider> api_provider) {
-  CHECK(!GetDispatcher())
+  CHECK(!dispatcher())
       << "API providers must be added before the Dispatcher is instantiated.";
   api_providers_.push_back(std::move(api_provider));
 }

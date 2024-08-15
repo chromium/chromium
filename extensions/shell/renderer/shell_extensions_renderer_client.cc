@@ -33,8 +33,4 @@ int ShellExtensionsRendererClient::GetLowestIsolatedWorldId() const {
   return 1;
 }
 
-Dispatcher* ShellExtensionsRendererClient::GetDispatcher() {
-  return dispatcher();
-}
-
 }  // namespace extensions

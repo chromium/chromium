@@ -31,7 +31,6 @@ struct WebPluginInfo;
 }
 
 namespace extensions {
-class Dispatcher;
 class RendererPermissionsPolicyDelegate;
 class ResourceRequestPolicy;
 }
@@ -72,7 +71,6 @@ class ChromeExtensionsRendererClient
   void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
-  extensions::Dispatcher* GetDispatcher() override;
   void OnExtensionLoaded(const extensions::Extension& extension) override;
   void OnExtensionUnloaded(
       const extensions::ExtensionId& extension_id) override;
@@ -97,9 +95,6 @@ class ChromeExtensionsRendererClient
       const blink::WebElement& plugin_element,
       v8::Isolate* isolate);
 
-  // TODO(https://crbug.com/359904696): Remove this.
-  extensions::Dispatcher* GetExtensionDispatcherForTest();
-
   static void DidBlockMimeHandlerViewForDisallowedPlugin(
       const blink::WebElement& plugin_element);
   static bool MaybeCreateMimeHandlerView(
@@ -113,9 +108,6 @@ class ChromeExtensionsRendererClient
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
-
-  // TODO(https://crbug.com/359904696): Remove this.
-  extensions::Dispatcher* extension_dispatcher() { return dispatcher(); }
 
  private:
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;

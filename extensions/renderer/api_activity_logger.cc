@@ -59,8 +59,7 @@ void APIActivityLogger::AddRoutes() {
 
 // static
 bool APIActivityLogger::IsLoggingEnabled() {
-  const Dispatcher* dispatcher =
-      ExtensionsRendererClient::Get()->GetDispatcher();
+  const Dispatcher* dispatcher = ExtensionsRendererClient::Get()->dispatcher();
   return (dispatcher &&  // dispatcher can be null in unittests.
           dispatcher->activity_logging_enabled()) ||
          g_log_for_testing;

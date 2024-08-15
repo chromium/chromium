@@ -21,7 +21,6 @@ class TestExtensionsRendererClient : public ExtensionsRendererClient {
   void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
-  Dispatcher* GetDispatcher() override;
 };
 
 }  // namespace extensions

@@ -8,7 +8,6 @@
 #include "extensions/renderer/extensions_renderer_client.h"
 
 namespace extensions {
-class Dispatcher;
 
 class ShellExtensionsRendererClient : public ExtensionsRendererClient {
  public:
@@ -22,7 +21,6 @@ class ShellExtensionsRendererClient : public ExtensionsRendererClient {
   void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
-  Dispatcher* GetDispatcher() override;
 };
 
 }  // namespace extensions

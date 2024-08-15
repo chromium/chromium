@@ -594,7 +594,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
       std::make_unique<ChromeContentSettingsAgentDelegate>(render_frame);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content_settings_delegate->SetExtensionDispatcher(
-      ChromeExtensionsRendererClient::GetInstance()->extension_dispatcher());
+      ChromeExtensionsRendererClient::GetInstance()->dispatcher());
 #endif
   content_settings::ContentSettingsAgentImpl* content_settings =
       new content_settings::ContentSettingsAgentImpl(
@@ -1740,7 +1740,7 @@ void ChromeContentRendererClient::
         const GURL& script_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->DidInitializeServiceWorkerContextOnWorkerThread(
           context_proxy, service_worker_scope, script_url);
 #endif
@@ -1755,7 +1755,7 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
     const blink::ServiceWorkerToken& service_worker_token) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->WillEvaluateServiceWorkerOnWorkerThread(
           context_proxy, v8_context, service_worker_version_id,
           service_worker_scope, script_url, service_worker_token);
@@ -1768,7 +1768,7 @@ void ChromeContentRendererClient::DidStartServiceWorkerContextOnWorkerThread(
     const GURL& script_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->DidStartServiceWorkerContextOnWorkerThread(
           service_worker_version_id, service_worker_scope, script_url);
 #endif
@@ -1781,7 +1781,7 @@ void ChromeContentRendererClient::WillDestroyServiceWorkerContextOnWorkerThread(
     const GURL& script_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->WillDestroyServiceWorkerContextOnWorkerThread(
           context, service_worker_version_id, service_worker_scope, script_url);
 #endif

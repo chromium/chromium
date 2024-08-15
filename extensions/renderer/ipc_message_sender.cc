@@ -268,7 +268,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                   const std::string& error,
                   mojom::ExtraResponseDataPtr response_data) {
     ExtensionsRendererClient::Get()
-        ->GetDispatcher()
+        ->dispatcher()
         ->bindings_system()
         ->HandleResponse(request_id, success, std::move(response), error,
                          std::move(response_data));

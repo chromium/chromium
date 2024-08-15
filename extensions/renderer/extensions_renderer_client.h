@@ -38,10 +38,6 @@ class ExtensionsRendererClient {
   // (third_party/WebKit/public/web/WebFrame.h) for additional context.
   virtual int GetLowestIsolatedWorldId() const = 0;
 
-  // Returns the associated Dispatcher.
-  // TODO(https://crbug.com/359904696): Remove this.
-  virtual Dispatcher* GetDispatcher() = 0;
-
   // Notifies the client when an extension is added or removed.
   // TODO(devlin): Make a RendererExtensionRegistryObserver?
   virtual void OnExtensionLoaded(const Extension& extension) {}
