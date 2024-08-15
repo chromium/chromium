@@ -651,7 +651,12 @@ class GSL_POINTER span {
   //
   // # Safety
   // The `other` span must not overlap with `this` or Undefined Behaviour may
-  // occur.
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
   UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(
       span<const T, N> other)
     requires(!std::is_const_v<T>)
@@ -696,7 +701,12 @@ class GSL_POINTER span {
   //
   // # Safety
   // The `other` span must not overlap with `this` or Undefined Behaviour may
-  // occur.
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
   //
   // # Implementation note
   // The parameter is taken as a template to avoid implicit conversion where
@@ -1213,7 +1223,12 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   //
   // # Safety
   // The `other` span must not overlap with `this` or Undefined Behaviour may
-  // occur.
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
   UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(
       span<const T> other)
     requires(!std::is_const_v<T>)
