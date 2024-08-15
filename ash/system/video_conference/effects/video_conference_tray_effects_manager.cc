@@ -184,9 +184,10 @@ VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(VcEffectId effect_id) {
       // language model (e.g. "libsoda-model-en-us") to operate.
       return {"libsoda", base::ToLowerASCII("libsoda-model-" + locale)};
     }
-    case VcEffectId::kTestEffect:
     case VcEffectId::kBackgroundBlur:
     case VcEffectId::kPortraitRelighting:
+      return {"ml-core-internal"};
+    case VcEffectId::kTestEffect:
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kStyleTransfer:
     case VcEffectId::kCameraFraming:
