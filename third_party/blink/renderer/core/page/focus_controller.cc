@@ -224,9 +224,18 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   }
 
   const Element* NextInDomOrder(const Element& current) {
-    Element* next = ElementTraversal::NextIncludingPseudo(current, root_);
-    while (next && !IsOwnedByRoot(*next))
-      next = ElementTraversal::NextIncludingPseudo(*next, root_);
+    Element* next;
+    if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled()) {
+      next = ElementTraversal::NextIncludingPseudo(current, root_);
+      while (next && !IsOwnedByRoot(*next)) {
+        next = ElementTraversal::NextIncludingPseudo(*next, root_);
+      }
+    } else {
+      next = ElementTraversal::Next(current, root_);
+      while (next && !IsOwnedByRoot(*next)) {
+        next = ElementTraversal::Next(*next, root_);
+      }
+    }
     return next;
   }
 
@@ -279,12 +288,24 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   }
 
   const Element* PreviousInDomOrder(const Element& current) {
-    Element* previous =
-        ElementTraversal::PreviousIncludingPseudo(current, root_);
-    if (previous == root_)
-      return nullptr;
-    while (previous && !IsOwnedByRoot(*previous))
-      previous = ElementTraversal::PreviousIncludingPseudo(*previous, root_);
+    Element* previous;
+    if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled()) {
+      previous = ElementTraversal::PreviousIncludingPseudo(current, root_);
+      if (previous == root_) {
+        return nullptr;
+      }
+      while (previous && !IsOwnedByRoot(*previous)) {
+        previous = ElementTraversal::PreviousIncludingPseudo(*previous, root_);
+      }
+    } else {
+      previous = ElementTraversal::Previous(current, root_);
+      if (previous == root_) {
+        return nullptr;
+      }
+      while (previous && !IsOwnedByRoot(*previous)) {
+        previous = ElementTraversal::Previous(*previous, root_);
+      }
+    }
     return previous;
   }
 
@@ -1664,6 +1685,7 @@ HTMLElement* FocusController::FindScopeOwnerSlotOrReadingFlowContainer(
     const Element& current) {
   Element* element = const_cast<Element*>(&current);
   if (element->IsPseudoElement()) {
+    DCHECK(RuntimeEnabledFeatures::PseudoElementsFocusableEnabled());
     return nullptr;
   }
   while (element) {

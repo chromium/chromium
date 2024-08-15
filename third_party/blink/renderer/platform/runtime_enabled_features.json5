@@ -1113,12 +1113,14 @@
       // https://github.com/flackr/carousel/tree/main/scroll-button
       name: "CSSPseudoScrollButtons",
       status: "experimental",
+      depends_on: ["PseudoElementsFocusable"],
     },
     {
       // For ::scroll-marker and ::scroll-marker-group pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-marker
       name: "CSSPseudoScrollMarkers",
       status: "experimental",
+      depends_on: ["PseudoElementsFocusable"],
     },
     {
       // TODO(crbug.com/40932006): Non-standard 'reading-flow' keyword
@@ -3414,6 +3416,11 @@
       origin_trial_feature_name: "FrobulateImplied",
       implied_by: ["ProtectedOriginTrialsSampleAPI"],
       is_protected_feature: "true",
+    },
+    {
+      // Allowing pseudo elements to have focus.
+      name: "PseudoElementsFocusable",
+      status: "experimental",
     },
     {
       name: "PushMessaging",
