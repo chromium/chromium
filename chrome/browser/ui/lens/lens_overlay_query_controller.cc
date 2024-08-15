@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_proto_converter.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "chrome/common/channel_info.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
@@ -203,7 +204,12 @@ LensOverlayQueryController::LensOverlayQueryController(
       identity_manager_(identity_manager),
       profile_(profile),
       invocation_source_(invocation_source),
-      use_dark_mode_(use_dark_mode) {}
+      use_dark_mode_(use_dark_mode) {
+  encoding_task_runner_ = base::ThreadPool::CreateTaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  encoding_task_tracker_ = std::make_unique<base::CancelableTaskTracker>();
+}
 
 LensOverlayQueryController::~LensOverlayQueryController() = default;
 
@@ -228,19 +234,31 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
          QueryControllerState::kAwaitingFullImageResponse);
   query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
 
-  lens::LensOverlayClientLogs client_logs;
-  client_logs.set_lens_overlay_entry_point(
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
-  lens::ImageData image_data = DownscaleAndEncodeBitmap(
-      original_screenshot_, ui_scale_factor_, client_logs);
 
+  // Do the image encoding asynchronously to prevent the main thread from
+  // blocking on the encoding.
+  encoding_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&lens::DownscaleAndEncodeBitmap, original_screenshot_,
+                     ui_scale_factor_, ref_counted_logs),
+      base::BindOnce(&LensOverlayQueryController::OnImageDataReady,
+                     weak_ptr_factory_.GetWeakPtr(), ref_counted_logs));
+}
+
+void LensOverlayQueryController::OnImageDataReady(
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+    lens::ImageData image_data) {
   if (lens::features::GetLensOverlaySendLatencyGen204()) {
-    client_logs.set_paella_id(gen204_id_);
+    ref_counted_logs->client_logs().set_paella_id(gen204_id_);
   }
 
   AddSignificantRegions(image_data, std::move(significant_region_boxes_));
   FetchFullImageRequest(request_id_generator_->GetNextRequestId(), image_data,
-                        client_logs);
+                        ref_counted_logs->client_logs());
 }
 
 lens::LensOverlayClientContext
@@ -482,6 +500,7 @@ void LensOverlayQueryController::EndQuery() {
   page_url_.reset();
   page_title_.reset();
   cluster_info_.reset();
+  encoding_task_tracker_->TryCancelAll();
   query_controller_state_ = QueryControllerState::kOff;
 }
 
@@ -548,13 +567,18 @@ void LensOverlayQueryController::SendInteraction(
     lens::LensOverlaySelectionType selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
+  // Cancel any pending encoding from previous SendInteraction requests.
+  encoding_task_tracker_->TryCancelAll();
+
   request_counter_++;
   int request_index = request_counter_;
-  lens::LensOverlayClientLogs client_logs;
-  client_logs.set_lens_overlay_entry_point(
+
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  ref_counted_logs->client_logs().set_lens_overlay_entry_point(
       LenOverlayEntryPointFromInvocationSource(invocation_source_));
   if (lens::features::GetLensOverlaySendLatencyGen204()) {
-    client_logs.set_paella_id(gen204_id_);
+    ref_counted_logs->client_logs().set_paella_id(gen204_id_);
   }
 
   // Add the start time to the query params now, so that image downscaling
@@ -562,12 +586,34 @@ void LensOverlayQueryController::SendInteraction(
   additional_search_query_params =
       AddStartTimeQueryParam(additional_search_query_params);
 
-  std::optional<lens::ImageCrop> image_crop =
-      DownscaleAndEncodeBitmapRegionIfNeeded(
-          original_screenshot_, region.Clone(), region_bytes, client_logs);
+  // Do the image encoding asynchronously to prevent the main thread from
+  // blocking on the encoding.
+  encoding_task_tracker_->PostTaskAndReplyWithResult(
+      encoding_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&lens::DownscaleAndEncodeBitmapRegionIfNeeded,
+                     original_screenshot_, region.Clone(), region_bytes,
+                     ref_counted_logs),
+      base::BindOnce(&LensOverlayQueryController::OnImageCropReady,
+                     weak_ptr_factory_.GetWeakPtr(), request_index,
+                     region.Clone(), query_text, object_id, selection_type,
+                     additional_search_query_params, ref_counted_logs));
+}
+
+void LensOverlayQueryController::OnImageCropReady(
+    int request_index,
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::optional<std::string> query_text,
+    std::optional<std::string> object_id,
+    lens::LensOverlaySelectionType selection_type,
+    std::map<std::string, std::string> additional_search_query_params,
+    scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+    std::optional<lens::ImageCrop> image_crop) {
+  // The request index should match our counter after encoding finishes.
+  CHECK(request_index == request_counter_);
   FetchInteractionRequestAndGenerateUrlIfClusterInfoReady(
       request_index, region.Clone(), query_text, object_id, selection_type,
-      additional_search_query_params, image_crop, client_logs);
+      additional_search_query_params, image_crop,
+      ref_counted_logs->client_logs());
 }
 
 void LensOverlayQueryController::

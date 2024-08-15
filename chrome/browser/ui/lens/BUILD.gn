@@ -55,6 +55,7 @@ source_set("lens") {
     "lens_search_bubble_controller.h",
     "lens_untrusted_ui.cc",
     "lens_untrusted_ui_config.cc",
+    "ref_counted_lens_overlay_client_logs.h",
     "search_bubble_page_handler.cc",
     "search_bubble_page_handler.h",
     "search_bubble_ui.cc",

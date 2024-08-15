@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include "base/functional/callback.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -13,11 +14,11 @@
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_client_logs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
@@ -151,6 +152,12 @@ class LensOverlayQueryController {
   // Processes the screenshot and fetches a full image request.
   void PrepareAndFetchFullImageRequest();
 
+  // Continues with fetching the full image request after the screenshot has
+  // been encoded.
+  void OnImageDataReady(
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      lens::ImageData image_data);
+
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
 
@@ -169,6 +176,17 @@ class LensOverlayQueryController {
       lens::LensOverlaySelectionType selection_type,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
+
+  // Continues with SendInteraction after the full image cropping is finished.
+  void OnImageCropReady(
+      int request_index,
+      lens::mojom::CenterRotatedBoxPtr region,
+      std::optional<std::string> query_text,
+      std::optional<std::string> object_id,
+      lens::LensOverlaySelectionType selection_type,
+      std::map<std::string, std::string> additional_search_query_params,
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      std::optional<lens::ImageCrop> image_crop);
 
   // Fetches the endpoint using the initial image data.
   void FetchFullImageRequest(
@@ -308,6 +326,15 @@ class LensOverlayQueryController {
 
   // Loader used for task completion gen204 requests.
   std::unique_ptr<network::SimpleURLLoader> task_completion_gen204_loader_;
+
+  // Task runner used to encode/downscale the JPEG images on a separate thread.
+  scoped_refptr<base::TaskRunner> encoding_task_runner_;
+
+  // Tracks the encoding/downscaling tasks currently running for follow up
+  // interactions. Does not track the encoding for the full image request
+  // because it is assumed this request will finish, never need to be
+  // cancelled, and all other tasks will wait on it if needed.
+  std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;
