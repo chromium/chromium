@@ -249,6 +249,7 @@ BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
 
 BASE_DECLARE_FEATURE(kManagementToolbarButton);
+BASE_DECLARE_FEATURE(kManagementToolbarButtonForTrustedManagementSources);
 
 BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 

@@ -31,6 +31,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,10 +51,46 @@ namespace {
 // management icon easier to read.
 constexpr int kIconSizeForNonTouchUi = 22;
 
-bool CanShowManagementToolbarButton(const PrefService& pref_service) {
-  return base::FeatureList::IsEnabled(features::kManagementToolbarButton) ||
-         !pref_service.GetString(prefs::kEnterpriseCustomLabel).empty() ||
-         !pref_service.GetString(prefs::kEnterpriseLogoUrl).empty();
+bool CanShowManagementToolbarButton(Profile* profile) {
+  const auto* pref_service = profile->GetPrefs();
+  if (!pref_service) {
+    return false;
+  }
+
+  // Show the button if a label or icon is specified.
+  if (!pref_service->GetString(prefs::kEnterpriseCustomLabel).empty() ||
+      !pref_service->GetString(prefs::kEnterpriseLogoUrl).empty()) {
+    return true;
+  }
+
+  auto* profile_management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  if (!profile_management_service) {
+    return false;
+  }
+
+  const bool profile_managed = profile_management_service->IsManaged();
+
+  // Show the button if the profile has any policies applied.
+  if (base::FeatureList::IsEnabled(features::kManagementToolbarButton)) {
+    return profile_managed;
+  }
+
+  // Show the button if the profile has any policy appplied and the profile or
+  // device is managed from a trusted source.
+  if (base::FeatureList::IsEnabled(
+          features::kManagementToolbarButtonForTrustedManagementSources)) {
+    const bool trusted_management =
+        profile_managed &&
+        (profile_management_service->GetManagementAuthorityTrustworthiness() >=
+             policy::ManagementAuthorityTrustworthiness::TRUSTED ||
+         policy::ManagementServiceFactory::GetForPlatform()
+                 ->GetManagementAuthorityTrustworthiness() >=
+             policy::ManagementAuthorityTrustworthiness::TRUSTED);
+    return trusted_management;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -112,7 +149,8 @@ void ManagementToolbarButton::UpdateManagementInfo() {
     icon_url =
         g_browser_process->local_state()->GetString(prefs::kEnterpriseLogoUrl);
   }
-  bool show_management_toolbar_button = CanShowManagementToolbarButton(*prefs);
+  bool show_management_toolbar_button =
+      CanShowManagementToolbarButton(profile_);
   bool button_becoming_visible =
       !GetVisible() && show_management_toolbar_button;
   SetVisible(show_management_toolbar_button);
