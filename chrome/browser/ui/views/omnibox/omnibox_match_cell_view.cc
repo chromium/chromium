@@ -179,12 +179,19 @@ void OmniboxMatchCellView::ComputeMatchMaxWidths(
     int contents_width,
     int separator_width,
     int description_width,
+    int iph_link_width,
     int available_width,
     bool description_on_separate_line,
     bool allow_shrinking_contents,
     int* contents_max_width,
-    int* description_max_width) {
+    int* description_max_width,
+    int* iph_link_max_width) {
   available_width = std::max(available_width, 0);
+
+  // The IPH link is top priority.
+  *iph_link_max_width = std::min(iph_link_width, available_width);
+  available_width = std::max(available_width - iph_link_width, 0);
+
   *contents_max_width = std::min(contents_width, available_width);
   *description_max_width = std::min(description_width, available_width);
 
@@ -501,10 +508,12 @@ void OmniboxMatchCellView::Layout(PassKey) {
     int content_width = content_view_->GetPreferredSize().width();
     int description_width = description_view_->GetPreferredSize().width();
     const gfx::Size separator_size = separator_view_->GetPreferredSize();
-    ComputeMatchMaxWidths(content_width, separator_size.width(),
-                          description_width, text_width,
-                          /*description_on_separate_line=*/false,
-                          !is_search_type_, &content_width, &description_width);
+    int iph_link_width = iph_link_view_->GetPreferredSize().width();
+    ComputeMatchMaxWidths(
+        content_width, separator_size.width(), description_width,
+        iph_link_width, /*available_width=*/text_width,
+        /*description_on_separate_line=*/false, !is_search_type_,
+        &content_width, &description_width, &iph_link_width);
     if (tail_suggest_ellipse_view_->GetVisible()) {
       const int tail_suggest_ellipse_width =
           tail_suggest_ellipse_view_->GetPreferredSize().width();
@@ -524,8 +533,7 @@ void OmniboxMatchCellView::Layout(PassKey) {
       separator_view_->SetSize(gfx::Size());
       description_view_->SetSize(gfx::Size());
     }
-    iph_link_view_->SetBounds(x, y, iph_link_view_->GetPreferredSize().width(),
-                              row_height);
+    iph_link_view_->SetBounds(x, y, iph_link_width, row_height);
   }
 }
 
