@@ -12,21 +12,58 @@ namespace chrome_pdf {
 
 namespace {
 
-TEST(PdfInkCursorTest, CursorDiameterFromBrushSize) {
+TEST(PdfInkCursorTest, CursorDiameterFromBrushSizeAndZoom) {
   // Very small brush sizes result in a minimum cursor size.
-  EXPECT_EQ(6, CursorDiameterFromBrushSize(1.0f));
-  EXPECT_EQ(6, CursorDiameterFromBrushSize(2.0f));
-  EXPECT_EQ(6, CursorDiameterFromBrushSize(4.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/1.0f,
+                                                  /*zoom=*/1.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/2.0f,
+                                                  /*zoom=*/1.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/4.0f,
+                                                  /*zoom=*/1.0f));
 
   // Small brush sizes have a small offset value.
-  EXPECT_EQ(7, CursorDiameterFromBrushSize(5.0f));
-  EXPECT_EQ(8, CursorDiameterFromBrushSize(6.0f));
-  EXPECT_EQ(11, CursorDiameterFromBrushSize(9.0f));
+  EXPECT_EQ(7, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/5.0f,
+                                                  /*zoom=*/1.0f));
+  EXPECT_EQ(8, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/6.0f,
+                                                  /*zoom=*/1.0f));
+  EXPECT_EQ(11, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/9.0f,
+                                                   /*zoom=*/1.0f));
 
   // Larger brush sizes have a larger offset value.
-  EXPECT_EQ(14, CursorDiameterFromBrushSize(10.0f));
-  EXPECT_EQ(15, CursorDiameterFromBrushSize(11.0f));
-  EXPECT_EQ(20, CursorDiameterFromBrushSize(16.0f));
+  EXPECT_EQ(14, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/10.0f,
+                                                   /*zoom=*/1.0f));
+  EXPECT_EQ(15, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/11.0f,
+                                                   /*zoom=*/1.0f));
+  EXPECT_EQ(20, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/16.0f,
+                                                   /*zoom=*/1.0f));
+
+  // Very small brush sizes with zoom end up close to the minimum cursor size.
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/1.0f,
+                                                  /*zoom=*/0.25f));
+  EXPECT_EQ(7, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/1.0f,
+                                                  /*zoom=*/5.0f));
+
+  // Small brush sizes scale with zoom, but can get clipped at min/max cursor
+  // sizes.
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/5.0f,
+                                                  /*zoom=*/0.5f));
+  EXPECT_EQ(19, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/5.0f,
+                                                   /*zoom=*/3.0f));
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/9.0f,
+                                                  /*zoom=*/0.33f));
+  EXPECT_EQ(32, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/9.0f,
+                                                   /*zoom=*/4.0f));
+
+  // Larger brush sizes scale with zoom, but often get clipped at max cursor
+  // size.
+  EXPECT_EQ(6, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/10.0f,
+                                                  /*zoom=*/0.25f));
+  EXPECT_EQ(24, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/10.0f,
+                                                   /*zoom=*/2.0f));
+  EXPECT_EQ(32, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/10.0f,
+                                                   /*zoom=*/3.0f));
+  EXPECT_EQ(32, CursorDiameterFromBrushSizeAndZoom(/*brush_size=*/16.0f,
+                                                   /*zoom=*/5.0f));
 }
 
 TEST(PdfInkCursorTest, GenerateToolCursor) {

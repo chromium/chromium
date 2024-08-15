@@ -219,6 +219,10 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
   return true;
 }
 
+void PdfInkModule::OnGeometryChanged() {
+  MaybeSetCursor();
+}
+
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? drawing_stroke_state().brush.get() : nullptr;
 }
@@ -807,8 +811,9 @@ void PdfInkModule::MaybeSetCursor() {
     brush_size = erasing_stroke_state().eraser_size;
   }
 
-  client_->UpdateInkCursorImage(
-      GenerateToolCursor(color, CursorDiameterFromBrushSize(brush_size)));
+  client_->UpdateInkCursorImage(GenerateToolCursor(
+      color,
+      CursorDiameterFromBrushSizeAndZoom(brush_size, client_->GetZoom())));
 }
 
 PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;

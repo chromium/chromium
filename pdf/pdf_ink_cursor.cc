@@ -19,9 +19,12 @@ namespace chrome_pdf {
 
 namespace {
 
+constexpr int kMinDiameter = 6;
+constexpr int kMaxDiameter = 32;
+
 void CheckCursorDiameterIsInRange(int diameter) {
-  CHECK_GE(diameter, 6);
-  CHECK_LE(diameter, 32);
+  CHECK_GE(diameter, kMinDiameter);
+  CHECK_LE(diameter, kMaxDiameter);
 }
 
 SkColor GetCursorOutlineColor(SkColor color) {
@@ -40,11 +43,11 @@ SkColor GetCursorOutlineColor(SkColor color) {
 
 }  // namespace
 
-int CursorDiameterFromBrushSize(float brush_size) {
+int CursorDiameterFromBrushSizeAndZoom(float brush_size, float zoom) {
   PdfInkBrush::CheckToolSizeIsInRange(brush_size);
 
   constexpr float kMinSize = 4;  // Cursor become very hard to see if smaller.
-  float cursor_diameter = std::max(brush_size, kMinSize);
+  float cursor_diameter = std::max(brush_size * zoom, kMinSize);
 
   // Fudge factors to better match sizes used in Chrome OS Gallery.
   constexpr int kSmallAdjustment = 2;
@@ -52,7 +55,8 @@ int CursorDiameterFromBrushSize(float brush_size) {
   constexpr int kLargeSize = 10;
   int adjustment =
       cursor_diameter < kLargeSize ? kSmallAdjustment : kLargeAdjustment;
-  return static_cast<int>(round(cursor_diameter)) + adjustment;
+  return std::clamp(static_cast<int>(round(cursor_diameter)) + adjustment,
+                    kMinDiameter, kMaxDiameter);
 }
 
 SkBitmap GenerateToolCursor(SkColor color, int diameter) {

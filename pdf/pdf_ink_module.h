@@ -114,6 +114,9 @@ class PdfInkModule {
   // Returns whether the message was handled or not.
   bool OnMessage(const base::Value::Dict& message);
 
+  // Informs PdfInkModule that the plugin geometry changed.
+  void OnGeometryChanged();
+
   // For testing only. Returns the current `PdfInkBrush` used to draw strokes,
   // or nullptr if there is no brush.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;

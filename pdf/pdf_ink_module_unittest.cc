@@ -339,6 +339,40 @@ TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingBrushes) {
   EXPECT_TRUE(ink_module().OnMessage(message));
 }
 
+TEST_F(PdfInkModuleTest, MaybeSetCursorWhenChangingZoom) {
+  {
+    InSequence seq;
+    EXPECT_CALL(client(), UpdateInkCursorImage(_))
+        .WillOnce([](SkBitmap bitmap) {
+          EXPECT_EQ(6, bitmap.width());
+          EXPECT_EQ(6, bitmap.height());
+        });
+    EXPECT_CALL(client(), UpdateInkCursorImage(_))
+        .WillOnce([](SkBitmap bitmap) {
+          EXPECT_EQ(20, bitmap.width());
+          EXPECT_EQ(20, bitmap.height());
+        });
+    EXPECT_CALL(client(), UpdateInkCursorImage(_))
+        .WillOnce([](SkBitmap bitmap) {
+          EXPECT_EQ(10, bitmap.width());
+          EXPECT_EQ(10, bitmap.height());
+        });
+  }
+
+  EnableAnnotationMode();
+  EXPECT_TRUE(ink_module().enabled());
+
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
+                                                  /*color_g=*/255,
+                                                  /*color_b=*/0};
+  base::Value::Dict message = CreateSetAnnotationBrushMessageForTesting(
+      "pen", /*size=*/16.0, &message_params);
+  EXPECT_TRUE(ink_module().OnMessage(message));
+
+  client().set_zoom(0.5f);
+  ink_module().OnGeometryChanged();
+}
+
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
