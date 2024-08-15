@@ -1187,8 +1187,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
 
-    settings.quarantine_mode = QuarantineMode::kAlwaysDisabled;
-
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
     memset(&sentinel_bucket, 0, sizeof(sentinel_bucket));

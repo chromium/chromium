@@ -27,14 +27,6 @@ void DCheckIsValidShiftFromSlotStart(internal::SlotSpanMetadata* slot_span,
   PA_DCHECK(shift_from_slot_start <= root->GetSlotUsableSize(slot_span));
 }
 
-void DCheckIsWithInSuperPagePayload(uintptr_t address) {
-  uintptr_t super_page = address & kSuperPageBaseMask;
-  auto* extent = PartitionSuperPageToExtent(super_page);
-  PA_DCHECK(IsWithinSuperPagePayload(address,
-                                     IsManagedByNormalBuckets(address) &&
-                                         extent->root->IsQuarantineAllowed()));
-}
-
 void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
                                 uintptr_t object_addr) {
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
@@ -52,8 +44,7 @@ void DCheckNumberOfPartitionPagesInSuperPagePayload(
   uintptr_t super_page =
       base::bits::AlignDown(entry_address, kSuperPageAlignment);
   size_t number_of_partition_pages_in_superpage_payload =
-      SuperPagePayloadSize(super_page, root->IsQuarantineAllowed()) /
-      PartitionPageSize();
+      SuperPagePayloadSize(super_page) / PartitionPageSize();
   PA_DCHECK(number_of_partition_pages_in_superpage_payload >
             number_of_nonempty_slot_spans);
 }

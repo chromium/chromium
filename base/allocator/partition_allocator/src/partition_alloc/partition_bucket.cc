@@ -782,7 +782,7 @@ PartitionBucket::AllocNewSuperPage(PartitionRoot* root, AllocFlags flags) {
     PA_DCHECK(ContainsFlags(flags, AllocFlags::kReturnNull));
     return 0;
   }
-  return SuperPagePayloadBegin(super_page, root->IsQuarantineAllowed());
+  return SuperPagePayloadBegin(super_page);
 }
 
 PA_ALWAYS_INLINE uintptr_t
@@ -802,8 +802,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
 
   root->next_partition_page = payload;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
-  PA_DCHECK(payload ==
-            SuperPagePayloadBegin(super_page, root->IsQuarantineAllowed()));
+  PA_DCHECK(payload == SuperPagePayloadBegin(super_page));
   PA_DCHECK(root->next_partition_page_end == SuperPagePayloadEnd(super_page));
 
   // Keep the first partition page in the super page inaccessible to serve as a

@@ -369,19 +369,15 @@ ReservedStateBitmapSize() {
 }
 
 PA_ALWAYS_INLINE uintptr_t
-SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
-                            bool with_quarantine) {
+SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets) {
   return PartitionPageSize() +
-         (is_managed_by_normal_buckets ? ReservedFreeSlotBitmapSize() : 0) +
-         (with_quarantine ? ReservedStateBitmapSize() : 0);
+         (is_managed_by_normal_buckets ? ReservedFreeSlotBitmapSize() : 0);
 }
 
-PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
-                                                 bool with_quarantine) {
+PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   return super_page +
-         SuperPagePayloadStartOffset(IsManagedByNormalBuckets(super_page),
-                                     with_quarantine);
+         SuperPagePayloadStartOffset(IsManagedByNormalBuckets(super_page));
 }
 
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
@@ -393,10 +389,8 @@ PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEnd(uintptr_t super_page) {
   return super_page + SuperPagePayloadEndOffset();
 }
 
-PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page,
-                                             bool with_quarantine) {
-  return SuperPagePayloadEnd(super_page) -
-         SuperPagePayloadBegin(super_page, with_quarantine);
+PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page) {
+  return SuperPagePayloadEnd(super_page) - SuperPagePayloadBegin(super_page);
 }
 
 PA_ALWAYS_INLINE ReadOnlyPartitionSuperPageExtentEntry*
@@ -409,12 +403,9 @@ SlotSpanMetadata::ToSuperPageExtent() const {
 // area devoted to slot spans). It doesn't check whether it's within a valid
 // slot span. It merely ensures it doesn't fall in a meta-data region that would
 // surely never contain user data.
-PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address,
-                                               bool with_quarantine) {
-  // Quarantine can only be enabled for normal buckets in the current code.
-  PA_DCHECK(!with_quarantine || IsManagedByNormalBuckets(address));
+PA_ALWAYS_INLINE bool IsWithinSuperPagePayload(uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
-  uintptr_t payload_start = SuperPagePayloadBegin(super_page, with_quarantine);
+  uintptr_t payload_start = SuperPagePayloadBegin(super_page);
   uintptr_t payload_end = SuperPagePayloadEnd(super_page);
   return address >= payload_start && address < payload_end;
 }
@@ -434,7 +425,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(IsReservationStart(super_page));
-  DCheckIsWithInSuperPagePayload(address);
+  PA_DCHECK(IsWithinSuperPagePayload(address));
 #endif
 
   uintptr_t partition_page_index =
@@ -730,7 +721,6 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::Reset() {
 // early return is needed.
 template <typename Callback>
 void IterateSlotSpans(uintptr_t super_page,
-                      bool with_quarantine,
                       Callback callback) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!(super_page % kSuperPageAlignment));
@@ -738,8 +728,8 @@ void IterateSlotSpans(uintptr_t super_page,
   DCheckRootLockIsAcquired(extent_entry->root);
 #endif
 
-  auto* const first_page_metadata = PartitionPageMetadata::FromAddr(
-      SuperPagePayloadBegin(super_page, with_quarantine));
+  auto* const first_page_metadata =
+      PartitionPageMetadata::FromAddr(SuperPagePayloadBegin(super_page));
   auto* const last_page_metadata = PartitionPageMetadata::FromAddr(
       SuperPagePayloadEnd(super_page) - PartitionPageSize());
   PartitionPageMetadata* page_metadata = nullptr;

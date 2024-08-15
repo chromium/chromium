@@ -38,10 +38,6 @@ void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
 PA_EXPORT_IF_DCHECK_IS_ON()
-void DCheckIsWithInSuperPagePayload(uintptr_t address)
-    PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
-
-PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckNumberOfPartitionPagesInSuperPagePayload(
     WritablePartitionSuperPageExtentEntry* entry,
     const PartitionRoot* root,

@@ -213,17 +213,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using WritableDirectMapExtent = internal::WritablePartitionDirectMapExtent;
   using ReadOnlyDirectMapExtent = internal::ReadOnlyPartitionDirectMapExtent;
 
-  enum class QuarantineMode : uint8_t {
-    kAlwaysDisabled,
-    kDisabledByDefault,
-    kEnabled,
-  };
-
-  enum class ScanMode : uint8_t {
-    kDisabled,
-    kEnabled,
-  };
-
   enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 
   // Root settings accessed on fast paths.
@@ -234,12 +223,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // Chromium-style: Complex constructor needs an explicit out-of-line
     // constructor.
     Settings();
-
-    // Defines whether objects should be quarantined for this root.
-    QuarantineMode quarantine_mode = QuarantineMode::kAlwaysDisabled;
-
-    // Defines whether the root should be scanned.
-    ScanMode scan_mode = ScanMode::kDisabled;
 
     // It's important to default to the 'neutral' distribution, otherwise a
     // switch from 'dense' -> 'neutral' would leave some buckets with dirty
@@ -376,8 +359,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
   std::atomic<int> thread_caches_being_constructed_{0};
-
-  bool quarantine_always_for_testing = false;
 
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
@@ -713,46 +694,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #else
     return internal::kRegularPoolHandle;
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  }
-
-  PA_ALWAYS_INLINE bool IsQuarantineAllowed() const {
-    return settings.quarantine_mode != QuarantineMode::kAlwaysDisabled;
-  }
-
-  PA_ALWAYS_INLINE bool IsQuarantineEnabled() const {
-    return settings.quarantine_mode == QuarantineMode::kEnabled;
-  }
-
-  PA_ALWAYS_INLINE bool ShouldQuarantine(void* object) const {
-    if (settings.quarantine_mode != QuarantineMode::kEnabled) [[unlikely]] {
-      return false;
-    }
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-    if (quarantine_always_for_testing) [[unlikely]] {
-      return true;
-    }
-    // If quarantine is enabled and the tag overflows, move the containing slot
-    // to quarantine, to prevent the attacker from exploiting a pointer that has
-    // an old tag.
-    if (IsMemoryTaggingEnabled()) [[likely]] {
-      return internal::HasOverflowTag(object);
-    }
-    // Default behaviour if MTE is not enabled for this PartitionRoot.
-    return true;
-#else
-    return true;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  }
-
-  PA_ALWAYS_INLINE void SetQuarantineAlwaysForTesting(bool value) {
-    quarantine_always_for_testing = value;
-  }
-
-  PA_ALWAYS_INLINE bool IsScanEnabled() const {
-    // Enabled scan implies enabled quarantine.
-    PA_DCHECK(settings.scan_mode != ScanMode::kEnabled ||
-              IsQuarantineEnabled());
-    return settings.scan_mode == ScanMode::kEnabled;
   }
 
   PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t

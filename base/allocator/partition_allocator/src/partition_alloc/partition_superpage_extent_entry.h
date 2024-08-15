@@ -15,8 +15,6 @@
 #include "partition_alloc/reservation_offset_table.h"
 
 // Should not include partition_root.h, partition_bucket.h, partition_page.h.
-// For IsQuarantineAllowed(), use partition_dcheck_helper.h instead of
-// partition_root.h.
 
 namespace partition_alloc::internal {
 
