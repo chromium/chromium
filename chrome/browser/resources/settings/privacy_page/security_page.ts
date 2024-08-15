@@ -202,8 +202,11 @@ export class SettingsSecurityPageElement extends
 
       hideExtendedReportingRadioButton_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('extendedReportingRemovePrefDependency'),
+        value() {
+          return loadTimeData.getBoolean(
+                     'extendedReportingRemovePrefDependency') &&
+              loadTimeData.getBoolean('hashPrefixRealTimeLookupsSamplePing');
+        },
       },
 
       showDisableSafebrowsingDialog_: Boolean,

@@ -422,6 +422,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           safe_browsing::kExtendedReportingRemovePrefDependency));
 
+  html_source->AddBoolean(
+      "hashPrefixRealTimeLookupsSamplePing",
+      base::FeatureList::IsEnabled(
+          safe_browsing::kHashPrefixRealTimeLookupsSamplePing));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

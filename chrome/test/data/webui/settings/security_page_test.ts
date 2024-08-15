@@ -332,6 +332,7 @@ suite('FlagsDisabled', function() {
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
       extendedReportingRemovePrefDependency: false,
+      hashPrefixRealTimeLookupsSamplePing: false,
     });
     resetRouterForTesting();
   });
@@ -1060,12 +1061,15 @@ suite('SafeBrowsing', function() {
   // </if>
 
   test(
-      'SafeBrowsingReportingToggleNotVisibleWhenExtendedReportingDeprecated',
+      'SafeBrowsingReportingToggleNotVisibleWhenExtendedReportingDeprecatedAndHprtSampled',
       async function() {
         // The safeBrowsingReportingToggle should not be visible if the extended
-        // reporting deprecation flag is enabled.
-        loadTimeData.overrideValues(
-            {'extendedReportingRemovePrefDependency': true});
+        // reporting deprecation flag is enabled and HPRT sampled lookup flag is
+        // enabled.
+        loadTimeData.overrideValues({
+          extendedReportingRemovePrefDependency: true,
+          hashPrefixRealTimeLookupsSamplePing: true,
+        });
         resetRouterForTesting();
 
         await resetPage();
@@ -1075,6 +1079,48 @@ suite('SafeBrowsing', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
 
         assertFalse(isChildVisible(page, '#safeBrowsingReportingToggle'));
+      });
+
+  test(
+      'SafeBrowsingReportingToggleVisibleWhenExtendedReportingDeprecatedAndHprtNotSampled',
+      async function() {
+        // The safeBrowsingReportingToggle should be visible if the extended
+        // reporting deprecation flag is enabled and HPRT sampled lookup flag is
+        // disabled.
+        loadTimeData.overrideValues({
+          extendedReportingRemovePrefDependency: true,
+          hashPrefixRealTimeLookupsSamplePing: false,
+        });
+        resetRouterForTesting();
+
+        await resetPage();
+        page.$.safeBrowsingStandard.click();
+
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+
+        assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
+      });
+
+  test(
+      'SafeBrowsingReportingToggleVisibleWhenExtendedReportingNotDeprecatedAndHprtSampled',
+      async function() {
+        // The safeBrowsingReportingToggle should be visible if the extended
+        // reporting deprecation flag is disabled and HPRT sampled lookup flag
+        // is enabled.
+        loadTimeData.overrideValues({
+          extendedReportingRemovePrefDependency: false,
+          hashPrefixRealTimeLookupsSamplePing: true,
+        });
+        resetRouterForTesting();
+
+        await resetPage();
+        page.$.safeBrowsingStandard.click();
+
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+
+        assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
 });
 
