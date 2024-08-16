@@ -12,15 +12,15 @@ test_invalid_value('text-box', 'leading');
 test_invalid_value('text-box', 'trim-both leading');
 
 // invalid grammars
-text_invalid_value('text-box', 'normal normal');
+test_invalid_value('text-box', 'normal normal');
 test_invalid_value('text-box', 'normal none');
-text_invalid_value('text-box', 'auto normal');
+test_invalid_value('text-box', 'auto normal');
 test_invalid_value('text-box', 'normal text');
 test_invalid_value('text-box', 'text normal');
-text_invalid_value('text-box', 'alphabetic text');
-text_invalid_value('text-box', 'alphabetic cap');
-text_invalid_value('text-box', 'cap none alphabetic');
-text_invalid_value('text-box', 'cap trim-both alphabetic');
-text_invalid_value('text-box', 'text none text');
-text_invalid_value('text-box', 'text trim-both text');
+test_invalid_value('text-box', 'alphabetic text');
+test_invalid_value('text-box', 'alphabetic cap');
+test_invalid_value('text-box', 'cap none alphabetic');
+test_invalid_value('text-box', 'cap trim-both alphabetic');
+test_invalid_value('text-box', 'text none text');
+test_invalid_value('text-box', 'text trim-both text');
 </script>

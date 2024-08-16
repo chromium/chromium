@@ -2652,6 +2652,10 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_a
 crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html [ Timeout ]
+[ Mac15 ] external/wpt/webrtc-encoded-transform/RTCRtpScriptTransform-bad-chunk.https.html [ Timeout ]
+[ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/script-transform.https.html [ Timeout ]
+[ Mac15 ] external/wpt/webrtc-encoded-transform/script-transform.https.html [ Timeout ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-accumulation-001.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-atomic-inline-001.html [ Failure ]
 crbug.com/359926563 external/wpt/css/css-inline/text-box-trim/text-box-trim-dynamic-001.html [ Timeout ]
