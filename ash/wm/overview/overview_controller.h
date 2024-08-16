@@ -24,10 +24,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace ui {
-class PresentationTimeRecorder;
-}  // namespace ui
-
 namespace ash {
 
 class OverviewSession;
@@ -194,7 +190,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   void ResetPauser();
 
   bool IsDeskBarOpen() const;
-  bool IsRenderingDeskBarWithMiniViews() const;
 
   // Collection of DelayedAnimationObserver objects that own widgets that may be
   // still animating after overview mode ends. If shell needs to shut down while
@@ -267,9 +262,6 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   bool desk_bar_shown_immediately_ = false;
 
   OverviewWindowOcclusionCalculator overview_window_occlusion_calculator_;
-
-  std::unique_ptr<ui::PresentationTimeRecorder>
-      enter_presentation_time_recorder_;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
 };
