@@ -33,7 +33,7 @@ class Widget;
 
 namespace tab_groups {
 
-class TabGroupServiceWrapper;
+class TabGroupSyncService;
 class SavedTabGroupButton;
 class SavedTabGroupDragData;
 
@@ -49,7 +49,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
  public:
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
-                   std::unique_ptr<TabGroupServiceWrapper> wrapper_service,
+                   TabGroupSyncService* tab_group_service,
                    bool animations_enabled);
   SavedTabGroupBar(const SavedTabGroupBar&) = delete;
   SavedTabGroupBar& operator=(const SavedTabGroupBar&) = delete;
@@ -235,16 +235,14 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Used to show the overflow menu when clicked.
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 
-  // The wrapper service used to retrieve information about the state of the tab
-  // groups. When kTabGroupSyncServiceDesktopMigration is enabled we use the
-  // TabGroupSyncService to query information. Otherwise, the
-  // SavedTabGroupKeyedService will be used.
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
+  // The service used to manage and query SavedTabGroups.
+  raw_ptr<TabGroupSyncService> tab_group_service_ = nullptr;
 
   // The page navigator used to create tab groups
   raw_ptr<content::PageNavigator, AcrossTasksDanglingUntriaged>
       page_navigator_ = nullptr;
-  raw_ptr<Browser> browser_;
+
+  raw_ptr<Browser> browser_ = nullptr;
 
   // During a drag and drop session, `drag_data_` owns the state for the drag.
   std::unique_ptr<SavedTabGroupDragData> drag_data_;

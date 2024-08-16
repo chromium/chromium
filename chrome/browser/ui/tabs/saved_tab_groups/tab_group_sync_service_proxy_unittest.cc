@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -22,11 +24,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tab_groups {
-class TabGroupServiceWrapperUnitTest
+class TabGroupSyncServiceProxyUnitTest
     : public TestWithBrowserView,
       public ::testing::WithParamInterface<bool> {
  public:
-  TabGroupServiceWrapperUnitTest() {
+  TabGroupSyncServiceProxyUnitTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -41,11 +43,11 @@ class TabGroupServiceWrapperUnitTest
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  ~TabGroupServiceWrapperUnitTest() = default;
-  TabGroupServiceWrapperUnitTest(const TabGroupServiceWrapperUnitTest&) =
+  ~TabGroupSyncServiceProxyUnitTest() = default;
+  TabGroupSyncServiceProxyUnitTest(const TabGroupSyncServiceProxyUnitTest&) =
       delete;
-  TabGroupServiceWrapperUnitTest& operator=(
-      const TabGroupServiceWrapperUnitTest&) = delete;
+  TabGroupSyncServiceProxyUnitTest& operator=(
+      const TabGroupSyncServiceProxyUnitTest&) = delete;
 
   Browser* AddBrowser() {
     Browser::CreateParams native_params(profile_.get(), true);
@@ -73,7 +75,7 @@ class TabGroupServiceWrapperUnitTest
 
   bool IsMigrationEnabled() { return GetParam(); }
 
-  TabGroupServiceWrapper* service() { return wrapper_service_.get(); }
+  TabGroupSyncService* service() { return service_.get(); }
 
   // Return a distant tab at position 0 with the "first" ids.
   SavedTabGroupTab FirstTab(base::Uuid group_guid) {
@@ -113,19 +115,12 @@ class TabGroupServiceWrapperUnitTest
  private:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    if (IsMigrationEnabled()) {
-      wrapper_service_ = std::make_unique<TabGroupServiceWrapper>(
-          TabGroupSyncServiceFactory::GetForProfile(profile_.get()),
-          /*saved_tab_group_keyed_service=*/nullptr);
-    } else {
-      wrapper_service_ = std::make_unique<TabGroupServiceWrapper>(
-          /*tab_group_sync_service=*/nullptr,
-          SavedTabGroupServiceFactory::GetForProfile(profile_.get()));
-    }
+
+    service_ =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_.get());
   }
 
   void TearDown() override {
-    wrapper_service_.reset();
     for (auto& browser : browsers_) {
       browser->tab_strip_model()->CloseAllTabs();
     }
@@ -135,12 +130,12 @@ class TabGroupServiceWrapperUnitTest
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
   std::vector<std::unique_ptr<Browser>> browsers_;
+  raw_ptr<TabGroupSyncService> service_ = nullptr;
 };
 
 // Verify we can add a group to both services correctly.
-TEST_P(TabGroupServiceWrapperUnitTest, AddGroup) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, AddGroup) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -161,7 +156,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, AddGroup) {
 }
 
 // Verify we can remove a group from the services using the local id correctly.
-TEST_P(TabGroupServiceWrapperUnitTest, RemoveGroupUsingLocalId) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveGroupUsingLocalId) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -179,7 +174,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, RemoveGroupUsingLocalId) {
 }
 
 // Verify we can remove a group from the services using the sync id correctly.
-TEST_P(TabGroupServiceWrapperUnitTest, RemoveGroupUsingSyncId) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveGroupUsingSyncId) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -197,7 +192,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, RemoveGroupUsingSyncId) {
 }
 
 // Verify we can update a groups visual data  from the services correctly.
-TEST_P(TabGroupServiceWrapperUnitTest, UpdateVisualData) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateVisualData) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -222,7 +217,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateVisualData) {
   EXPECT_EQ(new_color, retrieved_group->color());
 }
 
-TEST_P(TabGroupServiceWrapperUnitTest, UpdateGroupPositionPinnedState) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionPinnedState) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -246,7 +241,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateGroupPositionPinnedState) {
   EXPECT_EQ(retrieved_group->is_pinned(), pinned_state);
 }
 
-TEST_P(TabGroupServiceWrapperUnitTest, UpdateGroupPositionIndex) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateGroupPositionIndex) {
   auto get_index = [&](const LocalTabGroupID& local_id) -> int {
     std::vector<SavedTabGroup> groups = service()->GetAllGroups();
     auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
@@ -303,7 +298,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateGroupPositionIndex) {
 }
 
 // Verifies that we add tabs to a group at the correct position.
-TEST_P(TabGroupServiceWrapperUnitTest, AddTab) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, AddTab) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(kGroupTitle, kGroupColor, {FirstTab(kGroupId)}, 0,
@@ -338,7 +333,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, AddTab) {
 }
 
 // Verifies that we can update the title and url of a tab in a  saved group.
-TEST_P(TabGroupServiceWrapperUnitTest, UpdateTab) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(kGroupTitle, kGroupColor, {FirstTab(kGroupId)}, 0,
@@ -366,7 +361,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateTab) {
 
 // Verifies that we can remove a tab in a group and that after removing all of
 // the tabs, the group is deleted.
-TEST_P(TabGroupServiceWrapperUnitTest, RemoveTab) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveTab) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -406,7 +401,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, RemoveTab) {
 }
 
 // Verifies that we can move the tabs in a saved group correctly.
-TEST_P(TabGroupServiceWrapperUnitTest, MoveTab) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, MoveTab) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -461,7 +456,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, MoveTab) {
 
 // Verifies that we can update the local tab group mapping of a saved group
 // after it is added to the service.
-TEST_P(TabGroupServiceWrapperUnitTest, UpdateLocalTabGroupMapping) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabGroupMapping) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -483,7 +478,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateLocalTabGroupMapping) {
 
 // Verifies that we can remove the local tab group mapping of a saved group
 // after it is added to the service.
-TEST_P(TabGroupServiceWrapperUnitTest, RemoveLocalTabGroupMapping) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveLocalTabGroupMapping) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -504,7 +499,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, RemoveLocalTabGroupMapping) {
 
 // Verifies that we can update the local tab id mapping for a tab in a saved
 // group after it is added to the service.
-TEST_P(TabGroupServiceWrapperUnitTest, UpdateLocalTabId) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabId) {
   tab_groups::TabGroupId local_id = tab_groups::TabGroupId::GenerateNew();
 
   SavedTabGroup group(
@@ -528,7 +523,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, UpdateLocalTabId) {
 // Verifies that when a new tab group is created in the browser it is saved by
 // default. When it is closed, the group should still be saved but no longer
 // have a local id.
-TEST_P(TabGroupServiceWrapperUnitTest, DefaultSaveNewGroups) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, DefaultSaveNewGroups) {
   EXPECT_EQ(0u, service()->GetAllGroups().size());
 
   // Add some tabs and create a single tab group.
@@ -555,7 +550,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, DefaultSaveNewGroups) {
 
 // Verifies that opening a saved group in the same window properly opens it and
 // associates the local id with the saved id.
-TEST_P(TabGroupServiceWrapperUnitTest, OpenTabGroupInSameWindow) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, OpenTabGroupInSameWindow) {
   EXPECT_EQ(0u, service()->GetAllGroups().size());
 
   // Add some tabs and create a single tab group.
@@ -592,7 +587,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, OpenTabGroupInSameWindow) {
 
 // Verifies that opening a saved group in a different window properly opens it
 // and associates the local id with the saved id.
-TEST_P(TabGroupServiceWrapperUnitTest, OpenTabGroupInDifferentWindow) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, OpenTabGroupInDifferentWindow) {
   EXPECT_EQ(0u, service()->GetAllGroups().size());
 
   // Add some tabs and create a single tab group.
@@ -635,7 +630,7 @@ TEST_P(TabGroupServiceWrapperUnitTest, OpenTabGroupInDifferentWindow) {
 
 // Verifies that opening a saved group that is already open will focus the
 // first tab in the group instead of opening a new one.
-TEST_P(TabGroupServiceWrapperUnitTest,
+TEST_P(TabGroupSyncServiceProxyUnitTest,
        OpenTabGroupFocusFirstTabIfOpenedAlready) {
   EXPECT_EQ(0u, service()->GetAllGroups().size());
 
@@ -675,7 +670,7 @@ TEST_P(TabGroupServiceWrapperUnitTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(TabGroupServiceWrapper,
-                         TabGroupServiceWrapperUnitTest,
+                         TabGroupSyncServiceProxyUnitTest,
                          testing::Bool());
 
 }  // namespace tab_groups

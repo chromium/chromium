@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -566,10 +566,10 @@ void TabGroupEditorBubbleView::UpdateGroup() {
 }
 
 const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
-  if (!wrapper_service.get()) {
+  if (!tab_group_service) {
     return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
   }
 
@@ -578,7 +578,7 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
   if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
   } else {
-    return wrapper_service->GetGroup(group_).has_value()
+    return tab_group_service->GetGroup(group_).has_value()
                ? l10n_util::GetStringUTF16(
                      IDS_TAB_GROUP_HEADER_CXMENU_HIDE_GROUP)
                : l10n_util::GetStringUTF16(
@@ -594,9 +594,9 @@ const std::u16string TabGroupEditorBubbleView::GetSaveToggleAccessibleName()
 }
 
 bool TabGroupEditorBubbleView::CanSaveGroups() const {
-  return (
-      browser_->profile()->IsRegularProfile() &&
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile()));
+  return (browser_->profile()->IsRegularProfile() &&
+          tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+              browser_->profile()));
 }
 
 bool TabGroupEditorBubbleView::CanShareGroups() const {
@@ -607,15 +607,15 @@ bool TabGroupEditorBubbleView::CanShareGroups() const {
 }
 
 bool TabGroupEditorBubbleView::IsGroupSaved() const {
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
-  if (!wrapper_service) {
+  if (!tab_group_service) {
     return false;
   }
 
   const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
-      wrapper_service->GetGroup(group_);
+      tab_group_service->GetGroup(group_);
   if (!maybe_saved_group.has_value()) {
     return false;
   }
@@ -624,15 +624,15 @@ bool TabGroupEditorBubbleView::IsGroupSaved() const {
 }
 
 bool TabGroupEditorBubbleView::IsGroupShared() const {
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
-  if (!wrapper_service) {
+  if (!tab_group_service) {
     return false;
   }
 
   const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
-      wrapper_service->GetGroup(group_);
+      tab_group_service->GetGroup(group_);
   if (!maybe_saved_group.has_value()) {
     return false;
   }
@@ -702,12 +702,12 @@ void TabGroupEditorBubbleView::NewTabInGroupPressed() {
 void TabGroupEditorBubbleView::UngroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_Ungroup"));
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
 
-  if (wrapper_service.get()) {
+  if (tab_group_service) {
     const std::optional<tab_groups::SavedTabGroup> saved_group =
-        wrapper_service->GetGroup(group_);
+        tab_group_service->GetGroup(group_);
     if (tab_groups::IsTabGroupsSaveV2Enabled() && saved_group.has_value()) {
       tab_groups::SavedTabGroupUtils::UngroupSavedGroup(
           browser_, saved_group->saved_guid());
@@ -754,14 +754,14 @@ void TabGroupEditorBubbleView::HideGroupPressed() {
 void TabGroupEditorBubbleView::DeleteGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_DeleteGroup"));
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
-  if (!wrapper_service.get()) {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+  if (!tab_group_service) {
     return HideGroupPressed();
   }
 
   std::optional<tab_groups::SavedTabGroup> saved_group =
-      wrapper_service->GetGroup(group_);
+      tab_group_service->GetGroup(group_);
   if (!saved_group) {
     return HideGroupPressed();
   }
@@ -771,7 +771,7 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
                                                      saved_group->saved_guid());
   } else {
     DeleteGroupFromTabstrip();
-    wrapper_service->RemoveGroup(saved_group->saved_guid());
+    tab_group_service->RemoveGroup(saved_group->saved_guid());
   }
   GetWidget()->Close();
 }
@@ -824,11 +824,11 @@ views::View* TabGroupEditorBubbleView::CreateSavedTabGroupToggle(
                               base::Unretained(this))));
   save_group_toggle_->SetID(TAB_GROUP_HEADER_CXMENU_SAVE_GROUP);
 
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
-  CHECK(wrapper_service.get());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+  CHECK(tab_group_service);
 
-  save_group_toggle_->SetIsOn(wrapper_service->GetGroup(group_).has_value());
+  save_group_toggle_->SetIsOn(tab_group_service->GetGroup(group_).has_value());
   save_group_toggle_->GetViewAccessibility().SetName(
       GetSaveToggleAccessibleName());
   save_group_toggle_->SetProperty(views::kElementIdentifierKey,
@@ -941,10 +941,6 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorBubbleFooterBackground));
 
-  std::unique_ptr<tab_groups::TabGroupServiceWrapper> wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
-  CHECK(wrapper_service.get());
-
   // Get the keyed service and check if saved.
   views::StyledLabel* footer_label =
       AddChildView(std::make_unique<views::StyledLabel>());
@@ -954,7 +950,8 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
 
   // Strings for the footer are different if the user has sync enabled.
   footer_text_substr.push_back(l10n_util::GetStringUTF16(
-      wrapper_service->AreSavedTabGroupsSyncedForProfile(browser->profile())
+      tab_groups::SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(
+          browser->profile())
           ? IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_ENABLED
           : IDS_TAB_GROUP_EDITOR_BUBBLE_FOOTER_SYNC_DISABLED));
 

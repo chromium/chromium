@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
@@ -30,6 +32,7 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -186,11 +189,10 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
 BEGIN_METADATA(SavedTabGroupBar, OverflowMenu)
 END_METADATA
 
-SavedTabGroupBar::SavedTabGroupBar(
-    Browser* browser,
-    std::unique_ptr<TabGroupServiceWrapper> wrapper_service,
-    bool animations_enabled = true)
-    : wrapper_service_(std::move(wrapper_service)),
+SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
+                                   TabGroupSyncService* tab_group_service,
+                                   bool animations_enabled = true)
+    : tab_group_service_(tab_group_service),
       browser_(browser),
       animations_enabled_(animations_enabled),
       v2_ui_enabled_(tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
@@ -198,7 +200,7 @@ SavedTabGroupBar::SavedTabGroupBar(
   // regular, `SavedTabGroupBar` is instantiated. If the #tab-groups-saved
   // feature flag is turned off, there is no SavedTabGroupModel.
   DCHECK(browser_->profile()->IsRegularProfile());
-  DCHECK(wrapper_service_.get());
+  DCHECK(tab_group_service);
   GetViewAccessibility().SetProperties(
       ax::mojom::Role::kToolbar,
       /*name=*/l10n_util::GetStringUTF16(IDS_ACCNAME_SAVED_TAB_GROUPS));
@@ -220,7 +222,14 @@ SavedTabGroupBar::SavedTabGroupBar(
                           base::Unretained(this))));
 
   // Add the observer.
-  wrapper_service_->AddWrapperObserver(this, this);
+  // TODO(crbug.com/359715038): Consider consolidating logic by forwarding
+  // observer in proxy.
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    tab_group_service_->AddObserver(this);
+  } else {
+    static_cast<TabGroupSyncServiceProxy*>(tab_group_service_)
+        ->AddSavedTabGroupModelObserver(this);
+  }
 
   HideOverflowButton();
   if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
@@ -241,10 +250,10 @@ SavedTabGroupBar::SavedTabGroupBar(
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    bool animations_enabled = true)
-    : SavedTabGroupBar(
-          browser,
-          tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile()),
-          animations_enabled) {}
+    : SavedTabGroupBar(browser,
+                       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+                           browser->profile()),
+                       animations_enabled) {}
 
 SavedTabGroupBar::~SavedTabGroupBar() {
   everything_menu_.reset();
@@ -252,7 +261,14 @@ SavedTabGroupBar::~SavedTabGroupBar() {
   // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
-  wrapper_service_->RemoveWrapperObserver(this, this);
+  // TODO(crbug.com/359715038): Consider consolidating logic by forwarding
+  // observer in proxy.
+  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    tab_group_service_->RemoveObserver(this);
+  } else {
+    static_cast<TabGroupSyncServiceProxy*>(tab_group_service_)
+        ->RemoveSavedTabGroupModelObserver(this);
+  }
 }
 
 void SavedTabGroupBar::ShowEverythingMenu() {
@@ -270,7 +286,7 @@ void SavedTabGroupBar::ShowEverythingMenu() {
 
 std::optional<size_t> SavedTabGroupBar::GetIndexOfGroup(
     const base::Uuid& guid) const {
-  std::vector<SavedTabGroup> groups = wrapper_service_->GetAllGroups();
+  std::vector<SavedTabGroup> groups = tab_group_service_->GetAllGroups();
   auto it = base::ranges::find_if(groups, [&](const SavedTabGroup& group) {
     return group.saved_guid() == guid;
   });
@@ -346,7 +362,7 @@ void SavedTabGroupBar::UpdateDropIndex() {
     drop_index = drop_index.value() - 1;
   }
 
-  CHECK_LT(drop_index.value(), wrapper_service_->GetAllGroups().size());
+  CHECK_LT(drop_index.value(), tab_group_service_->GetAllGroups().size());
   drag_data_->SetInsertionIndex(drop_index);
   SchedulePaint();
   if (overflow_menu_) {
@@ -360,13 +376,13 @@ std::optional<size_t> SavedTabGroupBar::GetDropIndex() const {
   }
 
   CHECK_LT(drag_data_->insertion_index().value(),
-           wrapper_service_->GetAllGroups().size());
+           tab_group_service_->GetAllGroups().size());
   return drag_data_->insertion_index();
 }
 
 void SavedTabGroupBar::HandleDrop() {
-  wrapper_service_->UpdateGroupPosition(drag_data_->guid(), std::nullopt,
-                                        GetDropIndex().value());
+  tab_group_service_->UpdateGroupPosition(drag_data_->guid(), std::nullopt,
+                                          GetDropIndex().value());
   drag_data_.reset();
   SchedulePaint();
 }
@@ -389,7 +405,7 @@ bool SavedTabGroupBar::CanDrop(const OSExchangeData& data) {
     return false;
   }
 
-  return wrapper_service_->GetGroup(drag_data.value().guid()).has_value();
+  return tab_group_service_->GetGroup(drag_data.value().guid()).has_value();
 }
 
 void SavedTabGroupBar::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -656,7 +672,7 @@ void SavedTabGroupBar::SavedTabGroupAdded(const base::Uuid& guid) {
   if (!index.has_value()) {
     return;
   }
-  AddTabGroupButton(wrapper_service_->GetGroup(guid).value(), index.value());
+  AddTabGroupButton(tab_group_service_->GetGroup(guid).value(), index.value());
 
   InvalidateLayout();
 }
@@ -673,7 +689,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
     return;
   }
 
-  const std::optional<SavedTabGroup> group = wrapper_service_->GetGroup(guid);
+  const std::optional<SavedTabGroup> group = tab_group_service_->GetGroup(guid);
   SavedTabGroupButton* button =
       views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
 
@@ -709,7 +725,7 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
     }
   }
 
-  const std::vector<SavedTabGroup>& groups = wrapper_service_->GetAllGroups();
+  const std::vector<SavedTabGroup>& groups = tab_group_service_->GetAllGroups();
   for (size_t i = 0; i < groups.size(); ++i) {
     const std::string guid = groups[i].saved_guid().AsLowercaseString();
     if (base::Contains(buttons_by_guid, guid)) {
@@ -726,7 +742,7 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
 
 void SavedTabGroupBar::LoadAllButtonsFromModel() {
   const std::vector<SavedTabGroup>& saved_tab_groups =
-      wrapper_service_->GetAllGroups();
+      tab_group_service_->GetAllGroups();
 
   for (size_t index = 0; index < saved_tab_groups.size(); index++) {
     AddTabGroupButton(saved_tab_groups[index], index);
@@ -760,8 +776,9 @@ views::View* SavedTabGroupBar::GetButton(const base::Uuid& guid) {
 
 void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
                                                const ui::Event& event) {
-  DCHECK(wrapper_service_.get() && wrapper_service_->GetGroup(id).has_value());
-  const std::optional<SavedTabGroup> group = wrapper_service_->GetGroup(id);
+  DCHECK(tab_group_service_.get() &&
+         tab_group_service_->GetGroup(id).has_value());
+  const std::optional<SavedTabGroup> group = tab_group_service_->GetGroup(id);
 
   if (group->saved_tabs().empty()) {
     return;
@@ -773,11 +790,13 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
   bool left_mouse_button_pressed = event.flags() & ui::EF_LEFT_MOUSE_BUTTON;
 
   if (left_mouse_button_pressed || space_pressed) {
-    // Manually retrieve the wrapper service since this function is used as a
+    // Manually retrieve the service since this function is used as a
     // callback which means this code could be run asynchronously.
-    const auto wrapper_service =
-        TabGroupServiceWrapper::GetForProfile(browser_->profile());
-    wrapper_service->OpenTabGroup(
+    tab_groups::TabGroupSyncService* tab_group_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            browser_->profile());
+
+    tab_group_service->OpenTabGroup(
         group->saved_guid(),
         std::make_unique<TabGroupActionContextDesktop>(
             browser_, OpeningSource::kOpenedFromRevisitUi));
@@ -850,7 +869,7 @@ void SavedTabGroupBar::UpdateOverflowMenu() {
     const SavedTabGroupButton* const button =
         views::AsViewClass<SavedTabGroupButton>(child);
     const std::optional<SavedTabGroup> group =
-        wrapper_service_->GetGroup(button->guid());
+        tab_group_service_->GetGroup(button->guid());
 
     overflow_menu_->AddChildView(std::make_unique<SavedTabGroupButton>(
         *group,
@@ -1014,7 +1033,7 @@ void SavedTabGroupBar::MaybeShowClosePromo(const base::Uuid& saved_group_id) {
 
   // Only show this promo if the group exists and was closed.
   const std::optional<tab_groups::SavedTabGroup> group =
-      wrapper_service_->GetGroup(saved_group_id);
+      tab_group_service_->GetGroup(saved_group_id);
   if (!group || group->local_group_id().has_value()) {
     return;
   }

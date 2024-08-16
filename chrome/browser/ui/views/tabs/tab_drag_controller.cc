@@ -35,7 +35,8 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -2799,14 +2800,14 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
 
-  if (!wrapper_service || !wrapper_service->GetGroup(group_.value())) {
+  if (!tab_group_service || !tab_group_service->GetGroup(group_.value())) {
     return;
   }
 
-  observation_pauser_ = wrapper_service->CreateScopedLocalObserverPauser();
+  observation_pauser_ = tab_group_service->CreateScopedLocalObserverPauser();
 }
 
 void TabDragController::MaybeResumeTrackingSavedTabGroup() {
@@ -2819,10 +2820,10 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
 
-  if (!wrapper_service) {
+  if (!tab_group_service) {
     return;
   }
 

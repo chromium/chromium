@@ -38,7 +38,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -1163,12 +1163,12 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
     tab_strip_model = browser->tab_strip_model();
   }
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           tab_strip_model->profile());
 
   // If the service failed to start, then there are no saved tab groups.
-  if (!wrapper_service) {
+  if (!tab_group_service) {
     return false;
   }
 
@@ -1180,7 +1180,7 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
     return false;
   }
 
-  return wrapper_service->GetGroup(tab_group_id.value()).has_value();
+  return tab_group_service->GetGroup(tab_group_id.value()).has_value();
 }
 
 }  // namespace extensions

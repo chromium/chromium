@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_controller.h"
@@ -14,6 +16,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_sync_bridge_mediator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/gfx/range/range.h"
@@ -29,7 +32,7 @@ class DeviceInfoTracker;
 
 namespace tab_groups {
 
-class TabGroupServiceWrapper;
+class TabGroupSyncServiceProxy;
 
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
@@ -44,9 +47,6 @@ class SavedTabGroupKeyedService : public KeyedService,
   SavedTabGroupKeyedService& operator=(const SavedTabGroupKeyedService& other) =
       delete;
   ~SavedTabGroupKeyedService() override;
-
-  // Whether the sync setting is on for saved tab groups.
-  bool AreSavedTabGroupsSynced();
 
   SavedTabGroupModelListener* listener() { return listener_.get(); }
   const SavedTabGroupModel* model() const { return model_.get(); }
@@ -116,6 +116,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   void OnTabsReorderedLocally(const base::Uuid& group_guid);
 
   void OnTabGroupVisualsChanged(const base::Uuid& group_guid);
+
+  TabGroupSyncServiceProxy* proxy() { return service_proxy_.get(); }
 
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
@@ -191,12 +193,12 @@ class SavedTabGroupKeyedService : public KeyedService,
   // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;
 
-  // Represents sync backend. After migration, it will be a pointer to
-  // TabGroupSyncService.
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
-
   // The current representation of this profiles saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
+
+  // Proxy service which implements TabGroupSyncService. Forwards and translates
+  // TabGroupSyncService calls to SavedTabGroupKeyedService calls.
+  std::unique_ptr<TabGroupSyncServiceProxy> service_proxy_;
 
   // Listens to and observers all tabstrip models; updating the
   // SavedTabGroupModel when necessary.

@@ -29,6 +29,7 @@ class WebContents;
 namespace tab_groups {
 
 class SavedTabGroupTab;
+class TabGroupSyncService;
 
 class SavedTabGroupUtils {
  public:
@@ -41,6 +42,14 @@ class SavedTabGroupUtils {
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
+
+  // TODO(crbug.com/350514491): Default to using the TabGroupSyncService when
+  // crbug.com/350514491 is complete.
+  // When IsTabGroupSyncServiceDesktopMigrationEnabled() is true use the
+  // TabGroupSyncService. Otherwise, use SavedTabGroupKeyedService::proxy. This
+  // function will only return nullptr when the services cannot be created, or
+  // the profile is non-regular (Ex: incognito or guest mode).
+  static TabGroupSyncService* GetServiceForProfile(Profile* profile);
 
   static void RemoveGroupFromTabstrip(
       const Browser* browser,
@@ -125,6 +134,9 @@ class SavedTabGroupUtils {
 
   // Returns true if new tab groups should be pinned.
   static bool ShouldAutoPinNewTabGroups(Profile* profile);
+
+  // Returns true if the sync setting is on for saved tab groups.
+  static bool AreSavedTabGroupsSyncedForProfile(Profile* profile);
 };
 
 }  // namespace tab_groups

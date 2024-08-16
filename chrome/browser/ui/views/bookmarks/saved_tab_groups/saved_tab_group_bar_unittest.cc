@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
@@ -23,6 +23,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,7 +83,10 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
 
   bool IsV2UIEnabled() const { return GetParam(); }
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
-  TabGroupServiceWrapper* service() { return wrapper_service_.get(); }
+  TabGroupSyncService* service() {
+    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+        browser()->profile());
+  }
   TestingProfile* profile() { return profile_.get(); }
 
   int button_padding() { return button_padding_; }
@@ -91,19 +95,12 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
     ChromeViewsTestBase::SetUp();
     CreateBrowser();
 
-    saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(
-        browser(),
-        tab_groups::TabGroupServiceWrapper::GetForProfile(browser()->profile()),
-        false);
+    saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(browser(), false);
     saved_tab_group_bar_->SetPageNavigator(nullptr);
-
-    wrapper_service_ =
-        tab_groups::TabGroupServiceWrapper::GetForProfile(browser()->profile());
   }
 
   void TearDown() override {
     saved_tab_group_bar_.reset();
-    wrapper_service_.reset();
     browser_window_.reset();
     browser_.reset();
     profile_.reset();
@@ -112,10 +109,10 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
   }
 
   void Add4Groups() {
-    wrapper_service_->AddGroup(kSavedTabGroup1);
-    wrapper_service_->AddGroup(kSavedTabGroup2);
-    wrapper_service_->AddGroup(kSavedTabGroup3);
-    wrapper_service_->AddGroup(kSavedTabGroup4);
+    service()->AddGroup(kSavedTabGroup1);
+    service()->AddGroup(kSavedTabGroup2);
+    service()->AddGroup(kSavedTabGroup3);
+    service()->AddGroup(kSavedTabGroup4);
   }
 
   int GetWidthOfButtonsAndPadding() {
@@ -168,13 +165,11 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
   Browser* browser() { return browser_.get(); }
 
  private:
-  std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
-  std::unique_ptr<TabGroupServiceWrapper> wrapper_service_;
-
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
 
   static constexpr int button_padding_ = 8;
   static constexpr int button_height_ = 20;
@@ -396,8 +391,8 @@ TEST_P(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
   service()->AddGroup(kSavedTabGroup1);
 
   SavedTabGroupBar another_tab_group_bar_on_same_model(
-      browser(), tab_groups::TabGroupServiceWrapper::GetForProfile(profile()),
-      false);
+      browser(),
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile()), false);
 
   EXPECT_EQ(saved_tab_group_bar()->children().size(),
             another_tab_group_bar_on_same_model.children().size());

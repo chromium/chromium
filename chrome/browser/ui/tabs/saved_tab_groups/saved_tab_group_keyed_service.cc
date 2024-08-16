@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/common/channel_info.h"
@@ -122,10 +123,10 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
     Profile* profile,
     syncer::DeviceInfoTracker* device_info_tracker)
     : profile_(profile),
-      wrapper_service_(std::make_unique<TabGroupServiceWrapper>(nullptr, this)),
       model_(std::make_unique<SavedTabGroupModel>()),
+      service_proxy_(std::make_unique<TabGroupSyncServiceProxy>(this)),
       listener_(
-          std::make_unique<SavedTabGroupModelListener>(wrapper_service_.get(),
+          std::make_unique<SavedTabGroupModelListener>(service_proxy_.get(),
                                                        profile)),
       sync_bridge_mediator_(std::make_unique<TabGroupSyncBridgeMediator>(
           model(),
@@ -147,19 +148,6 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
   model_->RemoveObserver(this);
-}
-
-// Whether the sync setting is on for saved tab groups.
-bool SavedTabGroupKeyedService::AreSavedTabGroupsSynced() {
-  const syncer::SyncService* const sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-
-  if (!sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-
-  return sync_service->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kSavedTabGroups);
 }
 
 syncer::OnceDataTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {

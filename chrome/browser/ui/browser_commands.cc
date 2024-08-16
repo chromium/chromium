@@ -96,7 +96,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1131,8 +1131,8 @@ void MoveTabsToNewWindow(Browser* browser,
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  const auto wrapper_service =
-      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
   std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
 
   tab_groups::TabGroupVisualData visual_data;
@@ -1147,8 +1147,8 @@ void MoveTabsToNewWindow(Browser* browser,
     visual_data = tab_groups::TabGroupVisualData(old_visual_data->title(),
                                                  old_visual_data->color(),
                                                  false /* is_collapsed */);
-    if (wrapper_service && wrapper_service->GetGroup(group.value())) {
-      observation_pauser = wrapper_service->CreateScopedLocalObserverPauser();
+    if (tab_group_service && tab_group_service->GetGroup(group.value())) {
+      observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
     }
   }
 

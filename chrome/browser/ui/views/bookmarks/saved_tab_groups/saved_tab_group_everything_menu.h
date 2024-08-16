@@ -21,7 +21,7 @@
 
 namespace tab_groups {
 
-class TabGroupServiceWrapper;
+class TabGroupSyncService;
 
 // A menu that contains a "Create new tab group" item and all the saved tab
 // groups (if there are any) with color icon and tab group name. If no name is
@@ -99,7 +99,7 @@ class STGEverythingMenu : public views::MenuDelegate,
   // Returns sorted saved tab groups with the most recently created as the
   // first.
   std::vector<base::Uuid> GetSortedTabGroupsByCreationTime(
-      TabGroupServiceWrapper* wrapper_service);
+      TabGroupSyncService* wrapper_service);
 
   // Because all the menu items (i.e. tab group items in the Everything menu -
   // primary menu and their submenus - secondary menu) need to be recognized and

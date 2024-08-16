@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -57,12 +57,9 @@ ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
 TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
     TabGroupSyncService* service,
     Profile* profile)
-    : wrapper_service_(std::make_unique<TabGroupServiceWrapper>(
-          service,
-          /*saved_tab_group_keyed_service=*/nullptr)),
+    : service_(service),
       listener_(
-          std::make_unique<SavedTabGroupModelListener>(wrapper_service_.get(),
-                                                       profile)) {}
+          std::make_unique<SavedTabGroupModelListener>(service_, profile)) {}
 
 TabGroupSyncDelegateDesktop::~TabGroupSyncDelegateDesktop() = default;
 
@@ -70,7 +67,7 @@ void TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
     const base::Uuid& sync_tab_group_id,
     std::unique_ptr<TabGroupActionContext> context) {
   const std::optional<SavedTabGroup> group =
-      wrapper_service_->GetGroup(sync_tab_group_id);
+      service_->GetGroup(sync_tab_group_id);
 
   // In the case where this function is called after confirmation of an
   // interstitial, the saved_group could be null, so protect against this by
@@ -216,8 +213,7 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   tab_strip_model->AddToGroupForRestore(tab_indices, tab_group_id);
 
-  wrapper_service_->UpdateLocalTabGroupMapping(saved_group.saved_guid(),
-                                               tab_group_id);
+  service_->UpdateLocalTabGroupMapping(saved_group.saved_guid(), tab_group_id);
 
   TabGroup* const tab_group =
       tab_strip_model->group_model()->GetTabGroup(tab_group_id);
@@ -233,7 +229,7 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
   tab_group->SetVisualData(visual_data, /*is_customized=*/true);
 
   const std::optional<SavedTabGroup> saved_group2 =
-      wrapper_service_->GetGroup(saved_group.saved_guid());
+      service_->GetGroup(saved_group.saved_guid());
 
   listener_->ConnectToLocalTabGroup(*saved_group2, opened_web_contents_to_uuid);
   return tab_group_id;

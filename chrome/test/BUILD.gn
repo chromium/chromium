@@ -7834,7 +7834,7 @@ test("unit_tests") {
       "../browser/ui/tabs/recent_tabs_builder_test_helper.h",
       "../browser/ui/tabs/recent_tabs_sub_menu_model_unittest.cc",
       "../browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service_unittest.cc",
-      "../browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper_unittest.cc",
+      "../browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy_unittest.cc",
       "../browser/ui/tabs/supports_handles_unittest.cc",
       "../browser/ui/tabs/tab_collection_storage_unittest.cc",
       "../browser/ui/tabs/tab_collection_unittest.cc",
