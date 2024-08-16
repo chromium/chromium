@@ -309,15 +309,18 @@ class CheckBoxMenuItemView : public views::MenuItemView {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::MenuItemView::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(
-        view_delegate_->IsCategoryEnabled(
-            static_cast<AppListSearchControlCategory>(GetCommand()))
-            ? ax::mojom::CheckedState::kTrue
-            : ax::mojom::CheckedState::kFalse);
     // The title of the menu is not focusable but included in the position
     // counting. Explicitly set the hierarchical level of the toggleable menu
     // items to exclude the title.
     node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
+  }
+
+  void UpdateAccessibleCheckedState() override {
+    bool category_enabled = view_delegate_->IsCategoryEnabled(
+        static_cast<AppListSearchControlCategory>(GetCommand()));
+    GetViewAccessibility().SetCheckedState(
+        category_enabled ? ax::mojom::CheckedState::kTrue
+                         : ax::mojom::CheckedState::kFalse);
   }
 
  private:
@@ -359,6 +362,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     menu_item_view->SetIcon(model->GetIconAt(model_index));
     menu_item_view->GetViewAccessibility().SetName(
         model->GetAccessibleNameAt(model_index));
+    menu_item_view->UpdateAccessibleCheckedState();
 
     const ui::ElementIdentifier element_id =
         model->GetElementIdentifierAt(model_index);
@@ -408,6 +412,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
     // Toggle the checkbox icon.
     GetFilterMenuItemByCategory(category)->SetIcon(
         GetCheckboxImage(view_delegate_->IsCategoryEnabled(category)));
+    GetFilterMenuItemByCategory(category)->UpdateAccessibleCheckedState();
   }
 
   void ShowFilterMenu(SearchBoxView* search_box) {

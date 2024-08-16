@@ -416,6 +416,8 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Returns the corresponding border padding from the `MenuConfig`.
   int GetItemHorizontalBorder() const;
 
+  virtual void UpdateAccessibleCheckedState();
+
   void SetTriggerActionWithNonIconChildViews(
       bool trigger_action_with_non_icon_child_views) {
     trigger_action_with_non_icon_child_views_ =
@@ -474,7 +476,6 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
     return parent_menu_item_->GetSubmenu();
   }
 
-  void UpdateAccessibleCheckedState();
   // The RunXXX methods call into this to set up the necessary state before
   // running.
   void PrepareForRun(bool has_mnemonics, bool show_mnemonics);

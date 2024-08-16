@@ -873,6 +873,35 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
                 u"Websites including pages you've visited and open pages");
 }
 
+// Verify that kCheckedState is updated in cache for checkboxmenuitemview
+TEST_P(SearchResultImageViewTest, AccessibleCheckedState) {
+  GetAppListTestHelper()->ShowAppList();
+  auto* app_list_client = GetAppListTestHelper()->app_list_client();
+
+  app_list_client->set_available_categories_for_test(
+      {AppListSearchControlCategory::kApps});
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
+  LeftClickOn(filter_button);
+
+  ui::AXNodeData data;
+  auto* checkbox_menu_item_view =
+      GetSearchBoxView()->GetFilterMenuItemByCategory(
+          AppListSearchControlCategory::kApps);
+  checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  // Execute command to disable category.
+  LeftClickOn(checkbox_menu_item_view);
+
+  data = ui::AXNodeData();
+  checkbox_menu_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
 // Tests that key traversal correctly cycles between the list of results and
 // search box buttons.
 TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {
