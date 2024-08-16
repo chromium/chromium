@@ -113,11 +113,6 @@ bool TestWebUI::CanCallJavascript() {
   return true;
 }
 
-void TestWebUI::CallJavascriptFunctionUnsafe(std::string_view function_name) {
-  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  OnJavascriptCall(*call_data_.back());
-}
-
 void TestWebUI::CallJavascriptFunctionUnsafe(
     std::string_view function_name,
     base::span<const base::ValueView> args) {

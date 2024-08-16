@@ -227,13 +227,6 @@ bool WebUIImpl::CanCallJavascript() {
           frame_host_->GetLastCommittedURL().spec() == url::kAboutBlankURL);
 }
 
-void WebUIImpl::CallJavascriptFunctionUnsafe(std::string_view function_name) {
-  DCHECK(base::IsStringASCII(function_name));
-  std::u16string javascript =
-      base::ASCIIToUTF16(base::StrCat({function_name, "();"}));
-  ExecuteJavascript(javascript);
-}
-
 void WebUIImpl::CallJavascriptFunctionUnsafe(
     std::string_view function_name,
     base::span<const base::ValueView> args) {

@@ -121,7 +121,9 @@ class CONTENT_EXPORT WebUI {
   //
   // All function names in WebUI must consist of only ASCII characters.
   // There are variants for calls with more arguments.
-  virtual void CallJavascriptFunctionUnsafe(std::string_view function_name) = 0;
+  void CallJavascriptFunctionUnsafe(std::string_view function_name) {
+    CallJavascriptFunctionUnsafe(function_name, {});
+  }
 
   virtual void CallJavascriptFunctionUnsafe(
       std::string_view function_name,

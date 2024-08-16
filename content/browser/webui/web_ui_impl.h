@@ -81,7 +81,6 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
                            const std::string& message,
                            base::Value::List args) override;
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(std::string_view function_name) override;
   void CallJavascriptFunctionUnsafe(
       std::string_view function_name,
       base::span<const base::ValueView> args) override;
