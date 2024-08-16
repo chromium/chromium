@@ -29,12 +29,12 @@ unzip -l foo.apks
 ```
 
 *** note
-Adding new features vis feature splits is highly encouraged when it makes sense
+Adding new features via feature splits is highly encouraged when it makes sense
 to do so:
- * Has a non-trivial amount of Dex (>50kb)
+ * Has a non-trivial amount of Java code (after optimization). E.g. >150kb
  * Not needed on startup
  * Has a small integration surface (calls into it must be done with reflection)
- * Not used by WebView (WebView does not support DFMs)
+ * Not used by WebView
 ***
 
 [android_build_instructions.md#multiple-chrome-targets]: android_build_instructions.md#multiple-chrome-targets
