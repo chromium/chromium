@@ -33,6 +33,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
@@ -360,6 +361,28 @@ TEST_F(PinnedToolbarActionsContainerTest,
   ASSERT_EQ(child_views[0]->GetProperty(views::kElementIdentifierKey),
             kPinnedToolbarActionsContainerDividerElementId);
   ASSERT_FALSE(child_views[0]->GetVisible());
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, AccessibleCheckedState) {
+  actions::ActionItem* browser_action_item =
+      browser_view()->browser()->browser_actions()->root_action_item();
+  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+  model()->UpdatePinnedState(actions::kActionCut, true);
+  auto pinned_action_buttons = GetChildToolbarButtons();
+
+  ui::AXNodeData data;
+  pinned_action_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  data = ui::AXNodeData();
+  pinned_action_buttons[0]->AddHighlight();
+  pinned_action_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  pinned_action_buttons[0]->ResetHighlight();
+  pinned_action_buttons[0]->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {

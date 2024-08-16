@@ -86,17 +86,11 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   // TODO(shibalik): Revisit since all pinned actions should not be toggle
   // buttons.
   GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
 }
 
 PinnedActionToolbarButton::~PinnedActionToolbarButton() {
   action_count_changed_subscription_ = {};
-}
-
-void PinnedActionToolbarButton::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  ToolbarButton::GetAccessibleNodeData(node_data);
-  node_data->SetCheckedState(IsActive() ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
 }
 
 bool PinnedActionToolbarButton::IsActive() {
@@ -116,18 +110,12 @@ void PinnedActionToolbarButton::SetIconVisibility(bool is_visible) {
 
 void PinnedActionToolbarButton::AddHighlight() {
   anchor_higlight_ = AddAnchorHighlight();
-  if (pinned_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                             /*send_native_event=*/true);
-  }
+  GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kTrue);
 }
 
 void PinnedActionToolbarButton::ResetHighlight() {
   anchor_higlight_.reset();
-  if (pinned_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                             /*send_native_event=*/true);
-  }
+  GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
 }
 
 void PinnedActionToolbarButton::SetPinned(bool pinned) {

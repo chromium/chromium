@@ -64,7 +64,6 @@ class PinnedActionToolbarButton : public ToolbarButton,
   // ToolbarButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
