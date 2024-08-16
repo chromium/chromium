@@ -28,7 +28,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -590,8 +589,7 @@ struct AttributionDataHostManagerImpl::HeaderPendingDecode {
         reporting_url(std::move(reporting_url)),
         report_header_errors(report_header_errors),
         registration_type(registration_type) {
-    CHECK_EQ(*this->reporting_origin, url::Origin::Create(this->reporting_url),
-             base::NotFatalUntil::M128);
+    CHECK_EQ(*this->reporting_origin, url::Origin::Create(this->reporting_url));
   }
 
   HeaderPendingDecode(const HeaderPendingDecode&) = delete;
@@ -697,7 +695,7 @@ class AttributionDataHostManagerImpl::Registrations {
   bool operator<(const Registrations& other) const { return id() < other.id(); }
 
   void CompleteRegistrations() {
-    CHECK(!registrations_complete_, base::NotFatalUntil::M128);
+    CHECK(!registrations_complete_);
     registrations_complete_ = true;
   }
 
@@ -951,8 +949,7 @@ struct AttributionDataHostManagerImpl::PendingRegistrationData {
       : headers(std::move(headers)),
         reporting_origin(std::move(reporting_origin)),
         reporting_url(std::move(reporting_url)) {
-    CHECK_EQ(*this->reporting_origin, url::Origin::Create(this->reporting_url),
-             base::NotFatalUntil::M128);
+    CHECK_EQ(*this->reporting_origin, url::Origin::Create(this->reporting_url));
   }
 
   PendingRegistrationData(const PendingRegistrationData&) = delete;
@@ -1403,7 +1400,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
     // when the navigation data host disconnects.
     auto [__, inserted] =
         ongoing_background_datahost_registrations_.emplace(navigation_id);
-    CHECK(inserted, base::NotFatalUntil::M128);
+    CHECK(inserted);
 
     receivers_.Add(
         this, std::move(it->second),
@@ -1741,7 +1738,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
     attribution_reporting::SourceRegistration data,
     bool was_fetched_via_service_worker) {
   // This is validated by the Mojo typemapping.
-  CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
+  CHECK(reporting_origin.IsValid());
 
   const RegistrationContext* context =
       GetReceiverRegistrationContextForSource();
@@ -1783,7 +1780,7 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
     attribution_reporting::TriggerRegistration data,
     bool was_fetched_via_service_worker) {
   // This is validated by the Mojo typemapping.
-  CHECK(reporting_origin.IsValid(), base::NotFatalUntil::M128);
+  CHECK(reporting_origin.IsValid());
 
   const RegistrationContext* context =
       GetReceiverRegistrationContextForTrigger();
@@ -1902,7 +1899,7 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  CHECK(!it->registrations_complete(), base::NotFatalUntil::M128);
+  CHECK(!it->registrations_complete());
   if (is_final_response) {
     it->CompleteRegistrations();
   }
