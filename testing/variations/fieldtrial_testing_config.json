@@ -22466,25 +22466,6 @@
             ]
         }
     ],
-    "TabGroupParityAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "skip_tab_group_creation_dialog": "true"
-                    },
-                    "enable_features": [
-                        "TabGroupParityAndroid",
-                        "TabStripGroupIndicatorsAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGroupSyncAndroid": [
         {
             "platforms": [

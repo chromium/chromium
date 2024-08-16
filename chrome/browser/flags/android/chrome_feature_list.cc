@@ -923,7 +923,7 @@ BASE_FEATURE(kTabGroupCreationDialogAndroid,
 
 BASE_FEATURE(kTabGroupParityAndroid,
              "TabGroupParityAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabletTabSwitcherLongPressMenu,
              "TabletTabSwitcherLongPressMenu",
@@ -947,7 +947,7 @@ BASE_FEATURE(kTabStripGroupContextMenuAndroid,
 
 BASE_FEATURE(kTabStripGroupIndicatorsAndroid,
              "TabStripGroupIndicatorsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripLayoutOptimization,
              "TabStripLayoutOptimization",

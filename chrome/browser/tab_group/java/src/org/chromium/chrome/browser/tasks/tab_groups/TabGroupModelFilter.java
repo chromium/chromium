@@ -69,7 +69,7 @@ public class TabGroupModelFilter extends TabModelFilter {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
                     SKIP_TAB_GROUP_CREATION_DIALOG_PARAM,
-                    false);
+                    true);
 
     public static final String SHOW_TAB_GROUP_CREATION_DIALOG_SETTING_PARAM =
             "show_tab_group_creation_dialog_setting";
