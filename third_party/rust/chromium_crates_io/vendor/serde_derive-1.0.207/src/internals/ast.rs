@@ -63,7 +63,7 @@ impl<'a> Container<'a> {
         item: &'a syn::DeriveInput,
         derive: Derive,
     ) -> Option<Container<'a>> {
-        let mut attrs = attr::Container::from_ast(cx, item);
+        let attrs = attr::Container::from_ast(cx, item);
 
         let mut data = match &item.data {
             syn::Data::Enum(data) => Data::Enum(enum_from_ast(cx, &data.variants, attrs.default())),
@@ -77,15 +77,11 @@ impl<'a> Container<'a> {
             }
         };
 
-        let mut has_flatten = false;
         match &mut data {
             Data::Enum(variants) => {
                 for variant in variants {
                     variant.attrs.rename_by_rules(attrs.rename_all_rules());
                     for field in &mut variant.fields {
-                        if field.attrs.flatten() {
-                            has_flatten = true;
-                        }
                         field.attrs.rename_by_rules(
                             variant
                                 .attrs
@@ -97,16 +93,9 @@ impl<'a> Container<'a> {
             }
             Data::Struct(_, fields) => {
                 for field in fields {
-                    if field.attrs.flatten() {
-                        has_flatten = true;
-                    }
                     field.attrs.rename_by_rules(attrs.rename_all_rules());
                 }
             }
-        }
-
-        if has_flatten {
-            attrs.mark_has_flatten();
         }
 
         let mut item = Container {

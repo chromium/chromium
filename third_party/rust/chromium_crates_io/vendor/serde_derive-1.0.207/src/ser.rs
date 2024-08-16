@@ -289,9 +289,18 @@ fn serialize_tuple_struct(
 }
 
 fn serialize_struct(params: &Parameters, fields: &[Field], cattrs: &attr::Container) -> Fragment {
-    assert!(fields.len() as u64 <= u64::from(u32::MAX));
+    assert!(
+        fields.len() as u64 <= u64::from(u32::MAX),
+        "too many fields in {}: {}, maximum supported count is {}",
+        cattrs.name().serialize_name(),
+        fields.len(),
+        u32::MAX,
+    );
 
-    if cattrs.has_flatten() {
+    let has_non_skipped_flatten = fields
+        .iter()
+        .any(|field| field.attrs.flatten() && !field.attrs.skip_serializing());
+    if has_non_skipped_flatten {
         serialize_struct_as_map(params, fields, cattrs)
     } else {
         serialize_struct_as_struct(params, fields, cattrs)
@@ -370,26 +379,8 @@ fn serialize_struct_as_map(
 
     let let_mut = mut_if(serialized_fields.peek().is_some() || tag_field_exists);
 
-    let len = if cattrs.has_flatten() {
-        quote!(_serde::__private::None)
-    } else {
-        let len = serialized_fields
-            .map(|field| match field.attrs.skip_serializing_if() {
-                None => quote!(1),
-                Some(path) => {
-                    let field_expr = get_member(params, field, &field.member);
-                    quote!(if #path(#field_expr) { 0 } else { 1 })
-                }
-            })
-            .fold(
-                quote!(#tag_field_exists as usize),
-                |sum, expr| quote!(#sum + #expr),
-            );
-        quote!(_serde::__private::Some(#len))
-    };
-
     quote_block! {
-        let #let_mut __serde_state = _serde::Serializer::serialize_map(__serializer, #len)?;
+        let #let_mut __serde_state = _serde::Serializer::serialize_map(__serializer, _serde::__private::None)?;
         #tag_field
         #(#serialize_fields)*
         _serde::ser::SerializeMap::end(__serde_state)

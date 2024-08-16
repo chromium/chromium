@@ -1125,8 +1125,7 @@ where
     where
         T: ?Sized + Serialize,
     {
-        tri!(self.0.serialize_key(variant));
-        self.0.serialize_value(value)
+        self.0.serialize_entry(variant, value)
     }
 
     fn serialize_seq(self, _: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
