@@ -357,6 +357,13 @@
        {}
       ]
      ],
+     "missing-parent-map.html": [
+      "a6de311b5fbac56212c79e7e6115a04850777b8f",
+      [
+       null,
+       {}
+      ]
+     ],
      "missing-parent-multi-col.html": [
       "5899e98ba284d475fc0893cbf51dd092bf7cd8c0",
       [
@@ -88445,6 +88452,19 @@
         {}
        ]
       ],
+      "single-line-column-flex-fragmentation-071.html": [
+       "8cea4b75112389b0f69d26ca4afa4c0bbc338fd1",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-row-flex-fragmentation-001.html": [
        "379327a4aff584192f076d3f9d8f3ead232c0f5c",
        [
@@ -163500,6 +163520,19 @@
         {}
        ]
       ],
+      "line-clamp-028.tentative.html": [
+       "b8fa48025b692c325f66e7e5e7685cf461fcf94d",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-028-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-auto-001.tentative.html": [
        "02d8479736d4d6fd7e26df53611624e7a75d0989",
        [
@@ -163936,6 +163969,71 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/line-clamp-auto-034-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-with-ruby-001.tentative.html": [
+       "5f69cc1b71e9eaeceacbbb87140349b5d7590a8c",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-with-ruby-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-with-ruby-002.tentative.html": [
+       "62fe4814bda517297a4ddd5fa3525a8a9d72026f",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-with-ruby-003.tentative.html": [
+       "4a3b83093dd592c009b53c5b1f68fe7fcdc8c8fc",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-with-ruby-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-with-ruby-004.tentative.html": [
+       "6b93203de4d898f9c654baa07c7a2a93f709caa7",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-with-ruby-005.tentative.html": [
+       "af2a19d6fb043c85ead2a185c8ff955e90c9c21c",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-with-ruby-005-ref.html",
           "=="
          ]
         ],
@@ -334806,6 +334904,10 @@
         "01ed862e0a27147bf6be4b2c88e81f897b6ce34a",
         []
        ],
+       "line-clamp-028-ref.html": [
+        "21ec61f5c77f2791c34b220b48ffd4b1f07e58f5",
+        []
+       ],
        "line-clamp-auto-002-ref.html": [
         "fe0a8dbd588a8a56c8ac0488713a061ef83474f9",
         []
@@ -334872,6 +334974,18 @@
        ],
        "line-clamp-auto-034-ref.html": [
         "8fae3b278c124db00b8f79eb0cd0b91cb8752217",
+        []
+       ],
+       "line-clamp-auto-with-ruby-001-ref.html": [
+        "03d12b9c722c8c160830cc01997baa3ee4cf88c3",
+        []
+       ],
+       "line-clamp-auto-with-ruby-003-ref.html": [
+        "0b6a569dc8eb2b3faa3ccd3a1fb80a014b853f61",
+        []
+       ],
+       "line-clamp-auto-with-ruby-005-ref.html": [
+        "dca5f1b120cdb930680f2228156cb3a901d7da42",
         []
        ],
        "line-clamp-with-abspos-001-ref.html": [
@@ -357783,6 +357897,10 @@
       ],
       "scrollend-user-scroll-common.js": [
        "1b63723388284352dd5e83533e996a826fa37d00",
+       []
+      ],
+      "wheel-event-transactions-multiple-action-chains-expected.txt": [
+       "a885f88e30f48445aa248ada1f5c948c82aa7a6e",
        []
       ]
      }
@@ -466879,35 +466997,35 @@
         ]
        ],
        "text-box-computed.html": [
-        "07c074fc0cf2dda3155e8474f32f248131d60f2d",
+        "406a1639f789500c1b5ef854d499cf9c50fa34bb",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-computed.html": [
-        "769c85d3dd86f9949e3ccb3205b7119800463cea",
+        "b5b6f0c5cf737d0bdc3fc7b1b8ced1ec2a759f62",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-invalid.html": [
-        "8defe907da82b95616531fb76328816c5b380d97",
+        "0c1e2d19a3b7cb416a9b32a4aa336564cc2e39f6",
         [
          null,
          {}
         ]
        ],
        "text-box-edge-valid.html": [
-        "b85750767d4a6adc66971d483ac0914e13ecc34f",
+        "27917c02922a2ad171f6edf740482d04d52b7599",
         [
          null,
          {}
         ]
        ],
        "text-box-invalid.html": [
-        "b1b7c489968416d9ded5f9e5b00689a4233bfb6e",
+        "b874c3148fe260620cb5610f5eeee42272fa98fe",
         [
          null,
          {}
@@ -466928,7 +467046,7 @@
         ]
        ],
        "text-box-trim-invalid.html": [
-        "c5b7423f25a827baaa83c89e8decd5872988f6fa",
+        "d0bc05459eea8f8907540c84f2e0f37484127339",
         [
          null,
          {}
@@ -466942,7 +467060,7 @@
         ]
        ],
        "text-box-valid.html": [
-        "5ac9ee81da5039c18bbfe6670eaf5043805f084f",
+        "67894ca71f94967e6c235df54441adfd0e4dd4f2",
         [
          null,
          {}
@@ -484035,7 +484153,7 @@
         ]
        ],
        "calc-size-interpolation-expansion.html": [
-        "b3c2879763e984512429690cb0ffdc5cb7ef85ae",
+        "354d108f1daa5a020aa4499933bf1d965dd6573b",
         [
          null,
          {}
@@ -484178,14 +484296,14 @@
        ]
       ],
       "calc-size-height.html": [
-       "f2232943bd31b207a650e29e5e228487ffe381a5",
+       "540280c872a6c99063a14bed87d8208677e54382",
        [
         null,
         {}
        ]
       ],
       "calc-size-parsing.html": [
-       "e8b3b87ab3856a2ee8369dff0305ec6db0f52226",
+       "6db2635e5ef7a841c84ba1ccf379bddb12192da7",
        [
         null,
         {}
