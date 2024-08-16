@@ -218,7 +218,6 @@ void ActiveSessionAuthControllerImpl::OnAuthSessionStarted(
     return;
   }
 
-  SetState(ActiveSessionAuthState::kInitialized);
   uma_recorder_.RecordShow(reason_);
 
   auth_factor_editor_->GetAuthFactorsConfiguration(
@@ -264,6 +263,7 @@ void ActiveSessionAuthControllerImpl::InitUi() {
   widget_ = CreateAuthDialogWidget(std::move(contents_view));
   contents_view_observer_.Observe(contents_view_);
   contents_view_->AddObserver(this);
+  SetState(ActiveSessionAuthState::kInitialized);
 
   MoveToTheCenter();
   widget_->Show();
@@ -415,7 +415,7 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
   LOG(WARNING) << "SetState is requested from: "
                << ActiveSessionAuthStateToString(state_)
                << " state to : " << ActiveSessionAuthStateToString(state)
-               << "state.";
+               << " state.";
   switch (state) {
     case ActiveSessionAuthState::kWaitForInit:
       break;
@@ -423,9 +423,7 @@ void ActiveSessionAuthControllerImpl::SetState(ActiveSessionAuthState state) {
       CHECK(state_ == ActiveSessionAuthState::kWaitForInit ||
             state_ == ActiveSessionAuthState::kPasswordAuthStarted ||
             state_ == ActiveSessionAuthState::kPinAuthStarted);
-      if (contents_view_) {
-        contents_view_->SetInputEnabled(true);
-      }
+      contents_view_->SetInputEnabled(true);
       break;
     case ActiveSessionAuthState::kPasswordAuthStarted:
       // Disable the UI while we are waiting for the response, except the close
