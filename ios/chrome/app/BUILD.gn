@@ -565,6 +565,7 @@ source_set("app_internal") {
     "//components/previous_session_info",
     "//components/proxy_config",
     "//components/search_engines",
+    "//components/send_tab_to_self",
     "//components/signin/internal/identity_manager",
     "//components/sync",
     "//components/web_resource",

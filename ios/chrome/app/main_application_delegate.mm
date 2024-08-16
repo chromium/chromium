@@ -7,6 +7,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -16,6 +17,7 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -246,7 +248,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
                             true);
   web::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
-        if ([self isContentNotificationAvailable]) {
+        if ([self isContentNotificationAvailable] ||
+            base::FeatureList::IsEnabled(
+                send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
           // TODO(crbug.com/341906612) Remove use of
           // browserProviderInterfaceDoNotUse.
           Browser* browser =

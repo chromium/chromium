@@ -27,6 +27,7 @@ include_rules = [
   "+components/reading_list/core",
   "+components/reading_list/ios",
   "+components/search_engines",
+  "+components/send_tab_to_self",
   "+components/signin/internal",
   "+components/signin/public/identity_manager/identity_manager.h",
   "+components/suggestions",
