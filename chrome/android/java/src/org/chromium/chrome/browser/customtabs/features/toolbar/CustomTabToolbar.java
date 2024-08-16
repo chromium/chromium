@@ -1920,6 +1920,19 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 tab.getUrl(),
                                 clientPackageName);
                     });
+
+            mUrlBar.setAccessibilityDelegate(
+                    new View.AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.setClickable(true);
+                            info.setLongClickable(true);
+                            info.setEnabled(true);
+                            info.setEditable(false);
+                        }
+                    });
         }
     }
 

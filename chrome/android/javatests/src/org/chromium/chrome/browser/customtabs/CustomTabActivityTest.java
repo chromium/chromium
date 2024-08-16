@@ -2786,6 +2786,10 @@ public class CustomTabActivityTest {
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.title_url_container);
         Assert.assertTrue(titleBar.hasOnClickListeners());
 
+        var url = mCustomTabActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        Assert.assertNotNull(
+                "Url bar should have an accessibility delegate.", url.getAccessibilityDelegate());
+
         UserActionTester userActionTester = new UserActionTester();
         ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
         assertThat(userActionTester.getActions(), Matchers.hasItem("CustomTabs.OmniboxClicked"));
