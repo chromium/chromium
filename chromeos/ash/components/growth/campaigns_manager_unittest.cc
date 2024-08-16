@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1728,6 +1729,24 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignMismatch) {
       end.InSecondsFSinceUnixEpoch()));
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignMismatchWithSwitch) {
+  const auto now = base::Time::Now();
+  auto start = now + base::Seconds(5);
+  auto end = now + base::Seconds(10);
+  auto fake_now = now + base::Seconds(8);
+
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(
+      ash::switches::kGrowthCampaignsCurrentTimeSecondsSinceUnixEpoch,
+      base::NumberToString(fake_now.InSecondsFSinceUnixEpoch()));
+  LoadComponentWithScheduling(base::StringPrintf(
+      R"([{"start": %f, "end": %f}])", start.InSecondsFSinceUnixEpoch(),
+      end.InSecondsFSinceUnixEpoch()));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetSchedulingCampaignStartOnly) {

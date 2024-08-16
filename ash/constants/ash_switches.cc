@@ -728,6 +728,11 @@ const char kGrowthCampaigns[] = "growth-campaigns";
 // downloading from Omaha).
 const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 
+// Specifies the device current time in `SecondsSinceUnixEpoch` format for
+// testing.
+const char kGrowthCampaignsCurrentTimeSecondsSinceUnixEpoch[] =
+    "growth-campaigns-current-time";
+
 // Specifies the device registered time in `SecondsSinceUnixEpoch` format for
 // testing.
 const char kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch[] =

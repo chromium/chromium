@@ -234,6 +234,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFormFactor[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGrowthCampaigns[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGrowthCampaignsPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kGrowthCampaignsCurrentTimeSecondsSinceUnixEpoch[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kGrowthCampaignsDelayedTriggerTimeInSecs[];
