@@ -63,6 +63,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // user has opted-in, etc).
   void MaybeRequestNotification(base::OnceClosure completion);
 
+  // Clears all pending requests for this client.
+  void ClearAllRequestedNotifications();
+
   // Request a notification of the given `type`.
   void RequestNotification(TipsNotificationType type,
                            base::OnceClosure completion);

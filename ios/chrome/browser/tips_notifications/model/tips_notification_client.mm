@@ -287,6 +287,13 @@ void TipsNotificationClient::MaybeRequestNotification(
   std::move(completion).Run();
 }
 
+void TipsNotificationClient::ClearAllRequestedNotifications() {
+  [UNUserNotificationCenter.currentNotificationCenter
+      removePendingNotificationRequestsWithIdentifiers:@[
+        kTipsNotificationId
+      ]];
+}
+
 void TipsNotificationClient::RequestNotification(TipsNotificationType type,
                                                  base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -586,6 +593,7 @@ void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool newpermitted_ = IsPermitted();
   if (permitted_ != newpermitted_ && IsSceneLevelForegroundActive()) {
+    ClearAllRequestedNotifications();
     CheckAndMaybeRequestNotification(base::DoNothing());
   }
 }
