@@ -543,6 +543,40 @@ TEST_F(PickerViewTest, LeftClickSearchResultInsertsResult) {
   EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
 }
 
+TEST_F(PickerViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
+  {
+    base::test::TestFuture<void> future;
+    FakePickerViewDelegate delegate({
+        .available_categories = {PickerCategory::kLinks},
+        .zero_state_suggested_results = std::vector<PickerSearchResult>(
+            10, PickerSearchResult::Text(u"abc")),
+        .action_type = PickerActionType::kInsert,
+    });
+    auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+    widget->Show();
+    PickerView* view = GetPickerViewFromWidget(*widget);
+    PickerItemView* result_view = view->zero_state_view_for_testing()
+                                      .primary_section_view_for_testing()
+                                      ->item_views_for_testing()[0];
+    ViewDrawnWaiter().Wait(result_view);
+    LeftClickOn(result_view);
+
+    EXPECT_EQ(delegate.last_opened_result(), std::nullopt);
+    EXPECT_THAT(delegate.last_inserted_result(),
+                Optional(PickerSearchResult::Text(u"abc")));
+  }
+
+  cros_events::Picker_FinishSession expected_event;
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+      .SetAction(cros_events::PickerAction::UNKNOWN)
+      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
+      .SetResultType(cros_events::PickerResultType::TEXT)
+      .SetTotalEdits(0)
+      .SetFinalQuerySize(0)
+      .SetResultIndex(-1);
+  EXPECT_THAT(metrics_recorder_.GetEvents(), ContainsEvent(expected_event));
+}
+
 TEST_F(PickerViewTest, LeftClickSearchResultOpensResult) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({

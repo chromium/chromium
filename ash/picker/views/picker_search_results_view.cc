@@ -264,6 +264,9 @@ void PickerSearchResultsView::OnTrailingLinkClicked(
 
 int PickerSearchResultsView::GetIndex(
     const PickerSearchResult& inserted_result) {
+  if (top_results_.empty()) {
+    return -1;
+  }
   auto it = base::ranges::find(top_results_, inserted_result);
   if (it == top_results_.end()) {
     return kMaxIndexForMetrics;
