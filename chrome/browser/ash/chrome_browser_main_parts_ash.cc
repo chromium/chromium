@@ -1647,6 +1647,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
     user_image_manager_registry->Shutdown();
   }
   if (g_browser_process->platform_part()->user_manager()) {
+    g_browser_process->platform_part()
+        ->browser_policy_connector_ash()
+        ->OnUserManagerShutdown();
     g_browser_process->platform_part()->user_manager()->Shutdown();
   }
 

@@ -1377,8 +1377,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   // verify that the underlying policy subsystem will start a fetch
   // without this request as well, the user_manager::UserManager must be
   // prevented from seeing the policy change.
-  static_cast<ash::ChromeUserManagerImpl*>(user_manager::UserManager::Get())
-      ->StopPolicyObserverForTesting();
+  g_browser_process->platform_part()
+      ->browser_policy_connector_ash()
+      ->OnUserManagerShutdown();
 
   UploadDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);

@@ -117,20 +117,13 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
   if (auto* login_state = ash::LoginState::Get()) {
     login_state->OnUserManagerCreated(user_manager_.get());
   }
-  if (auto* policy_manager =
-          browser_policy_connector_ash()->GetDeviceCloudPolicyManager()) {
-    policy_manager->OnUserManagerCreated(user_manager_.get());
-  }
-
+  browser_policy_connector_ash()->OnUserManagerCreated(user_manager_.get());
   user_manager_->Initialize();
 }
 
 void BrowserProcessPlatformPart::DestroyUserManager() {
   user_manager_->Destroy();
-  if (auto* policy_manager =
-          browser_policy_connector_ash()->GetDeviceCloudPolicyManager()) {
-    policy_manager->OnUserManagerWillBeDestroyed(user_manager_.get());
-  }
+  browser_policy_connector_ash()->OnUserManagerWillBeDestroyed();
   if (auto* login_state = ash::LoginState::Get()) {
     login_state->OnUserManagerWillBeDestroyed(user_manager_.get());
   }

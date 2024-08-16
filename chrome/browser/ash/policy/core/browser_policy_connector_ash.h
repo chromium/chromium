@@ -37,10 +37,15 @@ namespace enterprise_management {
 class PolicyData;
 }  // namespace enterprise_management
 
+namespace user_manager {
+class UserManager;
+}  // namespace user_manager
+
 namespace policy {
 
 class AdbSideloadingAllowanceModePolicyHandler;
 class BluetoothPolicyHandler;
+class CloudExternalDataPolicyObserver;
 class CrdAdminSessionController;
 class DeviceCloudExternalDataPolicyHandler;
 class DeviceCloudPolicyInitializer;
@@ -223,6 +228,17 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Registers device refresh rate pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Called when UserManager instance is created.
+  void OnUserManagerCreated(user_manager::UserManager* user_manager);
+
+  // Called when UserManager instance is going to be shutdown soon.
+  // TODO(b/278643115): Consider to merge into OnUserManagerWillBeDestroyed()
+  // on resolving instance deletion timing issue.
+  void OnUserManagerShutdown();
+
+  // Called when UserManager instance will be destroyed soon.
+  void OnUserManagerWillBeDestroyed();
+
   // DeviceCloudPolicyManagerAsh::Observer:
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
@@ -298,6 +314,9 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       device_dlc_predownload_list_policy_handler_;
   std::unique_ptr<DeviceRestrictionScheduleController>
       device_restriction_schedule_controller_;
+
+  std::vector<std::unique_ptr<CloudExternalDataPolicyObserver>>
+      cloud_external_data_policy_observers_;
 
   // This policy provider is used on Chrome OS to feed user policy into the
   // global PolicyService instance. This works by installing the cloud policy

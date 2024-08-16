@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/users/affiliation.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/policy/external_data/cloud_external_data_policy_observer.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -59,8 +58,6 @@ class ChromeUserManagerImpl
   // policy::DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
   void OnDeviceLocalAccountsChanged() override;
-
-  void StopPolicyObserverForTesting();
 
   // policy::MinimumVersionPolicyHandler::Observer:
   void OnMinimumVersionStateChanged() override;
@@ -129,9 +126,6 @@ class ChromeUserManagerImpl
 
   base::CallbackListSubscription ephemeral_users_enabled_subscription_;
   base::CallbackListSubscription local_accounts_subscription_;
-
-  std::vector<std::unique_ptr<policy::CloudExternalDataPolicyObserver>>
-      cloud_external_data_policy_observers_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

@@ -48,12 +48,6 @@
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/print_servers_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/printers_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/user_avatar_image_external_data_handler.h"
-#include "chrome/browser/ash/policy/external_data/handlers/wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -236,47 +230,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   if (GetMinimumVersionPolicyHandler()) {
     GetMinimumVersionPolicyHandler()->AddObserver(this);
   }
-
-  // TODO(b/278643115): Move this out from ChromeUserManagerImpl.
-  policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceLocalAccountPolicyService();
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kUserAvatarImage, this,
-          std::make_unique<policy::UserAvatarImageExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kWallpaperImage, this,
-          std::make_unique<policy::WallpaperImageExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kPrintersBulkConfiguration, this,
-          std::make_unique<policy::PrintersExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kExternalPrintServers, this,
-          std::make_unique<policy::PrintServersExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kCrostiniAnsiblePlaybook, this,
-          std::make_unique<
-              policy::CrostiniAnsiblePlaybookExternalDataHandler>()));
-  cloud_external_data_policy_observers_.push_back(
-      std::make_unique<policy::CloudExternalDataPolicyObserver>(
-          cros_settings(), device_local_account_policy_service,
-          policy::key::kPreconfiguredDeskTemplates, this,
-          std::make_unique<
-              policy::PreconfiguredDeskTemplatesExternalDataHandler>()));
-  for (auto& observer : cloud_external_data_policy_observers_) {
-    observer->Init();
-  }
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
@@ -310,12 +263,6 @@ void ChromeUserManagerImpl::Shutdown() {
   if (device_local_account_policy_service_) {
     device_local_account_policy_service_->RemoveObserver(this);
   }
-
-  cloud_external_data_policy_observers_.clear();
-}
-
-void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
-  cloud_external_data_policy_observers_.clear();
 }
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {

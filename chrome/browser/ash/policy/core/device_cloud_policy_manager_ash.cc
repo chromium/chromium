@@ -273,8 +273,7 @@ void DeviceCloudPolicyManagerAsh::OnUserManagerCreated(
       std::make_unique<ReportingUserTracker>(user_manager);
 }
 
-void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed(
-    user_manager::UserManager* user_manager) {
+void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed() {
   // DeviceStatusCollector internally holds the reference to the
   // ReportingUserTracker instance, so should be released via Shutdown()
   // before this is reached.
