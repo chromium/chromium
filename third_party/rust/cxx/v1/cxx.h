@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 // Forwarding header to the specific cxx version header.
-#include "third_party/rust/chromium_crates_io/vendor/cxx-1.0.124/include/cxx.h"
+#include "third_party/rust/chromium_crates_io/vendor/cxx-1.0.126/include/cxx.h"
