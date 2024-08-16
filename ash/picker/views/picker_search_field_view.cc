@@ -11,6 +11,7 @@
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/views/picker_focus_indicator.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -18,6 +19,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -28,6 +30,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -228,6 +231,56 @@ void PickerSearchFieldView::SetShouldShowFocusIndicator(
   SchedulePaint();
 }
 
+views::View* PickerSearchFieldView::GetViewLeftOf(views::View* view) {
+  if (!Contains(view)) {
+    return nullptr;
+  }
+  views::View* left_view = GetNextPickerPseudoFocusableView(
+      view, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+  return Contains(left_view) ? left_view : nullptr;
+}
+
+views::View* PickerSearchFieldView::GetViewRightOf(views::View* view) {
+  if (!Contains(view)) {
+    return nullptr;
+  }
+  views::View* right_view = GetNextPickerPseudoFocusableView(
+      view, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+  return Contains(right_view) ? right_view : nullptr;
+}
+
+bool PickerSearchFieldView::LeftEventShouldMoveCursor(
+    views::View* pseudo_focused_view) {
+  if (pseudo_focused_view == textfield_ &&
+      textfield_->GetCursorPosition() != GetQueryStartIndexForTraversal()) {
+    return true;
+  }
+  return GetViewLeftOf(pseudo_focused_view) == nullptr;
+}
+
+bool PickerSearchFieldView::RightEventShouldMoveCursor(
+    views::View* pseudo_focused_view) {
+  if (pseudo_focused_view == textfield_ &&
+      textfield_->GetCursorPosition() != GetQueryEndIndexForTraversal()) {
+    return true;
+  }
+  return GetViewRightOf(pseudo_focused_view) == nullptr;
+}
+
+void PickerSearchFieldView::OnGainedPseudoFocusFromLeftEvent(
+    views::View* pseudo_focused_view) {
+  if (pseudo_focused_view == textfield_) {
+    textfield_->SetSelectedRange(gfx::Range(GetQueryEndIndexForTraversal()));
+  }
+}
+
+void PickerSearchFieldView::OnGainedPseudoFocusFromRightEvent(
+    views::View* pseudo_focused_view) {
+  if (pseudo_focused_view == textfield_) {
+    textfield_->SetSelectedRange(gfx::Range(GetQueryStartIndexForTraversal()));
+  }
+}
+
 void PickerSearchFieldView::ClearButtonPressed() {
   textfield_->SetText(u"");
   ContentsChanged(textfield_, u"");
@@ -255,6 +308,20 @@ void PickerSearchFieldView::NotifyInitialActiveDescendantForA11y() {
   if (active_descendant_tracker_) {
     SetTextfieldActiveDescendant(active_descendant_tracker_.view());
   }
+}
+
+size_t PickerSearchFieldView::GetQueryStartIndexForTraversal() {
+  // The query start index should actually be the same regardless of text
+  // direction, but we reverse it here since left / right key events are swapped
+  // when traversing Picker UI in RTL.
+  return base::i18n::IsRTL() ? GetQueryText().length() : 0;
+}
+
+size_t PickerSearchFieldView::GetQueryEndIndexForTraversal() {
+  // The query end index should actually be the same regardless of text
+  // direction, but we reverse it here since left / right key events are swapped
+  // when traversing Picker UI in RTL.
+  return base::i18n::IsRTL() ? 0 : GetQueryText().length();
 }
 
 BEGIN_METADATA(PickerSearchFieldView)

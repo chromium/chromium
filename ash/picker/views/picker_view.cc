@@ -493,14 +493,26 @@ bool PickerView::MovePseudoFocusDown() {
 }
 
 bool PickerView::MovePseudoFocusLeft() {
-  if (IsContainedInSubmenu(GetPseudoFocusedView())) {
+  views::View* pseudo_focused_view = GetPseudoFocusedView();
+  if (IsContainedInSubmenu(pseudo_focused_view)) {
     SetPseudoFocusedView(submenu_controller_.GetAnchorView());
     submenu_controller_.Close();
     return true;
   }
 
+  if (search_field_view_->Contains(pseudo_focused_view)) {
+    if (search_field_view_->LeftEventShouldMoveCursor(pseudo_focused_view)) {
+      return false;
+    }
+    views::View* left_view =
+        search_field_view_->GetViewLeftOf(pseudo_focused_view);
+    SetPseudoFocusedView(left_view);
+    search_field_view_->OnGainedPseudoFocusFromLeftEvent(left_view);
+    return true;
+  }
+
   if (views::View* left_item =
-          active_item_container_->GetItemLeftOf(GetPseudoFocusedView())) {
+          active_item_container_->GetItemLeftOf(pseudo_focused_view)) {
     SetPseudoFocusedView(left_item);
     return true;
   }
@@ -508,15 +520,27 @@ bool PickerView::MovePseudoFocusLeft() {
 }
 
 bool PickerView::MovePseudoFocusRight() {
-  if (views::IsViewClass<PickerItemWithSubmenuView>(GetPseudoFocusedView())) {
-    views::AsViewClass<PickerItemWithSubmenuView>(GetPseudoFocusedView())
+  views::View* pseudo_focused_view = GetPseudoFocusedView();
+  if (views::IsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view)) {
+    views::AsViewClass<PickerItemWithSubmenuView>(pseudo_focused_view)
         ->ShowSubmenu();
     SetPseudoFocusedView(submenu_controller_.GetSubmenuView()->GetTopItem());
     return true;
   }
 
+  if (search_field_view_->Contains(pseudo_focused_view)) {
+    if (search_field_view_->RightEventShouldMoveCursor(pseudo_focused_view)) {
+      return false;
+    }
+    views::View* right_view =
+        search_field_view_->GetViewRightOf(pseudo_focused_view);
+    SetPseudoFocusedView(right_view);
+    search_field_view_->OnGainedPseudoFocusFromRightEvent(right_view);
+    return true;
+  }
+
   if (views::View* right_item =
-          active_item_container_->GetItemRightOf(GetPseudoFocusedView())) {
+          active_item_container_->GetItemRightOf(pseudo_focused_view)) {
     SetPseudoFocusedView(right_item);
     return true;
   }

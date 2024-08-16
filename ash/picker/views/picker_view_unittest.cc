@@ -73,6 +73,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -2261,6 +2262,44 @@ TEST_F(PickerViewTest, KeyEventsNavigateWithinSubmenu) {
   EXPECT_THAT(delegate.last_opened_result(),
               Optional(PickerSearchResult::NewWindow(
                   PickerSearchResult::NewWindowData::Type::kSheet)));
+}
+
+TEST_F(PickerViewTest, LeftArrowKeyNavigatesToBackButton) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  // Select a category so that the back button is visible.
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  // Navigate to the back button from the textfield, then select it.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_LEFT, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_TRUE(picker_view->zero_state_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, RightArrowKeyNavigatesToClearButton) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  // Type a query so that the clear button is visible.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  const views::Textfield& textfield = GetPickerViewFromWidget(*widget)
+                                          ->search_field_view_for_testing()
+                                          .textfield_for_testing();
+  EXPECT_EQ(textfield.GetText(), u"a");
+
+  // Navigate to the clear button from the textfield, then select it.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  EXPECT_TRUE(textfield.GetText().empty());
 }
 
 TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
