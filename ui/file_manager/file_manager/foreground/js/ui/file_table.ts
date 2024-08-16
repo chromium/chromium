@@ -10,7 +10,7 @@ import {RateLimiter} from '../../../common/js/async_util.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {entriesToURLs, isTeamDriveRoot} from '../../../common/js/entry_utils.js';
-import {getType, isAudio, isEncrypted, isImage, isRaw, isVideo} from '../../../common/js/file_type.js';
+import {getType, isAudio, isEncrypted, isImage, isPDF, isRaw, isVideo} from '../../../common/js/file_type.js';
 import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
@@ -768,8 +768,9 @@ export class FileTable extends Table {
     const locationInfo = this.volumeManager_!.getLocationInfo(entry);
     const icon =
         renderFileTypeIcon(this.ownerDocument, entry, locationInfo, mimeType);
-    if (isImage(entry, mimeType) || isVideo(entry, mimeType) ||
-        isAudio(entry, mimeType) || isRaw(entry, mimeType)) {
+    if (isImage(entry, mimeType) || isPDF(entry, mimeType) ||
+        isVideo(entry, mimeType) || isAudio(entry, mimeType) ||
+        isRaw(entry, mimeType)) {
       icon.appendChild(this.renderThumbnail_(entry, icon));
     }
     icon.appendChild(this.renderCheckmark_());
