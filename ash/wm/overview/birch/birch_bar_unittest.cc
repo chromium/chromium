@@ -1240,7 +1240,9 @@ TEST_F(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
 
   // Click on the menu item to toggle temperature units.
   auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* toggle_temperature_units = chip_menu->GetMenuItemAt(2);
+  // TODO(http:/b/360072119): increase the index when the issue is fixed and
+  // submenu is recovered.
+  auto* toggle_temperature_units = chip_menu->GetMenuItemAt(1);
   EXPECT_EQ(toggle_temperature_units->GetCommand(),
             base::to_underlying(
                 BirchChipContextMenuModel::CommandId::kToggleTemperatureUnits));
@@ -1252,7 +1254,8 @@ TEST_F(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
 
 // Tests that there is no crash if hiding the suggestions by toggle the switch
 // button in chip's submenu.
-TEST_F(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
+// TODO(http:/b/360072119): re-enabled the test when the issue is fixed.
+TEST_F(BirchBarMenuTest, DISABLED_NoCrashHideSuggestionsByChipSubmenu) {
   // Set show suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
 
@@ -1291,7 +1294,8 @@ TEST_F(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
 
 // Tests that there is no crash if customizing the suggestions by selecting the
 // checkboxes in chip's submenu.
-TEST_F(BirchBarMenuTest, NoCrashCustomizeSuggestionsByChipSubmenu) {
+// TODO(http:/b/360072119): re-enabled the test when the issue is fixed.
+TEST_F(BirchBarMenuTest, DISABLED_NoCrashCustomizeSuggestionsByChipSubmenu) {
   // Set show suggestions and enable weather suggestions initially.
   GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
 
