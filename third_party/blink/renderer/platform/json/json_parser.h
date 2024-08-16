@@ -29,6 +29,12 @@ struct PLATFORM_EXPORT JSONParseError {
   int line;
   int column;
   String message;
+
+  // These aren't errors per se, but irregularities that clients may wish to
+  // surface to the user.
+
+  // Keys for which one object had the same key twice.
+  Vector<String> duplicate_keys;
 };
 
 enum class JSONCommentState {
