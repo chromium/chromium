@@ -816,7 +816,7 @@ BASE_FEATURE(kAutofillLogDeduplicationMetrics,
 // TODO(crbug.com/325450676): Remove when launched.
 BASE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates,
              "AutofillSilentlyRemoveQuasiDuplicates",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Currently, the importing logic offers new profile creation if the observed
 // profile is non-mergeable with any existing profile. With this feature, low-
