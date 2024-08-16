@@ -933,11 +933,13 @@ std::u16string BirchSelfShareItem::GetSubtitle(
 BirchLostMediaItem::BirchLostMediaItem(
     const GURL& source_url,
     const std::u16string& media_title,
+    const std::optional<ui::ImageModel>& backup_icon,
     const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure activation_callback)
     : BirchItem(media_title, GetSubtitle(secondary_icon_type)),
       source_url_(source_url),
       media_title_(media_title),
+      backup_icon_(backup_icon),
       secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(activation_callback)) {}
 
@@ -976,7 +978,8 @@ void BirchLostMediaItem::PerformAction() {
 }
 
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImage(source_url_, /*is_page_url=*/true, GetChromeBackupIcon(),
+  GetFaviconImage(source_url_, /*is_page_url=*/true,
+                  backup_icon_.value_or(GetChromeBackupIcon()),
                   secondary_icon_type_, std::move(callback));
 }
 

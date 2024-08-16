@@ -448,6 +448,7 @@ class BirchBarTest : public AshTestBase {
       item_list.emplace_back(
           /*source_url=*/GURL("https://www.source.com/"),
           /*media_title=*/u"media title",
+          /*backup_icon=*/std::nullopt,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);

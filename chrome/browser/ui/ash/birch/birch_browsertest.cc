@@ -199,7 +199,7 @@ class TestLostMediaProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override {
     std::vector<BirchLostMediaItem> items;
     items.emplace_back(GURL("https://www.source.com"), u"media title",
-                       SecondaryIconType::kLostMediaVideo,
+                       std::nullopt, SecondaryIconType::kLostMediaVideo,
                        base::BindRepeating(&TestLostMediaProvider::OnActivation,
                                            weak_factory_.GetWeakPtr()));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));
