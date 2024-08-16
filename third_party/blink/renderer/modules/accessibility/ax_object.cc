@@ -7549,6 +7549,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kLineBreak:
     case ax::mojom::blink::Role::kLink:
     case ax::mojom::blink::Role::kListBoxOption:
+    case ax::mojom::blink::Role::kListMarker:
     case ax::mojom::blink::Role::kMath:
     case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:
@@ -7765,7 +7766,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kLegend:
     case ax::mojom::blink::Role::kList:
     case ax::mojom::blink::Role::kListItem:
-    case ax::mojom::blink::Role::kListMarker:
     case ax::mojom::blink::Role::kMark:
     case ax::mojom::blink::Role::kNone:
     case ax::mojom::blink::Role::kParagraph:

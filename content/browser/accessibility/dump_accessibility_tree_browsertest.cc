@@ -3184,6 +3184,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityProgress) {
   RunHtmlTest(FILE_PATH_LITERAL("progress.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, PseudoElementListMarker) {
+  RunHtmlTest(FILE_PATH_LITERAL("pseudo-element-list-marker.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityProgressWithBackgroundExposesValues) {
   RunRegressionTest(

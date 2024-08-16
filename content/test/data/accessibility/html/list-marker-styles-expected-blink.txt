@@ -65,13 +65,13 @@ rootWebArea
 ++++++++++++inlineTextBox name='content: none'
 ++++++list
 ++++++++listItem listStyle=other
-++++++++++listMarker
+++++++++++listMarker name='bar'
 ++++++++++++staticText ignored name='bar'
 ++++++++++staticText name='content: 'bar''
 ++++++++++++inlineTextBox name='content: 'bar''
 ++++++list
 ++++++++listItem listStyle=image
-++++++++++listMarker
+++++++++++listMarker name='baz'
 ++++++++++++staticText ignored name='baz'
 ++++++++++staticText name='content: 'baz''
 ++++++++++++inlineTextBox name='content: 'baz''
