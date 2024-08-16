@@ -14,7 +14,7 @@ const DOCUMENT_MATCH_TYPE: string = 'document';
 const HISTORY_CLUSTER_MATCH_TYPE: string = 'history-cluster';
 const PEDAL: string = 'pedal';
 
-export interface RealboxIconElement {
+export interface SearchboxIconElement {
   $: {
     container: HTMLElement,
     icon: HTMLElement,
@@ -24,9 +24,9 @@ export interface RealboxIconElement {
 
 // The LHS icon. Used on autocomplete matches as well as the realbox input to
 // render icons, favicons, and entity images.
-export class RealboxIconElement extends PolymerElement {
+export class SearchboxIconElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-icon';
+    return 'cr-searchbox-icon';
   }
 
   static get template() {
@@ -301,4 +301,4 @@ export class RealboxIconElement extends PolymerElement {
   }
 }
 
-customElements.define(RealboxIconElement.is, RealboxIconElement);
+customElements.define(SearchboxIconElement.is, SearchboxIconElement);

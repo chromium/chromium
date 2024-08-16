@@ -8,17 +8,17 @@ import {PageCallbackRouter, PageHandler} from './searchbox.mojom-webui.js';
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo
  * handler interface used for bidirectional communication between the
- * <cr-realbox> or the <cr-realbox-dropdown> and the browser.
+ * <cr-searchbox> or the <cr-searchbox-dropdown> and the browser.
  */
 
-let instance: RealboxBrowserProxy|null = null;
+let instance: SearchboxBrowserProxy|null = null;
 
-export class RealboxBrowserProxy {
-  static getInstance(): RealboxBrowserProxy {
-    return instance || (instance = new RealboxBrowserProxy());
+export class SearchboxBrowserProxy {
+  static getInstance(): SearchboxBrowserProxy {
+    return instance || (instance = new SearchboxBrowserProxy());
   }
 
-  static setInstance(newInstance: RealboxBrowserProxy) {
+  static setInstance(newInstance: SearchboxBrowserProxy) {
     instance = newInstance;
   }
 

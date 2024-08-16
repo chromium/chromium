@@ -122,7 +122,7 @@ struct OmniboxPopupSelection {
 // searchboxes which communicate with this interface are chrome://new-tab-page
 // and two chrome-untrusted://lens pages.
 interface PageHandler {
-  // The RealboxBrowserProxy singleton calls this when it's first initialized.
+  // The SearchboxBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
   // Informs the handler and model about focus state changes.
   OnFocusChanged(bool focused);

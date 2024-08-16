@@ -153,11 +153,11 @@ ntp-middle-slot-promo {
   max-width: var(--ntp-search-box-width);
 }
 
-cr-realbox {
+cr-searchbox {
   visibility: hidden;
 }
 
-cr-realbox[shown] {
+cr-searchbox[shown] {
   visibility: visible;
 }
 

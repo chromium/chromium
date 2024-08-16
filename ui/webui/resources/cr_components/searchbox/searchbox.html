@@ -163,7 +163,7 @@
     background-color: var(--color-realbox-background-hovered);
   }
 
-  cr-realbox-icon {
+  cr-searchbox-icon {
     height: 100%;
     left: var(--cr-realbox-icon-left-position);
     position: absolute;
@@ -175,7 +175,7 @@
     display: none;
   }
 
-  :host-context([dir='rtl']) cr-realbox-icon {
+  :host-context([dir='rtl']) cr-searchbox-icon {
     left: unset;
     right: 12px;
   }
@@ -282,11 +282,11 @@
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  :-webkit-any(input, cr-realbox-icon, .realbox-icon-button) {
+  :-webkit-any(input, cr-searchbox-icon, .realbox-icon-button) {
     z-index: 100;
   }
 
-  cr-realbox-dropdown {
+  cr-searchbox-dropdown {
     left: 0;
     position: absolute;
     right: 0;
@@ -324,18 +324,18 @@
       on-keyup="onInputKeyup_" on-mousedown="onInputMouseDown_"
       on-paste="onInputPaste_">
   </input>
-  <cr-realbox-icon id="icon" match="[[selectedMatch_]]"
+  <cr-searchbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
-  </cr-realbox-icon>
+  </cr-searchbox-icon>
   <template is="dom-if" if="[[showThumbnail]]">
     <div id="thumbnailContainer">
       <!--Tabindex is set to 1 so that the thumbnail is tabbed first,
         then the search box. -->
-      <cr-realbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
+      <cr-searchbox-thumbnail id="thumbnail" thumbnail-url_="[[thumbnailUrl_]]"
           on-remove-thumbnail-click="onRemoveThumbnailClick_"
           role="button" aria-label="[[i18n('searchboxThumbnailLabel')]]"
           tabindex="1">
-      </cr-realbox-thumbnail>
+      </cr-searchbox-thumbnail>
     </div>
   </template>
   <template is="dom-if" if="[[realboxChromeRefreshTheming]]">
@@ -370,7 +370,7 @@
       </button>
     </template>
   </template>
-  <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
+  <cr-searchbox-dropdown id="matches" role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
       can-show-secondary-side="[[canShowSecondarySide]]"
       had-secondary-side="{{hadSecondarySide}}"
@@ -380,5 +380,5 @@
       on-match-click="onMatchClick_"
       hidden$="[[!dropdownIsVisible]]"
       show-thumbnail="[[showThumbnail]]">
-  </cr-realbox-dropdown>
+  </cr-searchbox-dropdown>
 </div>

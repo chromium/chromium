@@ -12,9 +12,9 @@ import {getTemplate} from './searchbox_thumbnail.html.js';
 const ThumbnailElementBase = I18nMixin(PolymerElement);
 
 // Displays a thumbnail in the realbox input.
-class RealboxThumbnailElement extends ThumbnailElementBase {
+class SearchboxThumbnailElement extends ThumbnailElementBase {
   static get is() {
-    return 'cr-realbox-thumbnail';
+    return 'cr-searchbox-thumbnail';
   }
 
   static get template() {
@@ -48,4 +48,4 @@ class RealboxThumbnailElement extends ThumbnailElementBase {
   }
 }
 
-customElements.define(RealboxThumbnailElement.is, RealboxThumbnailElement);
+customElements.define(SearchboxThumbnailElement.is, SearchboxThumbnailElement);

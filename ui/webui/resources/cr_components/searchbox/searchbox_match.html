@@ -197,8 +197,8 @@
   }
 
   /* Uses a dimmed color for description for entities. */
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #description,
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) .dim {
+  :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #description,
+  :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .dim {
     color: var(--color-realbox-results-dim-selected);
   }
 
@@ -208,7 +208,7 @@
     color: var(--color-realbox-results-url);
   }
 
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) .url {
+  :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .url {
     color: var(--color-realbox-results-url-selected);
   }
 
@@ -220,7 +220,7 @@
   }
 
   :host-context(.vertical) .container:hover #remove,
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host-context(.vertical) #remove {
+  :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host-context(.vertical) #remove {
     display: inline-flex;
   }
 
@@ -295,7 +295,7 @@
 </style>
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>
-  <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
+  <cr-searchbox-icon id="icon" match="[[match]]"></cr-searchbox-icon>
   <div id="text-container">
     <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
       <span id="prefix">[[tailSuggestPrefix_]]</span>
@@ -314,17 +314,17 @@
     <template is="dom-repeat" items="[[match.actions]]">
       <template is="dom-if" if="[[expandedStateIconsChromeRefresh]]">
         <div id="actions-focus-border">
-          <cr-realbox-action id="action" action="[[item]]"
+          <cr-searchbox-action id="action" action="[[item]]"
             action-index="[[actionIndex_(item)]]"
             on-execute-action="onExecuteAction_" tabindex="1">
-          </cr-realbox-action>
+          </cr-searchbox-action>
         </div>
       </template>
       <template is="dom-if" if="[[!expandedStateIconsChromeRefresh]]">
-        <cr-realbox-action id="action" action="[[item]]"
+        <cr-searchbox-action id="action" action="[[item]]"
           action-index="[[actionIndex_(item)]]"
           on-execute-action="onExecuteAction_" tabindex="1">
-        </cr-realbox-action>
+        </cr-searchbox-action>
       </template>
     </template>
   </div>

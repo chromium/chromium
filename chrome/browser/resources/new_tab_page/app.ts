@@ -160,7 +160,7 @@ export class AppElement extends AppElementBase {
       backgroundImageAttributionUrl_: {type: String},
       backgroundColor_: {type: Object},
 
-      // Used in cr-realbox component via host-context.
+      // Used in cr-searchbox component via host-context.
       colorSourceIsBaseline: {type: Boolean},
       logoColor_: {type: String},
       singleColoredLogo_: {type: Boolean},
@@ -946,7 +946,7 @@ export class AppElement extends AppElementBase {
         case $$(this, 'ntp-logo'):
           recordClick(NtpElement.LOGO);
           return;
-        case $$(this, 'cr-realbox'):
+        case $$(this, 'cr-searchbox'):
           recordClick(NtpElement.REALBOX);
           return;
         case $$(this, 'cr-most-visited'):

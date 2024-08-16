@@ -14,8 +14,8 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
-import {RealboxBrowserProxy} from './searchbox_browser_proxy.js';
-import type {RealboxIconElement} from './searchbox_icon.js';
+import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
+import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getTemplate} from './searchbox_match.html.js';
 import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './searchbox.mojom-webui.js';
 import {SelectionLineState} from './searchbox.mojom-webui.js';
@@ -44,9 +44,9 @@ type ActionEvent = CustomEvent<{
 }>;
 
 
-export interface RealboxMatchElement {
+export interface SearchboxMatchElement {
   $: {
-    icon: RealboxIconElement,
+    icon: SearchboxIconElement,
     contents: HTMLElement,
     description: HTMLElement,
     remove: HTMLElement,
@@ -56,9 +56,9 @@ export interface RealboxMatchElement {
 }
 
 // Displays an autocomplete match.
-export class RealboxMatchElement extends PolymerElement {
+export class SearchboxMatchElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-match';
+    return 'cr-searchbox-match';
   }
 
   static get template() {
@@ -215,7 +215,7 @@ export class RealboxMatchElement extends PolymerElement {
 
   constructor() {
     super();
-    this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+    this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
   }
 
   override ready() {
@@ -465,7 +465,7 @@ export class RealboxMatchElement extends PolymerElement {
         selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
             selection.line === this.matchIndex);
 
-    [...this.shadowRoot!.querySelectorAll('cr-realbox-action')].forEach(
+    [...this.shadowRoot!.querySelectorAll('cr-searchbox-action')].forEach(
         (action, index) => {
           action.classList.toggle(
               'selected',
@@ -478,8 +478,8 @@ export class RealboxMatchElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-realbox-match': RealboxMatchElement;
+    'cr-searchbox-match': SearchboxMatchElement;
   }
 }
 
-customElements.define(RealboxMatchElement.is, RealboxMatchElement);
+customElements.define(SearchboxMatchElement.is, SearchboxMatchElement);

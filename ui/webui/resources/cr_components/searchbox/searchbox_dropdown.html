@@ -29,7 +29,7 @@
     display: contents;
   }
 
-  cr-realbox-match {
+  cr-searchbox-match {
     color: var(--color-realbox-results-foreground);
   }
 
@@ -70,13 +70,13 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  :host(:not([chrome-refresh-hover-shape])) cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+  :host(:not([chrome-refresh-hover-shape])) cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {
-    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+    cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
       background-color: Highlight;
     }
   }
@@ -132,11 +132,11 @@
           <template is="dom-repeat"
               items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
               as="match" on-dom-change="onResultRepaint_">
-            <cr-realbox-match tabindex="0" role="option" match="[[match]]"
+            <cr-searchbox-match tabindex="0" role="option" match="[[match]]"
                 match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"
                 selected$="[[isSelected_(match, selectedMatchIndex)]]"
                 show-thumbnail="[[showThumbnail]]">
-            </cr-realbox-match>
+            </cr-searchbox-match>
           </template>
         </div>
       </template>

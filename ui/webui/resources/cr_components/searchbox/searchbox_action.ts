@@ -14,9 +14,9 @@ import {decodeString16} from './utils.js';
 
 // Displays an action associated with AutocompleteMatch (i.e. Clear
 // Browsing History, etc.)
-class RealboxActionElement extends PolymerElement {
+class SearchboxActionElement extends PolymerElement {
   static get is() {
-    return 'cr-realbox-action';
+    return 'cr-searchbox-action';
   }
 
   static get template() {
@@ -148,4 +148,4 @@ class RealboxActionElement extends PolymerElement {
   }
 }
 
-customElements.define(RealboxActionElement.is, RealboxActionElement);
+customElements.define(SearchboxActionElement.is, SearchboxActionElement);
