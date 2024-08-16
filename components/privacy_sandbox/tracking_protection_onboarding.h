@@ -171,12 +171,6 @@ class TrackingProtectionOnboarding : public KeyedService {
                          NoticeType notice_type,
                          NoticeAction action);
 
-  // Called by UI code to determine what type of notice is required.
-  NoticeType GetRequiredNotice(SurfaceType surface);
-
-  // Called by UI code to determine if we should run the 3PCD UI logic.
-  bool ShouldRunUILogic(SurfaceType surface);
-
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
 

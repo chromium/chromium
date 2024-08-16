@@ -274,60 +274,6 @@ TEST_F(TrackingProtectionOnboardingTest, AckingNoticeSetsAckedSincePref) {
             base::Time::Now());
 }
 
-TEST_F(TrackingProtectionOnboardingTest,
-       ShouldShowNoticeReturnsIsFalseIfProfileIneligible) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kNone);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       ShouldShowNoticeReturnsIsTrueIfProfileEligible) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kModeBOnboarding);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       ShouldShowNoticeReturnsIsTrueIfProfileOnboardedNotAcked) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, false);
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kModeBOnboarding);
-}
-
-TEST_F(TrackingProtectionOnboardingTest,
-       ShouldShowNoticeReturnsIsFalseIfProfileOnboardedAcked) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kNone);
-}
-
 TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInStable) {
   // Setup
   tracking_protection_onboarding_service_ =
@@ -934,54 +880,6 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
             TrackingProtectionOnboardingStatus::kOnboarded);
   EXPECT_EQ(prefs()->GetTime(prefs::kTrackingProtectionSilentOnboardedSince),
             base::Time::Now());
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       ShouldNotShowNoticeIfProfileIneligible) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kNone);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       ShouldShowNoticeIfProfileEligible) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kModeBSilentOnboarding);
-}
-
-TEST_F(TrackingProtectionSilentOnboardingTest,
-       ShouldNotShowNoticeIfProfileOnboarded) {
-  // Setup
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionSilentOnboardingStatus,
-      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
-
-  // Verification
-  EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(
-                SurfaceType::kDesktop),
-            NoticeType::kNone);
 }
 
 TEST_F(TrackingProtectionSilentOnboardingTest,

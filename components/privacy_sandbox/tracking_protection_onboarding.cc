@@ -244,21 +244,6 @@ void RecordHistogramsOnStartup(PrefService* pref_service) {
   RecordHistogramsSilentOnboardingOnStartup(pref_service);
 }
 
-TrackingProtectionOnboarding::NoticeType GetRequiredModeBSilentOnboardingNotice(
-    PrefService* pref_service) {
-  auto onboarding_status = GetInternalModeBSilentOnboardingStatus(pref_service);
-  switch (onboarding_status) {
-    case TrackingProtectionOnboardingStatus::kIneligible:
-    case TrackingProtectionOnboardingStatus::kOnboarded:
-      return TrackingProtectionOnboarding::NoticeType::kNone;
-    case TrackingProtectionOnboardingStatus::kEligible:
-      return TrackingProtectionOnboarding::NoticeType::kModeBSilentOnboarding;
-    case TrackingProtectionOnboardingStatus::kRequested:
-      NOTREACHED();
-  }
-  NOTREACHED();
-}
-
 void RecordSilentOnboardingMarkEligibleHistogram(bool result) {
   base::UmaHistogramBoolean(
       "PrivacySandbox.TrackingProtection.SilentOnboarding.MaybeMarkEligible",
@@ -525,35 +510,6 @@ void TrackingProtectionOnboarding::NoticeActionTaken(SurfaceType surface,
       return;
     case NoticeType::kModeBSilentOnboarding:
       return;
-  }
-}
-
-bool TrackingProtectionOnboarding::ShouldRunUILogic(SurfaceType surface) {
-  return GetRequiredNotice(surface) != NoticeType::kNone;
-}
-
-NoticeType TrackingProtectionOnboarding::GetRequiredNotice(
-    SurfaceType surface) {
-  if (surface != SurfaceType::kDesktop && surface != SurfaceType::kBrApp) {
-    return NoticeType::kNone;
-  }
-
-  auto onboarding_status = GetInternalModeBOnboardingStatus(pref_service_);
-  switch (onboarding_status) {
-    case TrackingProtectionOnboardingStatus::kIneligible:
-      return GetRequiredModeBSilentOnboardingNotice(pref_service_);
-    case TrackingProtectionOnboardingStatus::kEligible:
-    case TrackingProtectionOnboardingStatus::kRequested: {
-      return NoticeType::kModeBOnboarding;
-    }
-    case TrackingProtectionOnboardingStatus::kOnboarded: {
-      // We've already showed the user the onboarding notice. We keep showing
-      // the Onboarding Notice until they Ack.
-      return pref_service_->GetBoolean(
-                 prefs::kTrackingProtectionOnboardingAcked)
-                 ? NoticeType::kNone
-                 : NoticeType::kModeBOnboarding;
-    }
   }
 }
 
