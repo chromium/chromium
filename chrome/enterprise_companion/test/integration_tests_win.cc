@@ -95,7 +95,12 @@ class InstallerTest : public ::testing::Test {
 
  private:
   void Clean() {
-    ASSERT_TRUE(base::DeletePathRecursively(install_dir_));
+    // After the installer process exits, it may take some time for Windows to
+    // recognize that files in the install directory (e.g. the log file) are not
+    // open.
+    ASSERT_TRUE(WaitFor(
+        [&] { return base::DeletePathRecursively(install_dir_); },
+        [&] { VLOG(1) << "Waiting to delete " << install_dir_ << "..."; }));
 
     alt_install_dir_ = GetInstallDirectoryForAlternateArch();
     if (alt_install_dir_) {
