@@ -986,6 +986,25 @@
             ]
         }
     ],
+    "ArcVmGkiOnT": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcVmGki"
+                    ],
+                    "min_os_version": "15979.0.0",
+                    "hardware_classes": [
+                        "brya"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmIdleManagerV2": [
         {
             "platforms": [
