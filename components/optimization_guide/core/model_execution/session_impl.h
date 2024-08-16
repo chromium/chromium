@@ -65,6 +65,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     proto::OnDeviceModelVersions model_versions;
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
     SafetyConfig safety_cfg;
+    TokenLimits token_limits;
 
     // Returns true if the on-device model may be used.
     bool ShouldUse() const;
@@ -142,6 +143,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
+  const TokenLimits& GetTokenLimits() const override;
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
   void Score(const std::string& text,

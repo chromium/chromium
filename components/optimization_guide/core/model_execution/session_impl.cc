@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/token.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
@@ -137,9 +138,7 @@ class SessionImpl::ContextProcessor
     // Once the initial context is complete, we can cancel future context
     // processing.
     can_cancel_ = true;
-    if (tokens_processed_ <
-        static_cast<uint32_t>(
-            features::GetOnDeviceModelMaxTokensForContext())) {
+    if (tokens_processed_ < session_->GetTokenLimits().max_context_tokens) {
       AddContext(features::GetOnDeviceModelContextTokenChunkSize());
     }
   }
@@ -233,6 +232,14 @@ SessionImpl::~SessionImpl() {
                       GetStringNameForModelExecutionFeature(feature_)}),
         base::TimeTicks::Now() - on_device_state_->start);
   }
+}
+
+const TokenLimits& SessionImpl::GetTokenLimits() const {
+  if (!on_device_state_) {
+    static const TokenLimits null_limits{};
+    return null_limits;
+  }
+  return on_device_state_->opts.token_limits;
 }
 
 void SessionImpl::AddContext(
@@ -399,7 +406,7 @@ void SessionImpl::ExecuteModel(
   logged_request->set_execution_string(input->input_string);
   // TODO(b/302327957): Probably do some math to get the accurate number here.
   logged_request->set_execution_num_tokens_processed(
-      features::GetOnDeviceModelMaxTokensForOutput());
+      on_device_state_->opts.token_limits.max_execute_tokens);
 
   if (optimization_guide_logger_ &&
       optimization_guide_logger_->ShouldEnableDebugLogs()) {
@@ -425,9 +432,10 @@ void SessionImpl::ExecuteModel(
 
   auto options = on_device_model::mojom::InputOptions::New();
   options->text = input->input_string;
-  options->max_tokens = features::GetOnDeviceModelMaxTokensForExecute();
+  options->max_tokens = on_device_state_->opts.token_limits.max_execute_tokens;
   options->ignore_context = input->should_ignore_input_context;
-  options->max_output_tokens = features::GetOnDeviceModelMaxTokensForOutput();
+  options->max_output_tokens =
+      on_device_state_->opts.token_limits.max_output_tokens;
   options->top_k = sampling_params_.top_k;
   options->temperature = sampling_params_.temperature;
 

@@ -95,8 +95,7 @@ AITextSession::AITextSession(
   // If the context is not provided, initialize a new context with the default
   // configuration.
   context_ = std::make_unique<Context>(
-      optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-      std::nullopt);
+      session_->GetTokenLimits().max_context_tokens, std::nullopt);
 }
 
 AITextSession::~AITextSession() = default;
@@ -156,8 +155,7 @@ void AITextSession::InitializeContextWithSystemPrompt(
     return;
   }
 
-  uint32_t max_token =
-      optimization_guide::features::GetOnDeviceModelMaxTokensForContext();
+  uint32_t max_token = session_->GetTokenLimits().max_context_tokens;
   if (size > max_token) {
     // The session cannot be created if the system prompt contains more tokens
     // than the limit.

@@ -16,6 +16,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
@@ -32,62 +34,18 @@ namespace {
 
 class MockSupportsUserData : public base::SupportsUserData {};
 
-class MockSession
-    : public optimization_guide::OptimizationGuideModelExecutor::Session {
- public:
-  MOCK_METHOD(void,
-              AddContext,
-              (const google::protobuf::MessageLite& request_metadata));
-  MOCK_METHOD(
-      void,
-      Score,
-      (const std::string& text,
-       optimization_guide::OptimizationGuideModelScoreCallback callback));
-  MOCK_METHOD(
-      void,
-      ExecuteModel,
-      (const google::protobuf::MessageLite& request_metadata,
-       optimization_guide::
-           OptimizationGuideModelExecutionResultStreamingCallback callback));
-  MOCK_METHOD(
-      void,
-      GetSizeInTokens,
-      (const std::string& text,
-       optimization_guide::OptimizationGuideModelSizeInTokenCallback callback));
-};
+using optimization_guide::MockSession;
+using optimization_guide::MockSessionWrapper;
 
-// A wrapper that passes through calls to the underlying MockSession. Allows for
-// easily mocking calls with a single session object.
-class MockSessionWrapper
-    : public optimization_guide::OptimizationGuideModelExecutor::Session {
- public:
-  explicit MockSessionWrapper(MockSession& session) : session_(session) {}
-
-  void AddContext(
-      const google::protobuf::MessageLite& request_metadata) override {
-    session_->AddContext(request_metadata);
-  }
-  void Score(const std::string& text,
-             optimization_guide::OptimizationGuideModelScoreCallback callback)
-      override {
-    std::move(callback).Run(std::nullopt);
-  }
-  void ExecuteModel(
-      const google::protobuf::MessageLite& request_metadata,
-      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-          callback) override {
-    session_->ExecuteModel(request_metadata, std::move(callback));
-  }
-  void GetSizeInTokens(
-      const std::string& text,
-      optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
-      override {
-    session_->GetSizeInTokens(text, std::move(callback));
-  }
-
- private:
-  raw_ref<MockSession> session_;
-};
+const optimization_guide::TokenLimits& GetFakeTokenLimits() {
+  static const optimization_guide::TokenLimits limits{
+      .max_tokens = 4096,
+      .max_context_tokens = 2048,
+      .max_execute_tokens = 1024,
+      .max_output_tokens = 1024,
+  };
+  return limits;
+}
 
 }  // namespace
 
@@ -121,7 +79,9 @@ class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
 
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
-            [&] { return std::make_unique<MockSessionWrapper>(session_); });
+            [&] { return std::make_unique<MockSessionWrapper>(&session_); });
+
+    ON_CALL(session_, GetTokenLimits()).WillByDefault(GetFakeTokenLimits);
   }
 
   raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>

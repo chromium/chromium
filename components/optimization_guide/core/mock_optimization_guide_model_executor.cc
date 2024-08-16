@@ -22,6 +22,10 @@ MockSessionWrapper::MockSessionWrapper(MockSession* session)
     : session_(session) {}
 MockSessionWrapper::~MockSessionWrapper() = default;
 
+const optimization_guide::TokenLimits& MockSessionWrapper::GetTokenLimits()
+    const {
+  return session_->GetTokenLimits();
+}
 void MockSessionWrapper::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
   session_->AddContext(request_metadata);

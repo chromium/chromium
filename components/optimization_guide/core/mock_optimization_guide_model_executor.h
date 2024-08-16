@@ -42,6 +42,10 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
   MockSession();
   ~MockSession() override;
 
+  MOCK_METHOD(const optimization_guide::TokenLimits&,
+              GetTokenLimits,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               AddContext,
               (const google::protobuf::MessageLite& request_metadata));
@@ -68,6 +72,7 @@ class MockSessionWrapper : public OptimizationGuideModelExecutor::Session {
   ~MockSessionWrapper() override;
 
   // OptimizationGuideModelExecutor::Session:
+  const optimization_guide::TokenLimits& GetTokenLimits() const override;
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
   void Score(const std::string& text,
