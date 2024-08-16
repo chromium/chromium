@@ -387,6 +387,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   private getNumRemappedSixPackKeys(): number {
+    if (!this.keyboard.settings.sixPackKeyRemappings) {
+      return 0;
+    }
+
     return Object
         .values(this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo)
         .filter(
