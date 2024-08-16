@@ -596,6 +596,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.GoogleCalendar.EventClientIndex" units="count"
+    expires_after="2025-08-06">
+  <owner>rtatum@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the index of a clicked calendar event, with the first event at 0.
+    Recorded when the header of an event is clicked, but not when other aspects
+    are clicked for an expanded event.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.GoogleCalendar.RequestResult" units="count"
+    expires_after="2025-08-06">
+  <owner>rtatum@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the total number of events returned by the Google Calendar API. This
+    will include events that are filtered out in the client, but not events that
+    are filtered out using the request query. Recorded when a response is
+    received from the API, which will also include empty successful responses.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.GoogleCalendar.ShownEvents" units="count"
+    expires_after="2025-08-06">
+  <owner>rtatum@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of events shown on the Google Calendar Card after filtering
+    the response from the API. This will never be more than the number of events
+    the UI supports. Recorded when the events are first populated so it will not
+    log when there are 0 results, since the module would not show.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.GoogleCalendar.UserActions"
+    enum="NTPCalendarAction" expires_after="2025-08-06">
+  <owner>rtatum@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs count of each type of user action within the NTP Google Calendar module
+    depending on which part of the card was interacted with (event title,
+    attachment, etc).
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HasCredentials" enum="BooleanYesNo"
     expires_after="2025-01-31">
   <owner>tiborg@chromium.org</owner>

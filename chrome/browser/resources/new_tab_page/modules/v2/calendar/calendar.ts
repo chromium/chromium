@@ -11,7 +11,7 @@ import {WindowProxy} from '../../../window_proxy.js';
 
 import {getCss} from './calendar.css.js';
 import {getHtml} from './calendar.html.js';
-import {toJsTimestamp} from './common.js';
+import {CalendarAction, recordCalendarAction, toJsTimestamp} from './common.js';
 
 export interface CalendarElement {
   $: {
@@ -39,6 +39,7 @@ export class CalendarElement extends CrLitElement {
     return {
       calendarLink: {type: String},
       events: {type: Object},
+      moduleName: {type: String},
       doubleBookedIndices_: {type: Object},
       expandedEventIndex_: {type: Number},
     };
@@ -46,6 +47,7 @@ export class CalendarElement extends CrLitElement {
 
   calendarLink: string;
   events: CalendarEvent[] = [];
+  moduleName: string;
 
   private doubleBookedIndices_: number[] = [];
   private expandedEventIndex_: number;
@@ -54,6 +56,8 @@ export class CalendarElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('events')) {
+      chrome.metricsPrivate.recordSmallCount(
+          `NewTabPage.${this.moduleName}.ShownEvents`, this.events.length);
       this.expandedEventIndex_ = this.computeExpandedEventIndex_();
       if (this.expandedEventIndex_ !== -1) {
         this.sortEvents_();
@@ -150,6 +154,11 @@ export class CalendarElement extends CrLitElement {
 
   protected isExpanded_(index: number) {
     return index === this.expandedEventIndex_;
+  }
+
+  protected recordSeeMoreClick_() {
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    recordCalendarAction(CalendarAction.SEE_MORE_CLICKED, this.moduleName);
   }
 
   // Sort events to move expanded events before any of its double booked

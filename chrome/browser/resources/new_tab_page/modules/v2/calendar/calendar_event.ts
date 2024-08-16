@@ -9,10 +9,11 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
+import {WindowProxy} from '../../../window_proxy.js';
 
 import {getCss} from './calendar_event.css.js';
 import {getHtml} from './calendar_event.html.js';
-import {toJsTimestamp} from './common.js';
+import {CalendarAction, recordCalendarAction, toJsTimestamp} from './common.js';
 
 const kAttachmentScrollFadeBuffer: number = 4;
 const kMillisecondsInMinute: number = 60000;
@@ -47,6 +48,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   static override get properties() {
     return {
+      doubleBooked: {type: Boolean},
       event: {type: Object},
 
       expanded: {
@@ -54,14 +56,19 @@ export class CalendarEventElement extends CalendarEventElementBase {
         reflect: true,
       },
 
+      index: {type: Number},
+      moduleName: {type: String},
       attachmentListClass_: {type: String},
       formattedStartTime_: {type: String},
       timeStatus_: {type: String},
     };
   }
 
+  doubleBooked: boolean;
   event: CalendarEvent;
   expanded: boolean;
+  index: number;
+  moduleName: string;
 
   protected attachmentListClass_: string;
   protected formattedStartTime_: string;
@@ -115,7 +122,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     // Start time of event in milliseconds since Windows epoch.
     const startTime = toJsTimestamp(this.event.startTime);
     // Current time in milliseconds since Windows epoch.
-    const now = Date.now().valueOf();
+    const now = WindowProxy.getInstance().now().valueOf();
 
     const minutesUntilMeeting =
         Math.round((startTime - now) / kMillisecondsInMinute);
@@ -133,13 +140,32 @@ export class CalendarEventElement extends CalendarEventElementBase {
   }
 
   protected openAttachment_(e: Event) {
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    recordCalendarAction(CalendarAction.ATTACHMENT_CLICKED, this.moduleName);
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    window.location.href = this.event.attachments[index]!.resourceUrl.url;
+    WindowProxy.getInstance().navigate(
+        this.event.attachments[index]!.resourceUrl.url);
   }
 
   protected openVideoConference_() {
-    window.location.href = this.event.conferenceUrl!.url;
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    recordCalendarAction(
+        CalendarAction.CONFERENCE_CALL_CLICKED, this.moduleName);
+    WindowProxy.getInstance().navigate(this.event.conferenceUrl!.url);
+  }
+
+  protected recordHeaderClick_() {
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    let action = CalendarAction.BASIC_EVENT_HEADER_CLICKED;
+    if (this.expanded) {
+      action = CalendarAction.EXPANDED_EVENT_HEADER_CLICKED;
+    } else if (this.doubleBooked) {
+      action = CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED;
+    }
+    recordCalendarAction(action, this.moduleName);
+    chrome.metricsPrivate.recordSmallCount(
+        `NewTabPage.${this.moduleName}.EventClickIndex`, this.index);
   }
 
   protected showConferenceButton_(): boolean {

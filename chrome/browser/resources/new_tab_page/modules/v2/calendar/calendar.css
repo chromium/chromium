@@ -22,8 +22,8 @@
 }
 
 .row:first-child,
-.row[expanded] + .row:not(.double-booked),
-.double-booked + .row:not(.double-booked),
+.row[expanded] + .row:not([double-booked]),
+.row[double-booked] + .row:not([double-booked]),
 .row[expanded] {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -32,7 +32,7 @@
 }
 
 .row:last-child,
-.double-booked:has(+ .row:not(.double-booked)),
+.row[double-booked]:has(+ .row:not([double-booked])),
 .row[expanded]:has(+ .row),
 .row:has(+ .row[expanded]) {
   border-bottom-left-radius: 12px;
@@ -45,7 +45,7 @@
   padding-bottom: var(--calendar-event-group-gutter-size);
 }
 
-.divider + .double-booked {
+.divider + .row[double-booked] {
   padding-top: var(--calendar-event-group-gutter-size);
 }
 

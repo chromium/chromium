@@ -12,6 +12,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,6 +32,7 @@ namespace {
 
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
+const int32_t kNumEvents = 10;
 
 base::Value::List CreateAttachments() {
   base::Value::List attachments = base::Value::List();
@@ -105,7 +107,7 @@ base::Value::Dict CreateEvent(int index) {
 
 bool CreateEventsJson(std::string* json) {
   base::Value::List events = base::Value::List();
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < kNumEvents; i++) {
     events.Append(CreateEvent(i));
   }
   base::Value::Dict result_dict =
@@ -189,6 +191,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
         response);
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
   PrefService& pref_service() { return *pref_service_; }
   TestingProfile& profile() { return *profile_; }
   content::BrowserTaskEnvironment& task_environment() {
@@ -214,6 +217,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<PrefService> pref_service_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
@@ -369,6 +373,11 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
                 "https://foo-icon.com/" + base::NumberToString(j));
     }
   }
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.GoogleCalendar.RequestResult", kNumEvents, 1);
+  histogram_tester().ExpectBucketCount("NewTabPage.Modules.DataRequest",
+                                       base::PersistentHash("google_calendar"),
+                                       1);
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {

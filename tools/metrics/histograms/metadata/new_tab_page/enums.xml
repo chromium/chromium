@@ -223,6 +223,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Wallpaper search inspiration image"/>
 </enum>
 
+<enum name="NTPCalendarAction">
+  <summary>Calendar module user actions</summary>
+  <int value="0" label="Expanded event header clicked"/>
+  <int value="1" label="Double booked event header clicked"/>
+  <int value="2" label="Basic event header clicked"/>
+  <int value="3" label="Attachment clicked"/>
+  <int value="4" label="Conference call clicked"/>
+  <int value="5" label="See more clicked"/>
+</enum>
+
 <enum name="NTPChromeWebStoreOpen">
   <int value="0" label="Appearance section"/>
   <int value="1" label="Theme collections page"/>
@@ -374,6 +384,7 @@ chromium-metrics-reviews@google.com.
   <int value="-505117227" label="dummy2"/>
   <int value="86617696" label="history_clusters"/>
   <int value="301684683" label="kaleidoscope (deprecated)"/>
+  <int value="1482516488" label="google_calendar"/>
   <int value="1976054971" label="dummy"/>
 </enum>
 

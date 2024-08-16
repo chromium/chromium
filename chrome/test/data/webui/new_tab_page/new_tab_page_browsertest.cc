@@ -107,12 +107,23 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
 #endif  // !defined(OFFICIAL_BUILD)
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarTest general')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarMetrics) {
+  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEvent) {
   RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
-          "mocha.run()");
+          "runMochaSuite('NewTabPageModulesCalendarEventTest general')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEventMetrics) {
+  RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarEventTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, GoogleCalendarModule) {

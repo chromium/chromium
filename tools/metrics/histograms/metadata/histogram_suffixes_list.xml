@@ -2066,6 +2066,7 @@ chromium-metrics-reviews@google.com.
       label="Module ID for History Clusters module"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
+  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
   <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
