@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -37,6 +38,12 @@ void AITextSession::Trace(Visitor* visitor) const {
 mojo::PendingReceiver<blink::mojom::blink::AITextSession>
 AITextSession::GetModelSessionReceiver() {
   return text_session_remote_.BindNewPipeAndPassReceiver(task_runner_);
+}
+
+void AITextSession::SetInfo(base::PassKey<AITextSessionFactory>,
+                            blink::mojom::blink::AITextSessionInfoPtr info) {
+  CHECK(!info_) << "The session info should only be set once after creation";
+  info_ = std::move(info);
 }
 
 bool AITextSession::ThrowExceptionIfIsDestroyed(
@@ -70,7 +77,9 @@ ScriptPromise<IDLString> AITextSession::prompt(
 
   auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, task_runner_,
-      AIMetrics::AISessionType::kText);
+      AIMetrics::AISessionType::kText,
+      WTF::BindOnce(&AITextSession::OnResponseComplete,
+                    WrapWeakPersistent(this)));
   text_session_remote_->Prompt(input, std::move(pending_remote));
   return promise;
 }
@@ -97,11 +106,36 @@ ReadableStream* AITextSession::promptStreaming(
   }
 
   auto [readable_stream, pending_remote] =
-      CreateModelExecutionStreamingResponder(script_state, /*signal=*/nullptr,
-                                             task_runner_,
-                                             AIMetrics::AISessionType::kText);
+      CreateModelExecutionStreamingResponder(
+          script_state, /*signal=*/nullptr, task_runner_,
+          AIMetrics::AISessionType::kText,
+          WTF::BindOnce(&AITextSession::OnResponseComplete,
+                        WrapWeakPersistent(this)));
   text_session_remote_->Prompt(input, std::move(pending_remote));
   return readable_stream;
+}
+
+uint64_t AITextSession::maxTokens() const {
+  CHECK(info_);
+  return info_->max_tokens;
+}
+
+uint64_t AITextSession::tokensSoFar() const {
+  return current_tokens_;
+}
+
+uint64_t AITextSession::tokensLeft() const {
+  return maxTokens() - tokensSoFar();
+}
+
+uint32_t AITextSession::topK() const {
+  CHECK(info_);
+  return info_->sampling_params->top_k;
+}
+
+float AITextSession::temperature() const {
+  CHECK(info_);
+  return info_->sampling_params->temperature;
 }
 
 ScriptPromise<AITextSession> AITextSession::clone(
@@ -122,12 +156,15 @@ ScriptPromise<AITextSession> AITextSession::clone(
   if (!ThrowExceptionIfIsDestroyed(exception_state)) {
     AITextSession* cloned_session = MakeGarbageCollected<AITextSession>(
         GetExecutionContext(), task_runner_);
+    cloned_session->current_tokens_ = current_tokens_;
     text_session_remote_->Fork(
         cloned_session->GetModelSessionReceiver(),
         WTF::BindOnce(
             [](ScriptPromiseResolver<AITextSession>* resolver,
-               AITextSession* cloned_session, bool success) {
-              if (success) {
+               AITextSession* cloned_session,
+               blink::mojom::blink::AITextSessionInfoPtr info) {
+              if (info) {
+                cloned_session->info_ = std::move(info);
                 resolver->Resolve(cloned_session);
               } else {
                 resolver->Reject(DOMException::Create(
@@ -156,6 +193,12 @@ void AITextSession::destroy(ScriptState* script_state,
   if (!is_destroyed_) {
     is_destroyed_ = true;
     text_session_remote_->Destroy();
+  }
+}
+
+void AITextSession::OnResponseComplete(std::optional<uint64_t> current_tokens) {
+  if (current_tokens.has_value()) {
+    current_tokens_ = current_tokens.value();
   }
 }
 

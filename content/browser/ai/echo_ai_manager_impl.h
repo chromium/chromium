@@ -11,11 +11,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 
 namespace content {
 
 // The implementation of `blink::mojom::AIManager` that creates session which
-// only echoes back the prompt text used for testing.
+// only echoes back the prompt text used for testing, and all the parameters
+// will be set using the default value.
 class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
   using ReceiverContext =

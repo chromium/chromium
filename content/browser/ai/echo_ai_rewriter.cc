@@ -17,9 +17,10 @@ void EchoAIRewriter::Rewrite(
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "Model not available in Chromium\n" + input);
+                        "Model not available in Chromium\n" + input,
+                        /*current_tokens=*/std::nullopt);
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        std::nullopt);
+                        std::nullopt, /*current_tokens=*/std::nullopt);
 }
 
 }  // namespace content

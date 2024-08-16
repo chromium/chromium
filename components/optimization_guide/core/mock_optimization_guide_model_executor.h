@@ -62,6 +62,10 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               GetSizeInTokens,
               (const std::string& text,
                OptimizationGuideModelSizeInTokenCallback callback));
+  MOCK_METHOD(const optimization_guide::SamplingParams,
+              GetSamplingParams,
+              (),
+              (const override));
 };
 
 // A wrapper that passes through calls to the underlying MockSession. Allows for
@@ -86,6 +90,7 @@ class MockSessionWrapper : public OptimizationGuideModelExecutor::Session {
       const std::string& text,
       optimization_guide::OptimizationGuideModelSizeInTokenCallback callback)
       override;
+  const SamplingParams GetSamplingParams() const override;
 
  private:
   raw_ptr<MockSession> session_;

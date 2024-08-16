@@ -44,5 +44,8 @@ void MockSessionWrapper::GetSizeInTokens(
     OptimizationGuideModelSizeInTokenCallback callback) {
   session_->GetSizeInTokens(text, std::move(callback));
 }
+const SamplingParams MockSessionWrapper::GetSamplingParams() const {
+  return session_->GetSamplingParams();
+}
 
 }  // namespace optimization_guide

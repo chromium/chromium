@@ -43,6 +43,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method create
 [Worker] interface AITextSession
 [Worker]     attribute @@toStringTag
+[Worker]     getter maxTokens
+[Worker]     getter temperature
+[Worker]     getter tokensLeft
+[Worker]     getter tokensSoFar
+[Worker]     getter topK
 [Worker]     method clone
 [Worker]     method constructor
 [Worker]     method destroy

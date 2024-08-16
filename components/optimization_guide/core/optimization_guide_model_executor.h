@@ -206,6 +206,9 @@ class OptimizationGuideModelExecutor {
     virtual void GetSizeInTokens(
         const std::string& text,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
+
+    // Return the sampling params for the current session.
+    virtual const SamplingParams GetSamplingParams() const = 0;
   };
 
   // Whether an on-device session can be created for `feature`. An optional

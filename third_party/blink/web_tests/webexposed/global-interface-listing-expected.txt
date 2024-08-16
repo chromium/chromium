@@ -42,6 +42,11 @@ interface AISummarizerFactory
     method create
 interface AITextSession
     attribute @@toStringTag
+    getter maxTokens
+    getter temperature
+    getter tokensLeft
+    getter tokensSoFar
+    getter topK
     method clone
     method constructor
     method destroy

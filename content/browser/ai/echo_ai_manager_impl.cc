@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 
 namespace content {
 
@@ -43,7 +44,11 @@ void EchoAIManagerImpl::CreateTextSession(
     CreateTextSessionCallback callback) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAITextSession>(),
                               std::move(receiver));
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(blink::mojom::AITextSessionInfo::New(
+      optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
+      blink::mojom::AITextSessionSamplingParams::New(
+          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+          optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
 }
 
 void EchoAIManagerImpl::GetTextModelInfo(GetTextModelInfoCallback callback) {

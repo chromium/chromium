@@ -23,7 +23,10 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 
+using optimization_guide::MockSession;
+using optimization_guide::MockSessionWrapper;
 using testing::_;
 using testing::An;
 using testing::AtMost;
@@ -33,9 +36,6 @@ using testing::Return;
 namespace {
 
 class MockSupportsUserData : public base::SupportsUserData {};
-
-using optimization_guide::MockSession;
-using optimization_guide::MockSessionWrapper;
 
 const optimization_guide::TokenLimits& GetFakeTokenLimits() {
   static const optimization_guide::TokenLimits limits{
@@ -80,7 +80,6 @@ class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
         .WillByDefault(
             [&] { return std::make_unique<MockSessionWrapper>(&session_); });
-
     ON_CALL(session_, GetTokenLimits()).WillByDefault(GetFakeTokenLimits);
   }
 
@@ -128,7 +127,7 @@ TEST_F(AIManagerKeyedServiceTest, AITextSessionSet) {
   base::RunLoop run_loop;
   EXPECT_CALL(callback, Run(_))
       .Times(AtMost(1))
-      .WillOnce(Invoke([&](bool result) {
+      .WillOnce(Invoke([&](blink::mojom::AITextSessionInfoPtr result) {
         EXPECT_TRUE(result);
         run_loop.Quit();
       }));

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/ai/ai_text_session_factory.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/types/pass_key.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
@@ -100,8 +102,10 @@ void AITextSessionFactory::CreateTextSession(
       system_prompt,
       WTF::BindOnce(
           [](CreateTextSessionCallback callback, AITextSession* text_session,
-             bool success) {
-            if (success) {
+             blink::mojom::blink::AITextSessionInfoPtr info) {
+            if (info) {
+              text_session->SetInfo(base::PassKey<AITextSessionFactory>(),
+                                    std::move(info));
               std::move(callback).Run(text_session);
             } else {
               std::move(callback).Run(

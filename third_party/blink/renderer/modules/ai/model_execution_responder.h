@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
@@ -35,7 +36,9 @@ CreateModelExecutionStreamingResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    AIMetrics::AISessionType session_type);
+    AIMetrics::AISessionType session_type,
+    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+        complete_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
 // model execution. The responder will resolves the returned promise with the
@@ -47,7 +50,9 @@ CreateModelExecutionResponder(
     ScriptState* script_state,
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    AIMetrics::AISessionType session_type);
+    AIMetrics::AISessionType session_type,
+    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+        complete_callback);
 
 }  // namespace blink
 

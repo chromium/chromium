@@ -51,5 +51,9 @@ interface ModelStreamingResponder {
   // This is called when there is a new chunk of data available for
   // streaming, or when the response is fully streamed, or when there are
   // some errors.
-  OnResponse(ModelStreamingResponseStatus status, string? text);
+  // When `status` is `kComplete`, the `current_tokens` field might be set to
+  // the latest number of existing tokens, and the renderer should update the
+  // information accordingly. Otherwise, the `current_tokens` will be null.
+  OnResponse(
+    ModelStreamingResponseStatus status, string? text, uint64? current_tokens);
 };

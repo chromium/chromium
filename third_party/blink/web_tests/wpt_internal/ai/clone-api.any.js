@@ -13,6 +13,11 @@ promise_test(async () => {
 
   // Clone a session and test it.
   const cloned_session = await session.clone();
+  assert_true(cloned_session.maxTokens === session.maxTokens);
+  assert_true(cloned_session.tokensSoFar === session.tokensSoFar);
+  assert_true(cloned_session.tokensLeft === session.tokensLeft);
+  assert_true(cloned_session.topK === session.topK);
+  assert_true(cloned_session.temperature === session.temperature);
   result = await testSession(cloned_session);
   assert_true(result.success, result.error);
 });

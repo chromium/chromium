@@ -30,6 +30,7 @@ mojom("mojom_platform") {
     "ai/ai_manager.mojom",
     "ai/ai_rewriter.mojom",
     "ai/ai_text_session.mojom",
+    "ai/ai_text_session_info.mojom",
     "ai/ai_writer.mojom",
     "ai/model_streaming_responder.mojom",
     "annotation/annotation.mojom",

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_summarizer.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
@@ -66,7 +67,7 @@ ScriptPromise<IDLString> AISummarizer::summarize(
 
   auto [promise, pending_remote] = CreateModelExecutionResponder(
       script_state, /*signal=*/nullptr, task_runner_,
-      AIMetrics::AISessionType::kText);
+      AIMetrics::AISessionType::kText, /*complete_callback=*/base::DoNothing());
   text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
                                                 std::move(pending_remote));
   return promise;
@@ -97,9 +98,10 @@ ReadableStream* AISummarizer::summarizeStreaming(
   }
 
   auto [readable_stream, pending_remote] =
-      CreateModelExecutionStreamingResponder(script_state, /*signal=*/nullptr,
-                                             task_runner_,
-                                             AIMetrics::AISessionType::kText);
+      CreateModelExecutionStreamingResponder(
+          script_state, /*signal=*/nullptr, task_runner_,
+          AIMetrics::AISessionType::kText,
+          /*complete_callback=*/base::DoNothing());
   text_session_->GetRemoteTextSession()->Prompt(BuildPromptInput(input),
                                                 std::move(pending_remote));
   return readable_stream;

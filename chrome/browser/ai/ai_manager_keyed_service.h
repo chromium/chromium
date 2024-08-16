@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom-forward.h"
 
 // The browser-side implementation of `blink::mojom::AIManager`. There should
 // be one shared AIManagerKeyedService per BrowserContext.
@@ -38,7 +39,7 @@ class AIManagerKeyedService : public KeyedService,
       blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
       AITextSessionSet* session_set,
       const AITextSession::Context& context,
-      base::OnceCallback<void(bool)> callback);
+      CreateTextSessionCallback callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,

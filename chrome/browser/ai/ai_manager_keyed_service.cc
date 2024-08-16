@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace {
@@ -160,9 +161,8 @@ std::unique_ptr<AITextSession> AIManagerKeyedService::CreateTextSessionInternal(
   }
 
   return std::make_unique<AITextSession>(
-      std::move(session), config_params.sampling_params,
-      browser_context_->GetWeakPtr(), std::move(receiver), session_set,
-      context);
+      std::move(session), browser_context_->GetWeakPtr(), std::move(receiver),
+      session_set, context);
 }
 
 void AIManagerKeyedService::CreateTextSession(
@@ -178,7 +178,7 @@ void AIManagerKeyedService::CreateTextSession(
   if (!session) {
     // TODO(crbug.com/343325183): probably we should consider returning an error
     // enum and throw a clear exception from the blink side.
-    std::move(callback).Run(false);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -187,7 +187,7 @@ void AIManagerKeyedService::CreateTextSession(
     // invoke the callback after it.
     session->SetSystemPrompt(system_prompt.value(), std::move(callback));
   } else {
-    std::move(callback).Run(true);
+    std::move(callback).Run(session->GetTextSessionInfo());
   }
 
   session_set->AddSession(std::move(session));
@@ -256,16 +256,18 @@ void AIManagerKeyedService::CreateTextSessionForCloning(
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
     AITextSessionSet* session_set,
     const AITextSession::Context& context,
-    base::OnceCallback<void(bool)> callback) {
+    CreateTextSessionCallback callback) {
   std::unique_ptr<AITextSession> session = CreateTextSessionInternal(
       std::move(receiver), sampling_params, session_set, context);
   if (!session) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(nullptr);
     return;
   }
 
+  blink::mojom::AITextSessionInfoPtr session_info =
+      session->GetTextSessionInfo();
   session_set->AddSession(std::move(session));
-  std::move(callback).Run(true);
+  std::move(callback).Run(std::move(session_info));
 }
 
 void AIManagerKeyedService::OnModelPathValidationComplete(

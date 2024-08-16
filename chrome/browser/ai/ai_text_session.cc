@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 namespace {
@@ -78,13 +79,11 @@ bool AITextSession::Context::HasContextItem() {
 AITextSession::AITextSession(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
-    std::optional<optimization_guide::SamplingParams> sampling_params,
     base::WeakPtr<content::BrowserContext> browser_context,
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     AITextSessionSet* session_set,
     const std::optional<const Context>& context)
     : session_(std::move(session)),
-      sampling_params_(sampling_params),
       browser_context_(browser_context),
       session_set_(session_set),
       receiver_(this, std::move(receiver)) {
@@ -103,7 +102,7 @@ AITextSession::AITextSession(
 AITextSession::~AITextSession() = default;
 
 void AITextSession::SetSystemPrompt(std::string system_prompt,
-                                    base::OnceCallback<void(bool)> callback) {
+                                    CreateTextSessionCallback callback) {
   session_->GetSizeInTokens(
       system_prompt,
       base::BindOnce(&AITextSession::InitializeContextWithSystemPrompt,
@@ -147,13 +146,13 @@ blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
 
 void AITextSession::InitializeContextWithSystemPrompt(
     const std::string& text,
-    base::OnceCallback<void(bool)> callback,
+    CreateTextSessionCallback callback,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
   if (!size) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*info=*/nullptr);
     return;
   }
 
@@ -161,24 +160,27 @@ void AITextSession::InitializeContextWithSystemPrompt(
   if (size > max_token) {
     // The session cannot be created if the system prompt contains more tokens
     // than the limit.
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*info=*/nullptr);
     return;
   }
 
   context_ =
       std::make_unique<Context>(max_token, Context::ContextItem{text, size});
-  std::move(callback).Run(true);
+  std::move(callback).Run(GetTextSessionInfo());
 }
 
-// Adds the text into context. If the number of tokens in the current context
-// exceeds the limit, remove the oldest ones to reduce the context size.
-void AITextSession::AppendContextItem(const std::string& text, uint32_t size) {
+void AITextSession::OnGetSizeInTokensComplete(
+    const std::string& text,
+    blink::mojom::ModelStreamingResponder* responder,
+    uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
   if (size) {
     context_->AddContextItem({text, size});
   }
+  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
+                        std::nullopt, context_->current_tokens());
 }
 
 void AITextSession::ModelExecutionCallback(
@@ -194,7 +196,7 @@ void AITextSession::ModelExecutionCallback(
   if (!result.response.has_value()) {
     responder->OnResponse(
         ConvertModelExecutionError(result.response.error().error()),
-        std::nullopt);
+        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
     return;
   }
 
@@ -202,7 +204,7 @@ void AITextSession::ModelExecutionCallback(
       optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
     responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                          response->value());
+                          response->value(), /*current_tokens=*/std::nullopt);
   }
   if (result.response->is_complete) {
     std::string new_context = base::StringPrintf(kContextFormat, input.c_str(),
@@ -212,10 +214,8 @@ void AITextSession::ModelExecutionCallback(
     // be calculated during the execution.
     session_->GetSizeInTokens(
         new_context,
-        base::BindOnce(&AITextSession::AppendContextItem,
-                       weak_ptr_factory_.GetWeakPtr(), new_context));
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                          std::nullopt);
+        base::BindOnce(&AITextSession::OnGetSizeInTokensComplete,
+                       weak_ptr_factory_.GetWeakPtr(), new_context, responder));
   }
 }
 
@@ -228,7 +228,7 @@ void AITextSession::Prompt(
         std::move(pending_responder));
     responder->OnResponse(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        std::nullopt);
+        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
     return;
   }
 
@@ -256,21 +256,22 @@ void AITextSession::Fork(
   if (!browser_context_) {
     // The `browser_context_` is already destroyed before the renderer owner is
     // gone.
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(nullptr);
     return;
   }
 
   AIManagerKeyedService* service =
       AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
           browser_context_.get());
-  blink::mojom::AITextSessionSamplingParamsPtr sampling_params;
-  if (sampling_params_.has_value()) {
-    sampling_params = blink::mojom::AITextSessionSamplingParams::New(
-        sampling_params_->top_k, sampling_params_->temperature);
-  }
+
+  const optimization_guide::SamplingParams sampling_param =
+      session_->GetSamplingParams();
+
   service->CreateTextSessionForCloning(
       base::PassKey<AITextSession>(), std::move(session),
-      std::move(sampling_params), session_set_, *context_, std::move(callback));
+      blink::mojom::AITextSessionSamplingParams::New(
+          sampling_param.top_k, sampling_param.temperature),
+      session_set_, *context_, std::move(callback));
 }
 
 void AITextSession::Destroy() {
@@ -281,8 +282,17 @@ void AITextSession::Destroy() {
   for (auto& responder : responder_set_) {
     responder->OnResponse(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        std::nullopt);
+        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
   }
 
   responder_set_.Clear();
+}
+
+blink::mojom::AITextSessionInfoPtr AITextSession::GetTextSessionInfo() {
+  const optimization_guide::SamplingParams session_sampling_params =
+      session_->GetSamplingParams();
+  return blink::mojom::AITextSessionInfo::New(
+      context_->max_tokens(),
+      blink::mojom::AITextSessionSamplingParams::New(
+          session_sampling_params.top_k, session_sampling_params.temperature));
 }
