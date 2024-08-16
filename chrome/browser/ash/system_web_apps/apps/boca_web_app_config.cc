@@ -10,7 +10,7 @@
 namespace ash {
 BocaUIConfig::BocaUIConfig()
     : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
-                         ash::kChromeBocaAppHost) {}
+                         ash::boca::kChromeBocaAppHost) {}
 
 bool BocaUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   return ash::features::IsBocaEnabled();

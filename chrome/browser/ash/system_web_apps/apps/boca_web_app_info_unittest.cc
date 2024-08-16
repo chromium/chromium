@@ -72,7 +72,7 @@ TEST_F(BocaSystemAppDelegateTest, DisallowMaximizeForConsumerUsers) {
 TEST_F(BocaSystemAppDelegateTest, PinHomeTabForConsumerUsers) {
   scoped_feature_list_.InitAndEnableFeature(ash::features::kBocaConsumer);
   EXPECT_TRUE(
-      delegate_.ShouldPinTab(GURL(ash::kChromeBocaAppUntrustedIndexURL)));
+      delegate_.ShouldPinTab(GURL(ash::boca::kChromeBocaAppUntrustedIndexURL)));
 }
 
 }  // namespace

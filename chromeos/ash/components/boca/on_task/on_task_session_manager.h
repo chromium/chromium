@@ -13,11 +13,11 @@
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 
-namespace ash {
+namespace ash::boca {
 
 // Session manager implementation that is primarily used for configuring and
 // managing OnTask components and services throughout a Boca session.
-class OnTaskSessionManager : public BocaAppClient::Observer {
+class OnTaskSessionManager : public boca::BocaAppClient::Observer {
  public:
   explicit OnTaskSessionManager(
       std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager);
@@ -39,6 +39,6 @@ class OnTaskSessionManager : public BocaAppClient::Observer {
   base::WeakPtrFactory<OnTaskSessionManager> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SESSION_MANAGER_H_

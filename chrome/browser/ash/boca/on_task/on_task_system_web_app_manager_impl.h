@@ -14,7 +14,7 @@
 class Profile;
 class SessionID;
 
-namespace ash {
+namespace ash::boca {
 
 // `OnTaskSystemWebAppManager` implementation that is essentially a thin wrapper
 // around SWA window management APIs, specifically launch, close, and window
@@ -38,6 +38,6 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   base::WeakPtrFactory<OnTaskSystemWebAppManager> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_IMPL_H_

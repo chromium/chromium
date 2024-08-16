@@ -24,7 +24,7 @@ namespace ui {
 class ColorChangeHandler;
 }  // namespace ui
 
-namespace ash {
+namespace ash::boca {
 class BocaUI;
 class BocaAppHandler;
 
@@ -60,6 +60,6 @@ class BocaUI : public ui::UntrustedWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // ASH_WEBUI_BOCA_UI_BOCA_UI_H_

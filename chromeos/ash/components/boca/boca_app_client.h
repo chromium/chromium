@@ -18,7 +18,7 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace ash {
+namespace ash::boca {
 
 // Defines the interface for sub features to access hub Events
 class BocaAppClient {
@@ -70,6 +70,6 @@ class BocaAppClient {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_APP_CLIENT_H_

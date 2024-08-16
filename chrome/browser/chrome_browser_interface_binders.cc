@@ -1878,7 +1878,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   // --- Section 2: chrome-untrusted:// WebUIs:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsBocaEnabled()) {
-    registry.ForWebUI<ash::BocaUI>()
+    registry.ForWebUI<ash::boca::BocaUI>()
         .Add<ash::boca::mojom::BocaPageHandlerFactory>()
         .Add<color_change_listener::mojom::PageHandler>();
   }

@@ -49,7 +49,7 @@ std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor) {
 
 }  // namespace
 
-namespace ash {
+namespace ash::boca {
 TabInfoCollector::ImageGenerator::ImageGenerator(content::WebUI* web_ui)
     : web_ui_(web_ui) {}
 TabInfoCollector::ImageGenerator::ImageGenerator() = default;
@@ -138,4 +138,4 @@ std::vector<mojom::WindowPtr> TabInfoCollector::AshToPageWindows(
   return out;
 }
 
-}  // namespace ash
+}  // namespace ash::boca

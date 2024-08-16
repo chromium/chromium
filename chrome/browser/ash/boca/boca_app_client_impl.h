@@ -12,8 +12,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace ash {
-class BocaAppClientImpl : public ash::BocaAppClient {
+namespace ash::boca {
+class BocaAppClientImpl : public BocaAppClient {
  public:
   BocaAppClientImpl();
   BocaAppClientImpl(const BocaAppClientImpl&) = delete;
@@ -28,6 +28,6 @@ class BocaAppClientImpl : public ash::BocaAppClient {
  private:
   base::ObserverList<Observer> observers_;
 };
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_

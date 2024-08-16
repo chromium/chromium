@@ -15,7 +15,7 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace ash {
+namespace ash::boca {
 namespace {
 
 // Mock implementation of the `OnTaskSystemWebAppManager`.
@@ -113,4 +113,4 @@ TEST_F(OnTaskSessionManagerTest, ShouldIgnoreWhenNoBocaSWAOpenOnSessionEnd) {
 }
 
 }  // namespace
-}  // namespace ash
+}  // namespace ash::boca

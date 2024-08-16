@@ -8,7 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/session_id.h"
 
-namespace ash {
+namespace ash::boca {
 
 // Responsible for managing all OnTask interactions with the Boca SWA. These
 // interactions include launching the Boca SWA, closing the active SWA instance,
@@ -40,6 +40,6 @@ class OnTaskSystemWebAppManager {
   OnTaskSystemWebAppManager() = default;
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SYSTEM_WEB_APP_MANAGER_H_

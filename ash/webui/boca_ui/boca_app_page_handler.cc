@@ -14,7 +14,7 @@ namespace {
 constexpr char kOwnCoursesFilterValue[] = "me";
 }  // namespace
 
-namespace ash {
+namespace ash::boca {
 
 BocaAppHandler::BocaAppHandler(
     BocaUI* boca_ui,
@@ -41,4 +41,4 @@ void BocaAppHandler::ListStudents(const std::string& course_id,
                                   ListStudentsCallback callback) {
   class_room_page_handler_.ListStudents(course_id, std::move(callback));
 }
-}  // namespace ash
+}  // namespace ash::boca

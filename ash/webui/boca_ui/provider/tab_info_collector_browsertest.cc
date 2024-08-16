@@ -38,7 +38,7 @@ constexpr char kDefaultTitle[] = "foo";
 
 }  // namespace
 
-namespace ash {
+namespace ash::boca {
 
 class MockImageGenerator : public TabInfoCollector::ImageGenerator {
  public:
@@ -148,4 +148,4 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorTest, GetTabListForEmptyWindow) {
 
   EXPECT_EQ(0u, window_list.size());
 }
-}  // namespace ash
+}  // namespace ash::boca

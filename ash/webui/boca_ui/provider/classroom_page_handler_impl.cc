@@ -17,7 +17,7 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
 
-namespace ash {
+namespace ash::boca {
 namespace {
 using ::google_apis::ApiErrorCode;
 using ::google_apis::classroom::ListCoursesRequest;
@@ -180,4 +180,4 @@ ClassroomPageHandlerImpl::CreateRequestSender() {
       /*custom_user_agent=*/"", kTrafficAnnotation);
 }
 
-}  // namespace ash
+}  // namespace ash::boca

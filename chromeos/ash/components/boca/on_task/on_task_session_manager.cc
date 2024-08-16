@@ -14,7 +14,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "components/sessions/core/session_id.h"
 
-namespace ash {
+namespace ash::boca {
 
 OnTaskSessionManager::OnTaskSessionManager(
     std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager)
@@ -68,4 +68,4 @@ void OnTaskSessionManager::OnBocaSWALaunched(bool success) {
   }
 }
 
-}  // namespace ash
+}  // namespace ash::boca

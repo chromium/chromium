@@ -14,7 +14,7 @@ class BocaAppBrowserTest : public WebUIMochaBrowserTest {
  public:
   BocaAppBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
-    set_test_loader_host(std::string(ash::kChromeBocaAppHost));
+    set_test_loader_host(std::string(ash::boca::kChromeBocaAppHost));
 
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features */ {ash::features::kBoca,

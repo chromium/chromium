@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace ash {
+namespace ash::boca {
 namespace {
 
 // Returns a pointer to the browser window with the specified id. Returns
@@ -101,4 +101,4 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   }
 }
 
-}  // namespace ash
+}  // namespace ash::boca

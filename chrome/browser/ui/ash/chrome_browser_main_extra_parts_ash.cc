@@ -305,7 +305,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   annotator_client_ = std::make_unique<AnnotatorClientImpl>();
 
   if (ash::boca_util::IsEnabled()) {
-    boca_client_ = std::make_unique<ash::BocaAppClientImpl>();
+    boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();
   }
 
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();

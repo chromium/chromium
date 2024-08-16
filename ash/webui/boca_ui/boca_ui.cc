@@ -25,7 +25,7 @@
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace ash {
+namespace ash::boca {
 
 namespace {
 content::WebUIDataSource* CreateAndAddHostDataSource(
@@ -118,4 +118,4 @@ void BocaUI::Create(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
 
-}  // namespace ash
+}  // namespace ash::boca

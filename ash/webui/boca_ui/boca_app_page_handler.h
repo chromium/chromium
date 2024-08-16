@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
+namespace ash::boca {
 
 class BocaUI;
 
@@ -41,6 +41,6 @@ class BocaAppHandler : public boca::mojom::PageHandler {
   mojo::Remote<boca::mojom::Page> remote_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.
 };
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // ASH_WEBUI_BOCA_UI_BOCA_APP_PAGE_HANDLER_H_

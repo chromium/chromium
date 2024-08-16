@@ -16,10 +16,10 @@
 #include "url/gurl.h"
 
 std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp() {
-  GURL start_url = GURL(ash::kChromeBocaAppUntrustedIndexURL);
+  GURL start_url = GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(ash::kChromeBocaAppUntrustedURL);
+  info->scope = GURL(ash::boca::kChromeBocaAppUntrustedURL);
   // TODO(aprilzhou): Convert the title to a localized string
   info->title = u"BOCA";
   web_app::CreateIconInfoForSystemWebApp(
@@ -46,7 +46,7 @@ bool IsConsumerProfile(Profile* profile) {
 BocaSystemAppDelegate::BocaSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::BOCA,
                                 "Boca",
-                                GURL(ash::kChromeBocaAppUntrustedURL),
+                                GURL(ash::boca::kChromeBocaAppUntrustedURL),
                                 profile) {}
 
 std::unique_ptr<web_app::WebAppInstallInfo>
@@ -78,7 +78,7 @@ bool BocaSystemAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
 
 bool BocaSystemAppDelegate::ShouldPinTab(GURL url) const {
   return ShouldHaveTabStrip() &&
-         url == GURL(ash::kChromeBocaAppUntrustedIndexURL);
+         url == GURL(ash::boca::kChromeBocaAppUntrustedIndexURL);
 }
 
 bool BocaSystemAppDelegate::IsAppEnabled() const {

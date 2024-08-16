@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace ash::boca {
 namespace {
 
 using ::net::test_server::BasicHttpResponse;
@@ -499,4 +499,4 @@ TEST_F(ClassroomPageHandlerImplTest, ListStudentsWithInvalidCourseId) {
   ASSERT_EQ(response.size(), 0u);
 }
 
-}  // namespace ash
+}  // namespace ash::boca

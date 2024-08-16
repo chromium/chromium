@@ -21,7 +21,7 @@ namespace ui {
 class ImageModel;
 }
 
-namespace ash {
+namespace ash::boca {
 class TabInfoCollector {
  public:
   class ImageGenerator {
@@ -56,5 +56,5 @@ class TabInfoCollector {
       std::vector<std::vector<ash::TabInfo>> windows);
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 #endif  // ASH_WEBUI_BOCA_UI_PROVIDER_TAB_INFO_COLLECTOR_H_

@@ -131,7 +131,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ash::NewWindowDelegateProvider> new_window_delegate_provider_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
-  std::unique_ptr<ash::BocaAppClientImpl> boca_client_;
+  std::unique_ptr<ash::boca::BocaAppClientImpl> boca_client_;
   std::unique_ptr<ImeControllerClientImpl> ime_controller_client_;
   std::unique_ptr<InSessionAuthDialogClient> in_session_auth_dialog_client_;
   std::unique_ptr<ash::InSessionAuthTokenProviderImpl>

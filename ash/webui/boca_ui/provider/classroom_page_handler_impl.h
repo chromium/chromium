@@ -30,7 +30,7 @@ class Students;
 }  // namespace classroom
 }  // namespace google_apis
 
-namespace ash {
+namespace ash::boca {
 
 using StudentList = std::vector<mojom::StudentPtr>;
 using CourseList = std::vector<mojom::CoursePtr>;
@@ -81,6 +81,6 @@ class ClassroomPageHandlerImpl {
   base::WeakPtrFactory<ClassroomPageHandlerImpl> weak_factory_;
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // ASH_WEBUI_BOCA_UI_PROVIDER_CLASSROOM_PAGE_HANDLER_IMPL_H_

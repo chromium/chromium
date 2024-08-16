@@ -6,7 +6,7 @@
 
 #include "base/check_op.h"
 
-namespace ash {
+namespace ash::boca {
 
 namespace {
 
@@ -31,13 +31,13 @@ BocaAppClient::~BocaAppClient() {
   g_instance = nullptr;
 }
 
-void BocaAppClient::Observer::OnBundleUpdated(const boca::Bundle& bundle) {}
+void BocaAppClient::Observer::OnBundleUpdated(const ::boca::Bundle& bundle) {}
 
 void BocaAppClient::Observer::OnProducerCaptionConfigUpdated(
-    const boca::CaptionsConfig& config) {}
+    const ::boca::CaptionsConfig& config) {}
 
 void BocaAppClient::Observer::OnConsumerCaptionConfigUpdated(
-    const boca::CaptionsConfig& config) {}
+    const ::boca::CaptionsConfig& config) {}
 
 void BocaAppClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -47,4 +47,4 @@ void BocaAppClient::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace ash
+}  // namespace ash::boca
