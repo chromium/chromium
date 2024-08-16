@@ -2186,6 +2186,12 @@ class CONTENT_EXPORT ContentBrowserClient {
                                         bool* ignore_navigation);
 #endif
 
+  // Whether same-site RenderFrameHost swaps due to RenderDocument is allowed
+  // for navigations from `rfh`. Embedders can choose to disallow this if there
+  // are cases that are not correctly supported yet.
+  virtual bool ShouldAllowSameSiteRenderFrameHostChange(
+      const content::RenderFrameHost& rfh);
+
   // Called on IO or UI thread to determine whether or not to allow load and
   // render MHTML page from http/https URLs.
   virtual bool AllowRenderingMhtmlOverHttp(

@@ -1164,6 +1164,11 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
 }
 #endif
 
+bool ContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
+    const RenderFrameHost& rfh) {
+  return true;
+}
+
 bool ContentBrowserClient::AllowRenderingMhtmlOverHttp(
     NavigationUIData* navigation_ui_data) {
   return false;

@@ -17174,8 +17174,11 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
 bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
     const {
   return ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
-      is_main_frame(), is_local_root(), has_committed_any_navigation(),
-      must_be_replaced());
+             is_main_frame(), is_local_root(), has_committed_any_navigation(),
+             must_be_replaced()) &&
+         GetContentClient()
+             ->browser()
+             ->ShouldAllowSameSiteRenderFrameHostChange(*this);
 }
 
 bool RenderFrameHostImpl::CanReadFromSharedStorage() {

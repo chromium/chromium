@@ -323,6 +323,7 @@ void AwSettings::UpdateInitialPageScaleLocked(
     float dip_scale =
         static_cast<float>(Java_AwSettings_getDIPScaleLocked(env, obj));
     rvhe->SetInitialPageScale(initial_page_scale_percent / dip_scale / 100.0f);
+    initial_page_scale_is_non_default_ = true;
   }
 }
 
@@ -673,6 +674,9 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->initialize_at_minimum_page_scale =
       Java_AwSettings_getLoadWithOverviewModeLocked(env, obj);
+
+  initial_page_scale_is_non_default_ |=
+      (web_prefs->initialize_at_minimum_page_scale);
 
   web_prefs->autoplay_policy =
       Java_AwSettings_getMediaPlaybackRequiresUserGestureLocked(env, obj)

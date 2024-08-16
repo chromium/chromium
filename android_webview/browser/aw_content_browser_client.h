@@ -181,6 +181,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                 bool is_prerendering,
                                 ui::PageTransition transition,
                                 bool* ignore_navigation) override;
+  bool ShouldAllowSameSiteRenderFrameHostChange(
+      const content::RenderFrameHost& rfh) override;
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
