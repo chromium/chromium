@@ -160,6 +160,32 @@ suite('SeaPenInputQueryElementTest', function() {
     assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
   });
 
+  test('disables text input based on thumbnails loading state', async () => {
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    await setTextInputValue('Love looks not with the eyes, but with the mind');
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrTextareaElement>(
+            '#queryInput');
+
+    assertEquals(
+        'true', inputElement?.getAttribute('aria-disabled'),
+        'disable text input when thumbnails are loading');
+
+    // Set thumbnails loading completed.
+    personalizationStore.data.wallpaper.seaPen = {
+        ...personalizationStore.data.wallpaper.seaPen};
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    assertEquals(
+        'false', inputElement?.getAttribute('aria-disabled'),
+        'reenable text input when thumbnails finish loading');
+  });
+
   test('displays suggestions based on thumbnails loading state', async () => {
     const textValue = 'Love looks not with the eyes, but with the mind';
     personalizationStore.setReducersEnabled(true);
@@ -169,7 +195,6 @@ suite('SeaPenInputQueryElementTest', function() {
     await waitAfterNextRender(seaPenInputQueryElement);
 
     await setTextInputValue(textValue);
-
 
     // Suggestions should not display as thumbnails are loading.
     let seaPenSuggestions =
