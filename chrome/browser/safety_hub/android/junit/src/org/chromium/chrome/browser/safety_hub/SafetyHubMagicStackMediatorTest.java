@@ -273,6 +273,41 @@ public class SafetyHubMagicStackMediatorTest {
         verify(mModuleDelegate, times(1)).onDataReady(eq(ModuleType.SAFETY_HUB), any());
     }
 
+    @Test
+    public void testDismissCompromisedPasswords() {
+        MagicStackEntry entry =
+                MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.PASSWORDS);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        // Capture the callback
+        ArgumentCaptor<PrefObserver> captor = ArgumentCaptor.forClass(PrefObserver.class);
+        verify(mPrefChangeRegistrar)
+                .addObserver(eq(Pref.BREACHED_CREDENTIALS_COUNT), captor.capture());
+        PrefObserver observer = captor.getValue();
+
+        // Test that the module is not dismissed when compromised passwords exist.
+        doReturn(5).when(mPrefService).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        observer.onPreferenceChange();
+        verify(mModuleDelegate, times(0)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(0)).dismissCompromisedPasswordsModule();
+
+        // Dismiss the module when there is no compromised passwords.
+        doReturn(0).when(mPrefService).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        observer.onPreferenceChange();
+        verify(mModuleDelegate, times(1)).removeModule(ModuleType.SAFETY_HUB);
+        verify(mMagicStackBridge, times(1)).dismissCompromisedPasswordsModule();
+
+        // Ensure that dismissal is idempotent.
+        observer.onPreferenceChange();
+        verify(mModuleDelegate, times(1)).removeModule(eq(ModuleType.SAFETY_HUB));
+        verify(mMagicStackBridge, times(1)).dismissCompromisedPasswordsModule();
+
+        // Ensure that the module cannot be shown anymore.
+        mMediator.showModule();
+        verify(mModuleDelegate, times(1)).onDataReady(eq(ModuleType.SAFETY_HUB), any());
+    }
+
     private void testSafeStateDisplayed(String title, @Nullable String summary) {
         verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
         assertEquals(

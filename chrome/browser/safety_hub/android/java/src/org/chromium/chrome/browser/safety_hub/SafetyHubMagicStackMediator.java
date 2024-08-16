@@ -101,6 +101,9 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         if (magicStackEntry.getModuleType().equals(MagicStackEntry.ModuleType.SAFE_BROWSING)) {
             mPrefChangeRegistrar.addObserver(
                     Pref.SAFE_BROWSING_ENABLED, this::onSafeBrowsingChanged);
+        } else if (magicStackEntry.getModuleType().equals(MagicStackEntry.ModuleType.PASSWORDS)) {
+            mPrefChangeRegistrar.addObserver(
+                    Pref.BREACHED_CREDENTIALS_COUNT, this::onCompromisedPasswordsCountChanged);
         }
     }
 
@@ -133,6 +136,15 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         boolean isSafeBrowsingEnabled = mPrefService.getBoolean(Pref.SAFE_BROWSING_ENABLED);
         if (isSafeBrowsingEnabled && !mHasBeenDismissed) {
             mMagicStackBridge.dismissSafeBrowsingModule();
+            dismissModule();
+        }
+    }
+
+    private void onCompromisedPasswordsCountChanged() {
+        boolean hasCompromisedPasswords =
+                mPrefService.getInteger(Pref.BREACHED_CREDENTIALS_COUNT) > 0;
+        if (!hasCompromisedPasswords && !mHasBeenDismissed) {
+            mMagicStackBridge.dismissCompromisedPasswordsModule();
             dismissModule();
         }
     }
