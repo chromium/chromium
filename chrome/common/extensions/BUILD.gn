@@ -8,6 +8,111 @@ import("//tools/json_schema_compiler/json_features.gni")
 
 assert(enable_extensions)
 
+source_set("extensions") {
+  # The files that can be included from other modules.
+  public = [
+    "api/file_browser_handlers/file_browser_handler.h",
+    "api/notifications/notification_style.h",
+    "api/omnibox/omnibox_handler.h",
+    "api/side_panel/side_panel_info.h",
+    "api/speech/tts_engine_manifest_handler.h",
+    "api/storage/storage_schema_manifest_handler.h",
+    "api/system_indicator/system_indicator_handler.h",
+    "api/url_handlers/url_handlers_parser.h",
+    "chrome_extensions_client.h",
+    "chrome_manifest_url_handlers.h",
+    "extension_constants.h",
+    "extension_metrics.h",
+    "manifest_handlers/app_launch_info.h",
+    "manifest_handlers/natively_connectable_handler.h",
+    "manifest_handlers/settings_overrides_handler.h",
+    "manifest_handlers/theme_handler.h",
+    "permissions/chrome_api_permissions.h",
+    "permissions/chrome_permission_message_provider.h",
+    "permissions/chrome_permission_message_rules.h",
+    "sync_helper.h",
+    "webstore_install_result.h",
+    "webstore_override.h",
+  ]
+
+  # Files that can only be included from here.
+  sources = [
+    "api/file_browser_handlers/file_browser_handler.cc",
+    "api/notifications/notification_style.cc",
+    "api/omnibox/omnibox_handler.cc",
+    "api/side_panel/side_panel_info.cc",
+    "api/speech/tts_engine_manifest_handler.cc",
+    "api/storage/storage_schema_manifest_handler.cc",
+    "api/system_indicator/system_indicator_handler.cc",
+    "api/url_handlers/url_handlers_parser.cc",
+    "chrome_extensions_api_provider.cc",
+    "chrome_extensions_api_provider.h",
+    "chrome_extensions_client.cc",
+    "chrome_manifest_handlers.cc",
+    "chrome_manifest_handlers.h",
+    "chrome_manifest_url_handlers.cc",
+    "extension_constants.cc",
+    "extension_metrics.cc",
+    "manifest_handlers/app_launch_info.cc",
+    "manifest_handlers/minimum_chrome_version_checker.cc",
+    "manifest_handlers/minimum_chrome_version_checker.h",
+    "manifest_handlers/natively_connectable_handler.cc",
+    "manifest_handlers/settings_overrides_handler.cc",
+    "manifest_handlers/theme_handler.cc",
+    "permissions/chrome_api_permissions.cc",
+    "permissions/chrome_permission_message_provider.cc",
+    "permissions/chrome_permission_message_rules.cc",
+    "sync_helper.cc",
+    "webstore_install_result.cc",
+    "webstore_override.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/common:buildflags",
+    "//chrome/common/extensions/api",
+    "//components/services/app_service/public/cpp:app_types",
+    "//extensions/common",
+    "//extensions/common:common_constants",
+    "//extensions/common:mojom",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//chrome/common:request_code_constants",
+    "//chrome/common:resources",
+    "//chrome/common:url_constants",
+    "//chrome/common/extensions/api",
+    "//chrome/common/extensions/api:extensions_features",
+    "//components/app_constants",
+    "//components/device_signals/core/common:features",
+    "//components/policy/core/common",
+    "//components/url_formatter",
+    "//components/version_info",
+    "//extensions:extensions_resources",
+    "//extensions/common",
+    "//extensions/common:common_constants",
+    "//extensions/common:core_api_provider",
+    "//extensions/common:mojom",
+    "//extensions/strings",
+    "//ui/gfx/geometry",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    public += [ "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h" ]
+
+    sources += [ "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc" ]
+  }
+}
+
 json_features("extension_features_unittest") {
   feature_type = "APIFeature"
   method_name = "AddUnittestAPIFeatures"
