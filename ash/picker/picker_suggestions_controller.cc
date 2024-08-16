@@ -89,6 +89,11 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
             /*max_results=*/1,
             base::BindRepeating(&GetMostRecentResult).Then(callback));
         break;
+      case PickerCategory::kDriveFiles:
+        client_->GetRecentDriveFileResults(
+            /*max_results=*/5,
+            base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
       default:
         GetSuggestionsForCategory(
             category, base::BindRepeating(&GetMostRecentResult).Then(callback));

@@ -214,7 +214,7 @@ TEST_F(PickerSuggestionsControllerTest,
               PickerSearchResult::BrowsingHistory(GURL("b.com"), u"b",
                                                   /*icon=*/{}),
           })));
-  EXPECT_CALL(client, GetRecentDriveFileResults)
+  EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
       .WillRepeatedly(
           WithArg<1>(RunCallbackArgWith(std::vector<PickerSearchResult>{
               PickerSearchResult::DriveFile(/*id=*/{}, u"a", GURL("a.com"),
