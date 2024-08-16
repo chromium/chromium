@@ -39,10 +39,9 @@ class PaymentsWindowUserConsentDialogControllerImplTest : public testing::Test {
 // Tests that the correct strings are returned for the dialog.
 TEST_F(PaymentsWindowUserConsentDialogControllerImplTest,
        CorrectStringsAreReturned) {
-  EXPECT_EQ(
-      controller()->GetWindowTitle(),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_TITLE_VCN_3DS));
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_LOADING_AND_CONSENT_DIALOG_TITLE_VCN_3DS));
   EXPECT_EQ(
       controller()->GetDialogDescription(),
       l10n_util::GetStringUTF16(

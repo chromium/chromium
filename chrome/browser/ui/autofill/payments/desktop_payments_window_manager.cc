@@ -194,7 +194,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
         base::TimeTicks::Now() - vcn_3ds_popup_shown_timestamp_.value(),
         /*success=*/true);
     client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
-        AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
+        AutofillProgressDialogType::k3dsFetchVcnProgressDialog,
         base::BindOnce(&DesktopPaymentsWindowManager::
                            OnVcn3dsAuthenticationProgressDialogCancelled,
                        weak_ptr_factory_.GetWeakPtr()));

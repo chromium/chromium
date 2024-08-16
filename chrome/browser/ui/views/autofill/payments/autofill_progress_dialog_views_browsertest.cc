@@ -39,6 +39,8 @@ class AutofillProgressDialogViewsBrowserTest
       return AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog;
     } else if (GetParam() == "ServerCardUnmask") {
       return AutofillProgressDialogType::kServerCardUnmaskProgressDialog;
+    } else if (GetParam() == "3dsFetchVirtualCard") {
+      return AutofillProgressDialogType::k3dsFetchVcnProgressDialog;
     }
     NOTREACHED();
   }
@@ -185,6 +187,7 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
 INSTANTIATE_TEST_SUITE_P(,
                          AutofillProgressDialogViewsBrowserTest,
                          testing::Values("VirtualCardUnmask",
-                                         "ServerCardUnmask"));
+                                         "ServerCardUnmask",
+                                         "3dsFetchVirtualCard"));
 
 }  // namespace autofill

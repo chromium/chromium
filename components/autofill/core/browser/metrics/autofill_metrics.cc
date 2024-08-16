@@ -1010,7 +1010,9 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "ServerCardUnmask";
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
-    default:
+    case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+      return "3dsFetchVirtualCard";
+    case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
 }
