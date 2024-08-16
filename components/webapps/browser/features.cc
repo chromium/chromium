@@ -14,22 +14,6 @@ BASE_FEATURE(kAddToHomescreenMessaging,
              "AddToHomescreenMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the installable ambient badge message.
-BASE_FEATURE(kInstallPromptGlobalGuardrails,
-             "InstallPromptGlobalGuardrails",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-extern const base::FeatureParam<int>
-    kInstallPromptGlobalGuardrails_DismissCount{&kInstallPromptGlobalGuardrails,
-                                                "dismiss_count", 3};
-extern const base::FeatureParam<base::TimeDelta>
-    kInstallPromptGlobalGuardrails_DismissPeriod{
-        &kInstallPromptGlobalGuardrails, "dismiss_period", base::Days(7)};
-extern const base::FeatureParam<int> kInstallPromptGlobalGuardrails_IgnoreCount{
-    &kInstallPromptGlobalGuardrails, "ignore_count", 3};
-extern const base::FeatureParam<base::TimeDelta>
-    kInstallPromptGlobalGuardrails_IgnorePeriod{&kInstallPromptGlobalGuardrails,
-                                                "ignore_period", base::Days(3)};
-
 BASE_FEATURE(kPwaUniversalInstallUi,
              "PwaUniversalInstallUi",
              base::FEATURE_ENABLED_BY_DEFAULT);
