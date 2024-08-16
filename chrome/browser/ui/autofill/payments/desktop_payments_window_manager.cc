@@ -269,7 +269,7 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
             ->user_consent_already_given);
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-            /*is_permanent_error=*/true));
+            /*is_permanent_error=*/false));
   }
 
   autofill_metrics::LogVcn3dsFlowEvent(
