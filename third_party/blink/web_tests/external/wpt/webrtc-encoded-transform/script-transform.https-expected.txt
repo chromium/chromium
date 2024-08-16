@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] Cannot reuse attached transforms
-  assert_throws_dom: function "() => receiver2.transform = receiver.transform" did not throw
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to set the 'transform' property on 'RTCRtpSender': Transform already set"
 Harness: the test ran to completion.
 

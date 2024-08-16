@@ -7936,6 +7936,7 @@ interface RTCRtpReceiver
     getter playoutDelayHint
     getter rtcpTransport
     getter track
+    getter transform
     getter transport
     method constructor
     method createEncodedStreams
@@ -7945,6 +7946,7 @@ interface RTCRtpReceiver
     method getSynchronizationSources
     setter jitterBufferTarget
     setter playoutDelayHint
+    setter transform
 interface RTCRtpScriptTransform
     attribute @@toStringTag
     method constructor
