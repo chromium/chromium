@@ -92,7 +92,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 @Override
                 public void willCloseTab(Tab tab, boolean didCloseAlone) {
                     if (mCurrentTabModelFilterSupplier.get().getTabModel().getCount() == 1) {
-                        removeAllAppendedMessage();
+                        removeAllAppendedMessagePostAnimation();
                     } else if (mPriceMessageService != null
                             && mPriceMessageService.getBindingTabId() == tab.getId()) {
                         removePriceWelcomeMessage();
@@ -544,6 +544,19 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         for (MessageUpdateObserver observer : mObservers) {
             observer.onRemoveAllAppendedMessage();
         }
+    }
+
+    private void removeAllAppendedMessagePostAnimation() {
+        TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
+        if (tabListCoordinator == null) return;
+
+        tabListCoordinator.runOnItemAnimatorFinished(
+                () -> {
+                    if (mTabListCoordinatorSupplier.get() != tabListCoordinator) {
+                        return;
+                    }
+                    removeAllAppendedMessage();
+                });
     }
 
     /**
