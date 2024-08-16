@@ -3205,7 +3205,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       此功能是否可用还取决于相应的用户规范。</translation>
 <translation id="3495602011142234826">如果值设为 true，该扩展程序便能够使用被指定为供企业使用的所有密钥签署任意数据。如果值设为 false，该扩展程序将无法使用任何此类密钥，用户也无法授予此类权限。例外情况是：如果某个扩展程序生成了一个此类密钥，该密钥只能供这个扩展程序使用 1 次。</translation>
-<translation id="3496296378755072552">密码管理器</translation>
+<translation id="3496296378755072552">密码管理工具</translation>
 <translation id="3496761649331792755">启用书签栏</translation>
 <translation id="3498109920669229084">通过设置此政策，您可以指定哪些扩展程序不受屏蔽名单影响。
 
@@ -4381,7 +4381,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4464365009416584564">停用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">阻止第三方 Cookie</translation>
 <translation id="4472740647327683596">页面的宽度（以微米为单位）</translation>
-<translation id="4474167089968829729">允许将密码保存到密码管理器</translation>
+<translation id="4474167089968829729">允许将密码保存到密码管理工具</translation>
 <translation id="4478248026668918517">屏蔽政策范围检测。</translation>
 <translation id="4479671363221255277">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以通过 File System API 请求用户向其授予对主机操作系统的文件系统中的文件或目录的读取权限。
 
@@ -5817,13 +5817,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 在 <ph name="PRODUCT_OS_NAME" /> 自助服务终端中，此政策不提供“允许用户决定”选项。如果未为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策，系统会始终启用以网址为键的匿名化数据收集功能。
 为 <ph name="PRODUCT_OS_NAME" /> 自助服务终端设置此政策后，系统会为自助服务终端应用启用以网址为键的指标收集功能。</translation>
-<translation id="5618398258385745432">在我们推出“查看密码时需重新验证”这一规定之前，我们是使用相关的设置来控制用户能否查看密码。自这一规定推出后，相关设置以及此政策便不再对 Chrome 的行为有任何影响。Chrome 的当前行为等同于此政策设为在密码管理器设置页面中禁止以明文形式显示密码。这意味着，设置页面中包含的只是一个占位符，仅当用户点击“显示”（并进行重新验证，如果适用的话）后，Chrome 才会显示相应密码。此政策的原始描述如下所示：
+<translation id="5618398258385745432">在我们推出“查看密码时需重新验证”这一规定之前，我们是使用相关的设置来控制用户能否查看密码。自这一规定推出后，相关设置以及此政策便不再对 Chrome 的行为有任何影响。Chrome 的当前行为等同于此政策设为在密码管理工具设置页面中禁止以明文形式显示密码。这意味着，设置页面中包含的只是一个占位符，仅当用户点击“显示”（并进行重新验证，如果适用的话）后，Chrome 才会显示相应密码。此政策的原始描述如下所示：
 
-          控制用户是否可以在密码管理器中以明文形式显示密码。
+          控制用户是否可以在密码管理工具中以明文形式显示密码。
 
-          如果您停用了此设置，密码管理器将不允许在密码管理器窗口中以明文形式显示存储的密码。
+          如果您停用了此设置，密码管理工具将不允许在密码管理工具窗口中以明文形式显示存储的密码。
 
-          如果您启用了此政策或未设置此政策，用户将可以在密码管理器中查看以明文形式显示的密码。</translation>
+          如果您启用了此政策或未设置此政策，用户将可以在密码管理工具中查看以明文形式显示的密码。</translation>
 <translation id="5619498195290770056">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法设置 Cookie。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -7903,7 +7903,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策已停用，系统会阻止使用“本地设备发现”功能。
       </translation>
-<translation id="7167436895080860385">允许用户在密码管理器中显示密码（已弃用）</translation>
+<translation id="7167436895080860385">允许用户在密码管理工具中显示密码（已弃用）</translation>
 <translation id="7172046613126456732">允许 Chrome 在未注册 Chrome 浏览器云管理的情况下启动</translation>
 <translation id="7173856672248996428">临时个人资料</translation>
 <translation id="7174158612490351828"><ph name="PRODUCT_NAME" /> 在验证服务器身份时不应信任的证书公钥的列表。
@@ -7965,7 +7965,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="721970071627370558">停用设备电源状态报告功能</translation>
 <translation id="7221574724100909818">使用锁形图标表示安全连接</translation>
 <translation id="7227348936232766462">允许用户在用户反馈中包含下列所有设备类型的低级别调试数据</translation>
-<translation id="7229365071755865554">允许使用密码管理器保存密码</translation>
+<translation id="7229365071755865554">允许使用密码管理工具保存密码</translation>
 <translation id="7229975860249300121">这项政策包含一个正则表达式，用于决定哪些 Google 账号可以设定为 <ph name="PRODUCT_NAME" /> 中的浏览器主账号（也就是在同步功能启用流程中所选的账号）。
 
       如果用户尝试使用与此格式不匹配的用户名设置浏览器主账号，就会显示相应错误。
@@ -8760,7 +8760,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       确定在登录屏幕上用作屏幕保护程序的扩展程序的 ID。该扩展程序必须属于通过 DeviceAppPack 策略为此域配置的 AppPack。</translation>
 <translation id="7882890448959833986">禁止显示“操作系统不受支持”警告</translation>
-<translation id="788480874436328004">禁止使用密码管理器保存密码</translation>
+<translation id="788480874436328004">禁止使用密码管理工具保存密码</translation>
 <translation id="7891884447851425349">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 来指定在默认搜索期间使用的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SEARCH_URL" />。</translation>
@@ -9150,7 +9150,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           如果您未设置此政策，系统会执行默认操作，即暂停。
 
           如果需要执行的操作是暂停，您还可另行配置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
-<translation id="8214600119442850823">配置密码管理器。</translation>
+<translation id="8214600119442850823">配置密码管理工具。</translation>
 <translation id="8217664958939773083">如果此政策设为 <ph name="ENABLED" /> 或未设置，即意味着允许使用无头模式。如果此政策设为 <ph name="DISABLED" />，则意味着禁止使用无头模式。</translation>
 <translation id="8217837574199617401">此政策让管理员能以列表形式配置无痕模式导航所必需的扩展程序 ID。
 

@@ -2263,7 +2263,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5323043727018853753">Conteúdo incorporado permitido</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
-<translation id="5331585574693522196">Definir como predefinição</translation>
+<translation id="5331585574693522196">Predefinir</translation>
 <translation id="5332219387342487447">Método de envio</translation>
 <translation id="5332769172018416402">Pedir numa mensagem</translation>
 <translation id="5334145288572353250">Quer guardar o endereço?</translation>
@@ -4295,7 +4295,7 @@ Detalhes adicionais:
 <translation id="9213433120051936369">Personalize o aspeto</translation>
 <translation id="9215416866750762878">Uma aplicação está a impedir que o Chrome se ligue a este site em segurança</translation>
 <translation id="92178312226016010">Está a acompanhar este produto.</translation>
-<translation id="9218430445555521422">Definir como predefinição</translation>
+<translation id="9218430445555521422">Predefinir</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="922152298093051471">Personalizar o Chrome</translation>
 <translation id="9222403027701923763">Ensino básico e secundário</translation>

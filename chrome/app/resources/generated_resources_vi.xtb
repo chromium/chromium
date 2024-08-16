@@ -342,7 +342,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1240903469550363138">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />chính sách quyền riêng tư<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />điều khoản dịch vụ<ph name="END_LINK2" /> của trang web này.</translation>
 <translation id="1241066500170667906">Chọn trạng thái thử nghiệm cho <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Ngôn ngữ khác</translation>
-<translation id="1241381048229838873">Hiển thị tất cả dấu trang</translation>
+<translation id="1241381048229838873">Hiện tất cả dấu trang</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> muốn đặt lại cài đặt của bạn.</translation>
 <translation id="1243002225871118300">Thay đổi kích thước hiển thị và văn bản</translation>
 <translation id="1243314992276662751">Tải lên</translation>
@@ -2547,7 +2547,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2811205483104563968">Tài khoản</translation>
 <translation id="2812049959647166806">Không hỗ trợ Thunderbolt</translation>
 <translation id="2812171980080389735">Mạng và mật khẩu đã lưu để bạn có thể kết nối ngay lập tức</translation>
-<translation id="2813094189969465044">Quyền kiểm soát của cha mẹ</translation>
+<translation id="2813094189969465044">Chế độ kiểm soát của cha mẹ</translation>
 <translation id="2813765525536183456">&amp;Thêm hồ sơ mới</translation>
 <translation id="281390819046738856">Không thể ký yêu cầu.</translation>
 <translation id="2814489978934728345">Dừng tải trang này</translation>
@@ -2742,7 +2742,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2960942820860729477">Tốc độ làm mới</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (đã cung cấp tiện ích)</translation>
 <translation id="2961695502793809356">Nhấp vào để tiến, giữ để xem lịch sử</translation>
-<translation id="29618148602069201">Chủ thể</translation>
+<translation id="29618148602069201">Chủ đề</translation>
 <translation id="2963151496262057773">Plugin sau không hồi đáp: <ph name="PLUGIN_NAME" />Bạn có muốn dừng lại không?</translation>
 <translation id="2964193600955408481">Tắt Wi-Fi</translation>
 <translation id="2964245677645334031">Khả năng nhìn thấy thiết bị Chia sẻ lân cận</translation>
@@ -2815,7 +2815,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3010234549896186761">{COUNT,plural, =0{Mật khẩu của bạn có vẻ mạnh}=1{{COUNT} mật khẩu yếu}other{{COUNT} mật khẩu yếu}}</translation>
 <translation id="3010279545267083280">Đã xóa mật khẩu</translation>
 <translation id="3010389206479238935">Buộc mở trong</translation>
-<translation id="3010961843303056486">Hiển thị tất cả dấu trang</translation>
+<translation id="3010961843303056486">Hiện tất cả dấu trang</translation>
 <translation id="3011384993885886186">Xám ấm</translation>
 <translation id="3011488081941333749">Cookie từ <ph name="DOMAIN" /> sẽ bị xóa khi thoát</translation>
 <translation id="3012631534724231212">(iframe)</translation>

@@ -3493,7 +3493,7 @@
 <translation id="3537099313456411235">‏עליך לחבר את החשבון <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> כדי לגשת לקבצים שלך ב-Drive באפליקציה 'קבצים'</translation>
 <translation id="3537881477201137177">ניתן לשנות זאת מאוחר יותר ב'הגדרות'</translation>
 <translation id="3538066758857505094">‏קרתה שגיאה בהסרת ההתקנה של Linux. צריך לנסות שוב.</translation>
-<translation id="3539537154248488260">הצגה או הסתרה של ההשראה</translation>
+<translation id="3539537154248488260">הצגה או הסתרה של הרעיונות להשראה</translation>
 <translation id="3540173484406326944">אין חיבור לרשת דרך <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="354060433403403521">‏מתאם AC</translation>
 <translation id="354068948465830244">התוסף יכול לקרוא ולשנות נתוני אתרים</translation>
@@ -7832,7 +7832,7 @@
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
 <translation id="6803766346203101854">לאתר הזה יש הרשאה לשמור נתונים במכשיר שלך.</translation>
 <translation id="680488281839478944">‏יש VM בשם "<ph name="DEFAULT_VM_NAME" />"</translation>
-<translation id="6805478749741295868">‏זוהי תכונה ניסיונית שמבוססת על AI ויכול להיות שהארגון לא יתאים לך.</translation>
+<translation id="6805478749741295868">‏זוהי תכונה ניסיונית שמבוססת על AI ויכול להיות שהתוצאה לא תמיד תתאים לך.</translation>
 <translation id="6805647936811177813">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייבא אישור לקוח מ-<ph name="HOST_NAME" />.</translation>
 <translation id="680572642341004180">‏הפעלת מעקב RLZ ב-<ph name="SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="6806089545527108739">אין אישור, אבל יש לשאול מאוחר יותר</translation>

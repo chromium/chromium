@@ -13,7 +13,7 @@
 <translation id="1149651794389918149">登入 Chrome。如果你只想登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客的身分使用這部裝置<ph name="GUEST_LINK_END" />。</translation>
 <translation id="1152920704813762236">關於 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
-<translation id="1194807384646768652">這不是常有人下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
+<translation id="1194807384646768652">這不是其他人經常下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1229096353876452996">Google 建議將 Chrome 設為預設瀏覽器</translation>
 <translation id="1265739287306757398">操作說明</translation>
@@ -156,7 +156,7 @@
 <translation id="3080151273017101988">Google Chrome 關閉時繼續執行背景應用程式</translation>
 <translation id="3089968997497233615">Google Chrome 推出全新版本，安全性更勝以往。</translation>
 <translation id="3100998948628680988">為 Chrome 設定檔命名</translation>
-<translation id="3112458742631356345">這不是常有人下載的檔案，可能有危險，因此 Chrome 已禁止下載</translation>
+<translation id="3112458742631356345">這不是其他人經常下載的檔案，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="3114643501466072395">如要檢查你其他的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3119573284443908657">這個封存檔案內含可能藏有惡意軟體的其他檔案，因此 Chrome 已禁止下載</translation>
 <translation id="3140883423282498090">你的變更將於下次重新啟動 Google Chrome 時生效。</translation>

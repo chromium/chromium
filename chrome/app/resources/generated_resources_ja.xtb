@@ -1774,7 +1774,6 @@
 <translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
 <translation id="229182044471402145">一致するフォントは見つかりませんでした。</translation>
 <translation id="2292848386125228270">通常のユーザーとして <ph name="PRODUCT_NAME" /> を起動してください。開発の目的でルートとして実行する必要がある場合は、--no-sandbox フラグを指定して再実行してください。</translation>
-<translation id="2292862094862078674">インターネット接続を確認してから、もう一度お試しください。以前に生成された下のテーマから選択することは可能です。</translation>
 <translation id="2294081976975808113">画面のプライバシー</translation>
 <translation id="2294358108254308676"><ph name="PRODUCT_NAME" /> をインストールしますか？</translation>
 <translation id="229477815107578534">設定をご確認ください</translation>
@@ -6428,7 +6427,7 @@
 <translation id="5756163054456765343">ヘルプセンター(&amp;E)</translation>
 <translation id="5757187557809630523">次のトラック</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
-<translation id="5759397201362801675">気分を選択</translation>
+<translation id="5759397201362801675">ムードを選択</translation>
 <translation id="5759728514498647443">「<ph name="APP_NAME" />」を使用して印刷に送信したドキュメントは「<ph name="APP_NAME" />」で読めます。</translation>
 <translation id="5760318332127300368">閲覧履歴データ（<ph name="URL" />）も削除します。これにより、Google.com からログアウトします。<ph name="LEARN_MORE" /></translation>
 <translation id="5762787084360227629">Google アカウントの情報を入力</translation>
@@ -10972,7 +10971,7 @@
 <translation id="9114663181201435112">簡単にログイン</translation>
 <translation id="9115675100829699941">ブックマーク(&amp;B)</translation>
 <translation id="9115932142612197835">この設定を行っても、Google 翻訳やレンズはこれまでどおり使用できます</translation>
-<translation id="9116366756388192417">テーマを選択</translation>
+<translation id="9116366756388192417">主題を選択</translation>
 <translation id="9116799625073598554">メモ用アプリ</translation>
 <translation id="9117030152748022724">アプリを管理する</translation>
 <translation id="9119587891086680311">これらの機能は AI を使用していますが、開発の初期段階であり、常に正しく機能するとは限りません。</translation>
@@ -11182,7 +11181,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - カメラ録画とマイク録音</translation>
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="984705303330760860">スペルチェックの言語を追加</translation>
-<translation id="98515147261107953">横</translation>
+<translation id="98515147261107953">風景</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">全般</translation>
 <translation id="987475089238841621">言語パックは自動字幕起こしに使用され、デバイスに保存されます</translation>
