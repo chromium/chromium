@@ -220,8 +220,10 @@ void TouchCalibratorController::StopCalibrationAndResetParams() {
   if (state_ == CalibrationState::kNativeCalibration ||
       state_ == CalibrationState::kNativeCalibrationTouchscreenMapping) {
     for (const auto& it : touch_calibrator_widgets_) {
-      static_cast<TouchCalibratorView*>(it.second->GetContentsView())
-          ->SkipToFinalState();
+      if (auto* touch_calibrator_view = views::AsViewClass<TouchCalibratorView>(
+              it.second->GetContentsView())) {
+        touch_calibrator_view->SkipToFinalState();
+      }
     }
   }
 
@@ -327,8 +329,9 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
   touch->StopPropagation();
 
   TouchCalibratorView* target_screen_calibration_view =
-      static_cast<TouchCalibratorView*>(
+      views::AsViewClass<TouchCalibratorView>(
           touch_calibrator_widgets_[target_display_.id()]->GetContentsView());
+  CHECK(target_screen_calibration_view);
 
   // If this is the final state, then store all calibration data and stop
   // calibration.
