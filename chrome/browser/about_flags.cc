@@ -155,6 +155,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/sensitive_content/features.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -12067,7 +12068,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUndoMigrationOfSyncingUserToSignedInDescription,
      flags_ui::kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kUndoMigrationOfSyncingUserToSignedIn)},
-#endif
+
+    {"sensitive-content", flag_descriptions::kSensitiveContentName,
+     flag_descriptions::kSensitiveContentDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(sensitive_content::features::kSensitiveContent)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"safe-browsing-ripple-effect",
      flag_descriptions::kRippleForEnhancedProtectionName,

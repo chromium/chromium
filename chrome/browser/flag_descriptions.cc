@@ -3227,6 +3227,18 @@ const char kSendTabToSelfIOSPushNotificationsDescription[] =
     "Feature to allow users to send tabs to their iOS device through a system "
     "push notitification.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kSensitiveContentName[] =
+    "Redact sensitive content during screen sharing, screen recording, "
+    "and similar actions";
+
+const char kSensitiveContentDescription[] =
+    "When enabled, if sensitive form fields (such as credit cards, passwords) "
+    "are present on the page, the entire content area is redacted during "
+    "screen sharing, screen recording, and similar actions. This feature "
+    "works only on Android V or above.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kSettingsAppNotificationSettingsName[] =
     "Split notification permission settings";
 const char kSettingsAppNotificationSettingsDescription[] =

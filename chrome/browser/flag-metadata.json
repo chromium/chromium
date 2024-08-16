@@ -8124,6 +8124,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "sensitive-content",
+    "owners": ["theocristea@google.com", "jkeitel@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "separate-web-app-shortcut-badge-icon",
     "owners": ["tbarzic@chromium.org", "owenzhang@google.com"],
     "expiry_milestone": 130

@@ -21793,6 +21793,7 @@ from previous Chrome versions.
   <int value="557915559" label="CCTModuleCustomRequestHeader:enabled"/>
   <int value="558249253"
       label="ContextualSearchThinWebViewImplementation:disabled"/>
+  <int value="558250437" label="SensitiveContent:disabled"/>
   <int value="558873715" label="SiteDetails:disabled"/>
   <int value="559642066" label="AutoPictureInPictureForVideoPlayback:enabled"/>
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
@@ -24585,6 +24586,7 @@ from previous Chrome versions.
   <int value="1719189460" label="EnablePasswordSelection:disabled"/>
   <int value="1719958026" label="QueryTiles:enabled"/>
   <int value="1720399117" label="SkiaGraphite:enabled"/>
+  <int value="1720657677" label="SensitiveContent:enabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
   <int value="1722521465" label="CrosBatterySaverAlwaysOn:disabled"/>
   <int value="1722739418" label="CCTNestedSecurityIcon:disabled"/>

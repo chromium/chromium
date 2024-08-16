@@ -20,6 +20,7 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.content_public.common.ContentFeatures;
@@ -1083,6 +1084,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.DEFER_RENDERER_TASKS_AFTER_INPUT,
                 "If enabled, some renderer tasks will be deferred after discrete input events, e.g."
                         + " keypress, and the subsequent frame"),
+        Flag.baseFeature(
+                SensitiveContentFeatures.SENSITIVE_CONTENT,
+                "Redact sensitive content during screen sharing, screen recording, and similar"
+                        + " actions"),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

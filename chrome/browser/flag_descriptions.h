@@ -1863,6 +1863,11 @@ extern const char kQuickShareV2Description[];
 extern const char kSendTabToSelfIOSPushNotificationsName[];
 extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kSensitiveContentName[];
+extern const char kSensitiveContentDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kSettingsAppNotificationSettingsName[];
 extern const char kSettingsAppNotificationSettingsDescription[];
 
